@@ -32,6 +32,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -192,7 +193,7 @@ public class MidnightCreatureEntity extends ShapeshiftingEntity implements
         if (uuid == null) {
             this.dataTracker.set(CONTROLLER_UUID, Optional.empty());
         } else {
-            if (getControllerUuid() != uuid) {
+            if (!Objects.equals(getControllerUuid(), uuid)) {
                 onStartControlling();
             }
             this.dataTracker.set(CONTROLLER_UUID, Optional.of(uuid));
@@ -215,6 +216,7 @@ public class MidnightCreatureEntity extends ShapeshiftingEntity implements
     }
 
     @Override
+    @Nullable
     public UUID getControllerUuid() {
         return this.dataTracker.get(CONTROLLER_UUID).orElse(null);
     }
@@ -329,9 +331,8 @@ public class MidnightCreatureEntity extends ShapeshiftingEntity implements
                             }
 
                             // Not an ally if controlled by another player
-                            if (midnightAlly.getControllerUuid() != null
-                                    && midnightAlly.getControllerUuid()
-                                    != owner.getControllerUuid()) {
+                            if (midnightAlly.getControllerUuid() != null && !Objects.equals(
+                                    midnightAlly.getControllerUuid(), owner.getControllerUuid())) {
                                 return false;
                             }
 
@@ -379,17 +380,16 @@ public class MidnightCreatureEntity extends ShapeshiftingEntity implements
                 new FirstApplicableBehaviour<>(
                         // If not aggro-ed and target is holding water, study them
                         new StudyTarget<MidnightCreatureEntity>(100).canStudy((entity, target) -> {
-                            if (entity.getControllerUuid() != null) {
-                                return false;
-                            }
-                            return target.getMainHandStack()
-                                    .isIn(ModItemTags.TEMPTS_MIDNIGHT_CREATURES)
-                                    || target.getOffHandStack()
-                                    .isIn(ModItemTags.TEMPTS_MIDNIGHT_CREATURES);
-                        }).whenStopping(entity -> {
-                            BrainUtils.setForgettableMemory(entity,
-                                    MemoryModuleType.UNIVERSAL_ANGER, true, ANGER_TIME);
-                        }),
+                                    if (entity.getControllerUuid() != null) {
+                                        return false;
+                                    }
+                                    return target.getMainHandStack()
+                                            .isIn(ModItemTags.TEMPTS_MIDNIGHT_CREATURES)
+                                            || target.getOffHandStack()
+                                            .isIn(ModItemTags.TEMPTS_MIDNIGHT_CREATURES);
+                                })
+                                .whenStopping(entity -> BrainUtils.setForgettableMemory(entity,
+                                        MemoryModuleType.UNIVERSAL_ANGER, true, ANGER_TIME)),
                         // Start attacking
                         new AnimatableMeleeAttack<MidnightCreatureEntity>(0)));
     }
@@ -484,7 +484,7 @@ public class MidnightCreatureEntity extends ShapeshiftingEntity implements
     protected ActionResult interactMob(PlayerEntity player, Hand hand) {
         ItemStack stack = player.getStackInHand(hand);
 
-        if (stack.isEmpty() && player.getUuid() == this.getControllerUuid()) {
+        if (stack.isEmpty() && player.getUuid().equals(this.getControllerUuid())) {
             ModComponents.POSSESSION.get(player).setPossessedEntity(this);
             if (this.getWorld().isClient()) {
                 Worldsinger.PROXY.setRenderViewEntity(this);

@@ -7,7 +7,7 @@ import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 
-@SuppressWarnings("UnqualifiedStaticUsage")
+// @SuppressWarnings("UnqualifiedStaticUsage")
 public class ModMemoryModuleTypes {
 
     // public static final MemoryModuleType<Boolean> HAS_CONTROLLER = register("has_controller");

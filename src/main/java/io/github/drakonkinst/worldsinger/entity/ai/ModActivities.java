@@ -4,7 +4,7 @@ import net.minecraft.entity.ai.brain.Activity;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 
-@SuppressWarnings("UnqualifiedStaticUsage")
+// @SuppressWarnings("UnqualifiedStaticUsage")
 public final class ModActivities {
 
     // public static final Activity FIGHT_TAMED = register("fight_tamed");
