@@ -1,6 +1,7 @@
 package io.github.drakonkinst.worldsinger;
 
 import io.github.drakonkinst.worldsinger.dimension.ModDimensionEffects;
+import io.github.drakonkinst.worldsinger.event.ModClientEventHandlers;
 import io.github.drakonkinst.worldsinger.fluid.ModFluidRenderers;
 import io.github.drakonkinst.worldsinger.network.ClientNetworkHandler;
 import io.github.drakonkinst.worldsinger.network.ClientProxy;
@@ -26,6 +27,7 @@ public class WorldsingerClient implements ClientModInitializer {
         ModModelPredicates.register();
         ModDimensionEffects.initialize();
 
+        ModClientEventHandlers.registerEventHandlers();
         ClientNetworkHandler.registerPacketHandlers();
     }
 }

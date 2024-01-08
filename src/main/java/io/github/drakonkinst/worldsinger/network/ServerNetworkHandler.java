@@ -22,8 +22,9 @@ public class ServerNetworkHandler {
                         float forwardSpeed = buf.readFloat();
                         float sidewaysSpeed = buf.readFloat();
                         boolean jumping = buf.readBoolean();
+                        boolean sprinting = buf.readBoolean();
                         possessedEntity.commandMovement(headYaw, bodyYaw, pitch, forwardSpeed,
-                                sidewaysSpeed, jumping);
+                                sidewaysSpeed, jumping, sprinting);
                     }
                 }));
     }

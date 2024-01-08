@@ -18,7 +18,7 @@ public interface CameraPossessable {
     Identifier POSSESS_UPDATE_PACKET_ID = Worldsinger.id("possession_update");
 
     static PacketByteBuf createSyncPacket(float headYaw, float bodyYaw, float pitch,
-            float forwardSpeed, float sidewaysSpeed, boolean jumping) {
+            float forwardSpeed, float sidewaysSpeed, boolean jumping, boolean sprinting) {
         PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
         buf.writeFloat(headYaw);
         buf.writeFloat(bodyYaw);
@@ -26,11 +26,12 @@ public interface CameraPossessable {
         buf.writeFloat(forwardSpeed);
         buf.writeFloat(sidewaysSpeed);
         buf.writeBoolean(jumping);
+        buf.writeBoolean(sprinting);
         return buf;
     }
 
     void commandMovement(float headYaw, float bodyYaw, float pitch, float forwardSpeed,
-            float sidewaysSpeed, boolean jumping);
+            float sidewaysSpeed, boolean jumping, boolean sprinting);
 
     void onStartPossessing(PlayerEntity possessor);
 

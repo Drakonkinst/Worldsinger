@@ -14,10 +14,10 @@ public class PossessableMoveControl<E extends MobEntity & CameraPossessable> ext
     private final E castEntity;
     private final float speedMultiplier;
 
-    public PossessableMoveControl(E entity, float speedMultiplier) {
+    public PossessableMoveControl(E entity, float sprintingMultiplier) {
         super(entity);
         this.castEntity = entity;
-        this.speedMultiplier = speedMultiplier;
+        this.speedMultiplier = sprintingMultiplier;
 
     }
 
@@ -34,8 +34,12 @@ public class PossessableMoveControl<E extends MobEntity & CameraPossessable> ext
         if (this.state == MoveControl.State.STRAFE) {
             float baseMovementSpeed = (float) this.entity.getAttributeValue(
                     EntityAttributes.GENERIC_MOVEMENT_SPEED);
+            // TODO: Seems a bit fast right now
             // Instead of using the speed control, use the speed multiplier from the constructor
-            float speed = this.speedMultiplier * baseMovementSpeed;
+            float speed = baseMovementSpeed;
+            if (castEntity.isSprinting()) {
+                speed *= this.speedMultiplier;
+            }
             float forwards = this.forwardMovement;
             float sideways = this.sidewaysMovement;
             float magnitude = MathHelper.sqrt(forwards * forwards + sideways * sideways);

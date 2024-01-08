@@ -755,7 +755,7 @@ public class MidnightCreatureEntity extends ShapeshiftingEntity implements
 
     @Override
     public void commandMovement(float headYaw, float bodyYaw, float pitch, float forwardSpeed,
-            float sidewaysSpeed, boolean jumping) {
+            float sidewaysSpeed, boolean jumping, boolean sprinting) {
         this.setHeadYaw(headYaw);
         this.setYaw(headYaw);
         this.setBodyYaw(bodyYaw);
@@ -763,6 +763,7 @@ public class MidnightCreatureEntity extends ShapeshiftingEntity implements
         EntityUtil.fixYawAndPitch(this);
 
         if (forwardSpeed != 0 || sidewaysSpeed != 0) {
+            this.setSprinting(sprinting);
             this.getMoveControl().strafeTo(forwardSpeed, sidewaysSpeed);
         }
         if (jumping) {
@@ -812,6 +813,7 @@ public class MidnightCreatureEntity extends ShapeshiftingEntity implements
             possessor.playSound(ModSoundEvents.ENTITY_MIDNIGHT_CREATURE_POSSESS,
                     SoundCategory.PLAYERS, 0.5f, 0.5f);
         }
+        this.setSprinting(false);
     }
 
     @Override
