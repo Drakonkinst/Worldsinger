@@ -2,13 +2,13 @@ package io.github.drakonkinst.worldsinger.mixin.client.world;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.mojang.blaze3d.systems.RenderSystem;
-import io.github.drakonkinst.worldsinger.CameraPosAccess;
-import io.github.drakonkinst.worldsinger.ModClientEnums;
 import io.github.drakonkinst.worldsinger.Worldsinger;
 import io.github.drakonkinst.worldsinger.block.ModBlocks;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.SunlightSpores;
 import io.github.drakonkinst.worldsinger.fluid.AetherSporeFluid;
+import io.github.drakonkinst.worldsinger.registry.ModClientEnums;
 import io.github.drakonkinst.worldsinger.util.ColorUtil;
+import io.github.drakonkinst.worldsinger.world.CameraPosAccess;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.render.BackgroundRenderer;
 import net.minecraft.client.render.BackgroundRenderer.FogData;

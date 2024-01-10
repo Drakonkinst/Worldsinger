@@ -31,6 +31,7 @@ public class SeetheCommand {
     private static int activateNoArgs(CommandContext<ServerCommandSource> context) {
         SeetheComponent seethe = SeetheCommand.getSeethe(context);
         seethe.startSeethe();
+        // TODO: Make these translatable
         context.getSource().sendFeedback(() -> Text.literal("Set seethe to ACTIVE"), true);
         ModComponents.LUMAR_SEETHE.sync(context.getSource().getServer().getScoreboard());
         return 1;
@@ -39,6 +40,7 @@ public class SeetheCommand {
     private static int activateWithArgs(CommandContext<ServerCommandSource> context) {
         SeetheComponent seethe = SeetheCommand.getSeethe(context);
         seethe.startSeethe(getInteger(context, "duration"));
+        // TODO: Make these translatable
         context.getSource()
                 .sendFeedback(() -> Text.literal(
                                 "Set seethe to ACTIVE for " + seethe.getTicksUntilNextCycle() + " ticks"),
@@ -50,6 +52,7 @@ public class SeetheCommand {
     private static int deactivateNoArgs(CommandContext<ServerCommandSource> context) {
         SeetheComponent seethe = SeetheCommand.getSeethe(context);
         seethe.stopSeethe();
+        // TODO: Make these translatable
         context.getSource().sendFeedback(() -> Text.literal("Set seethe to INACTIVE"), true);
         ModComponents.LUMAR_SEETHE.sync(context.getSource().getServer().getScoreboard());
         return 1;
@@ -58,6 +61,7 @@ public class SeetheCommand {
     private static int deactivateWithArgs(CommandContext<ServerCommandSource> context) {
         SeetheComponent seethe = SeetheCommand.getSeethe(context);
         seethe.stopSeethe(getInteger(context, "duration"));
+        // TODO: Make these translatable
         context.getSource()
                 .sendFeedback(() -> Text.literal(
                                 "Set seethe to INACTIVE for " + seethe.getTicksUntilNextCycle() + " ticks"),
@@ -70,6 +74,7 @@ public class SeetheCommand {
         SeetheComponent seethe = SeetheCommand.getSeethe(context);
         boolean isSeething = seethe.isSeething();
         int cycleTicks = seethe.getTicksUntilNextCycle();
+        // TODO: Make these translatable
         context.getSource()
                 .sendMessage(Text.literal(
                         "Seethe is " + (isSeething ? "ACTIVE" : "INACTIVE") + " for the next "

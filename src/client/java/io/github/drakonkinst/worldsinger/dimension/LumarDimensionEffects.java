@@ -1,6 +1,6 @@
 package io.github.drakonkinst.worldsinger.dimension;
 
-import io.github.drakonkinst.worldsinger.ModClientEnums;
+import io.github.drakonkinst.worldsinger.registry.ModClientEnums;
 import net.minecraft.client.render.DimensionEffects;
 import net.minecraft.util.math.Vec3d;
 

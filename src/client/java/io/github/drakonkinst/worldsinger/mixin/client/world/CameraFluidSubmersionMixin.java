@@ -1,9 +1,9 @@
 package io.github.drakonkinst.worldsinger.mixin.client.world;
 
-import io.github.drakonkinst.worldsinger.CameraPosAccess;
-import io.github.drakonkinst.worldsinger.ModClientEnums;
 import io.github.drakonkinst.worldsinger.block.ModBlocks;
 import io.github.drakonkinst.worldsinger.fluid.ModFluidTags;
+import io.github.drakonkinst.worldsinger.registry.ModClientEnums;
+import io.github.drakonkinst.worldsinger.world.CameraPosAccess;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.CameraSubmersionType;

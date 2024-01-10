@@ -1,6 +1,7 @@
-package io.github.drakonkinst.worldsinger;
+package io.github.drakonkinst.worldsinger.entity.render;
 
 import com.mojang.datafixers.util.Pair;
+import io.github.drakonkinst.worldsinger.Worldsinger;
 import io.github.drakonkinst.worldsinger.component.ModComponents;
 import io.github.drakonkinst.worldsinger.component.SilverLinedComponent;
 import io.github.drakonkinst.worldsinger.cosmere.SilverLiningLevel;

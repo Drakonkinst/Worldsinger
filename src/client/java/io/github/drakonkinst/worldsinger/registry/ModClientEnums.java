@@ -1,4 +1,4 @@
-package io.github.drakonkinst.worldsinger;
+package io.github.drakonkinst.worldsinger.registry;
 
 import com.chocohead.mm.api.ClassTinkerers;
 import net.minecraft.client.render.DimensionEffects;

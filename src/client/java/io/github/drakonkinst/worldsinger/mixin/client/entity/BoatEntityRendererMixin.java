@@ -2,7 +2,7 @@ package io.github.drakonkinst.worldsinger.mixin.client.entity;
 
 import com.google.common.collect.Lists;
 import com.mojang.datafixers.util.Pair;
-import io.github.drakonkinst.worldsinger.BoatSilverLiningFeatureRenderer;
+import io.github.drakonkinst.worldsinger.entity.render.BoatSilverLiningFeatureRenderer;
 import java.util.List;
 import java.util.Map;
 import net.minecraft.client.render.VertexConsumerProvider;

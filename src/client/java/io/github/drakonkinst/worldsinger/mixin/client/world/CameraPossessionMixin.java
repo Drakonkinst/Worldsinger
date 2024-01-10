@@ -1,7 +1,7 @@
 package io.github.drakonkinst.worldsinger.mixin.client.world;
 
-import io.github.drakonkinst.worldsinger.CameraPosAccess;
 import io.github.drakonkinst.worldsinger.entity.CameraPossessable;
+import io.github.drakonkinst.worldsinger.world.CameraPosAccess;
 import net.minecraft.client.render.Camera;
 import net.minecraft.entity.Entity;
 import net.minecraft.world.BlockView;
