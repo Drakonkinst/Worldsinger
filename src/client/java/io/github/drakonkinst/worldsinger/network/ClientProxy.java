@@ -1,6 +1,8 @@
 package io.github.drakonkinst.worldsinger.network;
 
 import com.mojang.authlib.GameProfile;
+import io.github.drakonkinst.worldsinger.Worldsinger;
+import io.github.drakonkinst.worldsinger.component.ModComponents;
 import io.github.drakonkinst.worldsinger.entity.CameraPossessable;
 import java.util.UUID;
 import net.minecraft.client.MinecraftClient;
@@ -48,8 +50,18 @@ public class ClientProxy extends CommonProxy {
     }
 
     public void setRenderViewEntity(Entity entity) {
+        Worldsinger.LOGGER.info("Set render view to " + entity.getName().getString());
+        Worldsinger.LOGGER.info(
+                "UUID 1: " + ModComponents.POSSESSION.get(MinecraftClient.getInstance().player)
+                        .getPossessedEntityUuid());
         previousPerspective = MinecraftClient.getInstance().options.getPerspective();
         MinecraftClient.getInstance().setCameraEntity(entity);
+        Worldsinger.LOGGER.info("Camera entity is now " + MinecraftClient.getInstance()
+                .getCameraEntity()
+                .getName()
+                .getString());
+
+        // Set perspective of camera entity as well
         if (entity instanceof CameraPossessable cameraPossessable) {
             int perspectiveOrdinal = cameraPossessable.getDefaultPerspective();
             if (perspectiveOrdinal > -1) {
@@ -60,12 +72,17 @@ public class ClientProxy extends CommonProxy {
         usingCustomRenderView = true;
     }
 
-    public void resetRenderViewEntity() {
+    public boolean resetRenderViewEntity() {
         if (!usingCustomRenderView) {
-            return;
+            return false;
         }
+        Worldsinger.LOGGER.info(
+                "UUID 2: " + ModComponents.POSSESSION.get(MinecraftClient.getInstance().player)
+                        .getPossessedEntityUuid());
+        Worldsinger.LOGGER.info("RESET");
         MinecraftClient.getInstance().setCameraEntity(MinecraftClient.getInstance().player);
         MinecraftClient.getInstance().options.setPerspective(previousPerspective);
         usingCustomRenderView = false;
+        return true;
     }
 }

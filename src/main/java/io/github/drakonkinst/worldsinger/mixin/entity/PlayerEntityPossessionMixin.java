@@ -1,6 +1,5 @@
 package io.github.drakonkinst.worldsinger.mixin.entity;
 
-import io.github.drakonkinst.worldsinger.Worldsinger;
 import io.github.drakonkinst.worldsinger.component.ModComponents;
 import io.github.drakonkinst.worldsinger.component.PossessionComponent;
 import io.github.drakonkinst.worldsinger.entity.CameraPossessable;
@@ -33,13 +32,6 @@ public abstract class PlayerEntityPossessionMixin extends LivingEntity {
             if (this.shouldDismount() || (possessedEntity != null
                     && !possessedEntity.shouldKeepPossessing((PlayerEntity) (Object) this))) {
                 possessionData.resetPossessedEntity();
-                if (this.getWorld().isClient()) {
-                    Worldsinger.PROXY.resetRenderViewEntity();
-                }
-            }
-        } else {
-            if (this.getWorld().isClient()) {
-                Worldsinger.PROXY.resetRenderViewEntity();
             }
         }
     }

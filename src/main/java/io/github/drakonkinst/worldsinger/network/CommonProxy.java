@@ -19,7 +19,7 @@ public class CommonProxy {
     }
 
     // Handled by client
-    public void resetRenderViewEntity() {
+    public boolean resetRenderViewEntity() {
         throw new UnsupportedOperationException();
     }
 }
