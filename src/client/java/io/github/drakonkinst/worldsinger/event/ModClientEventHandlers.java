@@ -4,11 +4,15 @@ import io.github.drakonkinst.worldsinger.Worldsinger;
 import io.github.drakonkinst.worldsinger.component.ModComponents;
 import io.github.drakonkinst.worldsinger.component.PossessionComponent;
 import io.github.drakonkinst.worldsinger.entity.CameraPossessable;
+import io.github.drakonkinst.worldsinger.entity.CameraPossessable.AttackOrigin;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
+import net.fabricmc.fabric.api.event.player.AttackBlockCallback;
+import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.Entity;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.MathHelper;
 
 public final class ModClientEventHandlers {
@@ -47,6 +51,58 @@ public final class ModClientEventHandlers {
                 }
             }
         });
+
+        AttackEntityCallback.EVENT.register((player, world, hand, entity, hitResult) -> {
+            if (player.isSpectator()) {
+                return ActionResult.PASS;
+            }
+
+            // Explicitly prevent targeting yourself, which is possible in some possession cases
+            if (entity.equals(MinecraftClient.getInstance().player)) {
+                return ActionResult.FAIL;
+            }
+            return ActionResult.PASS;
+        });
+
+        AttackEntityCallback.EVENT.register((player, world, hand, entity, hitResult) -> {
+            if (player.isSpectator()) {
+                return ActionResult.PASS;
+            }
+
+            if (MinecraftClient.getInstance()
+                    .getCameraEntity() instanceof CameraPossessable cameraPossessable) {
+                if (!cameraPossessable.canPerformAttack()) {
+                    return ActionResult.FAIL;
+                }
+
+                AttackOrigin attackOrigin = cameraPossessable.getEntityAttackOrigin();
+                if (attackOrigin == AttackOrigin.DISABLED) {
+                    return ActionResult.FAIL;
+                } else if (attackOrigin == AttackOrigin.POSSESSED) {
+                    // We're on the client side and tryAttack() only works from the server side,
+                    // so we need to send a packet
+                    ClientPlayNetworking.send(CameraPossessable.POSSESS_ATTACK_PACKET_ID,
+                            CameraPossessable.createAttackPacket(entity));
+                    // Don't send the original packet
+                    return ActionResult.FAIL;
+                }
+            }
+            return ActionResult.PASS;
+        });
+
+        AttackBlockCallback.EVENT.register((player, world, hand, pos, direction) -> {
+            if (player.isSpectator()) {
+                return ActionResult.PASS;
+            }
+
+            if (MinecraftClient.getInstance()
+                    .getCameraEntity() instanceof CameraPossessable cameraPossessable
+                    && !cameraPossessable.canBreakBlock()) {
+                return ActionResult.FAIL;
+            }
+            return ActionResult.PASS;
+        });
+
     }
 
     private ModClientEventHandlers() {}

@@ -25,18 +25,9 @@ public abstract class MinecraftClientPossessionMixin {
     @Inject(method = "doAttack", at = @At("HEAD"), cancellable = true)
     private void preventAttackIfPossessing(CallbackInfoReturnable<Boolean> cir) {
         if (getCameraEntity() instanceof CameraPossessable cameraPossessable
-                && !cameraPossessable.canAttack()) {
+                && !cameraPossessable.canPerformAttack()) {
             cir.setReturnValue(false);
         }
-    }
-
-    @ModifyExpressionValue(method = "handleBlockBreaking", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/hit/HitResult;getType()Lnet/minecraft/util/hit/HitResult$Type;"))
-    private Type preventBlockBreakingIfPossessing(Type original) {
-        if (getCameraEntity() instanceof CameraPossessable cameraPossessable
-                && !cameraPossessable.canBreakBlock()) {
-            return Type.MISS;
-        }
-        return original;
     }
 
     @ModifyExpressionValue(method = "doItemPick", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/hit/HitResult;getType()Lnet/minecraft/util/hit/HitResult$Type;"))

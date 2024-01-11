@@ -850,9 +850,13 @@ public class MidnightCreatureEntity extends ShapeshiftingEntity implements
     }
 
     @Override
-    public boolean canAttack() {
-        // TODO: This currently allows breaking blocks and attacks from the player, which is not intended behavior.
+    public boolean canPerformAttack() {
         return true;
+    }
+
+    @Override
+    public AttackOrigin getEntityAttackOrigin() {
+        return AttackOrigin.POSSESSED;
     }
 
     @Override
