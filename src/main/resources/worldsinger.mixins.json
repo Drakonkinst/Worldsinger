@@ -78,6 +78,7 @@
     "screen.BrewingStandScreenHandlerFuelSlotMixin",
     "screen.BrewingStandScreenHandlerPotionSlotMixin",
     "world.ChunkLightProviderMixin",
+    "world.PlayerManagerPossessionMixin",
     "world.WorldMixin",
     "worldgen.CarverMixin",
     "worldgen.ShipwreckGeneratorPieceMixin",

@@ -115,4 +115,8 @@ public interface CameraPossessable {
     default float getMaxPossessionDistance() {
         return DEFAULT_MAX_POSSESSION_DISTANCE;
     }
+
+    default boolean redirectWorldEvents() {
+        return true;
+    }
 }
