@@ -808,14 +808,6 @@ public class MidnightCreatureEntity extends ShapeshiftingEntity implements
             this.setForwardSpeed(0.0f);
             this.stopMovement();
         }
-
-        // TODO: This (still) doesn't work
-        // Cancel the possessor's horizontal velocity to prevent sliding
-        Vec3d velocity = possessor.getVelocity();
-        possessor.setVelocity(new Vec3d(0.0, velocity.getY(), 0.0));
-        possessor.forwardSpeed = 0.0f;
-        possessor.sidewaysSpeed = 0.0f;
-
     }
 
     @Override
