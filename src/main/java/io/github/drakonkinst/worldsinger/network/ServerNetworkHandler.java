@@ -41,15 +41,14 @@ public class ServerNetworkHandler {
                     }
 
                     // Ensure rotation is wrapped between [-180, 180] on server-side
-                    final float headYaw = MathHelper.wrapDegrees(buf.readFloat());
-                    final float bodyYaw = MathHelper.wrapDegrees(buf.readFloat());
+                    final float yaw = MathHelper.wrapDegrees(buf.readFloat());
                     final float pitch = MathHelper.wrapDegrees(buf.readFloat());
                     final float forwardSpeed = buf.readFloat();
                     final float sidewaysSpeed = buf.readFloat();
                     final boolean jumping = buf.readBoolean();
                     final boolean sprinting = buf.readBoolean();
-                    possessedEntity.commandMovement(headYaw, bodyYaw, pitch, forwardSpeed,
-                            sidewaysSpeed, jumping, sprinting);
+                    possessedEntity.commandMovement(yaw, pitch, forwardSpeed, sidewaysSpeed,
+                            jumping, sprinting);
                 });
 
         // Client requests their entity makes a (melee) attack

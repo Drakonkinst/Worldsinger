@@ -40,31 +40,27 @@ public final class ModClientEventHandlers {
             PossessionComponent possessionData = ModComponents.POSSESSION.get(player);
             if (cameraEntity instanceof CameraPossessable cameraPossessable
                     && !cameraEntity.isRemoved() && possessionData.isPossessing()) {
-                float headYaw;
-                float bodyYaw;
+                float yaw;
                 float pitch;
-                // TODO: Check if we only need one yaw value? Can we make the head move and body update automatically?
                 if (freeLookData.worldsinger$isFreeLookEnabled()) {
-                    headYaw = freeLookData.worldsinger$getFreeLookYaw();
-                    bodyYaw = headYaw;
+                    yaw = freeLookData.worldsinger$getFreeLookYaw();
                     pitch = freeLookData.worldsinger$getFreeLookPitch();
                 } else {
-                    headYaw = player.getHeadYaw();
-                    bodyYaw = player.getBodyYaw();
+                    yaw = player.getHeadYaw();
                     pitch = player.getPitch();
                 }
                 final float forwardSpeed = player.input.movementForward;
                 final float sidewaysSpeed = player.input.movementSideways;
                 final boolean jumping = player.input.jumping;
                 final boolean sprinting = MinecraftClient.getInstance().options.sprintKey.isPressed();
-                cameraPossessable.commandMovement(headYaw, bodyYaw, pitch, forwardSpeed,
-                        sidewaysSpeed, jumping, sprinting);
+                cameraPossessable.commandMovement(yaw, pitch, forwardSpeed, sidewaysSpeed, jumping,
+                        sprinting);
 
                 // Rotation should be wrapped between [-180, 180] on server-side
                 ClientPlayNetworking.send(CameraPossessable.POSSESS_UPDATE_PACKET_ID,
-                        CameraPossessable.createUpdatePacket(MathHelper.wrapDegrees(headYaw),
-                                MathHelper.wrapDegrees(bodyYaw), MathHelper.wrapDegrees(pitch),
-                                forwardSpeed, sidewaysSpeed, jumping, sprinting));
+                        CameraPossessable.createUpdatePacket(MathHelper.wrapDegrees(yaw),
+                                MathHelper.wrapDegrees(pitch), forwardSpeed, sidewaysSpeed, jumping,
+                                sprinting));
             }
         });
 

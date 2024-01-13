@@ -761,11 +761,10 @@ public class MidnightCreatureEntity extends ShapeshiftingEntity implements
     }
 
     @Override
-    public void commandMovement(float headYaw, float bodyYaw, float pitch, float forwardSpeed,
-            float sidewaysSpeed, boolean jumping, boolean sprinting) {
-        this.setHeadYaw(headYaw);
-        this.setYaw(headYaw);
-        this.setBodyYaw(bodyYaw);
+    public void commandMovement(float yaw, float pitch, float forwardSpeed, float sidewaysSpeed,
+            boolean jumping, boolean sprinting) {
+        this.setHeadYaw(yaw);   // Turns the head
+        this.setYaw(yaw);       // Controls movement direction
         this.setPitch(pitch);
         EntityUtil.fixYawAndPitch(this);
 

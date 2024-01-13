@@ -38,11 +38,10 @@ public interface CameraPossessable {
         return buf;
     }
 
-    static PacketByteBuf createUpdatePacket(float headYaw, float bodyYaw, float pitch,
-            float forwardSpeed, float sidewaysSpeed, boolean jumping, boolean sprinting) {
+    static PacketByteBuf createUpdatePacket(float yaw, float pitch, float forwardSpeed,
+            float sidewaysSpeed, boolean jumping, boolean sprinting) {
         PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
-        buf.writeFloat(headYaw);
-        buf.writeFloat(bodyYaw);
+        buf.writeFloat(yaw);
         buf.writeFloat(pitch);
         buf.writeFloat(forwardSpeed);
         buf.writeFloat(sidewaysSpeed);
@@ -57,8 +56,8 @@ public interface CameraPossessable {
         return buf;
     }
 
-    void commandMovement(float headYaw, float bodyYaw, float pitch, float forwardSpeed,
-            float sidewaysSpeed, boolean jumping, boolean sprinting);
+    void commandMovement(float yaw, float pitch, float forwardSpeed, float sidewaysSpeed,
+            boolean jumping, boolean sprinting);
 
     void onStartPossessing(PlayerEntity possessor);
 
