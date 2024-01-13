@@ -1,13 +1,10 @@
 package io.github.drakonkinst.worldsinger.mixin.client.world;
 
-import com.llamalad7.mixinextras.injector.WrapWithCondition;
-import io.github.drakonkinst.worldsinger.entity.CameraPossessable;
+import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import io.github.drakonkinst.worldsinger.entity.MidnightCreatureEntity;
 import io.github.drakonkinst.worldsinger.util.PossessionClientUtil;
 import net.minecraft.client.gl.PostEffectProcessor;
-import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.GameRenderer;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
@@ -16,6 +13,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Slice;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(GameRenderer.class)
@@ -31,12 +29,10 @@ public abstract class GameRendererMixin {
 
     @Shadow
     abstract void loadPostProcessor(Identifier id);
-
-    @WrapWithCondition(method = "renderWorld", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/GameRenderer;renderHand(Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/Camera;F)V"))
-    private boolean disableHandRenderWhenPossessing(GameRenderer instance, MatrixStack matrices,
-            Camera camera, float tickDelta) {
-        CameraPossessable possessedEntity = PossessionClientUtil.getPossessedEntity();
-        return possessedEntity == null;
+    
+    @ModifyExpressionValue(method = "renderHand", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/option/Perspective;isFirstPerson()Z"), slice = @Slice(to = @At(value = "INVOKE", target = "Lnet/minecraft/client/util/math/MatrixStack;pop()V")))
+    private boolean disableHandRenderWhenPossessing(boolean original) {
+        return original && PossessionClientUtil.getPossessedEntity() == null;
     }
 
     @Inject(method = "onCameraEntitySet", at = @At("TAIL"))
