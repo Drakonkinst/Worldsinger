@@ -42,32 +42,10 @@ public class PossessableMoveControl<E extends MobEntity & CameraPossessable> ext
             float baseMovementSpeed =
                     (float) this.entity.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED)
                             * POSSESSED_MOVEMENT_MULTIPLIER;
-            // TODO: Seems a bit fast right now
-            // Instead of using the speed control, use the speed multiplier from the constructor
             float speed = baseMovementSpeed;
             if (castEntity.isSprinting()) {
                 speed *= this.speedMultiplier;
             }
-            float forwards = this.forwardMovement;
-            float sideways = this.sidewaysMovement;
-            float magnitude = MathHelper.sqrt(forwards * forwards + sideways * sideways);
-            if (magnitude < 1.0F) {
-                magnitude = 1.0F;
-            }
-
-            magnitude = speed / magnitude;
-            forwards *= magnitude;
-            sideways *= magnitude;
-            float yaw = this.entity.getYaw();
-            float sinYaw = MathHelper.sin(yaw * MathHelper.RADIANS_PER_DEGREE);
-            float cosYaw = MathHelper.cos(yaw * MathHelper.RADIANS_PER_DEGREE);
-            float targetX = forwards * cosYaw - sideways * sinYaw;
-            float targetZ = sideways * cosYaw + forwards * sinYaw;
-            if (!this.isPosWalkable(targetX, targetZ)) {
-                this.forwardMovement = 1.0F;
-                this.sidewaysMovement = 0.0F;
-            }
-
             this.entity.setMovementSpeed(speed);
             this.entity.setForwardSpeed(this.forwardMovement);
             this.entity.setSidewaysSpeed(this.sidewaysMovement);
