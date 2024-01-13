@@ -16,6 +16,7 @@
     "item.ItemColorsMixin",
     "network.GameOptionsMixin",
     "network.MinecraftClientPossessionMixin",
+    "network.MouseMixin",
     "world.BackgroundRendererMixin",
     "world.CameraFluidSubmersionMixin",
     "world.CameraPossessionMixin",

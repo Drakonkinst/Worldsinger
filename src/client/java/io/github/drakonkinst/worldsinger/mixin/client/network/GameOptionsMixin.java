@@ -1,7 +1,7 @@
 package io.github.drakonkinst.worldsinger.mixin.client.network;
 
 import io.github.drakonkinst.worldsinger.entity.CameraPossessable;
-import net.minecraft.client.MinecraftClient;
+import io.github.drakonkinst.worldsinger.util.PossessionClientUtil;
 import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.option.Perspective;
 import org.spongepowered.asm.mixin.Mixin;
@@ -15,9 +15,8 @@ public abstract class GameOptionsMixin {
     @Inject(method = "setPerspective", at = @At("HEAD"), cancellable = true)
     private void preventSwitchingPerspectiveWhilePossessing(Perspective perspective,
             CallbackInfo ci) {
-        if (MinecraftClient.getInstance()
-                .getCameraEntity() instanceof CameraPossessable cameraPossessable
-                && !cameraPossessable.canSwitchPerspectives()) {
+        CameraPossessable possessedEntity = PossessionClientUtil.getPossessedEntity();
+        if (possessedEntity != null && !possessedEntity.canSwitchPerspectives()) {
             ci.cancel();
         }
     }

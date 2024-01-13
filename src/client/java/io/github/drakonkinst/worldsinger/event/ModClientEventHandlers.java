@@ -1,10 +1,10 @@
 package io.github.drakonkinst.worldsinger.event;
 
-import io.github.drakonkinst.worldsinger.Worldsinger;
 import io.github.drakonkinst.worldsinger.component.ModComponents;
 import io.github.drakonkinst.worldsinger.component.PossessionComponent;
 import io.github.drakonkinst.worldsinger.entity.CameraPossessable;
 import io.github.drakonkinst.worldsinger.entity.CameraPossessable.AttackOrigin;
+import io.github.drakonkinst.worldsinger.util.PossessionClientUtil;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
 import net.fabricmc.fabric.api.event.client.player.ClientPickBlockApplyCallback;
@@ -31,28 +31,28 @@ public final class ModClientEventHandlers {
         WorldRenderEvents.START.register(context -> {
             Entity cameraEntity = MinecraftClient.getInstance().getCameraEntity();
             ClientPlayerEntity player = MinecraftClient.getInstance().player;
-            if (cameraEntity instanceof CameraPossessable cameraPossessable
-                    && !cameraEntity.isRemoved() && player != null) {
-                PossessionComponent possessionData = ModComponents.POSSESSION.get(player);
-                if (possessionData.isPossessing()) {
-                    final float headYaw = player.getHeadYaw();
-                    final float bodyYaw = player.getBodyYaw();
-                    final float pitch = player.getPitch();
-                    final float forwardSpeed = player.input.movementForward;
-                    final float sidewaysSpeed = player.input.movementSideways;
-                    final boolean jumping = player.input.jumping;
-                    final boolean sprinting = MinecraftClient.getInstance().options.sprintKey.isPressed();
-                    cameraPossessable.commandMovement(headYaw, bodyYaw, pitch, forwardSpeed,
-                            sidewaysSpeed, jumping, sprinting);
+            if (player == null) {
+                return;
+            }
 
-                    // Rotation should be wrapped between [-180, 180] on server-side
-                    ClientPlayNetworking.send(CameraPossessable.POSSESS_UPDATE_PACKET_ID,
-                            CameraPossessable.createUpdatePacket(MathHelper.wrapDegrees(headYaw),
-                                    MathHelper.wrapDegrees(bodyYaw), MathHelper.wrapDegrees(pitch),
-                                    forwardSpeed, sidewaysSpeed, jumping, sprinting));
-                } else {
-                    Worldsinger.PROXY.resetRenderViewEntity();
-                }
+            PossessionComponent possessionData = ModComponents.POSSESSION.get(player);
+            if (cameraEntity instanceof CameraPossessable cameraPossessable
+                    && !cameraEntity.isRemoved() && possessionData.isPossessing()) {
+                final float headYaw = player.getHeadYaw();
+                final float bodyYaw = player.getBodyYaw();
+                final float pitch = player.getPitch();
+                final float forwardSpeed = player.input.movementForward;
+                final float sidewaysSpeed = player.input.movementSideways;
+                final boolean jumping = player.input.jumping;
+                final boolean sprinting = MinecraftClient.getInstance().options.sprintKey.isPressed();
+                cameraPossessable.commandMovement(headYaw, bodyYaw, pitch, forwardSpeed,
+                        sidewaysSpeed, jumping, sprinting);
+
+                // Rotation should be wrapped between [-180, 180] on server-side
+                ClientPlayNetworking.send(CameraPossessable.POSSESS_UPDATE_PACKET_ID,
+                        CameraPossessable.createUpdatePacket(MathHelper.wrapDegrees(headYaw),
+                                MathHelper.wrapDegrees(bodyYaw), MathHelper.wrapDegrees(pitch),
+                                forwardSpeed, sidewaysSpeed, jumping, sprinting));
             }
         });
 
@@ -66,9 +66,8 @@ public final class ModClientEventHandlers {
             if (player.isSpectator()) {
                 return ActionResult.PASS;
             }
-            if (MinecraftClient.getInstance()
-                    .getCameraEntity() instanceof CameraPossessable cameraPossessable
-                    && !cameraPossessable.canInteractWithEntities()) {
+            CameraPossessable possessedEntity = PossessionClientUtil.getPossessedEntity();
+            if (possessedEntity != null && !possessedEntity.canInteractWithEntities()) {
                 return ActionResult.FAIL;
             }
             return ActionResult.PASS;
@@ -79,9 +78,8 @@ public final class ModClientEventHandlers {
             if (player.isSpectator()) {
                 return TypedActionResult.pass(stack);
             }
-            if (MinecraftClient.getInstance()
-                    .getCameraEntity() instanceof CameraPossessable cameraPossessable
-                    && !cameraPossessable.canInteractWithEntities()) {
+            CameraPossessable possessedEntity = PossessionClientUtil.getPossessedEntity();
+            if (possessedEntity != null && !possessedEntity.canInteractWithEntities()) {
                 return TypedActionResult.fail(stack);
             }
             return TypedActionResult.pass(stack);
@@ -91,9 +89,8 @@ public final class ModClientEventHandlers {
             if (player.isSpectator()) {
                 return ActionResult.PASS;
             }
-            if (MinecraftClient.getInstance()
-                    .getCameraEntity() instanceof CameraPossessable cameraPossessable
-                    && !cameraPossessable.canInteractWithBlocks()) {
+            CameraPossessable possessedEntity = PossessionClientUtil.getPossessedEntity();
+            if (possessedEntity != null && !possessedEntity.canInteractWithBlocks()) {
                 return ActionResult.FAIL;
             }
             return ActionResult.PASS;
@@ -104,13 +101,13 @@ public final class ModClientEventHandlers {
                 return ActionResult.PASS;
             }
 
-            if (MinecraftClient.getInstance()
-                    .getCameraEntity() instanceof CameraPossessable cameraPossessable) {
-                if (!cameraPossessable.canPerformAttack()) {
+            CameraPossessable possessedEntity = PossessionClientUtil.getPossessedEntity();
+            if (possessedEntity != null) {
+                if (!possessedEntity.canPerformAttack()) {
                     return ActionResult.FAIL;
                 }
 
-                AttackOrigin attackOrigin = cameraPossessable.getEntityAttackOrigin();
+                AttackOrigin attackOrigin = possessedEntity.getEntityAttackOrigin();
                 if (attackOrigin == AttackOrigin.DISABLED) {
                     return ActionResult.FAIL;
                 } else if (attackOrigin == AttackOrigin.POSSESSED) {
@@ -130,18 +127,16 @@ public final class ModClientEventHandlers {
                 return ActionResult.PASS;
             }
 
-            if (MinecraftClient.getInstance()
-                    .getCameraEntity() instanceof CameraPossessable cameraPossessable
-                    && !cameraPossessable.canBreakBlock()) {
+            CameraPossessable possessedEntity = PossessionClientUtil.getPossessedEntity();
+            if (possessedEntity != null && !possessedEntity.canBreakBlock()) {
                 return ActionResult.FAIL;
             }
             return ActionResult.PASS;
         });
 
         ClientPickBlockApplyCallback.EVENT.register((player, result, stack) -> {
-            if (MinecraftClient.getInstance()
-                    .getCameraEntity() instanceof CameraPossessable cameraPossessable
-                    && !cameraPossessable.canPickBlock()) {
+            CameraPossessable possessedEntity = PossessionClientUtil.getPossessedEntity();
+            if (possessedEntity != null && !possessedEntity.canPickBlock()) {
                 return ItemStack.EMPTY;
             }
             return stack;

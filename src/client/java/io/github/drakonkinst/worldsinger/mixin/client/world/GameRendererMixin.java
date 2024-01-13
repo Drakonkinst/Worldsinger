@@ -3,7 +3,7 @@ package io.github.drakonkinst.worldsinger.mixin.client.world;
 import com.llamalad7.mixinextras.injector.WrapWithCondition;
 import io.github.drakonkinst.worldsinger.entity.CameraPossessable;
 import io.github.drakonkinst.worldsinger.entity.MidnightCreatureEntity;
-import net.minecraft.client.MinecraftClient;
+import io.github.drakonkinst.worldsinger.util.PossessionClientUtil;
 import net.minecraft.client.gl.PostEffectProcessor;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.GameRenderer;
@@ -35,7 +35,8 @@ public abstract class GameRendererMixin {
     @WrapWithCondition(method = "renderWorld", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/GameRenderer;renderHand(Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/Camera;F)V"))
     private boolean disableHandRenderWhenPossessing(GameRenderer instance, MatrixStack matrices,
             Camera camera, float tickDelta) {
-        return !(MinecraftClient.getInstance().getCameraEntity() instanceof CameraPossessable);
+        CameraPossessable possessedEntity = PossessionClientUtil.getPossessedEntity();
+        return possessedEntity == null;
     }
 
     @Inject(method = "onCameraEntitySet", at = @At("TAIL"))

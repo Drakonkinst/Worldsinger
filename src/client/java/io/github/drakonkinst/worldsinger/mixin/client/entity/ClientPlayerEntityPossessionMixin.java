@@ -3,7 +3,8 @@ package io.github.drakonkinst.worldsinger.mixin.client.entity;
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.mojang.authlib.GameProfile;
 import io.github.drakonkinst.worldsinger.entity.CameraPossessable;
-import net.minecraft.client.MinecraftClient;
+import io.github.drakonkinst.worldsinger.entity.CameraPossessable.AttackOrigin;
+import io.github.drakonkinst.worldsinger.util.PossessionClientUtil;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.world.ClientWorld;
@@ -22,28 +23,16 @@ public abstract class ClientPlayerEntityPossessionMixin extends AbstractClientPl
 
     @ModifyReturnValue(method = "canStartSprinting", at = @At("RETURN"))
     private boolean preventSprintingIfPossessing(boolean original) {
-        // TODO: Check if possessing
-        return original && !(MinecraftClient.getInstance()
-                .getCameraEntity() instanceof CameraPossessable cameraPossessable
-                && !cameraPossessable.canMoveSelf());
+        CameraPossessable possessedEntity = PossessionClientUtil.getPossessedEntity();
+        return original && !(possessedEntity != null && !possessedEntity.canMoveSelf());
     }
 
     @Inject(method = "swingHand", at = @At("HEAD"), cancellable = true)
     private void preventSwingHandIfPossessing(Hand hand, CallbackInfo ci) {
-        // TODO: Check if possessing
-        if (MinecraftClient.getInstance()
-                .getCameraEntity() instanceof CameraPossessable cameraPossessable
-                && !cameraPossessable.canPerformAttack()) {
+        CameraPossessable possessedEntity = PossessionClientUtil.getPossessedEntity();
+        if (possessedEntity != null
+                && possessedEntity.getEntityAttackOrigin() != AttackOrigin.POSSESSOR) {
             ci.cancel();
         }
-    }
-
-    // Run after super.tick()
-    @Inject(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/ClientPlayerEntity;hasVehicle()Z"))
-    private void resetCameraWhenStopPossessing(CallbackInfo ci) {
-        // PossessionComponent possessionData = ModComponents.POSSESSION.get(this);
-        // if (!possessionData.isPossessing()) {
-        //     Worldsinger.PROXY.resetRenderViewEntity();
-        // }
     }
 }
