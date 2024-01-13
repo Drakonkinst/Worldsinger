@@ -5,6 +5,7 @@ import io.github.drakonkinst.worldsinger.component.PossessionComponent;
 import io.github.drakonkinst.worldsinger.entity.CameraPossessable;
 import io.github.drakonkinst.worldsinger.mixin.accessor.PlayerEntityInvoker;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.minecraft.command.argument.EntityAnchorArgumentType.EntityAnchor;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
@@ -86,8 +87,12 @@ public class PossessionPlayerData implements PossessionComponent {
         if (!isPossessing() || possessionTarget == null) {
             return;
         }
-
         LivingEntity possessedEntity = possessionTarget.toEntity();
+
+        // Look at possession target
+        player.lookAt(EntityAnchor.EYES, possessedEntity.getPos());
+
+        // Reset if conditions are not met
         if (possessedEntity.isDead() || doesPlayerWantToExit() || !isInRange(possessedEntity)
                 || !possessionTarget.shouldKeepPossessing(player)) {
             resetPossessionTarget();

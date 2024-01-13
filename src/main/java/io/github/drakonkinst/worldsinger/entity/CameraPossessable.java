@@ -112,6 +112,10 @@ public interface CameraPossessable {
         return false;
     }
 
+    default boolean canFreeLook() {
+        return false;
+    }
+
     default float getMaxPossessionDistance() {
         return DEFAULT_MAX_POSSESSION_DISTANCE;
     }

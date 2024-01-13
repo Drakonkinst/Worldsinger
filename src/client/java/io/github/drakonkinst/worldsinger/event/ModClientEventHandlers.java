@@ -4,6 +4,7 @@ import io.github.drakonkinst.worldsinger.component.ModComponents;
 import io.github.drakonkinst.worldsinger.component.PossessionComponent;
 import io.github.drakonkinst.worldsinger.entity.CameraPossessable;
 import io.github.drakonkinst.worldsinger.entity.CameraPossessable.AttackOrigin;
+import io.github.drakonkinst.worldsinger.entity.freelook.FreeLook;
 import io.github.drakonkinst.worldsinger.util.PossessionClientUtil;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
@@ -35,12 +36,23 @@ public final class ModClientEventHandlers {
                 return;
             }
 
+            FreeLook freeLookData = (FreeLook) player;
             PossessionComponent possessionData = ModComponents.POSSESSION.get(player);
             if (cameraEntity instanceof CameraPossessable cameraPossessable
                     && !cameraEntity.isRemoved() && possessionData.isPossessing()) {
-                final float headYaw = player.getHeadYaw();
-                final float bodyYaw = player.getBodyYaw();
-                final float pitch = player.getPitch();
+                float headYaw;
+                float bodyYaw;
+                float pitch;
+                // TODO: Check if we only need one yaw value? Can we make the head move and body update automatically?
+                if (freeLookData.worldsinger$isFreeLookEnabled()) {
+                    headYaw = freeLookData.worldsinger$getFreeLookYaw();
+                    bodyYaw = headYaw;
+                    pitch = freeLookData.worldsinger$getFreeLookPitch();
+                } else {
+                    headYaw = player.getHeadYaw();
+                    bodyYaw = player.getBodyYaw();
+                    pitch = player.getPitch();
+                }
                 final float forwardSpeed = player.input.movementForward;
                 final float sidewaysSpeed = player.input.movementSideways;
                 final boolean jumping = player.input.jumping;
@@ -67,7 +79,7 @@ public final class ModClientEventHandlers {
                 return ActionResult.PASS;
             }
             CameraPossessable possessedEntity = PossessionClientUtil.getPossessedEntity();
-            
+
             // Allow interactions targeting the possessed entity
             // This fixes issues where it can prevent the packet from being sent, causing a desync
             // on client/server side

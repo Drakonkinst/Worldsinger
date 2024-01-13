@@ -1,6 +1,5 @@
 package io.github.drakonkinst.worldsinger.network;
 
-import io.github.drakonkinst.worldsinger.Worldsinger;
 import io.github.drakonkinst.worldsinger.component.ModComponents;
 import io.github.drakonkinst.worldsinger.component.PossessionComponent;
 import io.github.drakonkinst.worldsinger.entity.CameraPossessable;
@@ -37,8 +36,6 @@ public class ServerNetworkHandler {
                     CameraPossessable possessedEntity = possessionData.getPossessionTarget();
                     if (possessedEntity == null) {
                         // Not possessing anything according to the server
-                        Worldsinger.LOGGER.warn("Player " + player.getName().getString()
-                                + " is not possessing anything, resetting camera");
                         possessionData.resetPossessionTarget();
                         return;
                     }

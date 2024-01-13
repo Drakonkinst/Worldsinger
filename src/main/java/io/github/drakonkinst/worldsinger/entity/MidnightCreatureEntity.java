@@ -882,6 +882,11 @@ public class MidnightCreatureEntity extends ShapeshiftingEntity implements
         return true;
     }
 
+    @Override
+    public boolean canFreeLook() {
+        return true;
+    }
+
     /* Should act like a hostile mob though it does not extend HostileEntity */
 
     @Override
