@@ -772,7 +772,11 @@ public class MidnightCreatureEntity extends ShapeshiftingEntity implements
         if (forwardSpeed != 0 || sidewaysSpeed != 0) {
             this.setSprinting(sprinting);
             this.getMoveControl().strafeTo(forwardSpeed, sidewaysSpeed);
+        } else {
+            this.setForwardSpeed(0.0f);
+            this.setSidewaysSpeed(0.0f);
         }
+
         if (jumping) {
             this.getJumpControl().setActive();
         }
@@ -788,7 +792,6 @@ public class MidnightCreatureEntity extends ShapeshiftingEntity implements
         BrainUtils.clearMemory(this, MemoryModuleType.PATH);
         BrainUtils.clearMemory(this, MemoryModuleType.ATTACK_TARGET);
         this.setForwardSpeed(0.0f);
-        this.setSidewaysSpeed(0.0f);
         this.stopMovement();
     }
 
@@ -803,14 +806,15 @@ public class MidnightCreatureEntity extends ShapeshiftingEntity implements
             BrainUtils.clearMemory(this, MemoryModuleType.PATH);
             BrainUtils.clearMemory(this, MemoryModuleType.ATTACK_TARGET);
             this.setForwardSpeed(0.0f);
-            this.setSidewaysSpeed(0.0f);
             this.stopMovement();
         }
 
-        // TODO: This doesn't work
+        // TODO: This (still) doesn't work
         // Cancel the possessor's horizontal velocity to prevent sliding
         Vec3d velocity = possessor.getVelocity();
         possessor.setVelocity(new Vec3d(0.0, velocity.getY(), 0.0));
+        possessor.forwardSpeed = 0.0f;
+        possessor.sidewaysSpeed = 0.0f;
 
     }
 
@@ -820,7 +824,10 @@ public class MidnightCreatureEntity extends ShapeshiftingEntity implements
             possessor.playSound(ModSoundEvents.ENTITY_MIDNIGHT_CREATURE_POSSESS,
                     SoundCategory.PLAYERS, 0.5f, 0.5f);
         }
+        this.setForwardSpeed(0.0f);
         this.setSprinting(false);
+        this.stopMovement();
+        isBeingPossessed = false;
     }
 
     @Override

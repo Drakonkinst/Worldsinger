@@ -11,7 +11,6 @@ import net.minecraft.client.option.Perspective;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.world.World;
 
 public class ClientProxy extends CommonProxy {
@@ -73,16 +72,5 @@ public class ClientProxy extends CommonProxy {
         MinecraftClient.getInstance().setCameraEntity(MinecraftClient.getInstance().player);
         MinecraftClient.getInstance().options.setPerspective(previousPerspective);
         usingCustomRenderView = false;
-    }
-
-    @Override
-    public Entity getCameraEntity() {
-        return MinecraftClient.getInstance().getCameraEntity();
-    }
-
-    @Override
-    public boolean isClientPlayer(PlayerEntity player) {
-        return player != null && player.getWorld().isClient() && player.equals(
-                MinecraftClient.getInstance().player);
     }
 }

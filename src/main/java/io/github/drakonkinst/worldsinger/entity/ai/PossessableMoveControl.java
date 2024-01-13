@@ -29,6 +29,11 @@ public class PossessableMoveControl<E extends MobEntity & CameraPossessable> ext
             doPossessedTick();
         } else {
             super.tick();
+            if (state == State.WAIT) {
+                // Prevent strafe drifting
+                this.sidewaysMovement = 0.0f;
+                this.entity.setSidewaysSpeed(0.0F);
+            }
         }
     }
 

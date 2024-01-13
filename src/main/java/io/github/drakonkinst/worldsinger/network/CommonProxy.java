@@ -4,7 +4,6 @@ import io.github.drakonkinst.worldsinger.entity.PlayerMorphDummy;
 import java.util.UUID;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.world.World;
 
 // Proxy pattern that acts as a bridge to call client-specific code from the server
@@ -22,14 +21,5 @@ public class CommonProxy {
     // Handled by client
     public void resetRenderViewEntity() {
         throw new UnsupportedOperationException();
-    }
-
-    // Handled by client
-    public Entity getCameraEntity() {
-        throw new UnsupportedOperationException();
-    }
-
-    public boolean isClientPlayer(PlayerEntity player) {
-        return false;
     }
 }
