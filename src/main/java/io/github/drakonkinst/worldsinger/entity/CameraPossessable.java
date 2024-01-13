@@ -116,6 +116,10 @@ public interface CameraPossessable {
         return false;
     }
 
+    default boolean shouldPossessorLookAt() {
+        return false;
+    }
+
     default float getMaxPossessionDistance() {
         return DEFAULT_MAX_POSSESSION_DISTANCE;
     }

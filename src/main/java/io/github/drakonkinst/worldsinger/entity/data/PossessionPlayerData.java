@@ -90,7 +90,9 @@ public class PossessionPlayerData implements PossessionComponent {
         LivingEntity possessedEntity = possessionTarget.toEntity();
 
         // Look at possession target
-        player.lookAt(EntityAnchor.EYES, possessedEntity.getPos());
+        if (possessionTarget.shouldPossessorLookAt()) {
+            player.lookAt(EntityAnchor.EYES, possessedEntity.getPos());
+        }
 
         // Reset if conditions are not met
         if (possessedEntity.isDead() || doesPlayerWantToExit() || !isInRange(possessedEntity)
