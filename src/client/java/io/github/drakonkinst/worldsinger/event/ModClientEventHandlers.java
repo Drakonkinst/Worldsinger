@@ -7,12 +7,18 @@ import io.github.drakonkinst.worldsinger.entity.CameraPossessable;
 import io.github.drakonkinst.worldsinger.entity.CameraPossessable.AttackOrigin;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
+import net.fabricmc.fabric.api.event.client.player.ClientPickBlockApplyCallback;
 import net.fabricmc.fabric.api.event.player.AttackBlockCallback;
 import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
+import net.fabricmc.fabric.api.event.player.UseBlockCallback;
+import net.fabricmc.fabric.api.event.player.UseEntityCallback;
+import net.fabricmc.fabric.api.event.player.UseItemCallback;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.Entity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.math.MathHelper;
 
 public final class ModClientEventHandlers {
@@ -25,25 +31,23 @@ public final class ModClientEventHandlers {
         WorldRenderEvents.START.register(context -> {
             Entity cameraEntity = MinecraftClient.getInstance().getCameraEntity();
             ClientPlayerEntity player = MinecraftClient.getInstance().player;
-            if (cameraEntity == null || cameraEntity.isRemoved()) {
-                Worldsinger.PROXY.resetRenderViewEntity();
-            } else if (player != null
-                    && cameraEntity instanceof CameraPossessable cameraPossessable) {
+            if (cameraEntity instanceof CameraPossessable cameraPossessable
+                    && !cameraEntity.isRemoved() && player != null) {
                 PossessionComponent possessionData = ModComponents.POSSESSION.get(player);
                 if (possessionData.isPossessing()) {
-                    float headYaw = player.getHeadYaw();
-                    float bodyYaw = player.getBodyYaw();
-                    float pitch = player.getPitch();
-                    float forwardSpeed = player.input.movementForward;
-                    float sidewaysSpeed = player.input.movementSideways;
-                    boolean jumping = player.input.jumping;
-                    boolean sprinting = MinecraftClient.getInstance().options.sprintKey.isPressed();
+                    final float headYaw = player.getHeadYaw();
+                    final float bodyYaw = player.getBodyYaw();
+                    final float pitch = player.getPitch();
+                    final float forwardSpeed = player.input.movementForward;
+                    final float sidewaysSpeed = player.input.movementSideways;
+                    final boolean jumping = player.input.jumping;
+                    final boolean sprinting = MinecraftClient.getInstance().options.sprintKey.isPressed();
                     cameraPossessable.commandMovement(headYaw, bodyYaw, pitch, forwardSpeed,
                             sidewaysSpeed, jumping, sprinting);
 
                     // Rotation should be wrapped between [-180, 180] on server-side
                     ClientPlayNetworking.send(CameraPossessable.POSSESS_UPDATE_PACKET_ID,
-                            CameraPossessable.createSyncPacket(MathHelper.wrapDegrees(headYaw),
+                            CameraPossessable.createUpdatePacket(MathHelper.wrapDegrees(headYaw),
                                     MathHelper.wrapDegrees(bodyYaw), MathHelper.wrapDegrees(pitch),
                                     forwardSpeed, sidewaysSpeed, jumping, sprinting));
                 } else {
@@ -52,13 +56,44 @@ public final class ModClientEventHandlers {
             }
         });
 
-        AttackEntityCallback.EVENT.register((player, world, hand, entity, hitResult) -> {
+        ModClientEventHandlers.registerPreventTargetingSelfEventHandlers();
+        ModClientEventHandlers.registerPossessionEventHandlers();
+
+    }
+
+    private static void registerPossessionEventHandlers() {
+        UseEntityCallback.EVENT.register(((player, world, hand, entity, hitResult) -> {
             if (player.isSpectator()) {
                 return ActionResult.PASS;
             }
+            if (MinecraftClient.getInstance()
+                    .getCameraEntity() instanceof CameraPossessable cameraPossessable
+                    && !cameraPossessable.canInteractWithEntities()) {
+                return ActionResult.FAIL;
+            }
+            return ActionResult.PASS;
+        }));
 
-            // Explicitly prevent targeting yourself, which is possible in some possession cases
-            if (entity.equals(MinecraftClient.getInstance().player)) {
+        UseItemCallback.EVENT.register((player, world, hand) -> {
+            ItemStack stack = player.getStackInHand(hand);
+            if (player.isSpectator()) {
+                return TypedActionResult.pass(stack);
+            }
+            if (MinecraftClient.getInstance()
+                    .getCameraEntity() instanceof CameraPossessable cameraPossessable
+                    && !cameraPossessable.canInteractWithEntities()) {
+                return TypedActionResult.fail(stack);
+            }
+            return TypedActionResult.pass(stack);
+        });
+
+        UseBlockCallback.EVENT.register((player, world, hand, hitResult) -> {
+            if (player.isSpectator()) {
+                return ActionResult.PASS;
+            }
+            if (MinecraftClient.getInstance()
+                    .getCameraEntity() instanceof CameraPossessable cameraPossessable
+                    && !cameraPossessable.canInteractWithBlocks()) {
                 return ActionResult.FAIL;
             }
             return ActionResult.PASS;
@@ -103,6 +138,31 @@ public final class ModClientEventHandlers {
             return ActionResult.PASS;
         });
 
+        ClientPickBlockApplyCallback.EVENT.register((player, result, stack) -> {
+            if (MinecraftClient.getInstance()
+                    .getCameraEntity() instanceof CameraPossessable cameraPossessable
+                    && !cameraPossessable.canPickBlock()) {
+                return ItemStack.EMPTY;
+            }
+            return stack;
+        });
+    }
+
+    private static void registerPreventTargetingSelfEventHandlers() {
+        // Explicitly prevent targeting yourself, which is possible in some possession cases
+        AttackEntityCallback.EVENT.register((player, world, hand, entity, hitResult) -> {
+            if (entity.equals(MinecraftClient.getInstance().player)) {
+                return ActionResult.FAIL;
+            }
+            return ActionResult.PASS;
+        });
+
+        UseEntityCallback.EVENT.register((player, world, hand, entity, hitResult) -> {
+            if (entity.equals(MinecraftClient.getInstance().player)) {
+                return ActionResult.FAIL;
+            }
+            return ActionResult.PASS;
+        });
     }
 
     private ModClientEventHandlers() {}

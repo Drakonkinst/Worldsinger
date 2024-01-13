@@ -7,6 +7,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.Identifier;
+import org.jetbrains.annotations.Nullable;
 
 // Indicates a mob that can be possessed by the player, which changes the camera client-side only.
 // Should use PossessionComponent
@@ -16,14 +17,28 @@ public interface CameraPossessable {
     int THIRD_PERSON_BACK = 1;
     int THIRD_PERSON_FRONT = 2;
 
+    float DEFAULT_MAX_POSSESSION_DISTANCE = 64.0f;
+
     enum AttackOrigin {
         POSSESSOR, POSSESSED, DISABLED
     }
 
+    Identifier POSSESS_SET_PACKET_ID = Worldsinger.id("possession_set");
     Identifier POSSESS_UPDATE_PACKET_ID = Worldsinger.id("possession_update");
     Identifier POSSESS_ATTACK_PACKET_ID = Worldsinger.id("possession_attack");
 
-    static PacketByteBuf createSyncPacket(float headYaw, float bodyYaw, float pitch,
+    // Can be sent by client or server
+    static PacketByteBuf createSetPacket(@Nullable CameraPossessable cameraPossessable) {
+        PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
+        if (cameraPossessable == null) {
+            buf.writeVarInt(-1);
+        } else {
+            buf.writeVarInt(cameraPossessable.toEntity().getId());
+        }
+        return buf;
+    }
+
+    static PacketByteBuf createUpdatePacket(float headYaw, float bodyYaw, float pitch,
             float forwardSpeed, float sidewaysSpeed, boolean jumping, boolean sprinting) {
         PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
         buf.writeFloat(headYaw);
@@ -95,5 +110,9 @@ public interface CameraPossessable {
 
     default boolean canSwitchPerspectives() {
         return false;
+    }
+
+    default float getMaxPossessionDistance() {
+        return DEFAULT_MAX_POSSESSION_DISTANCE;
     }
 }

@@ -11,6 +11,8 @@ import net.minecraft.util.math.MathHelper;
 
 public class PossessableMoveControl<E extends MobEntity & CameraPossessable> extends MoveControl {
 
+    private static final float POSSESSED_MOVEMENT_MULTIPLIER = 0.6f;
+
     private final E castEntity;
     private final float speedMultiplier;
 
@@ -32,8 +34,9 @@ public class PossessableMoveControl<E extends MobEntity & CameraPossessable> ext
 
     private void doPossessedTick() {
         if (this.state == MoveControl.State.STRAFE) {
-            float baseMovementSpeed = (float) this.entity.getAttributeValue(
-                    EntityAttributes.GENERIC_MOVEMENT_SPEED);
+            float baseMovementSpeed =
+                    (float) this.entity.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED)
+                            * POSSESSED_MOVEMENT_MULTIPLIER;
             // TODO: Seems a bit fast right now
             // Instead of using the speed control, use the speed multiplier from the constructor
             float speed = baseMovementSpeed;

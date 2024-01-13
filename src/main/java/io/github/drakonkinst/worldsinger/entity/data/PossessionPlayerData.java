@@ -1,83 +1,110 @@
 package io.github.drakonkinst.worldsinger.entity.data;
 
 import io.github.drakonkinst.worldsinger.Worldsinger;
-import io.github.drakonkinst.worldsinger.component.ModComponents;
 import io.github.drakonkinst.worldsinger.component.PossessionComponent;
 import io.github.drakonkinst.worldsinger.entity.CameraPossessable;
-import java.util.UUID;
-import net.minecraft.entity.Entity;
+import io.github.drakonkinst.worldsinger.mixin.accessor.PlayerEntityInvoker;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.server.world.ServerWorld;
+import net.minecraft.server.network.ServerPlayerEntity;
 import org.jetbrains.annotations.Nullable;
 
 public class PossessionPlayerData implements PossessionComponent {
 
-    private static final String POSSESSING_KEY = "Possessing";
-
     private final PlayerEntity player;
-    private UUID possessedEntityUuid;
-    private CameraPossessable possessedEntity;     // Kept on server-side only
+    private CameraPossessable possessionTarget;
+    private boolean shouldResetCamera = false;
 
     public PossessionPlayerData(PlayerEntity player) {
         this.player = player;
     }
 
     @Override
-    public void setPossessedEntity(CameraPossessable entity) {
-        if (entity.equals(possessedEntity)) {
-            return;
+    public void setPossessionTarget(CameraPossessable entity) {
+        if (!entity.equals(possessionTarget)) {
+            entity.onStartPossessing(player);
         }
-        this.possessedEntityUuid = entity.toEntity().getUuid();
-        this.possessedEntity = entity;
-        entity.onStartPossessing(player);
-        ModComponents.POSSESSION.sync(player);
+        this.possessionTarget = entity;
+        // Send packet to client
+        if (player instanceof ServerPlayerEntity serverPlayerEntity) {
+            ServerPlayNetworking.send(serverPlayerEntity, CameraPossessable.POSSESS_SET_PACKET_ID,
+                    CameraPossessable.createSetPacket(possessionTarget));
+        }
     }
 
     @Override
-    public void resetPossessedEntity() {
-        if (possessedEntity != null) {
-            possessedEntity.onStopPossessing(player);
+    public void resetPossessionTarget() {
+        if (possessionTarget != null) {
+            possessionTarget.onStopPossessing(player);
         }
+        this.possessionTarget = null;
 
-        this.possessedEntityUuid = null;
-        this.possessedEntity = null;
-        ModComponents.POSSESSION.sync(player);
+        // Send packet to client
+        if (player instanceof ServerPlayerEntity serverPlayerEntity) {
+            ServerPlayNetworking.send(serverPlayerEntity, CameraPossessable.POSSESS_SET_PACKET_ID,
+                    CameraPossessable.createSetPacket(null));
+        } else if (player.getWorld().isClient()) {
+            // Since this method can be called from events, need to defer camera changes to the render thread
+            shouldResetCamera = true;
+        }
     }
 
     @Override
     @Nullable
-    public CameraPossessable getPossessedEntity() {
-        return possessedEntity;
-    }
-
-    @Override
-    @Nullable
-    public UUID getPossessedEntityUuid() {
-        return possessedEntityUuid;
+    public CameraPossessable getPossessionTarget() {
+        return possessionTarget;
     }
 
     @Override
     public void readFromNbt(NbtCompound tag) {
-        if (tag.contains(POSSESSING_KEY, NbtElement.INT_ARRAY_TYPE)) {
-            this.possessedEntityUuid = tag.getUuid(POSSESSING_KEY);
-            if (player.getWorld() instanceof ServerWorld serverWorld) {
-                Entity entity = serverWorld.getEntity(this.possessedEntityUuid);
-                if (entity instanceof CameraPossessable cameraPossessable) {
-                    this.possessedEntity = cameraPossessable;
-                } else {
-                    Worldsinger.LOGGER.warn(
-                            "Failed to set possessed entity since entity does not extend CameraPossessable");
-                }
-            }
-        }
+        // Intentionally empty
     }
 
     @Override
     public void writeToNbt(NbtCompound tag) {
-        if (possessedEntityUuid != null) {
-            tag.putUuid(POSSESSING_KEY, possessedEntityUuid);
+        // Intentionally empty
+    }
+
+    @Override
+    public void clientTick() {
+        // Force the camera to follow the possessed entity
+        if (possessionTarget != null && !possessionTarget.toEntity().isRemoved()) {
+            Worldsinger.PROXY.setRenderViewEntity(possessionTarget.toEntity());
         }
+
+        // Reset the camera
+        if (shouldResetCamera) {
+            Worldsinger.PROXY.resetRenderViewEntity();
+            shouldResetCamera = false;
+        }
+    }
+
+    @Override
+    public void serverTick() {
+        if (!isPossessing() || possessionTarget == null) {
+            return;
+        }
+
+        LivingEntity possessedEntity = possessionTarget.toEntity();
+        if (possessedEntity.isDead() || doesPlayerWantToExit() || !isInRange(possessedEntity)
+                || !possessionTarget.shouldKeepPossessing(player)) {
+            resetPossessionTarget();
+        }
+    }
+
+    private boolean doesPlayerWantToExit() {
+        return ((PlayerEntityInvoker) player).worldsinger$shouldDismount();
+    }
+
+    private boolean isInRange(LivingEntity entity) {
+        final float maxPossessionDistance = possessionTarget.getMaxPossessionDistance();
+        return entity.squaredDistanceTo(player) <= maxPossessionDistance * maxPossessionDistance;
+    }
+
+    @Override
+    public void tick() {
+
     }
 }

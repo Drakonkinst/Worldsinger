@@ -133,7 +133,8 @@ public class MidnightCreatureEntity extends ShapeshiftingEntity implements
             ModStatusEffects.MIDNIGHT_SPORES, ModStatusEffects.ROSEITE_SPORES,
             ModStatusEffects.SUNLIGHT_SPORES, ModStatusEffects.VERDANT_SPORES,
             ModStatusEffects.ZEPHYR_SPORES);
-    private static final int MAX_POSSESSION_EXPIRY = 10;
+    private static final int MAX_POSSESSION_EXPIRY = 20;
+    private static final float MAX_POSSESS_DISTANCE = 32.0f;
 
     // Particles
     private static final int AMBIENT_PARTICLE_INTERVAL = 10;
@@ -155,7 +156,7 @@ public class MidnightCreatureEntity extends ShapeshiftingEntity implements
     private PlayerEntity controller;
 
     private boolean isBeingPossessed = false;
-    private int possessionExpiry = 0;
+    private int possessionTimeout = 0;
 
     public MidnightCreatureEntity(EntityType<? extends PathAwareEntity> entityType, World world) {
         super(entityType, world);
@@ -190,6 +191,10 @@ public class MidnightCreatureEntity extends ShapeshiftingEntity implements
 
     @Override
     public void setControllerUuid(UUID uuid) {
+        if (this.getWorld().isClient()) {
+            return;
+        }
+
         if (uuid == null) {
             this.dataTracker.set(CONTROLLER_UUID, Optional.empty());
         } else {
@@ -232,10 +237,10 @@ public class MidnightCreatureEntity extends ShapeshiftingEntity implements
     protected void mobTick() {
         // Drain water
         UUID controllerUuid = getControllerUuid();
+        PlayerEntity controller = getController();
         if (controllerUuid != null) {
             ++drainIntervalTicks;
             if (drainIntervalTicks >= maxDrainInterval) {
-                PlayerEntity controller = getController();
                 if (controller == null) {
                     resetController();
                 } else {
@@ -442,10 +447,10 @@ public class MidnightCreatureEntity extends ShapeshiftingEntity implements
         }
 
         // Possession expiry timer
-        if (possessionExpiry > 0) {
-            --possessionExpiry;
+        if (possessionTimeout > 0) {
+            --possessionTimeout;
         }
-        if (possessionExpiry <= 0) {
+        if (possessionTimeout <= 0) {
             isBeingPossessed = false;
         }
     }
@@ -484,11 +489,9 @@ public class MidnightCreatureEntity extends ShapeshiftingEntity implements
     protected ActionResult interactMob(PlayerEntity player, Hand hand) {
         ItemStack stack = player.getStackInHand(hand);
 
-        if (stack.isEmpty() && player.getUuid().equals(this.getControllerUuid())) {
-            ModComponents.POSSESSION.get(player).setPossessedEntity(this);
-            if (this.getWorld().isClient()) {
-                Worldsinger.PROXY.setRenderViewEntity(this);
-            }
+        if (!player.shouldCancelInteraction() && stack.isEmpty() && getMorph() != null
+                && player.getUuid().equals(this.getControllerUuid())) {
+            ModComponents.POSSESSION.get(player).setPossessionTarget(this);
             return ActionResult.success(true);
         }
 
@@ -513,7 +516,7 @@ public class MidnightCreatureEntity extends ShapeshiftingEntity implements
         MidnightAetherBondComponent bondData = ModComponents.MIDNIGHT_AETHER_BOND.get(host);
         if (currentWaterLevel <= 0) {
             CameraPossessable possessedEntity = ModComponents.POSSESSION.get(host)
-                    .getPossessedEntity();
+                    .getPossessionTarget();
             if (possessedEntity != null && possessedEntity.equals(this)) {
                 // They are trapped in the bond! Start killing them
                 host.damage(ModDamageTypes.createSource(host.getWorld(), ModDamageTypes.THIRST),
@@ -534,8 +537,8 @@ public class MidnightCreatureEntity extends ShapeshiftingEntity implements
         UUID uuid = player.getUuid();
         if (isBeingPossessed) {
             PossessionComponent possessionData = ModComponents.POSSESSION.get(player);
-            if (this.getUuid().equals(possessionData.getPossessedEntityUuid())) {
-                possessionData.resetPossessedEntity();
+            if (this.equals(possessionData.getPossessionTarget())) {
+                possessionData.resetPossessionTarget();
                 // Always called server-side, so no need to reset camera entity here
             }
         }
@@ -731,7 +734,11 @@ public class MidnightCreatureEntity extends ShapeshiftingEntity implements
             if (player != null) {
                 setController(player);
             }
+        } else {
+            setControllerUuid(null);
         }
+
+        waterBribes.clear();
         if (nbt.contains(BRIBES_KEY, NbtElement.LIST_TYPE)) {
             NbtList list = nbt.getList(BRIBES_KEY, NbtElement.COMPOUND_TYPE);
             for (NbtElement item : list) {
@@ -770,7 +777,7 @@ public class MidnightCreatureEntity extends ShapeshiftingEntity implements
             this.getJumpControl().setActive();
         }
 
-        this.possessionExpiry = MAX_POSSESSION_EXPIRY;
+        this.possessionTimeout = MAX_POSSESSION_EXPIRY;
         this.isBeingPossessed = true;
     }
 
@@ -818,7 +825,7 @@ public class MidnightCreatureEntity extends ShapeshiftingEntity implements
 
     @Override
     public boolean shouldKeepPossessing(PlayerEntity possessor) {
-        return true;
+        return possessor.getUuid().equals(getControllerUuid());
     }
 
     @Override

@@ -1,22 +1,18 @@
 package io.github.drakonkinst.worldsinger.component;
 
-import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
+import dev.onyxstudios.cca.api.v3.component.tick.CommonTickingComponent;
 import io.github.drakonkinst.worldsinger.entity.CameraPossessable;
-import java.util.UUID;
 import org.jetbrains.annotations.Nullable;
 
-public interface PossessionComponent extends AutoSyncedComponent {
+public interface PossessionComponent extends CommonTickingComponent {
 
-    // This method may only work server-side and return null otherwise
-    @Nullable CameraPossessable getPossessedEntity();
+    @Nullable CameraPossessable getPossessionTarget();
 
-    @Nullable UUID getPossessedEntityUuid();
+    void setPossessionTarget(CameraPossessable entity);
 
-    void setPossessedEntity(CameraPossessable entity);
-
-    void resetPossessedEntity();
+    void resetPossessionTarget();
 
     default boolean isPossessing() {
-        return getPossessedEntityUuid() != null;
+        return getPossessionTarget() != null;
     }
 }
