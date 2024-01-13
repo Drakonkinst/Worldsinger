@@ -14,10 +14,6 @@ public class OptionalAttackTarget<E extends LivingEntity> extends SetAttackTarge
 
     private LivingEntity cachedTarget;
 
-    public OptionalAttackTarget() {
-        super();
-    }
-
     public OptionalAttackTarget(boolean usingNearestAttackable) {
         super(usingNearestAttackable);
     }

@@ -76,7 +76,11 @@ public class ServerNetworkHandler {
                         return;
                     }
 
-                    attacker.tryAttack(target);
+                    boolean success = attacker.tryAttack(target);
+                    // Set player's attacking target so other pets respond
+                    if (success) {
+                        player.onAttacking(target);
+                    }
                 });
     }
 }
