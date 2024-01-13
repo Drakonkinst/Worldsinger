@@ -67,6 +67,13 @@ public final class ModClientEventHandlers {
                 return ActionResult.PASS;
             }
             CameraPossessable possessedEntity = PossessionClientUtil.getPossessedEntity();
+            
+            // Allow interactions targeting the possessed entity
+            // This fixes issues where it can prevent the packet from being sent, causing a desync
+            // on client/server side
+            if (entity.equals(possessedEntity)) {
+                return ActionResult.PASS;
+            }
             if (possessedEntity != null && !possessedEntity.canInteractWithEntities()) {
                 return ActionResult.FAIL;
             }
