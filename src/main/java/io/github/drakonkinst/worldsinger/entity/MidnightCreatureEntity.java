@@ -851,10 +851,22 @@ public class MidnightCreatureEntity extends ShapeshiftingEntity implements
         return ModSoundEvents.ENTITY_MIDNIGHT_CREATURE_DEATH;
     }
 
+    protected SoundEvent getStepSound() {
+        return ModSoundEvents.ENTITY_MIDNIGHT_CREATURE_STEP;
+    }
+
+    @Override
+    protected void playStepSound(BlockPos pos, BlockState state) {
+        // Setting at 0.75 pitch to sound slightly different from Zombie
+        this.playSound(this.getStepSound(), 0.15f, 0.75f);
+    }
+
     @Override
     public boolean canImmediatelyDespawn(double distanceSquared) {
         return super.canImmediatelyDespawn(distanceSquared) && !isBeingPossessed;
     }
+
+    // CameraPossessable attributes
 
     @Override
     public boolean canPerformAttack() {
