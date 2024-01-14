@@ -1,7 +1,10 @@
 package io.github.drakonkinst.worldsinger.mixin.client.gui;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
+import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.drakonkinst.worldsinger.entity.CameraPossessable;
+import io.github.drakonkinst.worldsinger.entity.MidnightCreatureEntity;
 import io.github.drakonkinst.worldsinger.gui.ThirstStatusBar;
 import io.github.drakonkinst.worldsinger.util.PossessionClientUtil;
 import net.minecraft.client.MinecraftClient;
@@ -14,12 +17,17 @@ import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(InGameHud.class)
 public abstract class InGameHudMixin {
+
+    @Shadow
+    @Final
+    private static Identifier VIGNETTE_TEXTURE;
 
     @Shadow
     protected abstract void renderOverlay(DrawContext context, Identifier texture, float opacity);
@@ -59,16 +67,41 @@ public abstract class InGameHudMixin {
         if (possessionTarget == null) {
             return;
         }
-
-        // TODO: Can render the custom midnight overlay here
-        
-        // Don't render anything except the frozen overlay, from the possessed entity's perspective
         LivingEntity possessedEntity = possessionTarget.toEntity();
+
+        if (possessedEntity instanceof MidnightCreatureEntity) {
+            renderMidnightEssencePossessionVignette(context);
+        }
+
+        // Don't render anything except the frozen overlay, from the possessed entity's perspective
         if (possessedEntity.getFrozenTicks() > 0) {
             this.renderOverlay(context, POWDER_SNOW_OUTLINE, possessedEntity.getFreezingScale());
         }
 
         ci.cancel();
+    }
+
+    @Unique
+    private void renderMidnightEssencePossessionVignette(DrawContext context) {
+        // Prepare
+        RenderSystem.disableDepthTest();
+        RenderSystem.depthMask(false);
+        RenderSystem.enableBlend();
+        RenderSystem.blendFuncSeparate(GlStateManager.SrcFactor.ZERO,
+                GlStateManager.DstFactor.ONE_MINUS_SRC_COLOR, GlStateManager.SrcFactor.ONE,
+                GlStateManager.DstFactor.ZERO);
+
+        // Use darkness = 1.0f, so no changes needed
+        final int scaledWidth = context.getScaledWindowWidth();
+        final int scaledHeight = context.getScaledWindowHeight();
+        context.drawTexture(VIGNETTE_TEXTURE, 0, 0, -90, 0.0f, 0.0f, scaledWidth, scaledHeight,
+                scaledWidth, scaledHeight);
+
+        // Reset
+        RenderSystem.depthMask(true);
+        RenderSystem.enableDepthTest();
+        RenderSystem.defaultBlendFunc();
+        RenderSystem.disableBlend();
     }
 
     @Shadow

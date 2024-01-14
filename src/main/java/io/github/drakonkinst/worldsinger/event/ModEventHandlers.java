@@ -19,7 +19,6 @@ import net.minecraft.util.math.BlockPos;
 
 public final class ModEventHandlers {
 
-    // TODO: Consider moving each event to its relevant feature, i.e. a ThirstManager
     public static void initialize() {
         // Add Thirst-related effects when consuming an item
         FinishConsumingItemCallback.EVENT.register((entity, stack) -> {
