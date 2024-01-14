@@ -6,19 +6,15 @@ import io.github.drakonkinst.worldsinger.component.PossessionComponent;
 import io.github.drakonkinst.worldsinger.cosmere.ShapeshiftingManager;
 import io.github.drakonkinst.worldsinger.entity.CameraPossessable;
 import io.github.drakonkinst.worldsinger.entity.Shapeshifter;
+import io.github.drakonkinst.worldsinger.util.PossessionClientUtil;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.text.Text;
-import net.minecraft.util.Util;
 
 @SuppressWarnings("UnqualifiedStaticUsage")
 public final class ClientNetworkHandler {
-
-    private static final String ON_POSSESS_TRANSLATION_KEY = Util.createTranslationKey("action",
-            Worldsinger.id("possess.on_start"));
 
     public static void registerPacketHandlers() {
         registerShapeshiftingPacketHandlers();
@@ -49,6 +45,9 @@ public final class ClientNetworkHandler {
                     if (entityIdToPossess < 0) {
                         possessionData.resetPossessionTarget();
                     } else {
+                        // Display dismount prompt, regardless of whether entity is already set
+                        PossessionClientUtil.displayPossessStartText();
+
                         CameraPossessable currentPossessedEntity = possessionData.getPossessionTarget();
                         if (currentPossessedEntity != null
                                 && currentPossessedEntity.toEntity().getId() == entityIdToPossess) {
@@ -59,12 +58,6 @@ public final class ClientNetworkHandler {
                         if (entity instanceof CameraPossessable cameraPossessable) {
                             possessionData.setPossessionTarget(cameraPossessable);
                         }
-
-                        // Display dismount prompt
-                        Text text = Text.translatable(ON_POSSESS_TRANSLATION_KEY,
-                                client.options.sneakKey.getBoundKeyLocalizedText());
-                        client.inGameHud.setOverlayMessage(text, false);
-                        client.getNarratorManager().narrate(text);
                     }
                 });
     }
