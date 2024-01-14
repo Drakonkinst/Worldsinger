@@ -16,6 +16,7 @@
     "gui.InGameHudMixin",
     "gui.InGameOverlayRendererPossessionMixin",
     "item.ItemColorsMixin",
+    "network.ClientPlayerInteractionManagerPossessionMixin",
     "network.GameOptionsMixin",
     "network.MinecraftClientPossessionMixin",
     "network.MouseMixin",

@@ -11,9 +11,14 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.text.Text;
+import net.minecraft.util.Util;
 
 @SuppressWarnings("UnqualifiedStaticUsage")
 public final class ClientNetworkHandler {
+
+    private static final String ON_POSSESS_TRANSLATION_KEY = Util.createTranslationKey("action",
+            Worldsinger.id("possess.on_start"));
 
     public static void registerPacketHandlers() {
         registerShapeshiftingPacketHandlers();
@@ -54,6 +59,12 @@ public final class ClientNetworkHandler {
                         if (entity instanceof CameraPossessable cameraPossessable) {
                             possessionData.setPossessionTarget(cameraPossessable);
                         }
+
+                        // Display dismount prompt
+                        Text text = Text.translatable(ON_POSSESS_TRANSLATION_KEY,
+                                client.options.sneakKey.getBoundKeyLocalizedText());
+                        client.inGameHud.setOverlayMessage(text, false);
+                        client.getNarratorManager().narrate(text);
                     }
                 });
     }

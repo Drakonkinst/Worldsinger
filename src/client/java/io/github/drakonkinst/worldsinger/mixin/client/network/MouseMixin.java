@@ -28,7 +28,7 @@ public abstract class MouseMixin {
     private boolean preventHotbarSwitchWithScrollIfPossessing(PlayerInventory instance,
             double scrollAmount) {
         CameraPossessable possessedEntity = PossessionClientUtil.getPossessedEntity();
-        return possessedEntity == null || possessedEntity.canSwitchHotbarItem();
+        return possessedEntity == null || possessedEntity.canModifyInventory();
     }
 
     @WrapOperation(method = "updateMouse", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/ClientPlayerEntity;changeLookDirection(DD)V"))

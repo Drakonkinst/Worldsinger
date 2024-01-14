@@ -95,7 +95,7 @@ public interface CameraPossessable {
         return false;
     }
 
-    default boolean canSwitchHotbarItem() {
+    default boolean canModifyInventory() {
         return false;
     }
 

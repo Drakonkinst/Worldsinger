@@ -117,6 +117,7 @@
   "block.worldsinger.damaged_steel_anvil": "Damaged Steel Anvil",
   "block.worldsinger.magma_vent": "Magma Vent",
   "block.worldsinger.midnight_essence": "Midnight Essence",
+  "action.worldsinger.possess.on_start": "Press %1$s to Exit",
   "config.worldsinger.yacl.missing": "Yet Another Config Lib is not installed",
   "config.worldsinger.yacl.missing.message": "YACL 3 is required to edit the config in game, would you like to install YACL 3?",
   "config.worldsinger.yacl.outdated": "Yet Another Config Lib is outdated",
