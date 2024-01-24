@@ -70,8 +70,6 @@
     "item.BrushItemMixin",
     "item.BucketItemMixin",
     "item.DrinkableItemFinishConsumingItemMixin",
-    "item.EnchantmentHelperMixin",
-    "item.EnchantmentMixin",
     "item.GlassBottleItemMixin",
     "item.ItemMixin",
     "screen.AnvilScreenHandlerMixin",
