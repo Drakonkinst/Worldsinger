@@ -29,12 +29,11 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.MiningToolItem;
 import net.minecraft.item.ToolMaterial;
-import net.minecraft.item.Vanishable;
 import net.minecraft.registry.tag.BlockTags;
 
 // By design, knives do not have Sweeping Edge. However, they can receive both mining and
 // weapon enchantments.
-public class KnifeItem extends MiningToolItem implements Vanishable {
+public class KnifeItem extends MiningToolItem {
 
     public KnifeItem(float attackDamage, float attackSpeed, ToolMaterial material,
             Settings settings) {
@@ -51,7 +50,7 @@ public class KnifeItem extends MiningToolItem implements Vanishable {
 
     @Override
     public boolean postHit(ItemStack stack, LivingEntity target, LivingEntity attacker) {
-        stack.damage(1, attacker, e -> e.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND));
+        stack.damage(1, attacker, EquipmentSlot.MAINHAND);
         return true;
     }
 }

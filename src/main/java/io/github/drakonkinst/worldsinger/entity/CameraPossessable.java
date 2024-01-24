@@ -23,19 +23,18 @@
  */
 package io.github.drakonkinst.worldsinger.entity;
 
-import io.github.drakonkinst.worldsinger.Worldsinger;
+import io.github.drakonkinst.worldsinger.network.packet.PossessSetPayload;
 import io.netty.buffer.Unpooled;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 
 // Indicates a mob that can be possessed by the player, which changes the camera client-side only.
 // Should use PossessionComponent
 public interface CameraPossessable {
 
+    PossessSetPayload POSSESS_RESET = new PossessSetPayload(-1);
     int FIRST_PERSON = 0;
     int THIRD_PERSON_BACK = 1;
     int THIRD_PERSON_FRONT = 2;
@@ -46,19 +45,12 @@ public interface CameraPossessable {
         POSSESSOR, POSSESSED, DISABLED
     }
 
-    Identifier POSSESS_SET_PACKET_ID = Worldsinger.id("possession_set");
-    Identifier POSSESS_UPDATE_PACKET_ID = Worldsinger.id("possession_update");
-    Identifier POSSESS_ATTACK_PACKET_ID = Worldsinger.id("possession_attack");
-
     // Can be sent by client or server
-    static PacketByteBuf createSetPacket(@Nullable CameraPossessable cameraPossessable) {
-        PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
+    static PossessSetPayload createSetPacket(@Nullable CameraPossessable cameraPossessable) {
         if (cameraPossessable == null) {
-            buf.writeVarInt(-1);
-        } else {
-            buf.writeVarInt(cameraPossessable.toEntity().getId());
+            return POSSESS_RESET;
         }
-        return buf;
+        return new PossessSetPayload(cameraPossessable.toEntity().getId());
     }
 
     static PacketByteBuf createUpdatePacket(float yaw, float pitch, float forwardSpeed,
@@ -70,12 +62,6 @@ public interface CameraPossessable {
         buf.writeFloat(sidewaysSpeed);
         buf.writeBoolean(jumping);
         buf.writeBoolean(sprinting);
-        return buf;
-    }
-
-    static PacketByteBuf createAttackPacket(Entity target) {
-        PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
-        buf.writeVarInt(target.getId());
         return buf;
     }
 

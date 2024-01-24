@@ -53,7 +53,7 @@ public class PossessionPlayerData implements PossessionComponent {
         this.possessionTarget = entity;
         // Send packet to client
         if (player instanceof ServerPlayerEntity serverPlayerEntity) {
-            ServerPlayNetworking.send(serverPlayerEntity, CameraPossessable.POSSESS_SET_PACKET_ID,
+            ServerPlayNetworking.send(serverPlayerEntity,
                     CameraPossessable.createSetPacket(possessionTarget));
         }
     }
@@ -67,8 +67,7 @@ public class PossessionPlayerData implements PossessionComponent {
 
         // Send packet to client
         if (player instanceof ServerPlayerEntity serverPlayerEntity) {
-            ServerPlayNetworking.send(serverPlayerEntity, CameraPossessable.POSSESS_SET_PACKET_ID,
-                    CameraPossessable.createSetPacket(null));
+            ServerPlayNetworking.send(serverPlayerEntity, CameraPossessable.createSetPacket(null));
         } else if (player.getWorld().isClient()) {
             // Since this method can be called from events, need to defer camera changes to the render thread
             shouldResetCamera = true;

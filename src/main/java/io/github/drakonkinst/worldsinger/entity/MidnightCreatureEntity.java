@@ -840,7 +840,7 @@ public class MidnightCreatureEntity extends ShapeshiftingEntity implements
     @Override
     public void onStartPossessing(PlayerEntity possessor) {
         if (this.getWorld().isClient()) {
-            possessor.playSound(ModSoundEvents.ENTITY_MIDNIGHT_CREATURE_POSSESS,
+            possessor.playSoundToPlayer(ModSoundEvents.ENTITY_MIDNIGHT_CREATURE_POSSESS,
                     SoundCategory.PLAYERS, 0.5f, 0.5f);
         } else {
             BrainUtils.clearMemory(this, MemoryModuleType.LOOK_TARGET);
@@ -855,7 +855,7 @@ public class MidnightCreatureEntity extends ShapeshiftingEntity implements
     @Override
     public void onStopPossessing(PlayerEntity possessor) {
         if (this.getWorld().isClient()) {
-            possessor.playSound(ModSoundEvents.ENTITY_MIDNIGHT_CREATURE_POSSESS,
+            possessor.playSoundToPlayer(ModSoundEvents.ENTITY_MIDNIGHT_CREATURE_POSSESS,
                     SoundCategory.PLAYERS, 0.5f, 0.5f);
         }
         this.setForwardSpeed(0.0f);

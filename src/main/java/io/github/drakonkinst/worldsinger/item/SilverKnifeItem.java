@@ -65,8 +65,8 @@ public class SilverKnifeItem extends KnifeItem {
                     targetPlayer);
             if (midnightAetherBondData.hasAnyBonds()) {
                 midnightAetherBondData.dispelAllBonds(true);
-                stack.damage(1, user, e -> e.sendEquipmentBreakStatus(
-                        hand == Hand.MAIN_HAND ? EquipmentSlot.MAINHAND : EquipmentSlot.OFFHAND));
+                stack.damage(1, user,
+                        hand == Hand.MAIN_HAND ? EquipmentSlot.MAINHAND : EquipmentSlot.OFFHAND);
                 return ActionResult.success(true);
             }
         }
@@ -81,8 +81,8 @@ public class SilverKnifeItem extends KnifeItem {
             ItemStack stack = user.getStackInHand(hand);
             if (midnightAetherBondData.hasAnyBonds()) {
                 midnightAetherBondData.dispelAllBonds(true);
-                stack.damage(1, user, e -> e.sendEquipmentBreakStatus(
-                        hand == Hand.MAIN_HAND ? EquipmentSlot.MAINHAND : EquipmentSlot.OFFHAND));
+                stack.damage(1, user,
+                        hand == Hand.MAIN_HAND ? EquipmentSlot.MAINHAND : EquipmentSlot.OFFHAND);
                 return TypedActionResult.success(stack);
             }
         }

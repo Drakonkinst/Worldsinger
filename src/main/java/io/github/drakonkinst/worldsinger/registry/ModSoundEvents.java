@@ -26,6 +26,7 @@ package io.github.drakonkinst.worldsinger.registry;
 import io.github.drakonkinst.worldsinger.Worldsinger;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
@@ -41,7 +42,7 @@ public final class ModSoundEvents {
     public static final SoundEvent BLOCK_SPORE_BLOCK_PLACE = SoundEvents.BLOCK_POWDER_SNOW_PLACE;
     public static final SoundEvent BLOCK_SUNLIGHT_EVAPORATE = SoundEvents.BLOCK_FIRE_EXTINGUISH;
     public static final SoundEvent BLOCK_SUNLIGHT_SPORE_BLOCK_CATALYZE = SoundEvents.ITEM_FIRECHARGE_USE;
-    public static final SoundEvent BLOCK_ZEPHYR_SEA_CATALYZE = SoundEvents.ENTITY_GENERIC_EXPLODE;
+    public static final RegistryEntry.Reference<SoundEvent> BLOCK_ZEPHYR_SEA_CATALYZE = SoundEvents.ENTITY_GENERIC_EXPLODE;
     public static final SoundEvent ENTITY_BOAT_PADDLE_SPORE_SEA = SoundEvents.BLOCK_SAND_BREAK;
     public static final SoundEvent ENTITY_BOAT_LINE_SILVER = SoundEvents.ENTITY_IRON_GOLEM_REPAIR;
     public static final SoundEvent ENTITY_MIDNIGHT_CREATURE_AMBIENT = SoundEvents.ENTITY_BREEZE_IDLE_GROUND;

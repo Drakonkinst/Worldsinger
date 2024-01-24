@@ -75,8 +75,8 @@ public final class SporeKillingManager {
                 silverLinedData.setSilverDurability(silverLinedData.getSilverDurability() - 1);
             } else {
                 // Assume it is a tool and damage its durability
-                stack.damage(1, player, e -> e.sendEquipmentBreakStatus(
-                        hand == Hand.MAIN_HAND ? EquipmentSlot.MAINHAND : EquipmentSlot.OFFHAND));
+                stack.damage(1, player,
+                        hand == Hand.MAIN_HAND ? EquipmentSlot.MAINHAND : EquipmentSlot.OFFHAND);
             }
             // Kill the block
             world.setBlockState(pos, SporeKillingManager.convertToDeadVariant(sporeGrowth, state));
