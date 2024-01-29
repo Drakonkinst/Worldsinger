@@ -143,6 +143,10 @@ public final class ModItems {
     public static final Item STEEL_HOE = register("steel_hoe",
             new HoeItem(ModToolMaterials.STEEL, -2, -1.0f, new FabricItemSettings()));
 
+    // Aluminum
+    public static final Item ALUMINUM_INGOT = register("aluminum_ingot",
+            new Item(new FabricItemSettings()));
+
     // Tools
     public static final Item QUARTZ_AND_STEEL = register("quartz_and_steel",
             new FlintAndSteelItem(new FabricItemSettings().maxDamage(88)));
@@ -267,6 +271,7 @@ public final class ModItems {
             itemGroup.add(ModItems.SALT);
             itemGroup.add(ModItems.SILVER_INGOT);
             itemGroup.add(ModItems.STEEL_INGOT);
+            itemGroup.add(ModItems.ALUMINUM_INGOT);
             itemGroup.add(ModBlocks.SALTSTONE);
             itemGroup.add(ModBlocks.SILVER_BLOCK);
             itemGroup.add(ModBlocks.STEEL_BLOCK);

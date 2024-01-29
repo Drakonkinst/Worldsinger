@@ -179,6 +179,7 @@ public class ModModelGenerator extends FabricModelProvider {
                 ModItems.SALT,
                 ModItems.STEEL_NUGGET,
                 ModItems.STEEL_INGOT,
+                ModItems.ALUMINUM_INGOT,
                 ModItems.DEAD_SPORES_BUCKET,
                 ModItems.VERDANT_SPORES_BUCKET,
                 ModItems.CRIMSON_SPORES_BUCKET,
