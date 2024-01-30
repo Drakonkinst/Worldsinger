@@ -46,6 +46,8 @@ public class ModRecipeGenerator extends FabricRecipeProvider {
                 0.7f, DEFAULT_SMELTING_TIME_SECONDS);
         offerBlastingCompatibleRecipe(exporter, ModItems.SALT,
                 List.of(ModBlocks.SALTSTONE_SALT_ORE), 0.7f, DEFAULT_SMELTING_TIME_SECONDS);
+        offerBlastingCompatibleRecipe(exporter, ModItems.ALUMINUM_NUGGET,
+                List.of(ModBlocks.ALUMINUM_SHEET), 0.1f, DEFAULT_SMELTING_TIME_SECONDS);
         offerMeltingDownRecipe(exporter, ModItems.STEEL_NUGGET, new Item[] {
                 ModItems.STEEL_PICKAXE,
                 ModItems.STEEL_AXE,

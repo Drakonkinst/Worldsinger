@@ -279,6 +279,7 @@ public final class ModItems {
             itemGroup.add(ModBlocks.SILVER_BLOCK);
             itemGroup.add(ModBlocks.STEEL_BLOCK);
             itemGroup.add(ModBlocks.ALUMINUM_BLOCK);
+            itemGroup.add(ModBlocks.ALUMINUM_SHEET);
 
             itemGroup.add(ModItems.DEAD_SPORES_BOTTLE);
             itemGroup.add(ModItems.DEAD_SPORES_SPLASH_BOTTLE);

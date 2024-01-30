@@ -29,10 +29,12 @@ public final class VoxelShapeUtil {
                     MAX_VOXEL - widthOffset, maxHeight, MAX_VOXEL - widthOffset);
             case DOWN ->
                     shape = Block.createCuboidShape(widthOffset, MAX_VOXEL - maxHeight, widthOffset,
-                            MAX_VOXEL - widthOffset, MAX_VOXEL, MAX_VOXEL - widthOffset);
+                            MAX_VOXEL - widthOffset, MAX_VOXEL - minHeight,
+                            MAX_VOXEL - widthOffset);
             case NORTH ->
                     shape = Block.createCuboidShape(widthOffset, widthOffset, MAX_VOXEL - maxHeight,
-                            MAX_VOXEL - widthOffset, MAX_VOXEL - widthOffset, MAX_VOXEL);
+                            MAX_VOXEL - widthOffset, MAX_VOXEL - widthOffset,
+                            MAX_VOXEL - minHeight);
             case SOUTH -> shape = Block.createCuboidShape(widthOffset, widthOffset, minHeight,
                     MAX_VOXEL - widthOffset, MAX_VOXEL - widthOffset, maxHeight);
             case EAST ->
@@ -40,7 +42,8 @@ public final class VoxelShapeUtil {
                             MAX_VOXEL - widthOffset, MAX_VOXEL - widthOffset);
             default ->
                     shape = Block.createCuboidShape(MAX_VOXEL - maxHeight, widthOffset, widthOffset,
-                            MAX_VOXEL, MAX_VOXEL - widthOffset, MAX_VOXEL - widthOffset);
+                            MAX_VOXEL - minHeight, MAX_VOXEL - widthOffset,
+                            MAX_VOXEL - widthOffset);
         }
         return shape;
     }

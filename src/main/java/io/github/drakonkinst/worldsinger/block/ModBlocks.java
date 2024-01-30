@@ -395,6 +395,15 @@ public final class ModBlocks {
             new Block(FabricBlockSettings.create().requiresTool()
                     // Same strength as Gold Block
                     .strength(3.0f, 6.0f).sounds(BlockSoundGroup.METAL)), true);
+    public static final Block ALUMINUM_SHEET = register("aluminum_sheet",
+            new AluminumSheetBlock(FabricBlockSettings.create()
+                    .requiresTool()
+                    // Same strength as Aluminum Block
+                    .strength(3.0f, 6.0f)
+                    .solid()
+                    .noCollision()
+                    .pistonBehavior(PistonBehavior.DESTROY)
+                    .sounds(BlockSoundGroup.METAL)), true);
 
     public static <T extends Block> T register(String id, T block, boolean shouldRegisterItem) {
         Identifier blockId = Worldsinger.id(id);
