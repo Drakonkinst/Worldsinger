@@ -133,10 +133,9 @@ public abstract class MultifaceBlock extends Block {
         }
 
         if (numChanged > 0) {
-            Block.dropStack(world, pos, new ItemStack(ModBlocks.ALUMINUM_SHEET, numChanged));
+            Block.dropStack(world, pos, new ItemStack(this, numChanged));
             world.setBlockState(pos, nextState);
         }
-
     }
 
     @Override
