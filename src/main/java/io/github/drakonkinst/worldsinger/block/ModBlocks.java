@@ -390,6 +390,12 @@ public final class ModBlocks {
                     .sounds(BlockSoundGroup.ANVIL)
                     .pistonBehavior(PistonBehavior.BLOCK)), true);
 
+    // Aluminum
+    public static final Block ALUMINUM_BLOCK = register("aluminum_block",
+            new Block(FabricBlockSettings.create().requiresTool()
+                    // Same strength as Gold Block
+                    .strength(3.0f, 6.0f).sounds(BlockSoundGroup.METAL)), true);
+
     public static <T extends Block> T register(String id, T block, boolean shouldRegisterItem) {
         Identifier blockId = Worldsinger.id(id);
 

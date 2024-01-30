@@ -146,6 +146,8 @@ public final class ModItems {
     // Aluminum
     public static final Item ALUMINUM_INGOT = register("aluminum_ingot",
             new Item(new FabricItemSettings()));
+    public static final Item ALUMINUM_NUGGET = register("aluminum_nugget",
+            new Item(new FabricItemSettings()));
 
     // Tools
     public static final Item QUARTZ_AND_STEEL = register("quartz_and_steel",
@@ -272,9 +274,11 @@ public final class ModItems {
             itemGroup.add(ModItems.SILVER_INGOT);
             itemGroup.add(ModItems.STEEL_INGOT);
             itemGroup.add(ModItems.ALUMINUM_INGOT);
+            itemGroup.add(ModItems.ALUMINUM_NUGGET);
             itemGroup.add(ModBlocks.SALTSTONE);
             itemGroup.add(ModBlocks.SILVER_BLOCK);
             itemGroup.add(ModBlocks.STEEL_BLOCK);
+            itemGroup.add(ModBlocks.ALUMINUM_BLOCK);
 
             itemGroup.add(ModItems.DEAD_SPORES_BOTTLE);
             itemGroup.add(ModItems.DEAD_SPORES_SPLASH_BOTTLE);

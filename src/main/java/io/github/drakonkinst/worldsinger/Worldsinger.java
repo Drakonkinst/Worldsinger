@@ -38,6 +38,10 @@ public class Worldsinger implements ModInitializer {
         return new Identifier(ModConstants.MOD_ID, id);
     }
 
+    public static String idStr(String id) {
+        return ModConstants.MOD_ID + ":" + id;
+    }
+
     @Override
     public void onInitialize() {
         LOGGER.info("Initializing Worldsinger...");
