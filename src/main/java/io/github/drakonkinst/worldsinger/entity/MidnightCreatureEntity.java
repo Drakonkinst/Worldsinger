@@ -214,7 +214,8 @@ public class MidnightCreatureEntity extends ShapeshiftingEntity implements
         if (controller != null && controller.isRemoved()) {
             controller = null;
         }
-        if (controller != null && controllerUUID == null) {
+        if (controller != null && (controllerUUID == null || !controller.getUuid()
+                .equals(controllerUUID))) {
             controller = null;
         }
         return controller;
