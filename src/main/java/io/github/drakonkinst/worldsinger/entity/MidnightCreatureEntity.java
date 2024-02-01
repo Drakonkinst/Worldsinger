@@ -764,12 +764,19 @@ public class MidnightCreatureEntity extends ShapeshiftingEntity implements
         return super.canHaveStatusEffect(effect);
     }
 
+    // Never push controller if being possessed
     @Override
     protected void pushAway(Entity entity) {
         if (isBeingPossessed && this.getController().equals(entity)) {
             return;
         }
         super.pushAway(entity);
+    }
+
+    // Never run out of air (since they don't need to breathe)
+    @Override
+    protected int getNextAirUnderwater(int air) {
+        return air;
     }
 
     @Override
