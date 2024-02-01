@@ -10,10 +10,8 @@ import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.TagKey;
-import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.random.Random;
 import org.jetbrains.annotations.NotNull;
 
 public final class EntityUtil {
@@ -46,14 +44,6 @@ public final class EntityUtil {
 
     public static boolean isSubmergedInFluid(Entity entity, TagKey<Fluid> fluidTag) {
         return EntityUtil.notFirstUpdate(entity) && entity.isSubmergedIn(fluidTag);
-    }
-
-    public static Vec3d getRandomPointInBoundingBox(Entity entity, Random random) {
-        Box box = entity.getBoundingBox();
-        double x = box.minX + (box.maxX - box.minX) * random.nextDouble();
-        double y = box.minY + (box.maxY - box.minY) * random.nextDouble();
-        double z = box.minZ + (box.maxZ - box.minZ) * random.nextDouble();
-        return new Vec3d(x, y, z);
     }
 
     @NotNull

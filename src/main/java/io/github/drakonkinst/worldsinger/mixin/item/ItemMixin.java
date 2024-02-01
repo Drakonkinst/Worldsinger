@@ -19,9 +19,9 @@ public class ItemMixin {
         if (original.call(instance, ignoreHunger)) {
             return true;
         }
-        // TODO: Replace with DataTable.contains()
-        return !ModComponents.THIRST_MANAGER.get(instance).isFull() &&
-                DataTableRegistry.INSTANCE.get(ModDataTables.CONSUMABLE_HYDRATION)
-                        .getIntForItem((Item) (Object) this) != 0;
+
+        return !ModComponents.THIRST_MANAGER.get(instance).isFull()
+                && DataTableRegistry.INSTANCE.get(ModDataTables.CONSUMABLE_HYDRATION)
+                .contains((Item) (Object) this);
     }
 }

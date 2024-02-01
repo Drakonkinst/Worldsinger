@@ -1,19 +1,13 @@
 package io.github.drakonkinst.worldsinger.cosmere.lumar;
 
 import io.github.drakonkinst.worldsinger.entity.MidnightCreatureEntity;
-import io.github.drakonkinst.worldsinger.particle.ModParticleTypes;
-import io.github.drakonkinst.worldsinger.util.EntityUtil;
 import net.fabricmc.fabric.api.tag.convention.v1.ConventionalItemTags;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.random.Random;
-import net.minecraft.world.World;
 
 public final class MidnightCreatureManager {
 
@@ -74,25 +68,6 @@ public final class MidnightCreatureManager {
             return Items.GLASS_BOTTLE.getDefaultStack();
         }
         return stack.getRecipeRemainder();
-    }
-
-    // Client-side only
-    public static void addMidnightParticle(World world, Entity entity, Random random,
-            double velocity) {
-        Vec3d pos = EntityUtil.getRandomPointInBoundingBox(entity, random);
-        double velocityX = velocity * random.nextGaussian();
-        double velocityY = velocity * random.nextGaussian();
-        double velocityZ = velocity * random.nextGaussian();
-        world.addParticle(ModParticleTypes.MIDNIGHT_ESSENCE, pos.getX(), pos.getY(), pos.getZ(),
-                velocityX, velocityY, velocityZ);
-    }
-
-    // Client-side only
-    public static void addMidnightParticles(World world, Entity entity, Random random,
-            double velocity, int count) {
-        for (int i = 0; i < count; ++i) {
-            MidnightCreatureManager.addMidnightParticle(world, entity, random, velocity);
-        }
     }
 
     private MidnightCreatureManager() {}

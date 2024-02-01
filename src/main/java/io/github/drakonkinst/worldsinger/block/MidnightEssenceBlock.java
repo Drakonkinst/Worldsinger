@@ -2,7 +2,9 @@ package io.github.drakonkinst.worldsinger.block;
 
 import io.github.drakonkinst.worldsinger.component.ModComponents;
 import io.github.drakonkinst.worldsinger.component.ThirstManagerComponent;
+import io.github.drakonkinst.worldsinger.cosmere.lumar.MidnightSpores;
 import io.github.drakonkinst.worldsinger.entity.MidnightCreatureEntity;
+import io.github.drakonkinst.worldsinger.particle.ModParticleTypes;
 import io.github.drakonkinst.worldsinger.registry.ModSoundEvents;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -15,10 +17,12 @@ import net.minecraft.state.property.Properties;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
 import org.jetbrains.annotations.Nullable;
 
 public class MidnightEssenceBlock extends Block {
@@ -57,7 +61,18 @@ public class MidnightEssenceBlock extends Block {
         // Decay over time
         if (random.nextInt(5) == 0) {
             world.breakBlock(pos, true);
+            Vec3d centerPos = pos.toCenterPos();
+
+            // randomTick() is always called server-side, so use spawnParticles()
+            world.spawnParticles(ModParticleTypes.MIDNIGHT_ESSENCE, centerPos.getX(),
+                    centerPos.getY(), centerPos.getZ(), 5, 0.5, 0.5, 0.5, 0.0);
         }
+    }
+
+    @Override
+    public void onBroken(WorldAccess world, BlockPos pos, BlockState state) {
+        super.onBroken(world, pos, state);
+        MidnightSpores.addMidnightParticles(world, new Box(pos), world.getRandom(), 0.1, 5);
     }
 
     @Override
@@ -69,11 +84,13 @@ public class MidnightEssenceBlock extends Block {
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player,
             BlockHitResult hit) {
         ThirstManagerComponent thirstManager = ModComponents.THIRST_MANAGER.get(player);
-        if (thirstManager.get() < WATER_COST) {
+        if (!player.isCreative() && thirstManager.get() < WATER_COST) {
             // Not enough water to summon anything, but should still swing hand
             return ActionResult.success(true);
         }
-        thirstManager.remove(WATER_COST);
+        if (!player.isCreative()) {
+            thirstManager.remove(WATER_COST);
+        }
         world.removeBlock(pos, false);
         MidnightCreatureEntity entity = new MidnightCreatureEntity(world);
         entity.setMidnightEssenceAmount(1);

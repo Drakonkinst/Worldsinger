@@ -6,19 +6,25 @@ import io.github.drakonkinst.worldsinger.entity.MidnightSporeGrowthEntity;
 import io.github.drakonkinst.worldsinger.entity.ModEntityTypes;
 import io.github.drakonkinst.worldsinger.fluid.ModFluids;
 import io.github.drakonkinst.worldsinger.item.ModItems;
+import io.github.drakonkinst.worldsinger.particle.ModParticleTypes;
 import io.github.drakonkinst.worldsinger.util.BlockPosUtil;
+import io.github.drakonkinst.worldsinger.util.BoxUtil;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.fluid.FlowableFluid;
 import net.minecraft.item.Item;
 import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
 
 public class MidnightSpores extends GrowableAetherSpores<MidnightSporeGrowthEntity> {
 
@@ -31,6 +37,32 @@ public class MidnightSpores extends GrowableAetherSpores<MidnightSporeGrowthEnti
 
     public static MidnightSpores getInstance() {
         return INSTANCE;
+    }
+
+    // Client-side only
+    public static void addMidnightParticle(WorldAccess world, Box box, Random random,
+            double velocity) {
+        Vec3d pos = BoxUtil.getRandomPointInBox(box, random);
+        double velocityX = velocity * random.nextGaussian();
+        double velocityY = velocity * random.nextGaussian();
+        double velocityZ = velocity * random.nextGaussian();
+        world.addParticle(ModParticleTypes.MIDNIGHT_ESSENCE, pos.getX(), pos.getY(), pos.getZ(),
+                velocityX, velocityY, velocityZ);
+    }
+
+    // Client-side only
+    public static void addMidnightParticles(WorldAccess world, Entity entity, Random random,
+            double velocity, int count) {
+        Box boundingBox = entity.getBoundingBox();
+        MidnightSpores.addMidnightParticles(world, boundingBox, random, velocity, count);
+    }
+
+    // Client-side only
+    public static void addMidnightParticles(WorldAccess world, Box box, Random random,
+            double velocity, int count) {
+        for (int i = 0; i < count; ++i) {
+            MidnightSpores.addMidnightParticle(world, box, random, velocity);
+        }
     }
 
     private MidnightSpores() {
@@ -67,7 +99,14 @@ public class MidnightSpores extends GrowableAetherSpores<MidnightSporeGrowthEnti
 
     @Override
     public void onDeathFromStatusEffect(World world, LivingEntity entity, BlockPos pos, int water) {
-        // TODO
+        // Status effects are only applied server-side, and synced to client
+        // So this is only called server-side
+        if (world instanceof ServerWorld serverWorld) {
+            Vec3d centerPos = pos.toCenterPos();
+            serverWorld.spawnParticles(ModParticleTypes.MIDNIGHT_ESSENCE, centerPos.getX(),
+                    centerPos.getY(), centerPos.getZ(), 20, 0.0, 0.0, 0.0, 0.5);
+
+        }
     }
 
     @Override

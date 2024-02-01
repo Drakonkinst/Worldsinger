@@ -150,7 +150,6 @@ public class ZephyrSpores extends AetherSpores {
     }
 
     private static void affectBlocks(World world, Explosion explosion) {
-        // TODO: Will particles still appear on dedicated server?
         world.getProfiler().push("explosion_blocks");
         for (BlockPos blockPos : explosion.getAffectedBlocks()) {
             world.getBlockState(blockPos)

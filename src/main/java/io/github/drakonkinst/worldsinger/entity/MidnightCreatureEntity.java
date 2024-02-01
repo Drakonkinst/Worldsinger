@@ -9,6 +9,7 @@ import io.github.drakonkinst.worldsinger.component.PossessionComponent;
 import io.github.drakonkinst.worldsinger.component.ThirstManagerComponent;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.AetherSpores;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.MidnightCreatureManager;
+import io.github.drakonkinst.worldsinger.cosmere.lumar.MidnightSpores;
 import io.github.drakonkinst.worldsinger.effect.ModStatusEffects;
 import io.github.drakonkinst.worldsinger.entity.ai.PossessableEntityNavigation;
 import io.github.drakonkinst.worldsinger.entity.ai.PossessableMoveControl;
@@ -134,7 +135,6 @@ public class MidnightCreatureEntity extends ShapeshiftingEntity implements
             ModStatusEffects.SUNLIGHT_SPORES, ModStatusEffects.VERDANT_SPORES,
             ModStatusEffects.ZEPHYR_SPORES);
     private static final int MAX_POSSESSION_EXPIRY = 20;
-    private static final float MAX_POSSESS_DISTANCE = 32.0f;
 
     // Particles
     private static final int AMBIENT_PARTICLE_INTERVAL = 10;
@@ -458,7 +458,7 @@ public class MidnightCreatureEntity extends ShapeshiftingEntity implements
     private void tickParticleEffects() {
         // Ambient particles
         if (this.age % AMBIENT_PARTICLE_INTERVAL == 0 && random.nextInt(3) != 0) {
-            MidnightCreatureManager.addMidnightParticle(this.getWorld(), this, random, 0.1);
+            MidnightSpores.addMidnightParticle(this.getWorld(), this.getBoundingBox(), random, 0.1);
         }
 
         // Update client controller
@@ -491,6 +491,10 @@ public class MidnightCreatureEntity extends ShapeshiftingEntity implements
 
         if (!player.shouldCancelInteraction() && stack.isEmpty() && getMorph() != null
                 && player.getUuid().equals(this.getControllerUuid())) {
+            // Lots of weird interactions happens when riding something, so don't do that
+            if (player.hasVehicle()) {
+                player.stopRiding();
+            }
             ModComponents.POSSESSION.get(player).setPossessionTarget(this);
             return ActionResult.success(true);
         }
@@ -526,7 +530,7 @@ public class MidnightCreatureEntity extends ShapeshiftingEntity implements
                 resetController();
             }
         } else {
-            if (!isInitial) {
+            if (!isInitial && !host.isCreative()) {
                 thirstManager.remove(1);
             }
             bondData.updateBond(this.getId());
@@ -618,7 +622,7 @@ public class MidnightCreatureEntity extends ShapeshiftingEntity implements
     public void afterMorphEntitySpawn(LivingEntity morph, boolean showTransformEffects) {
         super.afterMorphEntitySpawn(morph, showTransformEffects);
         if (showTransformEffects && this.getWorld().isClient()) {
-            MidnightCreatureManager.addMidnightParticles(this.getWorld(), this, random, 0.2,
+            MidnightSpores.addMidnightParticles(this.getWorld(), this, random, 0.2,
                     NUM_TRANSFORM_PARTICLES);
             this.getWorld()
                     .playSoundFromEntity(this, ModSoundEvents.ENTITY_MIDNIGHT_CREATURE_TRANSFORM,
@@ -690,7 +694,7 @@ public class MidnightCreatureEntity extends ShapeshiftingEntity implements
     @Override
     public void onDamaged(DamageSource damageSource) {
         super.onDamaged(damageSource);
-        MidnightCreatureManager.addMidnightParticles(this.getWorld(), this, random, 0.25,
+        MidnightSpores.addMidnightParticles(this.getWorld(), this, random, 0.25,
                 MidnightCreatureEntity.NUM_DAMAGE_PARTICLES);
     }
 
@@ -758,6 +762,14 @@ public class MidnightCreatureEntity extends ShapeshiftingEntity implements
             return false;
         }
         return super.canHaveStatusEffect(effect);
+    }
+
+    @Override
+    protected void pushAway(Entity entity) {
+        if (isBeingPossessed && this.getController().equals(entity)) {
+            return;
+        }
+        super.pushAway(entity);
     }
 
     @Override

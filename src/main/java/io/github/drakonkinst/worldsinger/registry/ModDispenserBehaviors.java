@@ -58,8 +58,8 @@ public final class ModDispenserBehaviors {
         DispenserBlock.registerBehavior(ModItems.CRIMSON_SPORES_BUCKET, FLUID_BUCKET_BEHAVIOR);
         DispenserBlock.registerBehavior(ModItems.ZEPHYR_SPORES_BUCKET, FLUID_BUCKET_BEHAVIOR);
         DispenserBlock.registerBehavior(ModItems.SUNLIGHT_SPORES_BUCKET, FLUID_BUCKET_BEHAVIOR);
-
-        // TODO: Add remaining spore logic
+        DispenserBlock.registerBehavior(ModItems.ROSEITE_SPORES_BUCKET, FLUID_BUCKET_BEHAVIOR);
+        DispenserBlock.registerBehavior(ModItems.MIDNIGHT_SPORES_BUCKET, FLUID_BUCKET_BEHAVIOR);
 
         DispenserBlock.registerBehavior(ModItems.DEAD_SPORES_SPLASH_BOTTLE, SPLASH_POTION_BEHAVIOR);
         DispenserBlock.registerBehavior(ModItems.VERDANT_SPORES_SPLASH_BOTTLE,

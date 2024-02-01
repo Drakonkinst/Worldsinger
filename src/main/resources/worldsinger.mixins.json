@@ -42,6 +42,7 @@
     "compat.smartbrainlib.TargetOrRetaliatePatchMixin",
     "effect.HungerStatusEffectThirstMixin",
     "entity.BoatEntityMovementMixin",
+    "entity.BoatEntityPassengersMixin",
     "entity.BoatEntitySilverMixin",
     "entity.EntityMixin",
     "entity.FallingBlockEntityMixin",
