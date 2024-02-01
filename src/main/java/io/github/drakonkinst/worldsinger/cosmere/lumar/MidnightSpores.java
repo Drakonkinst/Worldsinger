@@ -2,9 +2,14 @@ package io.github.drakonkinst.worldsinger.cosmere.lumar;
 
 import io.github.drakonkinst.worldsinger.block.ModBlocks;
 import io.github.drakonkinst.worldsinger.effect.ModStatusEffects;
+import io.github.drakonkinst.worldsinger.entity.MidnightSporeGrowthEntity;
+import io.github.drakonkinst.worldsinger.entity.ModEntityTypes;
 import io.github.drakonkinst.worldsinger.fluid.ModFluids;
 import io.github.drakonkinst.worldsinger.item.ModItems;
+import io.github.drakonkinst.worldsinger.util.BlockPosUtil;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.fluid.FlowableFluid;
@@ -15,7 +20,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 
-public class MidnightSpores extends AetherSpores {
+public class MidnightSpores extends GrowableAetherSpores<MidnightSporeGrowthEntity> {
 
     public static final String NAME = "midnight";
     public static final int ID = 6;
@@ -28,11 +33,36 @@ public class MidnightSpores extends AetherSpores {
         return INSTANCE;
     }
 
-    private MidnightSpores() {}
+    private MidnightSpores() {
+        super(MidnightSporeGrowthEntity.class);
+    }
 
     @Override
-    public void doReaction(World world, Vec3d pos, int spores, int water, Random random) {
-        // TODO
+    public EntityType<MidnightSporeGrowthEntity> getSporeGrowthEntityType() {
+        return ModEntityTypes.MIDNIGHT_SPORE_GROWTH;
+    }
+
+    @Override
+    public int getSmallStage() {
+        return 0;
+    }
+
+    // Only spawn a single Midnight Essence from a Midnight Splash Bottle
+    @Override
+    public void doReactionFromSplashBottle(World world, Vec3d pos, int spores, int water,
+            Random random, boolean affectingFluidContainer) {
+        BlockPos blockPos = BlockPosUtil.toBlockPos(pos);
+        if (affectingFluidContainer) {
+            blockPos = blockPos.up();
+        }
+        if (world.getBlockState(blockPos).isAir()) {
+            world.setBlockState(blockPos, ModBlocks.MIDNIGHT_ESSENCE.getDefaultState());
+        }
+    }
+
+    @Override
+    public BlockState getFluidCollisionState() {
+        return ModBlocks.MIDNIGHT_ESSENCE.getDefaultState();
     }
 
     @Override

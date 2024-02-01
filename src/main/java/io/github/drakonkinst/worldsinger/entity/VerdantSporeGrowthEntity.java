@@ -31,7 +31,6 @@ public class VerdantSporeGrowthEntity extends SporeGrowthEntity {
     private static final int SPORE_SPLIT_MIN = 100;
     private static final int WATER_SPLIT_MIN = 1;
     private static final int SPORE_WATER_THRESHOLD = 25;
-    private static final int FORCE_MODIFIER_MULTIPLIER = 20;
 
     private static final int COST_VERDANT_VINE_BLOCK = 10;
     private static final int COST_VERDANT_VINE_BRANCH = 5;
@@ -182,10 +181,6 @@ public class VerdantSporeGrowthEntity extends SporeGrowthEntity {
             weightBonus += 100;
         }
         return weightBonus;
-    }
-
-    private int getDistanceFromOrigin(BlockPos pos) {
-        return pos.getManhattanDistance(this.getOrigin());
     }
 
     private void updateStage() {

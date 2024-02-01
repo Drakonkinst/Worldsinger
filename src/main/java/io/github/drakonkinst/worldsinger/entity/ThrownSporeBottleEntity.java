@@ -24,7 +24,6 @@ import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
-import org.jetbrains.annotations.Nullable;
 
 public class ThrownSporeBottleEntity extends ThrownItemEntity implements FlyingItemEntity {
 
@@ -69,7 +68,6 @@ public class ThrownSporeBottleEntity extends ThrownItemEntity implements FlyingI
         this.discard();
     }
 
-    @Nullable
     private AetherSpores getSporeType() {
         ItemStack stack = this.getStack();
         if (stack.getItem() instanceof SporeBottleItem sporeBottleItem) {

@@ -32,6 +32,7 @@ import org.joml.Vector3d;
 public abstract class SporeGrowthEntity extends ServerSideEntity {
 
     protected static final Random random = Random.create();
+    protected static final int FORCE_MODIFIER_MULTIPLIER = 20;
 
     private static final String WATER_REMAINING_KEY = "WaterRemaining";
     private static final String SPORES_REMAINING_KEY = "SporesRemaining";
@@ -483,6 +484,10 @@ public abstract class SporeGrowthEntity extends ServerSideEntity {
         if (playSound) {
             SporeGrowthEntity.playPlaceSoundEffect(this.getWorld(), pos, state);
         }
+    }
+
+    protected int getDistanceFromOrigin(BlockPos pos) {
+        return pos.getManhattanDistance(this.getOrigin());
     }
 
     /* Getters */

@@ -31,7 +31,6 @@ public class CrimsonSporeGrowthEntity extends SporeGrowthEntity {
 
     public static final int MAX_STAGE = 2;
 
-    private static final int FORCE_MODIFIER_MULTIPLIER = 20;
     private static final float MIN_ROTATION = 10.0f * MathHelper.RADIANS_PER_DEGREE;
     private static final float MAX_ROTATION = 45.0f * MathHelper.RADIANS_PER_DEGREE;
     private static final int MAX_ATTEMPTS = 10;

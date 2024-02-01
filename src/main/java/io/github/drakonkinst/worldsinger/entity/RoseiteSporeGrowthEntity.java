@@ -24,8 +24,6 @@ public class RoseiteSporeGrowthEntity extends SporeGrowthEntity {
 
     public static final int MAX_STAGE = 0;
 
-    private static final int FORCE_MODIFIER_MULTIPLIER = 20;
-
     private static final int COST_ROSEITE_BLOCK = 9;
     private static final int COST_ROSEITE_STAIRS = 7;
     private static final int COST_ROSEITE_SLAB = 5;
@@ -306,10 +304,6 @@ public class RoseiteSporeGrowthEntity extends SporeGrowthEntity {
             weightBonus += 15;
         }
         return weightBonus;
-    }
-
-    private int getDistanceFromOrigin(BlockPos pos) {
-        return pos.getManhattanDistance(this.getOrigin());
     }
 
     @Override

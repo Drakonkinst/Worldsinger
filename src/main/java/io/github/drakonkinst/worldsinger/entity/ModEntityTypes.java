@@ -47,6 +47,12 @@ public final class ModEntityTypes {
                     .dimensions(EntityDimensions.fixed(0.0f, 0.0f))
                     .trackRangeChunks(0)
                     .build());
+    public static final EntityType<MidnightSporeGrowthEntity> MIDNIGHT_SPORE_GROWTH = register(
+            "midnight_spore_growth",
+            FabricEntityTypeBuilder.create(SpawnGroup.MISC, MidnightSporeGrowthEntity::new)
+                    .dimensions(EntityDimensions.fixed(0.0f, 0.0f))
+                    .trackRangeChunks(0)
+                    .build());
     public static final EntityType<ThrownSporeBottleEntity> THROWN_SPORE_BOTTLE = register(
             "spore_bottle", FabricEntityTypeBuilder.<ThrownSporeBottleEntity>create(SpawnGroup.MISC,
                             ThrownSporeBottleEntity::new)
