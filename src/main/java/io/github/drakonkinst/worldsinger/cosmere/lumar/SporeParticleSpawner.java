@@ -106,8 +106,7 @@ public final class SporeParticleSpawner {
 
     public static void spawnSplashPotionParticles(ServerWorld world, AetherSpores sporeType,
             Vec3d pos) {
-        Vec3d centerPos = new Vec3d(pos.getX(), pos.getY() - SPLASH_POTION_HEIGHT * 0.5,
-                pos.getZ());
+        Vec3d centerPos = new Vec3d(pos.getX(), pos.getY() - SPLASH_POTION_HEIGHT, pos.getZ());
         SporeParticleManager.createRandomSporeParticles(world, sporeType, centerPos,
                 SPLASH_POTION_RADIUS, 0.0, SPLASH_POTION_HEIGHT, 0.0, SPLASH_POTION_PARTICLE_SIZE,
                 SPLASH_POTION_PARTICLE_COUNT, true);
