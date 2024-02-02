@@ -3,8 +3,8 @@
   "pools": [
     {
       "rolls": {
-        "min": 3,
-        "max": 6
+        "min": 4,
+        "max": 8
       },
       "entries": [
         {
@@ -17,6 +17,62 @@
               "count": {
                 "min": 1,
                 "max": 6
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "weight": 200,
+          "name": "worldsinger:crimson_spine",
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": {
+                "min": 1,
+                "max": 3
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "weight": 200,
+          "name": "worldsinger:verdant_vine",
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": {
+                "min": 1,
+                "max": 3
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "weight": 200,
+          "name": "worldsinger:roseite_crystal",
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": {
+                "min": 1,
+                "max": 6
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "weight": 150,
+          "name": "worldsinger:roseite_bead",
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": {
+                "min": 1,
+                "max": 3
               }
             }
           ]
@@ -112,6 +168,73 @@
           "type": "minecraft:item",
           "weight": 10,
           "name": "worldsinger:verdant_spores_bucket"
+        },
+        {
+          "type": "minecraft:item",
+          "weight": 10,
+          "name": "worldsinger:crimson_spores_bucket"
+        },
+        {
+          "type": "minecraft:item",
+          "weight": 10,
+          "name": "worldsinger:zephyr_spores_bucket"
+        },
+        {
+          "type": "minecraft:item",
+          "weight": 10,
+          "name": "worldsinger:roseite_spores_bucket"
+        },
+        {
+          "type": "minecraft:item",
+          "weight": 10,
+          "name": "worldsinger:sunlight_spores_bucket"
+        },
+        {
+          "type": "minecraft:item",
+          "weight": 1,
+          "name": "worldsinger:midnight_spores_bucket"
+        },
+        {
+          "type": "minecraft:item",
+          "weight": 100,
+          "name": "worldsinger:aluminum_nugget",
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": {
+                "min": 8,
+                "max": 16
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "weight": 75,
+          "name": "worldsinger:aluminum_sheet",
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": {
+                "min": 4,
+                "max": 16
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "weight": 25,
+          "name": "worldsinger:aluminum_ingot",
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": {
+                "min": 1,
+                "max": 6
+              }
+            }
+          ]
         }
       ]
     },
