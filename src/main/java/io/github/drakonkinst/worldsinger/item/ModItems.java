@@ -19,12 +19,14 @@ import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.minecraft.block.Block;
+import net.minecraft.block.Blocks;
 import net.minecraft.item.ArmorItem;
 import net.minecraft.item.AxeItem;
 import net.minecraft.item.FlintAndSteelItem;
 import net.minecraft.item.FoodComponent;
 import net.minecraft.item.HoeItem;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemGroups;
 import net.minecraft.item.ItemStack;
@@ -198,27 +200,11 @@ public final class ModItems {
         RegistryKey<ItemGroup> moddedItemsItemGroupKey = RegistryKey.of(RegistryKeys.ITEM_GROUP,
                 moddedItemsIdentifier);
 
-        ItemGroupEvents.modifyEntriesEvent(ItemGroups.COMBAT).register((itemGroup) -> {
-            itemGroup.addAfter(Items.IRON_SWORD, ModItems.STEEL_SWORD);
-            itemGroup.addAfter(Items.IRON_AXE, ModItems.STEEL_AXE);
-            itemGroup.addAfter(Items.IRON_BOOTS, ModItems.STEEL_HELMET, ModItems.STEEL_CHESTPLATE,
-                    ModItems.STEEL_LEGGINGS, ModItems.STEEL_BOOTS);
-        });
-
-        ItemGroupEvents.modifyEntriesEvent(ItemGroups.TOOLS).register((itemGroup) -> {
-            itemGroup.addAfter(Items.IRON_HOE, ModItems.STEEL_SHOVEL, ModItems.STEEL_PICKAXE,
-                    ModItems.STEEL_AXE, ModItems.STEEL_HOE);
-            itemGroup.addAfter(Items.FLINT_AND_STEEL, ModItems.QUARTZ_AND_STEEL,
-                    ModItems.FLINT_AND_IRON, ModItems.QUARTZ_AND_IRON);
-            itemGroup.addAfter(Items.MILK_BUCKET, ModItems.DEAD_SPORES_BUCKET,
-                    ModItems.VERDANT_SPORES_BUCKET, ModItems.CRIMSON_SPORES_BUCKET,
-                    ModItems.ZEPHYR_SPORES_BUCKET, ModItems.SUNLIGHT_SPORES_BUCKET,
-                    ModItems.ROSEITE_SPORES_BUCKET, ModItems.MIDNIGHT_SPORES_BUCKET);
-        });
-
-        ItemGroupEvents.modifyEntriesEvent(ItemGroups.FUNCTIONAL).register((itemGroup) -> {
-            itemGroup.addAfter(Items.DAMAGED_ANVIL, ModBlocks.STEEL_ANVIL,
-                    ModBlocks.CHIPPED_STEEL_ANVIL, ModBlocks.DAMAGED_STEEL_ANVIL);
+        ItemGroupEvents.modifyEntriesEvent(ItemGroups.BUILDING_BLOCKS).register((itemGroup) -> {
+            itemGroup.addBefore(Items.GOLD_BLOCK, ModBlocks.STEEL_BLOCK);
+            itemGroup.addBefore(Items.REDSTONE_BLOCK, ModBlocks.SILVER_BLOCK,
+                    ModBlocks.ALUMINUM_BLOCK, ModBlocks.ALUMINUM_SHEET);
+            itemGroup.addAfter(Items.NETHERITE_BLOCK, ModBlocks.SALT_BLOCK);
         });
 
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.NATURAL).register((itemGroup) -> {
@@ -226,63 +212,174 @@ public final class ModItems {
             itemGroup.addAfter(Items.DEEPSLATE_COAL_ORE, ModBlocks.SALTSTONE_SALT_ORE);
             itemGroup.addAfter(Items.DEEPSLATE_GOLD_ORE, ModBlocks.SILVER_ORE,
                     ModBlocks.DEEPSLATE_SILVER_ORE);
-            itemGroup.addAfter(Items.WET_SPONGE, ModBlocks.VERDANT_VINE_BLOCK,
-                    ModBlocks.VERDANT_VINE_BRANCH, ModBlocks.VERDANT_VINE_SNARE,
-                    ModBlocks.TWISTING_VERDANT_VINES, ModBlocks.DEAD_VERDANT_VINE_BLOCK,
-                    ModBlocks.DEAD_VERDANT_VINE_BRANCH, ModBlocks.DEAD_VERDANT_VINE_SNARE,
-                    ModBlocks.DEAD_TWISTING_VERDANT_VINES);
+            // Spore Growth Blocks
+            itemGroup.addAfter(Items.WET_SPONGE, new ItemConvertible[] {
+                    ModBlocks.VERDANT_VINE_BLOCK,
+                    ModBlocks.VERDANT_VINE_BRANCH,
+                    ModBlocks.VERDANT_VINE_SNARE,
+                    ModBlocks.TWISTING_VERDANT_VINES,
+                    ModBlocks.DEAD_VERDANT_VINE_BLOCK,
+                    ModBlocks.DEAD_VERDANT_VINE_BRANCH,
+                    ModBlocks.DEAD_VERDANT_VINE_SNARE,
+                    ModBlocks.DEAD_TWISTING_VERDANT_VINES,
+                    ModBlocks.CRIMSON_GROWTH,
+                    ModBlocks.CRIMSON_SPIKE,
+                    ModBlocks.CRIMSON_SNARE,
+                    ModBlocks.TALL_CRIMSON_SPINES,
+                    ModBlocks.CRIMSON_SPINES,
+                    ModBlocks.DEAD_CRIMSON_GROWTH,
+                    ModBlocks.DEAD_CRIMSON_SPIKE,
+                    ModBlocks.DEAD_CRIMSON_SNARE,
+                    ModBlocks.DEAD_TALL_CRIMSON_SPINES,
+                    ModBlocks.DEAD_CRIMSON_SPINES,
+                    ModBlocks.ROSEITE_BLOCK,
+                    ModBlocks.ROSEITE_STAIRS,
+                    ModBlocks.ROSEITE_SLAB,
+                    ModBlocks.SMALL_ROSEITE_BUD,
+                    ModBlocks.MEDIUM_ROSEITE_BUD,
+                    ModBlocks.LARGE_ROSEITE_BUD,
+                    ModBlocks.ROSEITE_CLUSTER,
+                    ModBlocks.MIDNIGHT_ESSENCE
+            });
             itemGroup.addAfter(Items.RAW_GOLD_BLOCK, ModBlocks.RAW_SILVER_BLOCK);
+            itemGroup.addAfter(Blocks.MAGMA_BLOCK, ModBlocks.MAGMA_VENT);
+        });
+
+        ItemGroupEvents.modifyEntriesEvent(ItemGroups.FUNCTIONAL).register((itemGroup) -> {
+            itemGroup.addAfter(Items.DAMAGED_ANVIL, ModBlocks.STEEL_ANVIL,
+                    ModBlocks.CHIPPED_STEEL_ANVIL, ModBlocks.DAMAGED_STEEL_ANVIL);
+            itemGroup.addAfter(Blocks.MAGMA_BLOCK, ModBlocks.MAGMA_VENT);
+            itemGroup.addAfter(Items.END_CRYSTAL, ModBlocks.MIDNIGHT_ESSENCE);
+        });
+
+        ItemGroupEvents.modifyEntriesEvent(ItemGroups.TOOLS).register((itemGroup) -> {
+            // Steel Tools
+            itemGroup.addAfter(Items.IRON_HOE, new ItemConvertible[] {
+                    ModItems.STEEL_SHOVEL,
+                    ModItems.STEEL_PICKAXE,
+                    ModItems.STEEL_AXE,
+                    ModItems.STEEL_HOE
+            });
+            itemGroup.addAfter(Items.FLINT_AND_STEEL, ModItems.QUARTZ_AND_STEEL,
+                    ModItems.FLINT_AND_IRON, ModItems.QUARTZ_AND_IRON);
+            // Spore Buckets
+            itemGroup.addAfter(Items.MILK_BUCKET, new ItemConvertible[] {
+                    ModItems.VERDANT_SPORES_BUCKET,
+                    ModItems.CRIMSON_SPORES_BUCKET,
+                    ModItems.ZEPHYR_SPORES_BUCKET,
+                    ModItems.SUNLIGHT_SPORES_BUCKET,
+                    ModItems.ROSEITE_SPORES_BUCKET,
+                    ModItems.MIDNIGHT_SPORES_BUCKET,
+                    ModItems.DEAD_SPORES_BUCKET
+            });
+            itemGroup.addAfter(Items.FISHING_ROD, ModItems.SILVER_KNIFE);
+        });
+
+        ItemGroupEvents.modifyEntriesEvent(ItemGroups.COMBAT).register((itemGroup) -> {
+            itemGroup.addAfter(Items.IRON_SWORD, ModItems.STEEL_SWORD);
+            itemGroup.addAfter(Items.IRON_AXE, ModItems.STEEL_AXE);
+            itemGroup.addAfter(Items.IRON_BOOTS, new ItemConvertible[] {
+                    ModItems.STEEL_HELMET,
+                    ModItems.STEEL_CHESTPLATE,
+                    ModItems.STEEL_LEGGINGS,
+                    ModItems.STEEL_BOOTS
+            });
+            itemGroup.addAfter(Items.TRIDENT, ModItems.SILVER_KNIFE);
+        });
+
+        ItemGroupEvents.modifyEntriesEvent(ItemGroups.FOOD_AND_DRINK).register((itemGroup) -> {
+            itemGroup.addAfter(Items.DRIED_KELP, ModItems.VERDANT_VINE);
+            // Spore Bottles
+            itemGroup.addBefore(Items.MILK_BUCKET, new ItemConvertible[] {
+                    ModItems.VERDANT_SPORES_BOTTLE,
+                    ModItems.VERDANT_SPORES_SPLASH_BOTTLE,
+                    ModItems.CRIMSON_SPORES_BOTTLE,
+                    ModItems.CRIMSON_SPORES_SPLASH_BOTTLE,
+                    ModItems.ZEPHYR_SPORES_BOTTLE,
+                    ModItems.ZEPHYR_SPORES_SPLASH_BOTTLE,
+                    ModItems.SUNLIGHT_SPORES_BOTTLE,
+                    ModItems.SUNLIGHT_SPORES_SPLASH_BOTTLE,
+                    ModItems.ROSEITE_SPORES_BOTTLE,
+                    ModItems.ROSEITE_SPORES_SPLASH_BOTTLE,
+                    ModItems.MIDNIGHT_SPORES_BOTTLE,
+                    ModItems.MIDNIGHT_SPORES_SPLASH_BOTTLE,
+                    ModItems.DEAD_SPORES_BOTTLE,
+                    ModItems.DEAD_SPORES_SPLASH_BOTTLE
+            });
+            itemGroup.addAfter(Items.SPIDER_EYE, ModItems.SALT);
         });
 
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.INGREDIENTS).register((itemGroup) -> {
             itemGroup.addAfter(Items.RAW_GOLD, ModItems.RAW_SILVER);
             itemGroup.addAfter(Items.IRON_NUGGET, ModItems.STEEL_NUGGET);
-            itemGroup.addAfter(Items.IRON_INGOT, ModItems.STEEL_INGOT);
-            itemGroup.addAfter(Items.GOLD_NUGGET, ModItems.SILVER_NUGGET);
-            itemGroup.addAfter(Items.GOLD_INGOT, ModItems.SILVER_INGOT);
-            itemGroup.addBefore(Items.NETHERITE_SCRAP, ModItems.CRUDE_IRON);
+            itemGroup.addAfter(Items.IRON_INGOT, ModItems.CRUDE_IRON, ModItems.STEEL_INGOT);
+            itemGroup.addAfter(Items.GOLD_NUGGET, ModItems.SILVER_NUGGET, ModItems.ALUMINUM_NUGGET);
+            itemGroup.addAfter(Items.GOLD_INGOT, ModItems.SILVER_INGOT, ModItems.ALUMINUM_INGOT);
             itemGroup.addAfter(Items.SUGAR, ModItems.SALT);
+            itemGroup.addBefore(Items.WHITE_DYE, ModItems.VERDANT_VINE, ModItems.CRIMSON_SPINE,
+                    ModItems.ROSEITE_CRYSTAL, ModItems.ROSEITE_BEAD);
         });
 
-        ItemGroupEvents.modifyEntriesEvent(ItemGroups.BUILDING_BLOCKS).register((itemGroup) -> {
-            itemGroup.addBefore(Items.GOLD_BLOCK, ModBlocks.STEEL_BLOCK);
-            itemGroup.addBefore(Items.REDSTONE_BLOCK, ModBlocks.SILVER_BLOCK);
-            itemGroup.addAfter(Items.NETHERITE_BLOCK, ModBlocks.SALT_BLOCK);
-        });
-
-        ItemGroupEvents.modifyEntriesEvent(ItemGroups.FOOD_AND_DRINK).register((itemGroup) -> {
-            itemGroup.addAfter(Items.DRIED_KELP, ModItems.VERDANT_VINE);
+        ItemGroupEvents.modifyEntriesEvent(ItemGroups.SPAWN_EGGS).register((itemGroup) -> {
+            // Alphabetized
+            itemGroup.addAfter(Items.MAGMA_CUBE_SPAWN_EGG, ModItems.MIDNIGHT_CREATURE_SPAWN_EGG);
         });
 
         ItemGroupEvents.modifyEntriesEvent(moddedItemsItemGroupKey).register((itemGroup) -> {
-            // Only include the highlight items/blocks here
-            itemGroup.add(ModItems.DEAD_SPORES_BUCKET);
+            // For now, this item group should only contain important items
+
+            // Spore Buckets
             itemGroup.add(ModItems.VERDANT_SPORES_BUCKET);
             itemGroup.add(ModItems.CRIMSON_SPORES_BUCKET);
             itemGroup.add(ModItems.ZEPHYR_SPORES_BUCKET);
             itemGroup.add(ModItems.SUNLIGHT_SPORES_BUCKET);
             itemGroup.add(ModItems.ROSEITE_SPORES_BUCKET);
             itemGroup.add(ModItems.MIDNIGHT_SPORES_BUCKET);
+            itemGroup.add(ModItems.DEAD_SPORES_BUCKET);
 
+            // Spore Growth Blocks
             itemGroup.add(ModBlocks.VERDANT_VINE_BLOCK);
             itemGroup.add(ModBlocks.VERDANT_VINE_BRANCH);
             itemGroup.add(ModBlocks.VERDANT_VINE_SNARE);
             itemGroup.add(ModBlocks.TWISTING_VERDANT_VINES);
+            itemGroup.add(ModBlocks.CRIMSON_GROWTH);
+            itemGroup.add(ModBlocks.CRIMSON_SPIKE);
+            itemGroup.add(ModBlocks.CRIMSON_SNARE);
+            itemGroup.add(ModBlocks.TALL_CRIMSON_SPINES);
+            itemGroup.add(ModBlocks.CRIMSON_SPINES);
+            itemGroup.add(ModBlocks.ROSEITE_BLOCK);
+            itemGroup.add(ModBlocks.ROSEITE_STAIRS);
+            itemGroup.add(ModBlocks.ROSEITE_SLAB);
+            itemGroup.add(ModBlocks.ROSEITE_CLUSTER);
+            itemGroup.add(ModBlocks.LARGE_ROSEITE_BUD);
+            itemGroup.add(ModBlocks.MEDIUM_ROSEITE_BUD);
+            itemGroup.add(ModBlocks.SMALL_ROSEITE_BUD);
+            itemGroup.add(ModBlocks.MIDNIGHT_ESSENCE);
+
+            // Metal Blocks
+            itemGroup.add(ModBlocks.SILVER_BLOCK);
+            itemGroup.add(ModBlocks.STEEL_BLOCK);
+            itemGroup.add(ModBlocks.ALUMINUM_BLOCK);
+            itemGroup.add(ModBlocks.ALUMINUM_SHEET);
+
+            // Blocks
+            itemGroup.add(ModBlocks.SALTSTONE);
+            itemGroup.add(ModBlocks.MAGMA_VENT);
+
+            // Tools
+            itemGroup.add(ModItems.SILVER_KNIFE);
+
+            // Ingredients
             itemGroup.add(ModItems.VERDANT_VINE);
             itemGroup.add(ModItems.CRIMSON_SPINE);
             itemGroup.add(ModItems.SALT);
             itemGroup.add(ModItems.SILVER_INGOT);
             itemGroup.add(ModItems.STEEL_INGOT);
             itemGroup.add(ModItems.ALUMINUM_INGOT);
-            itemGroup.add(ModItems.ALUMINUM_NUGGET);
-            itemGroup.add(ModBlocks.SALTSTONE);
-            itemGroup.add(ModBlocks.SILVER_BLOCK);
-            itemGroup.add(ModBlocks.STEEL_BLOCK);
-            itemGroup.add(ModBlocks.ALUMINUM_BLOCK);
-            itemGroup.add(ModBlocks.ALUMINUM_SHEET);
+            itemGroup.add(ModItems.ROSEITE_CRYSTAL);
+            itemGroup.add(ModItems.ROSEITE_BEAD);
 
-            itemGroup.add(ModItems.DEAD_SPORES_BOTTLE);
-            itemGroup.add(ModItems.DEAD_SPORES_SPLASH_BOTTLE);
+            // Spore Bottles
             itemGroup.add(ModItems.VERDANT_SPORES_BOTTLE);
             itemGroup.add(ModItems.VERDANT_SPORES_SPLASH_BOTTLE);
             itemGroup.add(ModItems.CRIMSON_SPORES_BOTTLE);
@@ -295,32 +392,11 @@ public final class ModItems {
             itemGroup.add(ModItems.ROSEITE_SPORES_SPLASH_BOTTLE);
             itemGroup.add(ModItems.MIDNIGHT_SPORES_BOTTLE);
             itemGroup.add(ModItems.MIDNIGHT_SPORES_SPLASH_BOTTLE);
+            itemGroup.add(ModItems.DEAD_SPORES_BOTTLE);
+            itemGroup.add(ModItems.DEAD_SPORES_SPLASH_BOTTLE);
 
-            itemGroup.add(ModBlocks.CRIMSON_GROWTH);
-            itemGroup.add(ModBlocks.CRIMSON_SPIKE);
-            itemGroup.add(ModBlocks.CRIMSON_SNARE);
-            itemGroup.add(ModBlocks.TALL_CRIMSON_SPINES);
-            itemGroup.add(ModBlocks.CRIMSON_SPINES);
-            itemGroup.add(ModBlocks.DEAD_CRIMSON_GROWTH);
-            itemGroup.add(ModBlocks.DEAD_CRIMSON_SPIKE);
-            itemGroup.add(ModBlocks.DEAD_CRIMSON_SNARE);
-            itemGroup.add(ModBlocks.DEAD_TALL_CRIMSON_SPINES);
-            itemGroup.add(ModBlocks.DEAD_CRIMSON_SPINES);
-            itemGroup.add(ModBlocks.MAGMA_VENT);
-            itemGroup.add(ModBlocks.ROSEITE_BLOCK);
-            itemGroup.add(ModBlocks.ROSEITE_STAIRS);
-            itemGroup.add(ModBlocks.ROSEITE_SLAB);
-            itemGroup.add(ModBlocks.ROSEITE_CLUSTER);
-            itemGroup.add(ModBlocks.LARGE_ROSEITE_BUD);
-            itemGroup.add(ModBlocks.MEDIUM_ROSEITE_BUD);
-            itemGroup.add(ModBlocks.SMALL_ROSEITE_BUD);
-            itemGroup.add(ModItems.ROSEITE_CRYSTAL);
-            itemGroup.add(ModItems.ROSEITE_BEAD);
-
+            // Spawn Eggs
             itemGroup.add(ModItems.MIDNIGHT_CREATURE_SPAWN_EGG);
-            itemGroup.add(ModBlocks.MIDNIGHT_ESSENCE);
-
-            itemGroup.add(ModItems.SILVER_KNIFE);
         });
     }
 
