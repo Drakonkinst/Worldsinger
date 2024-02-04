@@ -9,6 +9,17 @@
 * **FurbyMom22**: 2D Artist
     * Aether Spore Block Texture
 
+### Other Textures
+
+* u/SeiyoNoShogun
+    * Steel Block texture
+* _trbz (SimplySteel)
+    * Steel Ingot
+    * Crude Iron
+    * Steel Armor
+    * Steel Tools
+    * Flint and Steel Variants
+
 ## Attributions
 
 Best effort has been made to properly attribute software from external sources. Please raise an
