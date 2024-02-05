@@ -27,6 +27,12 @@ import com.google.common.base.Suppliers;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.drakonkinst.worldsinger.block.ModBlocks;
+import io.github.drakonkinst.worldsinger.cosmere.lumar.CrimsonSpores;
+import io.github.drakonkinst.worldsinger.cosmere.lumar.MidnightSpores;
+import io.github.drakonkinst.worldsinger.cosmere.lumar.RoseiteSpores;
+import io.github.drakonkinst.worldsinger.cosmere.lumar.SunlightSpores;
+import io.github.drakonkinst.worldsinger.cosmere.lumar.VerdantSpores;
+import io.github.drakonkinst.worldsinger.cosmere.lumar.ZephyrSpores;
 import io.github.drakonkinst.worldsinger.fluid.ModFluidTags;
 import io.github.drakonkinst.worldsinger.worldgen.dimension.CustomNoiseChunkGenerator;
 import java.util.function.Supplier;
@@ -44,7 +50,7 @@ import net.minecraft.world.gen.noise.NoiseConfig;
 
 public class LumarChunkGenerator extends CustomNoiseChunkGenerator {
 
-    public record SporeSeaEntry(String name, BlockState blockState, double x, double y) {}
+    public record SporeSeaEntry(int id, BlockState blockState, double x, double y) {}
 
     public static final int SEA_LEVEL = 80;
     public static final Block PLACEHOLDER_BLOCK = ModBlocks.DEAD_SPORE_SEA;
@@ -58,12 +64,18 @@ public class LumarChunkGenerator extends CustomNoiseChunkGenerator {
     private static final Supplier<FluidLevelSampler> SPORE_SEA_PLACEHOLDER = Suppliers.memoize(
             LumarChunkGenerator::createFluidLevelSampler);
     private static final SporeSeaEntry[] SPORE_SEA_ENTRIES = new SporeSeaEntry[] {
-            new SporeSeaEntry("verdant", ModBlocks.VERDANT_SPORE_SEA.getDefaultState(), -0.5, -0.1),
-            new SporeSeaEntry("crimson", ModBlocks.CRIMSON_SPORE_SEA.getDefaultState(), 0.0, -0.1),
-            new SporeSeaEntry("zephyr", ModBlocks.ZEPHYR_SPORE_SEA.getDefaultState(), -0.5, 0.1),
-            new SporeSeaEntry("sunlight", ModBlocks.SUNLIGHT_SPORE_SEA.getDefaultState(), 0.5, 0.1),
-            new SporeSeaEntry("roseite", ModBlocks.ROSEITE_SPORE_SEA.getDefaultState(), 0.0, 0.1),
-            new SporeSeaEntry("midnight", ModBlocks.MIDNIGHT_SPORE_SEA.getDefaultState(), 0.5, -0.1)
+            new SporeSeaEntry(VerdantSpores.ID, ModBlocks.VERDANT_SPORE_SEA.getDefaultState(), -0.5,
+                    -0.1),
+            new SporeSeaEntry(CrimsonSpores.ID, ModBlocks.CRIMSON_SPORE_SEA.getDefaultState(), 0.0,
+                    -0.1),
+            new SporeSeaEntry(ZephyrSpores.ID, ModBlocks.ZEPHYR_SPORE_SEA.getDefaultState(), -0.5,
+                    0.1),
+            new SporeSeaEntry(SunlightSpores.ID, ModBlocks.SUNLIGHT_SPORE_SEA.getDefaultState(),
+                    0.5, 0.1),
+            new SporeSeaEntry(RoseiteSpores.ID, ModBlocks.ROSEITE_SPORE_SEA.getDefaultState(), 0.0,
+                    0.1),
+            new SporeSeaEntry(MidnightSpores.ID, ModBlocks.MIDNIGHT_SPORE_SEA.getDefaultState(),
+                    0.5, -0.1)
     };
     private static final int SHIFT_X = 10000;
     private static final int SHIFT_Z = 10000;
@@ -75,11 +87,10 @@ public class LumarChunkGenerator extends CustomNoiseChunkGenerator {
     }
 
     public static BlockState getSporeSeaBlockAtPos(NoiseConfig noiseConfig, int x, int z) {
-        return LumarChunkGenerator.calculateSporeSeaEntryForPos(noiseConfig, x, z).blockState();
+        return LumarChunkGenerator.getSporeSeaEntryAtPos(noiseConfig, x, z).blockState();
     }
 
-    private static SporeSeaEntry calculateSporeSeaEntryForPos(NoiseConfig noiseConfig, int x,
-            int z) {
+    public static SporeSeaEntry getSporeSeaEntryAtPos(NoiseConfig noiseConfig, int x, int z) {
         DensityFunction temperature = noiseConfig.getNoiseRouter().temperature();
         double first = temperature.sample(new DensityFunction.UnblendedNoisePos(x, 0, z));
         double second = temperature.sample(

@@ -24,12 +24,17 @@
 package io.github.drakonkinst.worldsinger.command;
 
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.suggestion.SuggestionProvider;
+import io.github.drakonkinst.worldsinger.cosmere.lumar.AetherSpores;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+import net.minecraft.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
 
 public final class ModCommands {
 
     public static final int PERMISSION_LEVEL_GAMEMASTER = 2;
+    public static final SuggestionProvider<ServerCommandSource> AETHER_SPORE_TYPE_SUGGESTION_PROVIDER = (context, builder) -> CommandSource.suggestMatching(
+            AetherSpores.getAetherSporeMap().keySet(), builder);
 
     public static void initialize() {
         CommandRegistrationCallback.EVENT.register(

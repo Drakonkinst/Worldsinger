@@ -35,6 +35,7 @@
     "block.ShapeCacheMixin",
     "block.SlabBlockMixin",
     "block.WaterloggableMixin",
+    "command.LocateCommandMixin",
     "compat.smartbrainlib.ExtendedTargetingConditionsPatchMixin",
     "compat.smartbrainlib.FloatToSurfaceOfFluidMixin",
     "compat.smartbrainlib.NearbyLivingEntitySensorPatchMixin",
