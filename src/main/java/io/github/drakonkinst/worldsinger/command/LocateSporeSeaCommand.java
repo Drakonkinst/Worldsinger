@@ -38,6 +38,7 @@ import io.github.drakonkinst.worldsinger.util.BlockPosUtil;
 import io.github.drakonkinst.worldsinger.worldgen.dimension.ModDimensionTypes;
 import io.github.drakonkinst.worldsinger.worldgen.lumar.LumarChunkGenerator;
 import io.github.drakonkinst.worldsinger.worldgen.lumar.LumarChunkGenerator.SporeSeaEntry;
+import it.unimi.dsi.fastutil.ints.IntSet;
 import java.time.Duration;
 import java.util.Optional;
 import net.minecraft.command.argument.RegistryEntryArgumentType;
@@ -53,6 +54,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockPos.Mutable;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.Heightmap;
 import org.jetbrains.annotations.Nullable;
 
 // Not actually an actual command, but mixed into the vanilla /locate command
@@ -82,7 +84,7 @@ public class LocateSporeSeaCommand {
         BlockPos originPos = BlockPos.ofFloored(source.getPosition());
         Stopwatch stopwatch = Stopwatch.createStarted(Util.TICKER);
         Pair<BlockPos, SporeSeaEntry> result = LocateSporeSeaCommand.locateSporeSea(
-                source.getWorld(), originPos, 6400, 64, false, spores.getId());
+                source.getWorld(), originPos, 6400, 64, false, IntSet.of(spores.getId()));
         stopwatch.stop();
         if (result == null) {
             throw SPORE_SEA_NOT_FOUND_EXCEPTION.create(spores.getSeaDisplayName());
@@ -120,7 +122,7 @@ public class LocateSporeSeaCommand {
     @Nullable
     public static Pair<BlockPos, SporeSeaEntry> locateSporeSea(ServerWorld world, BlockPos origin,
             int radius, int horizontalBlockCheckInterval, boolean mustBeAboveSeaLevel,
-            int sporeId) {
+            IntSet filterSporeIds) {
         if (!world.getDimensionKey().equals(ModDimensionTypes.LUMAR)) {
             return null;
         }
@@ -131,13 +133,20 @@ public class LocateSporeSeaCommand {
             int z = origin.getZ() + mutable.getZ() * horizontalBlockCheckInterval;
             SporeSeaEntry entry = LumarChunkGenerator.getSporeSeaEntryAtPos(
                     world.getChunkManager().getNoiseConfig(), x, z);
-            if (entry.id() == sporeId) {
+            if (filterSporeIds.contains(entry.id())) {
                 if (mustBeAboveSeaLevel) {
-                    // TODO: Additional checks
+                    // TODO: Problem here is that this only works for loaded chunks. World#getTopY() returns the bottommost world position otherwise.
+                    // TODO: Perhaps look for places with high continentalness instead? Or locate a good starting biome like a saltstone island.
+                    int yPos = world.getTopY(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, x, z);
+                    if (yPos > LumarChunkGenerator.SEA_LEVEL) {
+                        return Pair.of(new BlockPos(x, yPos, z), entry);
+                    }
+                    continue;
                 }
                 return Pair.of(new BlockPos(x, LumarChunkGenerator.SEA_LEVEL, z), entry);
             }
         }
         return null;
     }
+
 }
