@@ -21,21 +21,26 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+
 package io.github.drakonkinst.worldsinger.world;
 
-import io.github.drakonkinst.worldsinger.worldgen.dimension.ModDimensions;
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
-import net.fabricmc.fabric.api.client.rendering.v1.DimensionRenderingRegistry;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.util.function.Supplier;
+import net.minecraft.world.PersistentState;
 
-public class ModDimensionRenderers {
+// A variation of PersistentState that stores a byte array instead of NBT
+public abstract class PersistentByteData extends PersistentState {
 
-    public static void initialize() {
+    public record ByteDataType<T extends PersistentState>(Supplier<T> constructor) {}
 
-        DimensionRenderingRegistry.registerDimensionEffects(ModDimensions.LUMAR,
-                new LumarDimensionEffects());
-        ClientLifecycleEvents.CLIENT_STARTED.register(client -> {
-            DimensionRenderingRegistry.registerSkyRenderer(ModDimensions.WORLD_LUMAR,
-                    new LumarSkyRenderer());
-        });
+    public abstract void loadBytes(ByteArrayInputStream in) throws IOException;
+
+    public abstract void saveBytesToFile(File file);
+
+    @Override
+    public void save(File file) {
+        saveBytesToFile(file);
     }
 }

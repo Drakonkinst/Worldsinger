@@ -131,7 +131,7 @@ public class LocateSporeSeaCommand {
     public static Pair<BlockPos, SporeSeaEntry> locateSporeSea(ServerWorld world, BlockPos origin,
             int radius, int horizontalBlockCheckInterval, boolean mustBeAboveSeaLevel,
             IntSet filterSporeIds, @Nullable Predicate<RegistryEntry<Biome>> biomePredicate) {
-        if (!world.getDimensionKey().equals(ModDimensions.LUMAR_DIMENSION)) {
+        if (!world.getDimensionKey().equals(ModDimensions.DIMENSION_TYPE_LUMAR)) {
             return null;
         }
         MultiNoiseSampler noiseSampler = world.getChunkManager()

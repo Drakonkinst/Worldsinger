@@ -25,7 +25,9 @@
 package io.github.drakonkinst.worldsinger.cosmere.lumar;
 
 import com.mojang.datafixers.util.Pair;
+import io.github.drakonkinst.worldsinger.Worldsinger;
 import io.github.drakonkinst.worldsinger.command.LocateSporeSeaCommand;
+import io.github.drakonkinst.worldsinger.world.PersistentByteData;
 import io.github.drakonkinst.worldsinger.worldgen.ModBiomes;
 import io.github.drakonkinst.worldsinger.worldgen.lumar.LumarChunkGenerator.SporeSeaEntry;
 import it.unimi.dsi.fastutil.ints.IntArraySet;
@@ -33,18 +35,22 @@ import it.unimi.dsi.fastutil.ints.IntIntPair;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.BufferUnderflowException;
-import java.nio.ByteBuffer;
 import java.util.Optional;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 
-public class LunagreeManager {
+public class LunagreeManager extends PersistentByteData {
 
     public static final float TRAVEL_DISTANCE = 1000.0f;
+    public static final String NAME = "lunagrees";
 
     private static final IntSet VALID_SPORE_IDS = IntSet.of(DeadSpores.ID, VerdantSpores.ID,
             CrimsonSpores.ID, ZephyrSpores.ID, SunlightSpores.ID, RoseiteSpores.ID,
@@ -52,6 +58,55 @@ public class LunagreeManager {
     // Associative array of direction vector offsets for axial hex coordinates
     private static final int[] DIRECTION_Q = { +1, +1, +0, -1, -1, +0 };
     private static final int[] DIRECTION_R = { +0, -1, -1, +0, +1, +1 };
+
+    public static ByteDataType<LunagreeManager> getPersistentByteDataType(ServerWorld world) {
+        return new ByteDataType<>(() -> new LunagreeManager(world));
+    }
+
+    // Does not use NBT
+    @Override
+    public NbtCompound writeNbt(NbtCompound nbt) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void saveBytesToFile(File file) {
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        DataOutputStream out = new DataOutputStream(bos);
+        try {
+            for (Long2ObjectMap.Entry<LunagreeLocation> entry : lunagreeMap.long2ObjectEntrySet()) {
+                LunagreeLocation value = entry.getValue();
+                out.writeLong(entry.getLongKey());
+                out.writeInt(value.blockX());
+                out.writeInt(value.blockZ());
+                out.write(value.sporeId());
+            }
+            out.close();
+            FileOutputStream fileOutputStream = new FileOutputStream(file);
+            bos.writeTo(fileOutputStream);
+            fileOutputStream.close();
+        } catch (IOException e) {
+            Worldsinger.LOGGER.error("Could not save data {}", this, e);
+        }
+    }
+
+    @Override
+    public void loadBytes(ByteArrayInputStream bytes) {
+        DataInputStream in = new DataInputStream(bytes);
+        try {
+            while (in.available() > 0) {
+                long key = in.readLong();
+                int blockX = in.readInt();
+                int blockZ = in.readInt();
+                int sporeId = in.read();
+                lunagreeMap.put(key, new LunagreeLocation(blockX, blockZ, sporeId));
+            }
+            in.close();
+        } catch (IOException e) {
+            Worldsinger.LOGGER.error("Error loading saved data: {}", this, e);
+        }
+
+    }
 
     public record LunagreeLocation(int blockX, int blockZ, int sporeId) {
 
@@ -140,39 +195,7 @@ public class LunagreeManager {
         // Store it in the map
         long key = LunagreeManager.toKey(q, r);
         lunagreeMap.put(key, entry);
+        this.markDirty();
         return Optional.of(entry);
-    }
-
-    private void readFromBuffer(ByteBuffer buffer) {
-        try {
-            while (buffer.hasRemaining()) {
-                long key = buffer.getLong();
-                int blockX = buffer.getInt();
-                int blockZ = buffer.getInt();
-                byte sporeId = buffer.get();
-                lunagreeMap.put(key, new LunagreeLocation(blockX, blockZ, sporeId));
-            }
-        } catch (BufferUnderflowException e) {
-            // TODO
-        }
-
-    }
-
-    private void writeToBuffer() {
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        DataOutputStream out = new DataOutputStream(bos);
-        try {
-            for (Long2ObjectMap.Entry<LunagreeLocation> entry : lunagreeMap.long2ObjectEntrySet()) {
-                LunagreeLocation value = entry.getValue();
-                out.writeLong(entry.getLongKey());
-                out.writeInt(value.blockX());
-                out.writeInt(value.blockZ());
-                out.write(value.sporeId());
-            }
-            out.close();
-        } catch (IOException e) {
-            // TODO
-        }
-        // Then call bos.writeTo(fileOutputStream)
     }
 }

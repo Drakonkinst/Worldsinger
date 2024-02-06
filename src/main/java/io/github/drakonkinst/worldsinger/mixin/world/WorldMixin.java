@@ -42,7 +42,7 @@ public abstract class WorldMixin {
 
     @ModifyReturnValue(method = "getRainGradient", at = @At("RETURN"))
     private float removeCustomDimensionRainGradient(float originalValue) {
-        if (this.dimension.equals(ModDimensions.LUMAR_DIMENSION)) {
+        if (this.dimension.equals(ModDimensions.DIMENSION_TYPE_LUMAR)) {
             return 0.0f;
         }
         return originalValue;
@@ -50,7 +50,7 @@ public abstract class WorldMixin {
 
     @ModifyReturnValue(method = "getThunderGradient", at = @At("RETURN"))
     private float removeCustomDimensionThunderGradient(float originalValue) {
-        if (this.dimension.equals(ModDimensions.LUMAR_DIMENSION)) {
+        if (this.dimension.equals(ModDimensions.DIMENSION_TYPE_LUMAR)) {
             return 0.0f;
         }
         return originalValue;

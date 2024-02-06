@@ -55,7 +55,7 @@ public abstract class ShipwreckGeneratorPieceMixin {
         if (world.getDimension()
                 .equals(world.getRegistryManager()
                         .get(RegistryKeys.DIMENSION_TYPE)
-                        .get(ModDimensions.LUMAR_DIMENSION))) {
+                        .get(ModDimensions.DIMENSION_TYPE_LUMAR))) {
             Identifier identifier = LUMAR_LOOT_TABLES.get(metadata);
             if (identifier != null) {
                 LootableInventory.setLootTable(world, random, pos.down(), identifier);

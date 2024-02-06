@@ -36,9 +36,9 @@ import net.minecraft.world.dimension.DimensionType;
 public class ModDimensions {
 
     public static final Identifier LUMAR = Worldsinger.id("lumar");
-    public static final RegistryKey<DimensionType> LUMAR_DIMENSION = ModDimensions.registerDimension(
+    public static final RegistryKey<DimensionType> DIMENSION_TYPE_LUMAR = ModDimensions.registerDimension(
             LUMAR);
-    public static final RegistryKey<World> LUMAR_WORLD = ModDimensions.registerWorld(LUMAR);
+    public static final RegistryKey<World> WORLD_LUMAR = ModDimensions.registerWorld(LUMAR);
 
     public static void initialize() {
         Registry.register(Registries.CHUNK_GENERATOR, Worldsinger.id("lumar"),

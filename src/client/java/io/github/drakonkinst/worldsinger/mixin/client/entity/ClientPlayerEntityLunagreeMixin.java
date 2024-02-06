@@ -26,21 +26,36 @@ package io.github.drakonkinst.worldsinger.mixin.client.entity;
 import com.mojang.authlib.GameProfile;
 import io.github.drakonkinst.worldsinger.cosmere.LunagreeData;
 import io.github.drakonkinst.worldsinger.entity.LunagreeDataAccess;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
+import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.client.recipebook.ClientRecipeBook;
 import net.minecraft.client.world.ClientWorld;
+import net.minecraft.stat.StatHandler;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ClientPlayerEntity.class)
 public abstract class ClientPlayerEntityLunagreeMixin extends AbstractClientPlayerEntity implements
         LunagreeDataAccess {
 
     @Unique
-    private final LunagreeData lunagreeData = new LunagreeData();
+    private LunagreeData lunagreeData;
 
     public ClientPlayerEntityLunagreeMixin(ClientWorld world, GameProfile profile) {
         super(world, profile);
+        throw new UnsupportedOperationException();
+    }
+
+    @Inject(method = "<init>", at = @At("TAIL"))
+    private void initializeLunagreeData(MinecraftClient client, ClientWorld world,
+            ClientPlayNetworkHandler networkHandler, StatHandler stats, ClientRecipeBook recipeBook,
+            boolean lastSneaking, boolean lastSprinting, CallbackInfo ci) {
+        lunagreeData = new LunagreeData();
     }
 
     @Override

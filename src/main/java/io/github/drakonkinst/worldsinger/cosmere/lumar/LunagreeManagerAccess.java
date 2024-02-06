@@ -21,21 +21,10 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.github.drakonkinst.worldsinger.world;
 
-import io.github.drakonkinst.worldsinger.worldgen.dimension.ModDimensions;
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
-import net.fabricmc.fabric.api.client.rendering.v1.DimensionRenderingRegistry;
+package io.github.drakonkinst.worldsinger.cosmere.lumar;
 
-public class ModDimensionRenderers {
+public interface LunagreeManagerAccess {
 
-    public static void initialize() {
-
-        DimensionRenderingRegistry.registerDimensionEffects(ModDimensions.LUMAR,
-                new LumarDimensionEffects());
-        ClientLifecycleEvents.CLIENT_STARTED.register(client -> {
-            DimensionRenderingRegistry.registerSkyRenderer(ModDimensions.WORLD_LUMAR,
-                    new LumarSkyRenderer());
-        });
-    }
+    LunagreeManager worldsinger$getLunagreeManager();
 }

@@ -110,7 +110,7 @@ public final class ModEntityTypes {
             SpawnReason spawnReason, BlockPos pos, Random random) {
         DimensionType lumarDimension = world.getRegistryManager()
                 .get(RegistryKeys.DIMENSION_TYPE)
-                .get(ModDimensions.LUMAR_DIMENSION);
+                .get(ModDimensions.DIMENSION_TYPE_LUMAR);
         if (lumarDimension != null && lumarDimension.equals(world.getDimension())) {
             return world.getBlockState(pos.down()).isIn(ModBlockTags.SEAGULLS_SPAWNABLE_ON)
                     && world.getBaseLightLevel(pos, 0) > 8;
