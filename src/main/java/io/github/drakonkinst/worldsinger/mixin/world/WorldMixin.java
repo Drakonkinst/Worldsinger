@@ -24,7 +24,7 @@
 package io.github.drakonkinst.worldsinger.mixin.world;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
-import io.github.drakonkinst.worldsinger.worldgen.dimension.ModDimensionTypes;
+import io.github.drakonkinst.worldsinger.worldgen.dimension.ModDimensions;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
@@ -42,7 +42,7 @@ public abstract class WorldMixin {
 
     @ModifyReturnValue(method = "getRainGradient", at = @At("RETURN"))
     private float removeCustomDimensionRainGradient(float originalValue) {
-        if (this.dimension.equals(ModDimensionTypes.LUMAR)) {
+        if (this.dimension.equals(ModDimensions.LUMAR_DIMENSION)) {
             return 0.0f;
         }
         return originalValue;
@@ -50,7 +50,7 @@ public abstract class WorldMixin {
 
     @ModifyReturnValue(method = "getThunderGradient", at = @At("RETURN"))
     private float removeCustomDimensionThunderGradient(float originalValue) {
-        if (this.dimension.equals(ModDimensionTypes.LUMAR)) {
+        if (this.dimension.equals(ModDimensions.LUMAR_DIMENSION)) {
             return 0.0f;
         }
         return originalValue;

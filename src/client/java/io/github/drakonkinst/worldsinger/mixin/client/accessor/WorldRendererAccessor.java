@@ -21,18 +21,22 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.github.drakonkinst.worldsinger.dimension;
 
-import io.github.drakonkinst.worldsinger.mixin.client.accessor.DimensionEffectsAccessor;
-import io.github.drakonkinst.worldsinger.worldgen.dimension.ModDimensionTypes;
-import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
-import net.minecraft.client.render.DimensionEffects;
-import net.minecraft.util.Identifier;
+package io.github.drakonkinst.worldsinger.mixin.client.accessor;
 
-public class ModDimensionEffects {
+import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.render.WorldRenderer;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.gen.Invoker;
 
-    public static void initialize() {
-        Object2ObjectMap<Identifier, DimensionEffects> dimensionEffectsMap = DimensionEffectsAccessor.worldsinger$getDimensionEffectsMap();
-        dimensionEffectsMap.put(ModDimensionTypes.LUMAR_ID, new LumarDimensionEffects());
+@Mixin(WorldRenderer.class)
+public interface WorldRendererAccessor {
+
+    @Invoker("renderSky")
+    static BufferBuilder.BuiltBuffer worldsinger$renderSky(BufferBuilder builder, float f) {
+        throw new UnsupportedOperationException();
     }
+
+    @Invoker("renderStars")
+    BufferBuilder.BuiltBuffer worldsinger$renderStars(BufferBuilder builder);
 }

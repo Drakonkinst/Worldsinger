@@ -21,19 +21,21 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.github.drakonkinst.worldsinger.mixin.client.accessor;
+package io.github.drakonkinst.worldsinger.dimension;
 
-import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
-import net.minecraft.client.render.DimensionEffects;
-import net.minecraft.util.Identifier;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.gen.Accessor;
+import io.github.drakonkinst.worldsinger.worldgen.dimension.ModDimensions;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
+import net.fabricmc.fabric.api.client.rendering.v1.DimensionRenderingRegistry;
 
-@Mixin(DimensionEffects.class)
-public interface DimensionEffectsAccessor {
+public class ModDimensionRenderers {
 
-    @Accessor("BY_IDENTIFIER")
-    static Object2ObjectMap<Identifier, DimensionEffects> worldsinger$getDimensionEffectsMap() {
-        throw new UnsupportedOperationException();
+    public static void initialize() {
+
+        DimensionRenderingRegistry.registerDimensionEffects(ModDimensions.LUMAR,
+                new LumarDimensionEffects());
+        ClientLifecycleEvents.CLIENT_STARTED.register(client -> {
+            DimensionRenderingRegistry.registerSkyRenderer(ModDimensions.LUMAR_WORLD,
+                    new LumarSkyRenderer());
+        });
     }
 }

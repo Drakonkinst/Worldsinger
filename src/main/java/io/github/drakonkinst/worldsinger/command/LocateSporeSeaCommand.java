@@ -35,7 +35,7 @@ import io.github.drakonkinst.worldsinger.Worldsinger;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.AetherSpores;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.DeadSpores;
 import io.github.drakonkinst.worldsinger.util.BlockPosUtil;
-import io.github.drakonkinst.worldsinger.worldgen.dimension.ModDimensionTypes;
+import io.github.drakonkinst.worldsinger.worldgen.dimension.ModDimensions;
 import io.github.drakonkinst.worldsinger.worldgen.lumar.LumarChunkGenerator;
 import io.github.drakonkinst.worldsinger.worldgen.lumar.LumarChunkGenerator.SporeSeaEntry;
 import it.unimi.dsi.fastutil.ints.IntSet;
@@ -131,7 +131,7 @@ public class LocateSporeSeaCommand {
     public static Pair<BlockPos, SporeSeaEntry> locateSporeSea(ServerWorld world, BlockPos origin,
             int radius, int horizontalBlockCheckInterval, boolean mustBeAboveSeaLevel,
             IntSet filterSporeIds, @Nullable Predicate<RegistryEntry<Biome>> biomePredicate) {
-        if (!world.getDimensionKey().equals(ModDimensionTypes.LUMAR)) {
+        if (!world.getDimensionKey().equals(ModDimensions.LUMAR_DIMENSION)) {
             return null;
         }
         MultiNoiseSampler noiseSampler = world.getChunkManager()

@@ -30,19 +30,26 @@ import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.util.Identifier;
+import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
 
-public class ModDimensionTypes {
+public class ModDimensions {
 
-    public static final RegistryKey<DimensionType> LUMAR = ModDimensionTypes.of("lumar");
-    public static final Identifier LUMAR_ID = Worldsinger.id("lumar");
+    public static final Identifier LUMAR = Worldsinger.id("lumar");
+    public static final RegistryKey<DimensionType> LUMAR_DIMENSION = ModDimensions.registerDimension(
+            LUMAR);
+    public static final RegistryKey<World> LUMAR_WORLD = ModDimensions.registerWorld(LUMAR);
 
     public static void initialize() {
         Registry.register(Registries.CHUNK_GENERATOR, Worldsinger.id("lumar"),
                 LumarChunkGenerator.CODEC);
     }
 
-    private static RegistryKey<DimensionType> of(String id) {
-        return RegistryKey.of(RegistryKeys.DIMENSION_TYPE, Worldsinger.id(id));
+    private static RegistryKey<DimensionType> registerDimension(Identifier id) {
+        return RegistryKey.of(RegistryKeys.DIMENSION_TYPE, id);
+    }
+
+    private static RegistryKey<World> registerWorld(Identifier id) {
+        return RegistryKey.of(RegistryKeys.WORLD, id);
     }
 }
