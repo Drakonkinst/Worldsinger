@@ -33,6 +33,7 @@ import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.ShaderProgram;
 import net.minecraft.client.gl.VertexBuffer;
+import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.BackgroundRenderer;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.BufferRenderer;
@@ -47,6 +48,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
 import net.minecraft.util.math.Vec3d;
+import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
 
 public class LumarSkyRenderer implements SkyRenderer {
@@ -102,6 +104,8 @@ public class LumarSkyRenderer implements SkyRenderer {
         final Camera camera = context.camera();
         final GameRenderer gameRenderer = context.gameRenderer();
         final ClientWorld world = context.world();
+        final ClientPlayerEntity player = MinecraftClient.getInstance().player;
+        assert (player != null);
 
         Vec3d skyColor = world.getSkyColor(gameRenderer.getCamera().getPos(), tickDelta);
         float red = (float) skyColor.x;
@@ -130,15 +134,14 @@ public class LumarSkyRenderer implements SkyRenderer {
         this.drawSun(bufferBuilder, matrices);
         this.drawStars(matrices, projectionMatrix, world, gameRenderer, camera, tickDelta);
         matrices.pop();
-        this.drawMoons(bufferBuilder, matrices);
+        this.drawMoons(bufferBuilder, matrices, player, tickDelta);
         RenderSystem.disableBlend();
         RenderSystem.defaultBlendFunc();
 
         // Draw dark sky
-        this.drawDarkSky(matrices, projectionMatrix, shaderProgram, world, tickDelta);
+        this.drawDarkSky(matrices, projectionMatrix, shaderProgram, world, tickDelta, player);
 
         RenderSystem.depthMask(true);
-
     }
 
     private void drawSun(BufferBuilder bufferBuilder, MatrixStack matrices) {
@@ -161,30 +164,48 @@ public class LumarSkyRenderer implements SkyRenderer {
         BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
     }
 
-    private void drawMoons(BufferBuilder bufferBuilder, MatrixStack matrices) {
-        float radius = 250.0f;
+    private void drawMoons(BufferBuilder bufferBuilder, MatrixStack matrices,
+            @NotNull ClientPlayerEntity player, float tickDelta) {
         RenderSystem.setShaderTexture(0, LUMAR_MOON);
-        int moonPhase = this.getMoonTextureIndex();
-        int xIndex = moonPhase % MOON_TEXTURE_SECTIONS_X;
-        int yIndex = moonPhase / MOON_TEXTURE_SECTIONS_X % MOON_TEXTURE_SECTIONS_Y;
-        float t = (float) xIndex / MOON_TEXTURE_SECTIONS_X;
-        float o = (float) yIndex / MOON_TEXTURE_SECTIONS_Y;
-        float p = (float) (xIndex + 1) / MOON_TEXTURE_SECTIONS_X;
-        float q = (float) (yIndex + 1) / MOON_TEXTURE_SECTIONS_Y;
-        float moonHeight = -200.0f;
         matrices.push();
-        matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(180.0f));
-        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(45.0f));
-        matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(67.5f));
 
+        float radius = 250.0f;
+        float moonHeight = -100.0f;
+        Vec3d moonPos = Vec3d.ZERO;
+        Vec3d playerPos = player.getCameraPosVec(tickDelta);
+
+        drawMoon(bufferBuilder, matrices, 0, radius, moonHeight, 180.0f, 0, 0.0f);
+        // drawMoon(bufferBuilder, matrices, 1, radius, moonHeight, 180.0f, 45.0f + 180.0f, 70.0f);
+
+        matrices.pop();
+    }
+
+    private void drawMoon(BufferBuilder bufferBuilder, MatrixStack matrices, int moonIndex,
+            float radius, float height, float xRotation, float yRotation, float zRotation) {
+        int xIndex = moonIndex % MOON_TEXTURE_SECTIONS_X;
+        int yIndex = moonIndex / MOON_TEXTURE_SECTIONS_X % MOON_TEXTURE_SECTIONS_Y;
+        float x1 = (float) xIndex / MOON_TEXTURE_SECTIONS_X;
+        float y1 = (float) yIndex / MOON_TEXTURE_SECTIONS_Y;
+        float x2 = (float) (xIndex + 1) / MOON_TEXTURE_SECTIONS_X;
+        float y2 = (float) (yIndex + 1) / MOON_TEXTURE_SECTIONS_Y;
+
+        matrices.push();
+
+        // Position the moon
+        matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(xRotation));
+        // Horizontal position
+        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(yRotation));
+        // Vertical position (inverse)
+        matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(zRotation));
+
+        // Draw moon
         Matrix4f moonPosition = matrices.peek().getPositionMatrix();
         bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
-        bufferBuilder.vertex(moonPosition, -radius, moonHeight, radius).texture(p, q).next();
-        bufferBuilder.vertex(moonPosition, radius, moonHeight, radius).texture(t, q).next();
-        bufferBuilder.vertex(moonPosition, radius, moonHeight, -radius).texture(t, o).next();
-        bufferBuilder.vertex(moonPosition, -radius, moonHeight, -radius).texture(p, o).next();
+        bufferBuilder.vertex(moonPosition, -radius, height, radius).texture(x2, y2).next();
+        bufferBuilder.vertex(moonPosition, radius, height, radius).texture(x1, y2).next();
+        bufferBuilder.vertex(moonPosition, radius, height, -radius).texture(x1, y1).next();
+        bufferBuilder.vertex(moonPosition, -radius, height, -radius).texture(x2, y1).next();
         BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
-
         matrices.pop();
     }
 
@@ -260,10 +281,11 @@ public class LumarSkyRenderer implements SkyRenderer {
     }
 
     private void drawDarkSky(MatrixStack matrices, Matrix4f projectionMatrix,
-            ShaderProgram shaderProgram, ClientWorld world, float tickDelta) {
+            ShaderProgram shaderProgram, ClientWorld world, float tickDelta,
+            @NotNull ClientPlayerEntity player) {
         RenderSystem.setShaderColor(0.0f, 0.0f, 0.0f, 1.0f);
-        double skyDarknessHeight = MinecraftClient.getInstance().player.getCameraPosVec(tickDelta).y
-                - world.getLevelProperties().getSkyDarknessHeight(world);
+        double skyDarknessHeight = player.getCameraPosVec(tickDelta).y - world.getLevelProperties()
+                .getSkyDarknessHeight(world);
         if (skyDarknessHeight < 0.0) {
             matrices.push();
             matrices.translate(0.0f, 12.0f, 0.0f);
