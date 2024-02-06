@@ -21,28 +21,30 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.github.drakonkinst.worldsinger.dimension;
+package io.github.drakonkinst.worldsinger.mixin.client.entity;
 
-import io.github.drakonkinst.worldsinger.registry.ModClientEnums;
-import net.minecraft.client.render.DimensionEffects;
-import net.minecraft.util.math.Vec3d;
+import com.mojang.authlib.GameProfile;
+import io.github.drakonkinst.worldsinger.cosmere.LunagreeData;
+import io.github.drakonkinst.worldsinger.entity.LunagreeDataAccess;
+import net.minecraft.client.network.AbstractClientPlayerEntity;
+import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.client.world.ClientWorld;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 
-public class LumarDimensionEffects extends DimensionEffects {
+@Mixin(ClientPlayerEntity.class)
+public abstract class ClientPlayerEntityLunagreeMixin extends AbstractClientPlayerEntity implements
+        LunagreeDataAccess {
 
-    private static final float CLOUD_HEIGHT = 384.0f;
+    @Unique
+    private final LunagreeData lunagreeData = new LunagreeData();
 
-    public LumarDimensionEffects() {
-        super(CLOUD_HEIGHT, true, ModClientEnums.SkyType.LUMAR, false, false);
+    public ClientPlayerEntityLunagreeMixin(ClientWorld world, GameProfile profile) {
+        super(world, profile);
     }
 
     @Override
-    public Vec3d adjustFogColor(Vec3d color, float sunHeight) {
-        return color.multiply(sunHeight * 0.94f + 0.06f, sunHeight * 0.94f + 0.06f,
-                sunHeight * 0.91f + 0.09f);
-    }
-
-    @Override
-    public boolean useThickFog(int camX, int camY) {
-        return false;
+    public LunagreeData worldsinger$getLunagreeData() {
+        return lunagreeData;
     }
 }

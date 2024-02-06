@@ -22,11 +22,15 @@
  * SOFTWARE.
  */
 
-package io.github.drakonkinst.worldsinger.dimension;
+package io.github.drakonkinst.worldsinger.world;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.drakonkinst.worldsinger.Worldsinger;
+import io.github.drakonkinst.worldsinger.cosmere.LunagreeData;
+import io.github.drakonkinst.worldsinger.cosmere.LunagreeData.LunagreeLocation;
+import io.github.drakonkinst.worldsinger.cosmere.lumar.LunagreeManager;
+import io.github.drakonkinst.worldsinger.entity.LunagreeDataAccess;
 import io.github.drakonkinst.worldsinger.mixin.client.accessor.WorldRendererAccessor;
 import net.fabricmc.fabric.api.client.rendering.v1.DimensionRenderingRegistry.SkyRenderer;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext;
@@ -61,6 +65,7 @@ public class LumarSkyRenderer implements SkyRenderer {
 
     private static final float SUN_RADIUS = 30.0f;
     private static final float SUN_HEIGHT = 100.0f;
+    private static final int[] SPORE_ID_TO_MOON_INDEX = { -1, 0, 1, 2, 4, 5, 6 };
 
     private final VertexBuffer starsBuffer;
     private final VertexBuffer lightSkyBuffer;
@@ -169,19 +174,47 @@ public class LumarSkyRenderer implements SkyRenderer {
         RenderSystem.setShaderTexture(0, LUMAR_MOON);
         matrices.push();
 
-        float radius = 250.0f;
-        float moonHeight = -100.0f;
-        Vec3d moonPos = Vec3d.ZERO;
-        Vec3d playerPos = player.getCameraPosVec(tickDelta);
+        final LunagreeData lunagreeData = ((LunagreeDataAccess) player).worldsinger$getLunagreeData();
+        final Vec3d playerPos = player.getCameraPosVec(tickDelta);
+        for (LunagreeLocation location : lunagreeData.getKnownLunagreeLocations()) {
+            final double distSq = location.distSqTo(playerPos.getX(), playerPos.getZ());
+            if (distSq > LunagreeManager.TRAVEL_DISTANCE * LunagreeManager.TRAVEL_DISTANCE) {
+                continue;
+            }
+            // Render moon
+            drawMoonAtLocation(bufferBuilder, matrices, location, distSq);
+        }
 
-        drawMoon(bufferBuilder, matrices, 0, radius, moonHeight, 180.0f, 0, 0.0f);
-        // drawMoon(bufferBuilder, matrices, 1, radius, moonHeight, 180.0f, 45.0f + 180.0f, 70.0f);
+        float radius = 250.0f;
+        float moonHeight = 100.0f;
+        Vec3d moonPos = Vec3d.ZERO;
+
+        drawMoon(bufferBuilder, matrices, 0, radius, moonHeight, 0.0f, 0.0f);
+        // drawMoon(bufferBuilder, matrices, 1, radius, moonHeight, 45.0f + 180.0f, 70.0f);
 
         matrices.pop();
     }
 
+    private void drawMoonAtLocation(BufferBuilder bufferBuilder, MatrixStack matrices,
+            LunagreeLocation lunagreeLocation, double distSq) {
+        final int sporeId = lunagreeLocation.sporeId();
+        if (sporeId < 0 || sporeId >= SPORE_ID_TO_MOON_INDEX.length) {
+            Worldsinger.LOGGER.warn("Cannot render lunagree with unknown spore ID " + sporeId);
+            return;
+        }
+        int moonIndex = SPORE_ID_TO_MOON_INDEX[sporeId];
+
+        float radius = 250.0f;
+        float moonHeight = 100.0f;
+        float horizontalAngle = 0.0f;
+        float verticalAngle = 0.0f;
+
+        drawMoon(bufferBuilder, matrices, moonIndex, radius, moonHeight, horizontalAngle,
+                verticalAngle);
+    }
+
     private void drawMoon(BufferBuilder bufferBuilder, MatrixStack matrices, int moonIndex,
-            float radius, float height, float xRotation, float yRotation, float zRotation) {
+            float radius, float height, float horizontalAngle, float verticalAngle) {
         int xIndex = moonIndex % MOON_TEXTURE_SECTIONS_X;
         int yIndex = moonIndex / MOON_TEXTURE_SECTIONS_X % MOON_TEXTURE_SECTIONS_Y;
         float x1 = (float) xIndex / MOON_TEXTURE_SECTIONS_X;
@@ -192,19 +225,22 @@ public class LumarSkyRenderer implements SkyRenderer {
         matrices.push();
 
         // Position the moon
-        matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(xRotation));
+        // TODO: Make a constant
+        matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(180.0f));
         // Horizontal position
-        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(yRotation));
+        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(horizontalAngle));
         // Vertical position (inverse)
-        matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(zRotation));
+        matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(-verticalAngle));
 
         // Draw moon
         Matrix4f moonPosition = matrices.peek().getPositionMatrix();
         bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
-        bufferBuilder.vertex(moonPosition, -radius, height, radius).texture(x2, y2).next();
-        bufferBuilder.vertex(moonPosition, radius, height, radius).texture(x1, y2).next();
-        bufferBuilder.vertex(moonPosition, radius, height, -radius).texture(x1, y1).next();
-        bufferBuilder.vertex(moonPosition, -radius, height, -radius).texture(x2, y1).next();
+        // Height needs to be inverted for some reason, don't know why. Maybe because we're flipping
+        // 180 degrees on the x-axis?
+        bufferBuilder.vertex(moonPosition, -radius, -height, radius).texture(x2, y2).next();
+        bufferBuilder.vertex(moonPosition, radius, -height, radius).texture(x1, y2).next();
+        bufferBuilder.vertex(moonPosition, radius, -height, -radius).texture(x1, y1).next();
+        bufferBuilder.vertex(moonPosition, -radius, -height, -radius).texture(x2, y1).next();
         BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
         matrices.pop();
     }
