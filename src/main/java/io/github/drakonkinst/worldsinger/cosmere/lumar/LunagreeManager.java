@@ -46,6 +46,7 @@ import java.util.Optional;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
+import org.apache.commons.io.FileUtils;
 
 public class LunagreeManager extends PersistentByteData {
 
@@ -71,9 +72,9 @@ public class LunagreeManager extends PersistentByteData {
 
     @Override
     public void saveBytesToFile(File file) {
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        DataOutputStream out = new DataOutputStream(bos);
         try {
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            DataOutputStream out = new DataOutputStream(bos);
             for (Long2ObjectMap.Entry<LunagreeLocation> entry : lunagreeMap.long2ObjectEntrySet()) {
                 LunagreeLocation value = entry.getValue();
                 out.writeLong(entry.getLongKey());
@@ -84,6 +85,7 @@ public class LunagreeManager extends PersistentByteData {
             out.close();
             FileOutputStream fileOutputStream = new FileOutputStream(file);
             bos.writeTo(fileOutputStream);
+            bos.close();
             fileOutputStream.close();
         } catch (IOException e) {
             Worldsinger.LOGGER.error("Could not save data {}", this, e);
@@ -91,9 +93,11 @@ public class LunagreeManager extends PersistentByteData {
     }
 
     @Override
-    public void loadBytes(ByteArrayInputStream bytes) {
-        DataInputStream in = new DataInputStream(bytes);
+    public void loadBytesFromFile(File file) {
         try {
+            ByteArrayInputStream byteStream = new ByteArrayInputStream(
+                    FileUtils.readFileToByteArray(file));
+            DataInputStream in = new DataInputStream(byteStream);
             while (in.available() > 0) {
                 long key = in.readLong();
                 int blockX = in.readInt();
@@ -102,10 +106,10 @@ public class LunagreeManager extends PersistentByteData {
                 lunagreeMap.put(key, new LunagreeLocation(blockX, blockZ, sporeId));
             }
             in.close();
+            byteStream.close();
         } catch (IOException e) {
             Worldsinger.LOGGER.error("Error loading saved data: {}", this, e);
         }
-
     }
 
     public record LunagreeLocation(int blockX, int blockZ, int sporeId) {

@@ -24,17 +24,13 @@
 
 package io.github.drakonkinst.worldsinger.mixin.world;
 
-import io.github.drakonkinst.worldsinger.Worldsinger;
 import io.github.drakonkinst.worldsinger.world.PersistentByteData;
 import io.github.drakonkinst.worldsinger.world.PersistentByteData.ByteDataType;
 import io.github.drakonkinst.worldsinger.world.PersistentStateManagerAccess;
-import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.IOException;
 import java.util.Map;
 import net.minecraft.world.PersistentState;
 import net.minecraft.world.PersistentStateManager;
-import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -76,7 +72,6 @@ public abstract class PersistentStateManagerMixin implements PersistentStateMana
             persistentState = this.readBytesFromFile(type, id);
             this.loadedStates.put(id, persistentState);
         }
-
         return (T) persistentState;
     }
 
@@ -84,18 +79,11 @@ public abstract class PersistentStateManagerMixin implements PersistentStateMana
     @Nullable
     private <T extends PersistentByteData> T readBytesFromFile(ByteDataType<T> type, String id) {
         T data = type.constructor().get();
-        try {
-            File file = this.getFile(id);
-            if (file.exists()) {
-                ByteArrayInputStream in = new ByteArrayInputStream(
-                        FileUtils.readFileToByteArray(file));
-                data.loadBytes(in);
-                in.close();
-            }
-        } catch (IOException e) {
-            Worldsinger.LOGGER.error("Error loading saved data: {}", id, e);
+        File file = this.getFile(id);
+        if (file.exists()) {
+            data.loadBytesFromFile(file);
+            return data;
         }
-
         return null;
     }
 }

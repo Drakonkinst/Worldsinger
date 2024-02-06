@@ -24,9 +24,7 @@
 
 package io.github.drakonkinst.worldsinger.world;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.IOException;
 import java.util.function.Supplier;
 import net.minecraft.world.PersistentState;
 
@@ -35,7 +33,7 @@ public abstract class PersistentByteData extends PersistentState {
 
     public record ByteDataType<T extends PersistentState>(Supplier<T> constructor) {}
 
-    public abstract void loadBytes(ByteArrayInputStream in) throws IOException;
+    public abstract void loadBytesFromFile(File file);
 
     public abstract void saveBytesToFile(File file);
 
