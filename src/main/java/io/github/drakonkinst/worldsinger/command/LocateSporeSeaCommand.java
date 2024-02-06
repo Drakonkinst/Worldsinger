@@ -41,7 +41,9 @@ import io.github.drakonkinst.worldsinger.worldgen.lumar.LumarChunkGenerator.Spor
 import it.unimi.dsi.fastutil.ints.IntSet;
 import java.time.Duration;
 import java.util.Optional;
+import java.util.function.Predicate;
 import net.minecraft.command.argument.RegistryEntryArgumentType;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.ClickEvent;
@@ -55,6 +57,9 @@ import net.minecraft.util.math.BlockPos.Mutable;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.Heightmap;
+import net.minecraft.world.biome.Biome;
+import net.minecraft.world.biome.source.BiomeCoords;
+import net.minecraft.world.biome.source.util.MultiNoiseUtil.MultiNoiseSampler;
 import org.jetbrains.annotations.Nullable;
 
 // Not actually an actual command, but mixed into the vanilla /locate command
@@ -83,8 +88,11 @@ public class LocateSporeSeaCommand {
 
         BlockPos originPos = BlockPos.ofFloored(source.getPosition());
         Stopwatch stopwatch = Stopwatch.createStarted(Util.TICKER);
+        // Pair<BlockPos, SporeSeaEntry> result = LocateSporeSeaCommand.locateSporeSea(
+        //         source.getWorld(), originPos, 6400, 64, false, IntSet.of(spores.getId()),
+        //         biome -> ModBiomes.DEEP_SPORE_SEA.equals(biome.getKey().orElse(null)));
         Pair<BlockPos, SporeSeaEntry> result = LocateSporeSeaCommand.locateSporeSea(
-                source.getWorld(), originPos, 6400, 64, false, IntSet.of(spores.getId()));
+                source.getWorld(), originPos, 6400, 64, false, IntSet.of(spores.getId()), null);
         stopwatch.stop();
         if (result == null) {
             throw SPORE_SEA_NOT_FOUND_EXCEPTION.create(spores.getSeaDisplayName());
@@ -122,10 +130,13 @@ public class LocateSporeSeaCommand {
     @Nullable
     public static Pair<BlockPos, SporeSeaEntry> locateSporeSea(ServerWorld world, BlockPos origin,
             int radius, int horizontalBlockCheckInterval, boolean mustBeAboveSeaLevel,
-            IntSet filterSporeIds) {
+            IntSet filterSporeIds, @Nullable Predicate<RegistryEntry<Biome>> biomePredicate) {
         if (!world.getDimensionKey().equals(ModDimensionTypes.LUMAR)) {
             return null;
         }
+        MultiNoiseSampler noiseSampler = world.getChunkManager()
+                .getNoiseConfig()
+                .getMultiNoiseSampler();
         int cellRadius = Math.floorDiv(radius, horizontalBlockCheckInterval);
         for (Mutable mutable : BlockPos.iterateInSquare(BlockPos.ORIGIN, cellRadius, Direction.EAST,
                 Direction.SOUTH)) {
@@ -142,6 +153,17 @@ public class LocateSporeSeaCommand {
                         return Pair.of(new BlockPos(x, yPos, z), entry);
                     }
                     continue;
+                }
+                if (biomePredicate != null) {
+                    int biomeX = BiomeCoords.fromBlock(x);
+                    int biomeY = BiomeCoords.fromBlock(LumarChunkGenerator.SEA_LEVEL);
+                    int biomeZ = BiomeCoords.fromBlock(z);
+                    if (!biomePredicate.test(world.getChunkManager()
+                            .getChunkGenerator()
+                            .getBiomeSource()
+                            .getBiome(biomeX, biomeY, biomeZ, noiseSampler))) {
+                        continue;
+                    }
                 }
                 return Pair.of(new BlockPos(x, LumarChunkGenerator.SEA_LEVEL, z), entry);
             }
