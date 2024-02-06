@@ -182,21 +182,37 @@ public class LumarSkyRenderer implements SkyRenderer {
                 continue;
             }
             // Render moon
-            drawMoonAtLocation(bufferBuilder, matrices, location, distSq);
+            drawMoonAtLocation(bufferBuilder, matrices, location, playerPos, distSq);
         }
 
-        float radius = 250.0f;
-        float moonHeight = 100.0f;
         Vec3d moonPos = Vec3d.ZERO;
+        double deltaX = playerPos.getX() - moonPos.getX();
+        double deltaZ = playerPos.getZ() - moonPos.getZ();
+        double distSq = deltaX * deltaX + deltaZ * deltaZ;
+        float distance = MathHelper.sqrt((float) distSq);
+        float multiplier = distance / LunagreeManager.TRAVEL_DISTANCE;
 
-        drawMoon(bufferBuilder, matrices, 0, radius, moonHeight, 0.0f, 0.0f);
+        float radius = 300.0f;
+        // float moonHeight = 200.0f;  // Can go from 100.0 to 200.0f
+        float moonHeight = MathHelper.lerp(multiplier, 100.0f, 500.0f);
+
+        // For some reason we need to flip the Z coordinate here
+        double angleRadians = MathHelper.atan2(playerPos.getZ() - moonPos.getZ(),
+                moonPos.getX() - playerPos.getX());
+        float horizontalAngle = (float) angleRadians * MathHelper.DEGREES_PER_RADIAN;
+
+        float verticalAngle = MathHelper.lerp(multiplier, 180.0f, 45.0f);
+
+        drawMoon(bufferBuilder, matrices, 0, radius, moonHeight, horizontalAngle, verticalAngle);
         // drawMoon(bufferBuilder, matrices, 1, radius, moonHeight, 45.0f + 180.0f, 70.0f);
+        // Worldsinger.LOGGER.info(
+        //         multiplier + " " + moonHeight + " " + horizontalAngle + " " + verticalAngle);
 
         matrices.pop();
     }
 
     private void drawMoonAtLocation(BufferBuilder bufferBuilder, MatrixStack matrices,
-            LunagreeLocation lunagreeLocation, double distSq) {
+            LunagreeLocation lunagreeLocation, Vec3d playerPos, double distSq) {
         final int sporeId = lunagreeLocation.sporeId();
         if (sporeId < 0 || sporeId >= SPORE_ID_TO_MOON_INDEX.length) {
             Worldsinger.LOGGER.warn("Cannot render lunagree with unknown spore ID " + sporeId);
@@ -204,10 +220,19 @@ public class LumarSkyRenderer implements SkyRenderer {
         }
         int moonIndex = SPORE_ID_TO_MOON_INDEX[sporeId];
 
-        float radius = 250.0f;
+        // Calculate shrink factor
+        // TODO
+        float radius = 300.0f;
         float moonHeight = 100.0f;
-        float horizontalAngle = 0.0f;
+
+        // Calculate vertical angle
+        // TODO
         float verticalAngle = 0.0f;
+
+        // Calculate horizontal angle
+        double angleRadians = MathHelper.atan2(playerPos.getZ() - lunagreeLocation.blockZ(),
+                playerPos.getX() - lunagreeLocation.blockX());
+        float horizontalAngle = (float) angleRadians * MathHelper.DEGREES_PER_RADIAN;
 
         drawMoon(bufferBuilder, matrices, moonIndex, radius, moonHeight, horizontalAngle,
                 verticalAngle);
@@ -225,18 +250,16 @@ public class LumarSkyRenderer implements SkyRenderer {
         matrices.push();
 
         // Position the moon
-        // TODO: Make a constant
-        matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(180.0f));
-        // Horizontal position
+        // Horizontal position. 0 = West (-X) direction, then goes clockwise.
         matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(horizontalAngle));
-        // Vertical position (inverse)
-        matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(-verticalAngle));
+        // matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(verticalAngle));
+        // Vertical position. 180 = Directly upwards (+Y), 90 = Directly horizontal
+        matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(verticalAngle));
 
         // Draw moon
         Matrix4f moonPosition = matrices.peek().getPositionMatrix();
         bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
-        // Height needs to be inverted for some reason, don't know why. Maybe because we're flipping
-        // 180 degrees on the noiseX-axis?
+        // Height needs to be inverted for some reason, don't know why.
         bufferBuilder.vertex(moonPosition, -radius, -height, radius).texture(x2, y2).next();
         bufferBuilder.vertex(moonPosition, radius, -height, radius).texture(x1, y2).next();
         bufferBuilder.vertex(moonPosition, radius, -height, -radius).texture(x1, y1).next();

@@ -50,8 +50,11 @@ import org.apache.commons.io.FileUtils;
 
 public class LunagreeManager extends PersistentByteData {
 
-    public static final float TRAVEL_DISTANCE = 1000.0f;
     public static final String NAME = "lunagrees";
+    public static final float TRAVEL_DISTANCE = 2000.0f;
+    // CELL_SIZE should always be less than TRAVEL_DISTANCE. A fraction of this value should be
+    // used to spawn a lunagree.
+    public static final float CELL_SIZE = 1800.0f;
 
     private static final IntSet VALID_SPORE_IDS = IntSet.of(DeadSpores.ID, VerdantSpores.ID,
             CrimsonSpores.ID, ZephyrSpores.ID, SunlightSpores.ID, RoseiteSpores.ID,
