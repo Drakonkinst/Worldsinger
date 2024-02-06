@@ -50,7 +50,7 @@ import net.minecraft.world.gen.noise.NoiseConfig;
 
 public class LumarChunkGenerator extends CustomNoiseChunkGenerator {
 
-    public record SporeSeaEntry(int id, BlockState blockState, double x, double y) {}
+    public record SporeSeaEntry(int id, BlockState blockState, double noiseX, double noiseY) {}
 
     public static final int SEA_LEVEL = 80;
     public static final Block PLACEHOLDER_BLOCK = ModBlocks.DEAD_SPORE_SEA;
@@ -104,8 +104,8 @@ public class LumarChunkGenerator extends CustomNoiseChunkGenerator {
         SporeSeaEntry result = SPORE_SEA_ENTRIES[0];
 
         for (SporeSeaEntry entry : SPORE_SEA_ENTRIES) {
-            double deltaX = entry.x() - x;
-            double deltaY = entry.y() - y;
+            double deltaX = entry.noiseX() - x;
+            double deltaY = entry.noiseY() - y;
             double distSq = deltaX * deltaX + deltaY * deltaY;
             if (distSq < minDistSq) {
                 result = entry;

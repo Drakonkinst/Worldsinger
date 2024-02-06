@@ -28,8 +28,8 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.drakonkinst.worldsinger.Worldsinger;
 import io.github.drakonkinst.worldsinger.cosmere.LunagreeData;
-import io.github.drakonkinst.worldsinger.cosmere.LunagreeData.LunagreeLocation;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LunagreeManager;
+import io.github.drakonkinst.worldsinger.cosmere.lumar.LunagreeManager.LunagreeLocation;
 import io.github.drakonkinst.worldsinger.entity.LunagreeDataAccess;
 import io.github.drakonkinst.worldsinger.mixin.client.accessor.WorldRendererAccessor;
 import net.fabricmc.fabric.api.client.rendering.v1.DimensionRenderingRegistry.SkyRenderer;
@@ -236,7 +236,7 @@ public class LumarSkyRenderer implements SkyRenderer {
         Matrix4f moonPosition = matrices.peek().getPositionMatrix();
         bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
         // Height needs to be inverted for some reason, don't know why. Maybe because we're flipping
-        // 180 degrees on the x-axis?
+        // 180 degrees on the noiseX-axis?
         bufferBuilder.vertex(moonPosition, -radius, -height, radius).texture(x2, y2).next();
         bufferBuilder.vertex(moonPosition, radius, -height, radius).texture(x1, y2).next();
         bufferBuilder.vertex(moonPosition, radius, -height, -radius).texture(x1, y1).next();

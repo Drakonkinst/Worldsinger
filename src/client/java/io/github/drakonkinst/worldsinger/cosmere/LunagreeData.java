@@ -24,19 +24,11 @@
 
 package io.github.drakonkinst.worldsinger.cosmere;
 
+import io.github.drakonkinst.worldsinger.cosmere.lumar.LunagreeManager.LunagreeLocation;
 import java.util.ArrayList;
 import java.util.List;
 
 public class LunagreeData {
-
-    public record LunagreeLocation(int x, int z, int sporeId) {
-
-        public double distSqTo(double otherX, double otherZ) {
-            final double deltaX = x - otherX;
-            final double deltaZ = z - otherZ;
-            return deltaX * deltaX + deltaZ * deltaZ;
-        }
-    }
 
     private final List<LunagreeLocation> knownLunagreeLocations = new ArrayList<>();
 
