@@ -26,6 +26,7 @@ package io.github.drakonkinst.worldsinger.entity;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import org.apache.commons.lang3.NotImplementedException;
 
 // Contrary to the name, the component is not limited to being used just for boats
 // However, we don't want to store type information (max durability) in the component, so
@@ -51,5 +52,6 @@ public class SilverLinedBoatData extends SilverLinedEntityData {
     @Override
     public void sync() {
         // TODO
+        throw new NotImplementedException();
     }
 }
