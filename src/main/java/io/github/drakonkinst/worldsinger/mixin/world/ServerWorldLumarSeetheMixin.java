@@ -26,49 +26,47 @@ package io.github.drakonkinst.worldsinger.mixin.world;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarSeetheManager;
-import java.util.List;
-import java.util.concurrent.Executor;
-import net.fabricmc.fabric.api.attachment.v1.AttachmentTarget;
+import io.github.drakonkinst.worldsinger.cosmere.lumar.NullSeetheManager;
+import io.github.drakonkinst.worldsinger.worldgen.dimension.ModDimensions;
+import java.util.function.Supplier;
+import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.RegistryKey;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.WorldGenerationProgressListener;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.random.RandomSequencesState;
+import net.minecraft.util.profiler.Profiler;
+import net.minecraft.world.MutableWorldProperties;
 import net.minecraft.world.PersistentStateManager;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.World;
-import net.minecraft.world.dimension.DimensionOptions;
-import net.minecraft.world.level.ServerWorldProperties;
-import net.minecraft.world.level.storage.LevelStorage.Session;
-import net.minecraft.world.spawner.SpecialSpawner;
+import net.minecraft.world.dimension.DimensionType;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+@SuppressWarnings("UnstableApiUsage")
 @Mixin(ServerWorld.class)
 public abstract class ServerWorldLumarSeetheMixin extends WorldLumarMixin implements
-        StructureWorldAccess, AttachmentTarget {
+        StructureWorldAccess {
 
     @Shadow
     public abstract PersistentStateManager getPersistentStateManager();
 
-    @Unique
-    private LumarSeetheManager persistentSeetheManager;
-
-    @Inject(method = "<init>", at = @At("TAIL"))
-    private void initializeLumar(MinecraftServer server, Executor workerExecutor, Session session,
-            ServerWorldProperties properties, RegistryKey<World> worldKey,
-            DimensionOptions dimensionOptions,
-            WorldGenerationProgressListener worldGenerationProgressListener, boolean debugWorld,
-            long seed, List<SpecialSpawner> spawners, boolean shouldTickTime,
-            RandomSequencesState randomSequencesState, CallbackInfo ci) {
+    @Override
+    protected void worldsinger$initializeLumar(MutableWorldProperties properties,
+            RegistryKey<World> registryRef, DynamicRegistryManager registryManager,
+            RegistryEntry<DimensionType> dimensionEntry, Supplier<Profiler> profiler,
+            boolean isClient, boolean debugWorld, long biomeAccess, int maxChainedNeighborUpdates,
+            CallbackInfo ci) {
+        isLumar = registryRef.equals(ModDimensions.WORLD_LUMAR);
         if (isLumar) {
-            persistentSeetheManager = this.getPersistentStateManager()
+            // Create the seethe manager using PersistentState instead
+            seetheManager = this.getPersistentStateManager()
                     .getOrCreate(LumarSeetheManager.getPersistentStateType(),
                             LumarSeetheManager.NAME);
+        } else {
+            seetheManager = new NullSeetheManager();
         }
     }
 

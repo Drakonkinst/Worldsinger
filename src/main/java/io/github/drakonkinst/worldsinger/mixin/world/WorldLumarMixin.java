@@ -30,10 +30,11 @@ public abstract class WorldLumarMixin implements WorldAccess, AutoCloseable, See
     protected SeetheManager seetheManager;
 
     @Inject(method = "<init>", at = @At("TAIL"))
-    private void initializeLumar(MutableWorldProperties properties, RegistryKey<World> registryRef,
-            DynamicRegistryManager registryManager, RegistryEntry<DimensionType> dimensionEntry,
-            Supplier<Profiler> profiler, boolean isClient, boolean debugWorld, long biomeAccess,
-            int maxChainedNeighborUpdates, CallbackInfo ci) {
+    protected void worldsinger$initializeLumar(MutableWorldProperties properties,
+            RegistryKey<World> registryRef, DynamicRegistryManager registryManager,
+            RegistryEntry<DimensionType> dimensionEntry, Supplier<Profiler> profiler,
+            boolean isClient, boolean debugWorld, long biomeAccess, int maxChainedNeighborUpdates,
+            CallbackInfo ci) {
         isLumar = registryRef.equals(ModDimensions.WORLD_LUMAR);
         if (isLumar) {
             seetheManager = new LumarSeetheManager();
