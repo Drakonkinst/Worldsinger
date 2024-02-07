@@ -30,6 +30,7 @@ import net.minecraft.util.math.intprovider.IntProvider;
 import net.minecraft.util.math.intprovider.UniformIntProvider;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.PersistentState;
+import org.apache.commons.lang3.NotImplementedException;
 
 public class LumarSeetheManager extends PersistentState implements SeetheManager {
 
@@ -143,5 +144,6 @@ public class LumarSeetheManager extends PersistentState implements SeetheManager
     public void sync() {
         this.markDirty();
         // TODO: Send a packet if there's a noticeable display change
+        throw new NotImplementedException();
     }
 }

@@ -23,6 +23,7 @@
  */
 package io.github.drakonkinst.worldsinger.event;
 
+import io.github.drakonkinst.worldsinger.api.ModAttachmentTypes;
 import io.github.drakonkinst.worldsinger.block.LivingSporeGrowthBlock;
 import io.github.drakonkinst.worldsinger.component.ModComponents;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.MidnightAetherBondManager;
@@ -46,7 +47,7 @@ public final class ModEventHandlers {
         // Add Thirst-related effects when consuming an item
         FinishConsumingItemCallback.EVENT.register((entity, stack) -> {
             if (entity instanceof PlayerEntity player) {
-                ModComponents.THIRST_MANAGER.get(player).drink(stack.getItem(), stack);
+                player.getAttachedOrCreate(ModAttachmentTypes.THIRST).drink(stack.getItem(), stack);
 
                 // Status effects should only be added on server side
                 if (!entity.getWorld().isClient()) {

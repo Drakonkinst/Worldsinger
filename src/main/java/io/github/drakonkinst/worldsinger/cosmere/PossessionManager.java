@@ -24,20 +24,18 @@
 
 package io.github.drakonkinst.worldsinger.cosmere;
 
+import io.github.drakonkinst.worldsinger.api.ClientTickableAttachment;
+import io.github.drakonkinst.worldsinger.api.ServerTickableAttachment;
 import io.github.drakonkinst.worldsinger.entity.CameraPossessable;
 import org.jetbrains.annotations.Nullable;
 
-public interface PossessionManager {
+public interface PossessionManager extends ClientTickableAttachment, ServerTickableAttachment {
 
     @Nullable CameraPossessable getPossessionTarget();
 
     void setPossessionTarget(CameraPossessable entity);
 
     void resetPossessionTarget();
-
-    void clientTick();
-
-    void serverTick();
 
     default boolean isPossessing() {
         return getPossessionTarget() != null;

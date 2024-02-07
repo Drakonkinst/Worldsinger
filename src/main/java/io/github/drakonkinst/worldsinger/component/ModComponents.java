@@ -30,16 +30,12 @@ import dev.onyxstudios.cca.api.v3.entity.EntityComponentFactoryRegistry;
 import dev.onyxstudios.cca.api.v3.entity.EntityComponentInitializer;
 import dev.onyxstudios.cca.api.v3.entity.RespawnCopyStrategy;
 import io.github.drakonkinst.worldsinger.Worldsinger;
-import io.github.drakonkinst.worldsinger.cosmere.ThirstManager;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.MidnightAetherBondManager;
-import io.github.drakonkinst.worldsinger.entity.PlayerThirstManager;
 import io.github.drakonkinst.worldsinger.entity.data.PlayerMidnightAetherBondManager;
 
 @SuppressWarnings("UnqualifiedStaticUsage")
 public final class ModComponents implements EntityComponentInitializer {
 
-    public static final ComponentKey<ThirstManager> THIRST_MANAGER = register("thirst_manager",
-            ThirstManager.class);
     public static final ComponentKey<MidnightAetherBondManager> MIDNIGHT_AETHER_BOND = register(
             "midnight_aether_bond", MidnightAetherBondManager.class);
 
@@ -49,9 +45,6 @@ public final class ModComponents implements EntityComponentInitializer {
 
     @Override
     public void registerEntityComponentFactories(EntityComponentFactoryRegistry registry) {
-        // Should be reset upon death
-        registry.registerForPlayers(THIRST_MANAGER, PlayerThirstManager::new,
-                RespawnCopyStrategy.LOSSLESS_ONLY);
         // Custom handling upon death
         registry.registerForPlayers(MIDNIGHT_AETHER_BOND, PlayerMidnightAetherBondManager::new,
                 RespawnCopyStrategy.ALWAYS_COPY);

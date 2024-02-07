@@ -59,6 +59,7 @@
     "entity.ProjectileUtilMixin",
     "entity.ServerPlayerEntityDeathMixin",
     "entity.ServerPlayerEntityPossessionMixin",
+    "entity.ServerPlayerEntityThirstMixin",
     "entity.VehicleEntityMixin",
     "entity.ai.BirdPathNodeMakerMixin",
     "entity.ai.LandPathNodeMakerMixin",

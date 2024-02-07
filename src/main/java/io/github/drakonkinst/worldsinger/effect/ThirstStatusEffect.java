@@ -23,7 +23,7 @@
  */
 package io.github.drakonkinst.worldsinger.effect;
 
-import io.github.drakonkinst.worldsinger.component.ModComponents;
+import io.github.drakonkinst.worldsinger.api.ModAttachmentTypes;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectCategory;
@@ -40,8 +40,8 @@ public class ThirstStatusEffect extends StatusEffect {
 
     @Override
     public boolean applyUpdateEffect(LivingEntity entity, int amplifier) {
-        if (entity instanceof PlayerEntity player) {
-            ModComponents.THIRST_MANAGER.get(player)
+        if (entity instanceof PlayerEntity) {
+            entity.getAttachedOrCreate(ModAttachmentTypes.THIRST)
                     .addDehydration(drainMultiplier * (float) (amplifier + 1));
         }
         return true;

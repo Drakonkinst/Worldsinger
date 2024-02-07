@@ -544,7 +544,7 @@ public class MidnightCreatureEntity extends ShapeshiftingEntity implements
     }
 
     private void drainWaterFromHost(PlayerEntity host, boolean isInitial) {
-        ThirstManager thirstManager = ModComponents.THIRST_MANAGER.get(host);
+        ThirstManager thirstManager = host.getAttachedOrCreate(ModAttachmentTypes.THIRST);
         int currentWaterLevel = thirstManager.get();
         MidnightAetherBondManager bondData = ModComponents.MIDNIGHT_AETHER_BOND.get(host);
         if (currentWaterLevel <= 0) {

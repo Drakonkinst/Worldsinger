@@ -22,31 +22,9 @@
  * SOFTWARE.
  */
 
-package io.github.drakonkinst.worldsinger.cosmere;
+package io.github.drakonkinst.worldsinger.api;
 
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
+public interface ServerTickableAttachment {
 
-public interface ThirstManager {
-
-    void update(LivingEntity entity);
-
-    // Call when consuming an item
-    void drink(Item item, ItemStack stack);
-
-    // Add exhaustion like hunger, which can lead to water loss
-    void addDehydration(float exhaustion);
-
-    // Directly add water
-    void add(int water);
-
-    // Directly remove water
-    void remove(int water);
-
-    int get();
-
-    boolean isFull();
-
-    boolean isCritical();
+    void serverTick();
 }

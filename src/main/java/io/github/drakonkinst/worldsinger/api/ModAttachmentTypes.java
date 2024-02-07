@@ -25,6 +25,7 @@
 package io.github.drakonkinst.worldsinger.api;
 
 import io.github.drakonkinst.worldsinger.Worldsinger;
+import io.github.drakonkinst.worldsinger.entity.PlayerThirstManager;
 import io.github.drakonkinst.worldsinger.entity.SilverLinedBoatData;
 import io.github.drakonkinst.worldsinger.entity.data.PlayerPossessionManager;
 import net.fabricmc.fabric.api.attachment.v1.AttachmentRegistry;
@@ -39,5 +40,9 @@ public class ModAttachmentTypes {
             .buildAndRegister(Worldsinger.id("silver_lined_boat"));
     public static final AttachmentType<PlayerPossessionManager> POSSESSION = AttachmentRegistry.create(
             Worldsinger.id("possession"));
+    public static final AttachmentType<PlayerThirstManager> THIRST = AttachmentRegistry.<PlayerThirstManager>builder()
+            .persistent(PlayerThirstManager.CODEC)
+            .initializer(PlayerThirstManager::new)
+            .buildAndRegister(Worldsinger.id("thirst"));
 
 }
