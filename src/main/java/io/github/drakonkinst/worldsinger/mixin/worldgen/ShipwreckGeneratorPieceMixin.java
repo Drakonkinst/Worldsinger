@@ -1,7 +1,7 @@
 package io.github.drakonkinst.worldsinger.mixin.worldgen;
 
 import io.github.drakonkinst.worldsinger.registry.ModLootTables;
-import io.github.drakonkinst.worldsinger.worldgen.dimension.ModDimensionTypes;
+import io.github.drakonkinst.worldsinger.worldgen.dimension.ModDimensions;
 import java.util.Map;
 import net.minecraft.inventory.LootableInventory;
 import net.minecraft.registry.RegistryKeys;
@@ -32,7 +32,7 @@ public abstract class ShipwreckGeneratorPieceMixin {
         if (world.getDimension()
                 .equals(world.getRegistryManager()
                         .get(RegistryKeys.DIMENSION_TYPE)
-                        .get(ModDimensionTypes.LUMAR))) {
+                        .get(ModDimensions.DIMENSION_TYPE_LUMAR))) {
             Identifier identifier = LUMAR_LOOT_TABLES.get(metadata);
             if (identifier != null) {
                 LootableInventory.setLootTable(world, random, pos.down(), identifier);

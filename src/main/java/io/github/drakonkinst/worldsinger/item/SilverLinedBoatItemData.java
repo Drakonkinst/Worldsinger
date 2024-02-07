@@ -1,6 +1,6 @@
 package io.github.drakonkinst.worldsinger.item;
 
-import io.github.drakonkinst.worldsinger.entity.SilverLinedBoatEntityData;
+import io.github.drakonkinst.worldsinger.entity.SilverLinedBoatData;
 import net.minecraft.item.ItemStack;
 
 public class SilverLinedBoatItemData extends SilverLinedItemData {
@@ -11,6 +11,11 @@ public class SilverLinedBoatItemData extends SilverLinedItemData {
 
     @Override
     public int getMaxSilverDurability() {
-        return SilverLinedBoatEntityData.MAX_DURABILITY;
+        return SilverLinedBoatData.MAX_DURABILITY;
+    }
+
+    @Override
+    public void sync() {
+        // Item does not sync
     }
 }

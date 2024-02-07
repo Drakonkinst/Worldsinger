@@ -1,7 +1,7 @@
 package io.github.drakonkinst.worldsinger.mixin.entity;
 
 import io.github.drakonkinst.worldsinger.cosmere.lumar.AetherSpores;
-import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarSeethe;
+import io.github.drakonkinst.worldsinger.cosmere.lumar.SeetheManager;
 import io.github.drakonkinst.worldsinger.fluid.AetherSporeFluid;
 import io.github.drakonkinst.worldsinger.fluid.ModFluidTags;
 import io.github.drakonkinst.worldsinger.fluid.SunlightFluid;
@@ -69,7 +69,7 @@ public abstract class LivingEntityCustomFluidMovementMixin extends Entity {
             CallbackInfoReturnable<Boolean> cir) {
         if (state.isIn(ModFluidTags.STILL_AETHER_SPORES)) {
             World world = this.getWorld();
-            if (!LumarSeethe.areSporesFluidized(world)) {
+            if (!SeetheManager.areSporesFluidized(world)) {
                 cir.setReturnValue(true);
             }
         }

@@ -1,7 +1,7 @@
 package io.github.drakonkinst.worldsinger.mixin.compat.smartbrainlib;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
-import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarSeethe;
+import io.github.drakonkinst.worldsinger.cosmere.lumar.SeetheManager;
 import io.github.drakonkinst.worldsinger.fluid.ModFluidTags;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -18,7 +18,7 @@ public abstract class FloatToSurfaceOfFluidMixin<E extends MobEntity> extends Ex
 
     @ModifyReturnValue(method = "checkExtraStartConditions", at = @At("RETURN"))
     private boolean checkForSporeFluid(boolean original, ServerWorld world, E entity) {
-        return original || (LumarSeethe.areSporesFluidized(entity.getWorld())
+        return original || (SeetheManager.areSporesFluidized(entity.getWorld())
                 && entity.getFluidHeight(ModFluidTags.AETHER_SPORES) > entity.getSwimHeight());
     }
 

@@ -1,13 +1,14 @@
 package io.github.drakonkinst.worldsinger.entity;
 
 import io.github.drakonkinst.worldsinger.Worldsinger;
+import io.github.drakonkinst.worldsinger.api.ModAttachmentTypes;
 import io.github.drakonkinst.worldsinger.block.ModBlockTags;
 import io.github.drakonkinst.worldsinger.block.ModBlocks;
-import io.github.drakonkinst.worldsinger.component.MidnightAetherBondComponent;
 import io.github.drakonkinst.worldsinger.component.ModComponents;
-import io.github.drakonkinst.worldsinger.component.PossessionComponent;
-import io.github.drakonkinst.worldsinger.component.ThirstManagerComponent;
+import io.github.drakonkinst.worldsinger.cosmere.PossessionManager;
+import io.github.drakonkinst.worldsinger.cosmere.ThirstManager;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.AetherSpores;
+import io.github.drakonkinst.worldsinger.cosmere.lumar.MidnightAetherBondManager;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.MidnightCreatureManager;
 import io.github.drakonkinst.worldsinger.effect.ModStatusEffects;
 import io.github.drakonkinst.worldsinger.entity.ai.PossessableEntityNavigation;
@@ -18,6 +19,7 @@ import io.github.drakonkinst.worldsinger.entity.ai.behavior.StudyTarget;
 import io.github.drakonkinst.worldsinger.entity.ai.sensor.ConditionalNearbyBlocksSensor;
 import io.github.drakonkinst.worldsinger.entity.ai.sensor.NearestAttackableSensor;
 import io.github.drakonkinst.worldsinger.entity.data.MidnightOverlayAccess;
+import io.github.drakonkinst.worldsinger.entity.data.PlayerPossessionManager;
 import io.github.drakonkinst.worldsinger.item.ModItemTags;
 import io.github.drakonkinst.worldsinger.mixin.accessor.EntityAccessor;
 import io.github.drakonkinst.worldsinger.particle.ModParticleTypes;
@@ -102,6 +104,7 @@ import net.tslat.smartbrainlib.util.BrainUtils;
 import net.tslat.smartbrainlib.util.SensoryUtils;
 import org.jetbrains.annotations.Nullable;
 
+@SuppressWarnings("UnstableApiUsage")
 public class MidnightCreatureEntity extends ShapeshiftingEntity implements
         SmartBrainOwner<MidnightCreatureEntity>, Controllable, Monster, SilverVulnerable,
         CameraPossessable {
@@ -491,7 +494,9 @@ public class MidnightCreatureEntity extends ShapeshiftingEntity implements
 
         if (!player.shouldCancelInteraction() && stack.isEmpty() && getMorph() != null
                 && player.getUuid().equals(this.getControllerUuid())) {
-            ModComponents.POSSESSION.get(player).setPossessionTarget(this);
+            PossessionManager possessionManager = player.getAttachedOrCreate(
+                    ModAttachmentTypes.POSSESSION, () -> PlayerPossessionManager.create(player));
+            possessionManager.setPossessionTarget(this);
             return ActionResult.success(true);
         }
 
@@ -511,13 +516,12 @@ public class MidnightCreatureEntity extends ShapeshiftingEntity implements
     }
 
     private void drainWaterFromHost(PlayerEntity host, boolean isInitial) {
-        ThirstManagerComponent thirstManager = ModComponents.THIRST_MANAGER.get(host);
+        ThirstManager thirstManager = ModComponents.THIRST_MANAGER.get(host);
         int currentWaterLevel = thirstManager.get();
-        MidnightAetherBondComponent bondData = ModComponents.MIDNIGHT_AETHER_BOND.get(host);
+        MidnightAetherBondManager bondData = ModComponents.MIDNIGHT_AETHER_BOND.get(host);
         if (currentWaterLevel <= 0) {
-            CameraPossessable possessedEntity = ModComponents.POSSESSION.get(host)
-                    .getPossessionTarget();
-            if (possessedEntity != null && possessedEntity.equals(this)) {
+            PossessionManager possessionManager = host.getAttached(ModAttachmentTypes.POSSESSION);
+            if (possessionManager != null && this.equals(possessionManager.getPossessionTarget())) {
                 // They are trapped in the bond! Start killing them
                 host.damage(ModDamageTypes.createSource(host.getWorld(), ModDamageTypes.THIRST),
                         POSSESS_THIRST_DAMAGE);
@@ -536,9 +540,9 @@ public class MidnightCreatureEntity extends ShapeshiftingEntity implements
     public void forgetAboutPlayer(PlayerEntity player) {
         UUID uuid = player.getUuid();
         if (isBeingPossessed) {
-            PossessionComponent possessionData = ModComponents.POSSESSION.get(player);
-            if (this.equals(possessionData.getPossessionTarget())) {
-                possessionData.resetPossessionTarget();
+            PossessionManager possessionManager = player.getAttached(ModAttachmentTypes.POSSESSION);
+            if (possessionManager != null && this.equals(possessionManager.getPossessionTarget())) {
+                possessionManager.resetPossessionTarget();
                 // Always called server-side, so no need to reset camera entity here
             }
         }

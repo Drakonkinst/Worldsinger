@@ -57,6 +57,7 @@
     "entity.PotionEntityMixin",
     "entity.ProjectileUtilMixin",
     "entity.ServerPlayerEntityDeathMixin",
+    "entity.ServerPlayerEntityPossessionMixin",
     "entity.VehicleEntityMixin",
     "entity.ai.BirdPathNodeMakerMixin",
     "entity.ai.LandPathNodeMakerMixin",
@@ -77,7 +78,8 @@
     "screen.BrewingStandScreenHandlerPotionSlotMixin",
     "world.ChunkLightProviderMixin",
     "world.PlayerManagerPossessionMixin",
-    "world.WorldMixin",
+    "world.ServerWorldLumarSeetheMixin",
+    "world.WorldLumarMixin",
     "worldgen.CarverMixin",
     "worldgen.ShipwreckGeneratorPieceMixin",
     "worldgen.WorldChunkMixin"

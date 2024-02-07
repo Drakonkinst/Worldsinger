@@ -1,7 +1,7 @@
 package io.github.drakonkinst.worldsinger.block;
 
 import io.github.drakonkinst.worldsinger.component.ModComponents;
-import io.github.drakonkinst.worldsinger.component.ThirstManagerComponent;
+import io.github.drakonkinst.worldsinger.cosmere.ThirstManager;
 import io.github.drakonkinst.worldsinger.entity.MidnightCreatureEntity;
 import io.github.drakonkinst.worldsinger.registry.ModSoundEvents;
 import net.minecraft.block.Block;
@@ -68,7 +68,7 @@ public class MidnightEssenceBlock extends Block {
     @Override
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player,
             BlockHitResult hit) {
-        ThirstManagerComponent thirstManager = ModComponents.THIRST_MANAGER.get(player);
+        ThirstManager thirstManager = ModComponents.THIRST_MANAGER.get(player);
         if (thirstManager.get() < WATER_COST) {
             // Not enough water to summon anything, but should still swing hand
             return ActionResult.success(true);
