@@ -24,9 +24,11 @@
 
 package io.github.drakonkinst.worldsinger.mixin.world;
 
+import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarLunagreeManager;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LunagreeManager;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LunagreeManagerAccess;
-import io.github.drakonkinst.worldsinger.world.PersistentStateManagerAccess;
+import io.github.drakonkinst.worldsinger.cosmere.lumar.NullLunagreeManager;
+import io.github.drakonkinst.worldsinger.world.PersistentByteDataManager;
 import io.github.drakonkinst.worldsinger.worldgen.dimension.ModDimensions;
 import java.util.List;
 import java.util.concurrent.Executor;
@@ -56,7 +58,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ServerWorld.class)
-public abstract class ServerWorldLumarMixin extends World implements StructureWorldAccess,
+public abstract class ServerWorldLunagreeManagerMixin extends World implements StructureWorldAccess,
         LunagreeManagerAccess {
 
     @Shadow
@@ -65,7 +67,7 @@ public abstract class ServerWorldLumarMixin extends World implements StructureWo
     @Unique
     private LunagreeManager lunagreeManager;
 
-    protected ServerWorldLumarMixin(MutableWorldProperties properties,
+    protected ServerWorldLunagreeManagerMixin(MutableWorldProperties properties,
             RegistryKey<World> registryRef, DynamicRegistryManager registryManager,
             RegistryEntry<DimensionType> dimensionEntry, Supplier<Profiler> profiler,
             boolean isClient, boolean debugWorld, long biomeAccess, int maxChainedNeighborUpdates) {
@@ -82,9 +84,11 @@ public abstract class ServerWorldLumarMixin extends World implements StructureWo
             long seed, List<SpecialSpawner> spawners, boolean shouldTickTime,
             RandomSequencesState randomSequencesState, CallbackInfo ci) {
         if (worldKey.equals(ModDimensions.WORLD_LUMAR)) {
-            lunagreeManager = ((PersistentStateManagerAccess) this.getPersistentStateManager()).worldsinger$getOrCreateFromBytes(
-                    LunagreeManager.getPersistentByteDataType((ServerWorld) (Object) this),
+            lunagreeManager = ((PersistentByteDataManager) this.getPersistentStateManager()).worldsinger$getOrCreateFromBytes(
+                    LumarLunagreeManager.getPersistentByteDataType((ServerWorld) (Object) this),
                     LunagreeManager.NAME);
+        } else {
+            lunagreeManager = new NullLunagreeManager();
         }
     }
 

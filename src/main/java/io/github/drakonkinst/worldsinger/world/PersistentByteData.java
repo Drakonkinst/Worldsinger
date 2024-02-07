@@ -26,6 +26,7 @@ package io.github.drakonkinst.worldsinger.world;
 
 import java.io.File;
 import java.util.function.Supplier;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.world.PersistentState;
 
 // A variation of PersistentState that stores a byte array instead of NBT
@@ -40,5 +41,11 @@ public abstract class PersistentByteData extends PersistentState {
     @Override
     public void save(File file) {
         saveBytesToFile(file);
+    }
+
+    // Does not use NBT
+    @Override
+    public NbtCompound writeNbt(NbtCompound nbt) {
+        throw new UnsupportedOperationException();
     }
 }

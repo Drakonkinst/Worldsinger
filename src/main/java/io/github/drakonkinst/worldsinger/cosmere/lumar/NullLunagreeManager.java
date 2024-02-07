@@ -24,18 +24,17 @@
 
 package io.github.drakonkinst.worldsinger.cosmere.lumar;
 
-import io.github.drakonkinst.worldsinger.world.PersistentByteData;
+import java.io.File;
 
-public abstract class LunagreeManager extends PersistentByteData {
+public class NullLunagreeManager extends LunagreeManager {
 
-    public static final String NAME = "lunagrees";
+    @Override
+    public void loadBytesFromFile(File file) {
+        // Do nothing
+    }
 
-    public record LunagreeLocation(int blockX, int blockZ, int sporeId) {
-
-        public double distSqTo(double x, double z) {
-            final double deltaX = blockX - x;
-            final double deltaZ = blockZ - z;
-            return deltaX * deltaX + deltaZ * deltaZ;
-        }
+    @Override
+    public void saveBytesToFile(File file) {
+        // Do nothing
     }
 }

@@ -82,7 +82,7 @@
     "world.ChunkLightProviderMixin",
     "world.PersistentStateManagerMixin",
     "world.PlayerManagerPossessionMixin",
-    "world.ServerWorldLumarMixin",
+    "world.ServerWorldLunagreeManagerMixin",
     "world.WorldMixin",
     "worldgen.CarverMixin",
     "worldgen.ShipwreckGeneratorPieceMixin",

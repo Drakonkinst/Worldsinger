@@ -28,7 +28,7 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.drakonkinst.worldsinger.Worldsinger;
 import io.github.drakonkinst.worldsinger.cosmere.LunagreeData;
-import io.github.drakonkinst.worldsinger.cosmere.lumar.LunagreeManager;
+import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarLunagreeManager;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LunagreeManager.LunagreeLocation;
 import io.github.drakonkinst.worldsinger.entity.LunagreeDataAccess;
 import io.github.drakonkinst.worldsinger.mixin.client.accessor.WorldRendererAccessor;
@@ -178,7 +178,8 @@ public class LumarSkyRenderer implements SkyRenderer {
         final Vec3d playerPos = player.getCameraPosVec(tickDelta);
         for (LunagreeLocation location : lunagreeData.getKnownLunagreeLocations()) {
             final double distSq = location.distSqTo(playerPos.getX(), playerPos.getZ());
-            if (distSq > LunagreeManager.TRAVEL_DISTANCE * LunagreeManager.TRAVEL_DISTANCE) {
+            if (distSq
+                    > LumarLunagreeManager.TRAVEL_DISTANCE * LumarLunagreeManager.TRAVEL_DISTANCE) {
                 continue;
             }
             // Render moon
@@ -190,7 +191,7 @@ public class LumarSkyRenderer implements SkyRenderer {
         double deltaZ = playerPos.getZ() - moonPos.getZ();
         double distSq = deltaX * deltaX + deltaZ * deltaZ;
         float distance = MathHelper.sqrt((float) distSq);
-        float multiplier = distance / LunagreeManager.TRAVEL_DISTANCE;
+        float multiplier = distance / LumarLunagreeManager.TRAVEL_DISTANCE;
 
         float radius = 300.0f;
         // float moonHeight = 200.0f;  // Can go from 100.0 to 200.0f

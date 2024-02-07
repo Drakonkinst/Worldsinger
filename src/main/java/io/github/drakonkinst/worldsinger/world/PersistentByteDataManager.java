@@ -26,7 +26,7 @@ package io.github.drakonkinst.worldsinger.world;
 
 import io.github.drakonkinst.worldsinger.world.PersistentByteData.ByteDataType;
 
-public interface PersistentStateManagerAccess {
+public interface PersistentByteDataManager {
 
     <T extends PersistentByteData> T worldsinger$getOrCreateFromBytes(ByteDataType<T> type,
             String id);
