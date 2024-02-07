@@ -25,6 +25,7 @@
 package io.github.drakonkinst.worldsinger.cosmere.lumar;
 
 import java.io.File;
+import net.minecraft.server.network.ServerPlayerEntity;
 
 public class NullLunagreeManager extends LunagreeManager {
 
@@ -36,5 +37,21 @@ public class NullLunagreeManager extends LunagreeManager {
     @Override
     public void saveBytesToFile(File file) {
         // Do nothing
+    }
+
+    @Override
+    public void updateLunagreeDataForPlayer(ServerPlayerEntity player) {
+        // Do nothing
+    }
+
+    @Override
+    public long getKeyForPos(int blockX, int blockZ) {
+        // Key should never change
+        return 0;
+    }
+
+    @Override
+    public boolean isNull() {
+        return true;
     }
 }

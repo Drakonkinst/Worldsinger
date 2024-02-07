@@ -30,6 +30,7 @@ import io.github.drakonkinst.worldsinger.command.LocateSporeSeaCommand;
 import io.github.drakonkinst.worldsinger.worldgen.ModBiomes;
 import io.github.drakonkinst.worldsinger.worldgen.lumar.LumarChunkGenerator.SporeSeaEntry;
 import it.unimi.dsi.fastutil.ints.IntArraySet;
+import it.unimi.dsi.fastutil.ints.IntIntImmutablePair;
 import it.unimi.dsi.fastutil.ints.IntIntPair;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
@@ -41,9 +42,13 @@ import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import org.apache.commons.io.FileUtils;
 
 public class LumarLunagreeManager extends LunagreeManager {
@@ -52,6 +57,8 @@ public class LumarLunagreeManager extends LunagreeManager {
     // CELL_SIZE should always be less than TRAVEL_DISTANCE. A fraction of this value should be
     // used to spawn a lunagree.
     public static final float CELL_SIZE = 1800.0f;
+    private static final int CENTER_X = 0;
+    private static final int CENTER_Z = 0;
 
     private static final IntSet VALID_SPORE_IDS = IntSet.of(DeadSpores.ID, VerdantSpores.ID,
             CrimsonSpores.ID, ZephyrSpores.ID, SunlightSpores.ID, RoseiteSpores.ID,
@@ -59,9 +66,48 @@ public class LumarLunagreeManager extends LunagreeManager {
     // Associative array of direction vector offsets for axial hex coordinates
     private static final int[] DIRECTION_Q = { +1, +1, +0, -1, -1, +0 };
     private static final int[] DIRECTION_R = { +0, -1, -1, +0, +1, +1 };
+    private static final float RAD_3 = MathHelper.sqrt(3);
+    private static final float RAD_3_OVER_3 = MathHelper.sqrt(3) / 3.0f;
 
     public static ByteDataType<LumarLunagreeManager> getPersistentByteDataType(ServerWorld world) {
         return new ByteDataType<>(() -> new LumarLunagreeManager(world));
+    }
+
+    // https://stackoverflow.com/questions/12772939/java-storing-two-ints-in-a-long
+    private static long toKey(int q, int r) {
+        return (((long) q) << 32) | (r & 0xffffffffL);
+    }
+
+    private static int getQ(long key) {
+        return (int) (key >> 32);
+    }
+
+    private static int getR(long key) {
+        return (int) key;
+    }
+
+    private static long roundAxial(float fracQ, float fracR) {
+        float fracS = -fracQ - fracR;
+        int q = Math.round(fracQ);
+        int r = Math.round(fracR);
+        int s = Math.round(fracS);
+        float deltaQ = Math.abs(q - fracQ);
+        float deltaR = Math.abs(r - fracR);
+        float deltaS = Math.abs(s - fracS);
+
+        if (deltaQ > deltaR && deltaQ > deltaS) {
+            q = -r - s;
+        } else if (deltaR > deltaS) {
+            r = -q - s;
+        }
+        return LumarLunagreeManager.toKey(q, r);
+    }
+
+    private final ServerWorld world;
+    private final Long2ObjectMap<LunagreeLocation> lunagreeMap = new Long2ObjectOpenHashMap<>();
+
+    public LumarLunagreeManager(ServerWorld world) {
+        this.world = world;
     }
 
     @Override
@@ -106,28 +152,7 @@ public class LumarLunagreeManager extends LunagreeManager {
         }
     }
 
-    private static IntIntPair getHexCellForBlockPos(BlockPos pos) {
-        return null;
-    }
-
-    private static BlockPos getCenterBlockPosForHexCell(int q, int r) {
-        // TODO
-        return null;
-    }
-
-    // https://stackoverflow.com/questions/12772939/java-storing-two-ints-in-a-long
-    private static long toKey(int q, int r) {
-        return (((long) q) << 32) | (r & 0xffffffffL);
-    }
-
-    private final ServerWorld world;
-    private final Long2ObjectMap<LunagreeLocation> lunagreeMap = new Long2ObjectOpenHashMap<>();
-
-    public LumarLunagreeManager(ServerWorld world) {
-        this.world = world;
-    }
-
-    private Optional<LunagreeLocation> getOrCreateLunagreeFor(int q, int r, int s) {
+    private Optional<LunagreeLocation> getOrCreateLunagreeFor(int q, int r) {
         long key = LumarLunagreeManager.toKey(q, r);
         Optional<LunagreeLocation> entry;
         if (lunagreeMap.containsKey(key)) {
@@ -167,9 +192,10 @@ public class LumarLunagreeManager extends LunagreeManager {
         // Find a good position
 
         IntSet possibleSporeIds = generatePossibleSporeIds(q, r);
-        BlockPos centerPos = LumarLunagreeManager.getCenterBlockPosForHexCell(q, r);
+        IntIntPair center = this.getCenterBlockPosForHexCell(q, r);
         Pair<BlockPos, SporeSeaEntry> result = LocateSporeSeaCommand.locateSporeSea(world,
-                centerPos, RADIUS, BLOCK_CHECK_INTERVAL, false, possibleSporeIds,
+                center.firstInt(), center.secondInt(), RADIUS, BLOCK_CHECK_INTERVAL, false,
+                possibleSporeIds,
                 biome -> ModBiomes.DEEP_SPORE_SEA.equals(biome.getKey().orElse(null)));
         if (result == null) {
             return Optional.empty();
@@ -186,5 +212,45 @@ public class LumarLunagreeManager extends LunagreeManager {
         lunagreeMap.put(key, entry);
         this.markDirty();
         return Optional.of(entry);
+    }
+
+    // Triggered when the player loads new chunks. This can also generate new lunagrees.
+    @Override
+    public void updateLunagreeDataForPlayer(ServerPlayerEntity player) {
+        long key = getKeyForPos(player.getBlockX(), player.getBlockZ());
+        int q = LumarLunagreeManager.getQ(key);
+        int r = LumarLunagreeManager.getR(key);
+
+        List<LunagreeLocation> locations = new ArrayList<>(DIRECTION_Q.length + 1);
+        getOrCreateLunagreeFor(q, r).ifPresent(locations::add);
+        for (int i = 0; i < DIRECTION_Q.length; ++i) {
+            int neighborQ = q + DIRECTION_Q[i];
+            int neighborR = r + DIRECTION_R[i];
+            getOrCreateLunagreeFor(neighborQ, neighborR).ifPresent(locations::add);
+        }
+
+        // Send packet
+
+        Worldsinger.LOGGER.info(
+                "Sending lunagree data in cell (" + q + ", " + r + "): " + locations);
+    }
+
+    // Convert hex cell to the center block pos
+    private IntIntPair getCenterBlockPosForHexCell(int q, int r) {
+        int x = Math.round(1.5f * q * CELL_SIZE) + CENTER_X;
+        int z = Math.round((RAD_3 * 0.5f * q + RAD_3 * r) * CELL_SIZE) + CENTER_Z;
+        return new IntIntImmutablePair(x, z);
+    }
+
+    // Convert block pos to flat-top pixel coordinates, rounded
+    private long getHexCellForBlockPos(int blockX, int blockZ) {
+        float fracQ = (2.0f / 3.0f * (blockX - CENTER_X)) / CELL_SIZE;
+        float fracR = (-1.0f / 3.0f * (blockZ - CENTER_Z)) / CELL_SIZE;
+        return LumarLunagreeManager.roundAxial(fracQ, fracR);
+    }
+
+    @Override
+    public long getKeyForPos(int blockX, int blockZ) {
+        return getHexCellForBlockPos(blockX, blockZ);
     }
 }

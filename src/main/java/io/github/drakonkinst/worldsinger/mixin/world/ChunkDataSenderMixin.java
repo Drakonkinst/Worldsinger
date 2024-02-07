@@ -22,29 +22,23 @@
  * SOFTWARE.
  */
 
-package io.github.drakonkinst.worldsinger.cosmere.lumar;
+package io.github.drakonkinst.worldsinger.mixin.world;
 
-import io.github.drakonkinst.worldsinger.world.PersistentByteData;
+import io.github.drakonkinst.worldsinger.world.LunagreeDataReceiver;
+import net.minecraft.server.network.ChunkDataSender;
 import net.minecraft.server.network.ServerPlayerEntity;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-public abstract class LunagreeManager extends PersistentByteData {
+@Mixin(ChunkDataSender.class)
+public abstract class ChunkDataSenderMixin {
 
-    public static final String NAME = "lunagrees";
-
-    public record LunagreeLocation(int blockX, int blockZ, int sporeId) {
-
-        public double distSqTo(double x, double z) {
-            final double deltaX = blockX - x;
-            final double deltaZ = blockZ - z;
-            return deltaX * deltaX + deltaZ * deltaZ;
-        }
-    }
-
-    public abstract void updateLunagreeDataForPlayer(ServerPlayerEntity player);
-
-    public abstract long getKeyForPos(int blockX, int blockZ);
-
-    public boolean isNull() {
-        return false;
+    // We don't want to introduce more lag to the chunk update code, but we signal the player that
+    // they might want to be sent new Lumar update data
+    @Inject(method = "sendChunkBatches", at = @At(value = "NEW", target = "()Lnet/minecraft/network/packet/s2c/play/StartChunkSendS2CPacket;"))
+    private void setChunkDataUpdated(ServerPlayerEntity player, CallbackInfo ci) {
+        ((LunagreeDataReceiver) player).worldsinger$setShouldCheckPosition();
     }
 }

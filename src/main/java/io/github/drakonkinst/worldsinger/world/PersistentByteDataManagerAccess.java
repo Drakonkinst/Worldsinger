@@ -22,29 +22,12 @@
  * SOFTWARE.
  */
 
-package io.github.drakonkinst.worldsinger.cosmere.lumar;
+package io.github.drakonkinst.worldsinger.world;
 
-import io.github.drakonkinst.worldsinger.world.PersistentByteData;
-import net.minecraft.server.network.ServerPlayerEntity;
+import io.github.drakonkinst.worldsinger.world.PersistentByteData.ByteDataType;
 
-public abstract class LunagreeManager extends PersistentByteData {
+public interface PersistentByteDataManagerAccess {
 
-    public static final String NAME = "lunagrees";
-
-    public record LunagreeLocation(int blockX, int blockZ, int sporeId) {
-
-        public double distSqTo(double x, double z) {
-            final double deltaX = blockX - x;
-            final double deltaZ = blockZ - z;
-            return deltaX * deltaX + deltaZ * deltaZ;
-        }
-    }
-
-    public abstract void updateLunagreeDataForPlayer(ServerPlayerEntity player);
-
-    public abstract long getKeyForPos(int blockX, int blockZ);
-
-    public boolean isNull() {
-        return false;
-    }
+    <T extends PersistentByteData> T worldsinger$getOrCreateFromBytes(ByteDataType<T> type,
+            String id);
 }

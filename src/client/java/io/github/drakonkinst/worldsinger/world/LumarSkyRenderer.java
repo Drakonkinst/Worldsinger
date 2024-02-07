@@ -204,8 +204,7 @@ public class LumarSkyRenderer implements SkyRenderer {
 
         float verticalAngle = MathHelper.lerp(multiplier, 180.0f, 45.0f);
 
-        drawMoon(bufferBuilder, matrices, 0, radius, moonHeight, horizontalAngle, verticalAngle);
-        // drawMoon(bufferBuilder, matrices, 1, radius, moonHeight, 45.0f + 180.0f, 70.0f);
+        // drawMoon(bufferBuilder, matrices, 0, radius, moonHeight, horizontalAngle, verticalAngle);
         // Worldsinger.LOGGER.info(
         //         multiplier + " " + moonHeight + " " + horizontalAngle + " " + verticalAngle);
 
@@ -221,18 +220,20 @@ public class LumarSkyRenderer implements SkyRenderer {
         }
         int moonIndex = SPORE_ID_TO_MOON_INDEX[sporeId];
 
+        float distance = MathHelper.sqrt((float) distSq);
+        float multiplier = distance / LumarLunagreeManager.TRAVEL_DISTANCE;
+
         // Calculate shrink factor
         // TODO
         float radius = 300.0f;
-        float moonHeight = 100.0f;
+        float moonHeight = MathHelper.lerp(multiplier, 100.0f, 500.0f);
 
         // Calculate vertical angle
-        // TODO
-        float verticalAngle = 0.0f;
+        float verticalAngle = MathHelper.lerp(multiplier, 180.0f, 45.0f);
 
         // Calculate horizontal angle
         double angleRadians = MathHelper.atan2(playerPos.getZ() - lunagreeLocation.blockZ(),
-                playerPos.getX() - lunagreeLocation.blockX());
+                lunagreeLocation.blockX() - playerPos.getX());
         float horizontalAngle = (float) angleRadians * MathHelper.DEGREES_PER_RADIAN;
 
         drawMoon(bufferBuilder, matrices, moonIndex, radius, moonHeight, horizontalAngle,

@@ -92,7 +92,8 @@ public class LocateSporeSeaCommand {
         //         source.getWorld(), originPos, 6400, 64, false, IntSet.of(spores.getId()),
         //         biome -> ModBiomes.DEEP_SPORE_SEA.equals(biome.getKey().orElse(null)));
         Pair<BlockPos, SporeSeaEntry> result = LocateSporeSeaCommand.locateSporeSea(
-                source.getWorld(), originPos, 6400, 64, false, IntSet.of(spores.getId()), null);
+                source.getWorld(), originPos.getX(), originPos.getZ(), 6400, 64, false,
+                IntSet.of(spores.getId()), null);
         stopwatch.stop();
         if (result == null) {
             throw SPORE_SEA_NOT_FOUND_EXCEPTION.create(spores.getSeaDisplayName());
@@ -128,8 +129,8 @@ public class LocateSporeSeaCommand {
     }
 
     @Nullable
-    public static Pair<BlockPos, SporeSeaEntry> locateSporeSea(ServerWorld world, BlockPos origin,
-            int radius, int horizontalBlockCheckInterval, boolean mustBeAboveSeaLevel,
+    public static Pair<BlockPos, SporeSeaEntry> locateSporeSea(ServerWorld world, int originX,
+            int originZ, int radius, int horizontalBlockCheckInterval, boolean mustBeAboveSeaLevel,
             IntSet filterSporeIds, @Nullable Predicate<RegistryEntry<Biome>> biomePredicate) {
         if (!world.getDimensionKey().equals(ModDimensions.DIMENSION_TYPE_LUMAR)) {
             return null;
@@ -140,8 +141,8 @@ public class LocateSporeSeaCommand {
         int cellRadius = Math.floorDiv(radius, horizontalBlockCheckInterval);
         for (Mutable mutable : BlockPos.iterateInSquare(BlockPos.ORIGIN, cellRadius, Direction.EAST,
                 Direction.SOUTH)) {
-            int x = origin.getX() + mutable.getX() * horizontalBlockCheckInterval;
-            int z = origin.getZ() + mutable.getZ() * horizontalBlockCheckInterval;
+            int x = originX + mutable.getX() * horizontalBlockCheckInterval;
+            int z = originZ + mutable.getZ() * horizontalBlockCheckInterval;
             SporeSeaEntry entry = LumarChunkGenerator.getSporeSeaEntryAtPos(
                     world.getChunkManager().getNoiseConfig(), x, z);
             if (filterSporeIds.contains(entry.id())) {

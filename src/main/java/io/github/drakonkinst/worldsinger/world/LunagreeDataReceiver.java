@@ -24,10 +24,7 @@
 
 package io.github.drakonkinst.worldsinger.world;
 
-import io.github.drakonkinst.worldsinger.world.PersistentByteData.ByteDataType;
+public interface LunagreeDataReceiver {
 
-public interface PersistentByteDataManager {
-
-    <T extends PersistentByteData> T worldsinger$getOrCreateFromBytes(ByteDataType<T> type,
-            String id);
+    void worldsinger$setShouldCheckPosition();
 }

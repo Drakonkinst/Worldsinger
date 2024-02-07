@@ -26,7 +26,7 @@ package io.github.drakonkinst.worldsinger.mixin.world;
 
 import io.github.drakonkinst.worldsinger.world.PersistentByteData;
 import io.github.drakonkinst.worldsinger.world.PersistentByteData.ByteDataType;
-import io.github.drakonkinst.worldsinger.world.PersistentByteDataManager;
+import io.github.drakonkinst.worldsinger.world.PersistentByteDataManagerAccess;
 import java.io.File;
 import java.util.Map;
 import net.minecraft.world.PersistentState;
@@ -40,7 +40,7 @@ import org.spongepowered.asm.mixin.Unique;
 // Adds functionality to store byte arrays as persistent state, not just NBTs
 // Byte arrays are good for structured data compared to NBT data
 @Mixin(PersistentStateManager.class)
-public abstract class PersistentStateManagerMixin implements PersistentByteDataManager {
+public abstract class PersistentStateManagerMixin implements PersistentByteDataManagerAccess {
 
     @Shadow
     @Final
