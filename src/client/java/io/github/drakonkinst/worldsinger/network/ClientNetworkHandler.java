@@ -24,11 +24,12 @@
 package io.github.drakonkinst.worldsinger.network;
 
 import io.github.drakonkinst.worldsinger.Worldsinger;
-import io.github.drakonkinst.worldsinger.component.ModComponents;
-import io.github.drakonkinst.worldsinger.component.PossessionComponent;
+import io.github.drakonkinst.worldsinger.api.ModAttachmentTypes;
+import io.github.drakonkinst.worldsinger.cosmere.PossessionManager;
 import io.github.drakonkinst.worldsinger.cosmere.ShapeshiftingManager;
 import io.github.drakonkinst.worldsinger.entity.CameraPossessable;
 import io.github.drakonkinst.worldsinger.entity.Shapeshifter;
+import io.github.drakonkinst.worldsinger.entity.data.PlayerPossessionManager;
 import io.github.drakonkinst.worldsinger.network.packet.PossessSetPayload;
 import io.github.drakonkinst.worldsinger.network.packet.ShapeshiftAttackPayload;
 import io.github.drakonkinst.worldsinger.network.packet.ShapeshiftSyncPayload;
@@ -37,7 +38,7 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NbtCompound;
 
-@SuppressWarnings("UnqualifiedStaticUsage")
+@SuppressWarnings({ "UnqualifiedStaticUsage", "UnstableApiUsage" })
 public final class ClientNetworkHandler {
 
     public static void registerPacketHandlers() {
@@ -100,14 +101,16 @@ public final class ClientNetworkHandler {
     private static void registerPossessionPacketHandlers() {
         ClientPlayNetworking.registerGlobalReceiver(PossessSetPayload.ID, (payload, context) -> {
             final int entityIdToPossess = payload.entityId();
-            PossessionComponent possessionData = ModComponents.POSSESSION.get(context.player());
+            PossessionManager possessionManager = context.player()
+                    .getAttachedOrCreate(ModAttachmentTypes.POSSESSION,
+                            () -> PlayerPossessionManager.create(context.player()));
             if (entityIdToPossess < 0) {
-                possessionData.resetPossessionTarget();
+                possessionManager.resetPossessionTarget();
             } else {
                 // Display dismount prompt, regardless of whether entity is already set
                 PossessionClientUtil.displayPossessStartText();
 
-                CameraPossessable currentPossessedEntity = possessionData.getPossessionTarget();
+                CameraPossessable currentPossessedEntity = possessionManager.getPossessionTarget();
                 if (currentPossessedEntity != null
                         && currentPossessedEntity.toEntity().getId() == entityIdToPossess) {
                     // Already set
@@ -115,7 +118,7 @@ public final class ClientNetworkHandler {
                 }
                 Entity entity = context.player().getWorld().getEntityById(entityIdToPossess);
                 if (entity instanceof CameraPossessable cameraPossessable) {
-                    possessionData.setPossessionTarget(cameraPossessable);
+                    possessionManager.setPossessionTarget(cameraPossessable);
                 }
             }
         });

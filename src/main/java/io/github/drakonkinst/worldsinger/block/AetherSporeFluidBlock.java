@@ -26,7 +26,7 @@ package io.github.drakonkinst.worldsinger.block;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.AetherSpores;
-import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarSeethe;
+import io.github.drakonkinst.worldsinger.cosmere.lumar.SeetheManager;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.SporeParticleSpawner;
 import io.github.drakonkinst.worldsinger.fluid.AetherSporeFluid;
 import io.github.drakonkinst.worldsinger.fluid.FluidShapes;
@@ -234,7 +234,7 @@ public class AetherSporeFluidBlock extends FluidBlock implements SporeEmitting {
         // during stillings (mainly for entities). Otherwise, assume it is transparent.
         if (fluidState.isStill() && context instanceof WorldShapeContextAccess shapeContext) {
             World realWorld = shapeContext.worldsinger$getWorld();
-            if (realWorld != null && !LumarSeethe.areSporesFluidized(realWorld)) {
+            if (realWorld != null && !SeetheManager.areSporesFluidized(realWorld)) {
                 return FluidShapes.VOXEL_SHAPES[fluidState.getLevel()];
             }
         }

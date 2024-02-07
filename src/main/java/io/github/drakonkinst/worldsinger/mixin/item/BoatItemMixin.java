@@ -26,10 +26,8 @@ package io.github.drakonkinst.worldsinger.mixin.item;
 import com.llamalad7.mixinextras.sugar.Local;
 import io.github.drakonkinst.worldsinger.Worldsinger;
 import io.github.drakonkinst.worldsinger.api.ModApi;
-import io.github.drakonkinst.worldsinger.component.ModComponents;
-import io.github.drakonkinst.worldsinger.component.SilverLinedComponent;
 import io.github.drakonkinst.worldsinger.cosmere.SilverLined;
-import io.github.drakonkinst.worldsinger.entity.SilverLinedBoatEntityData;
+import io.github.drakonkinst.worldsinger.entity.SilverLinedBoatData;
 import java.util.List;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.player.PlayerEntity;
@@ -48,6 +46,7 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
+@SuppressWarnings("UnstableApiUsage")
 @Mixin(BoatItem.class)
 public abstract class BoatItemMixin extends Item {
 
@@ -121,8 +120,9 @@ public abstract class BoatItemMixin extends Item {
         if (silverDurability <= 0) {
             return super.getItemBarStep(stack);
         }
-        int step = Math.min(Math.round((float) silverDurability * MAX_METER_STEPS
-                / SilverLinedBoatEntityData.MAX_DURABILITY), MAX_METER_STEPS);
+        int step = Math.min(Math.round(
+                        (float) silverDurability * MAX_METER_STEPS / SilverLinedBoatData.MAX_DURABILITY),
+                MAX_METER_STEPS);
         return step;
     }
 
@@ -130,17 +130,7 @@ public abstract class BoatItemMixin extends Item {
     private BoatEntity addDataToEntity(BoatEntity entity, @Local PlayerEntity user,
             @Local Hand hand) {
         ItemStack itemStack = user.getStackInHand(hand);
-        this.copySilverDataFromItemToEntity(itemStack, entity);
+        SilverLined.transferDataFromItemStackToEntity(itemStack, entity);
         return entity;
-    }
-
-    @Unique
-    private void copySilverDataFromItemToEntity(ItemStack itemStack, BoatEntity entity) {
-        int silverDurability = this.getSilverDurability(itemStack);
-        if (silverDurability <= 0) {
-            return;
-        }
-        SilverLinedComponent silverEntityData = ModComponents.SILVER_LINED.get(entity);
-        silverEntityData.setSilverDurability(silverDurability);
     }
 }

@@ -23,8 +23,8 @@
  */
 package io.github.drakonkinst.worldsinger.network;
 
-import io.github.drakonkinst.worldsinger.component.ModComponents;
-import io.github.drakonkinst.worldsinger.component.PossessionComponent;
+import io.github.drakonkinst.worldsinger.api.ModAttachmentTypes;
+import io.github.drakonkinst.worldsinger.cosmere.PossessionManager;
 import io.github.drakonkinst.worldsinger.entity.CameraPossessable;
 import io.github.drakonkinst.worldsinger.network.packet.PossessAttackPayload;
 import io.github.drakonkinst.worldsinger.network.packet.PossessSetPayload;
@@ -35,7 +35,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.MathHelper;
 
-@SuppressWarnings("UnqualifiedStaticUsage")
+@SuppressWarnings({ "UnqualifiedStaticUsage", "UnstableApiUsage" })
 public class ServerNetworkHandler {
 
     public static void initialize() {
@@ -47,11 +47,12 @@ public class ServerNetworkHandler {
         ServerPlayNetworking.registerGlobalReceiver(PossessSetPayload.ID, (payload, context) -> {
             ServerPlayerEntity player = context.player();
             final int possessedEntityId = payload.entityId();
-            PossessionComponent possessionData = ModComponents.POSSESSION.get(player);
+            PossessionManager possessionManager = player.getAttached(ModAttachmentTypes.POSSESSION);
 
             // If negative, reset the entity
-            if (possessionData.isPossessing() && possessedEntityId < 0) {
-                ModComponents.POSSESSION.get(player).resetPossessionTarget();
+            if (possessionManager != null && possessionManager.isPossessing()
+                    && possessedEntityId < 0) {
+                possessionManager.resetPossessionTarget();
             }
         });
 
@@ -59,11 +60,14 @@ public class ServerNetworkHandler {
         ServerPlayNetworking.registerGlobalReceiver(PossessUpdatePayload.ID, (payload, context) -> {
             ServerPlayerEntity player = context.player();
             // Get corresponding entity
-            PossessionComponent possessionData = ModComponents.POSSESSION.get(player);
-            CameraPossessable possessedEntity = possessionData.getPossessionTarget();
+            PossessionManager possessionManager = player.getAttached(ModAttachmentTypes.POSSESSION);
+            if (possessionManager == null) {
+                return;
+            }
+            CameraPossessable possessedEntity = possessionManager.getPossessionTarget();
             if (possessedEntity == null) {
                 // Not possessing anything according to the server
-                possessionData.resetPossessionTarget();
+                possessionManager.resetPossessionTarget();
                 return;
             }
 
@@ -74,12 +78,15 @@ public class ServerNetworkHandler {
                     payload.sidewaysSpeed(), payload.jumping(), payload.sprinting());
         });
 
-        // Client requests to set the possessing entity
+        // Client requests to attack as the possessing entity
         ServerPlayNetworking.registerGlobalReceiver(PossessAttackPayload.ID, (payload, context) -> {
             ServerPlayerEntity player = context.player();
             // Get corresponding entity
-            PossessionComponent possessionData = ModComponents.POSSESSION.get(player);
-            CameraPossessable possessedEntity = possessionData.getPossessionTarget();
+            PossessionManager possessionManager = player.getAttached(ModAttachmentTypes.POSSESSION);
+            if (possessionManager == null) {
+                return;
+            }
+            CameraPossessable possessedEntity = possessionManager.getPossessionTarget();
             if (possessedEntity == null) {
                 // Not possessing anything according to the server
                 return;

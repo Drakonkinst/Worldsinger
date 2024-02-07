@@ -25,7 +25,7 @@ package io.github.drakonkinst.worldsinger.entity;
 
 import io.github.drakonkinst.datatables.DataTableRegistry;
 import io.github.drakonkinst.worldsinger.component.ModComponents;
-import io.github.drakonkinst.worldsinger.component.ThirstManagerComponent;
+import io.github.drakonkinst.worldsinger.cosmere.ThirstManager;
 import io.github.drakonkinst.worldsinger.registry.ModDamageTypes;
 import io.github.drakonkinst.worldsinger.registry.ModDataTables;
 import net.minecraft.entity.LivingEntity;
@@ -40,7 +40,7 @@ import net.minecraft.world.Difficulty;
 
 // Similar to Hunger, but uses different names.
 // Thirst is simpler, and has no saturation equivalent. It goes down faster than hunger by default.
-public class ThirstManager implements ThirstManagerComponent {
+public class PlayerThirstManager implements ThirstManager {
 
     // NBT Keys
     private static final String KEY_THIRST_LEVEL = "ThirstLevel";
@@ -66,7 +66,7 @@ public class ThirstManager implements ThirstManagerComponent {
     private int dehydrationTickTimer;
     private float dehydration;
 
-    public ThirstManager(LivingEntity entity) {
+    public PlayerThirstManager(LivingEntity entity) {
         this.entity = entity;
         thirstDamageSource = ModDamageTypes.createSource(entity.getWorld(), ModDamageTypes.THIRST);
     }

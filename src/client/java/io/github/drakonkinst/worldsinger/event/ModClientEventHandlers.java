@@ -23,8 +23,8 @@
  */
 package io.github.drakonkinst.worldsinger.event;
 
-import io.github.drakonkinst.worldsinger.component.ModComponents;
-import io.github.drakonkinst.worldsinger.component.PossessionComponent;
+import io.github.drakonkinst.worldsinger.api.ModAttachmentTypes;
+import io.github.drakonkinst.worldsinger.cosmere.PossessionManager;
 import io.github.drakonkinst.worldsinger.entity.CameraPossessable;
 import io.github.drakonkinst.worldsinger.entity.CameraPossessable.AttackOrigin;
 import io.github.drakonkinst.worldsinger.entity.freelook.FreeLook;
@@ -47,6 +47,7 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.math.MathHelper;
 
+@SuppressWarnings("UnstableApiUsage")
 public final class ModClientEventHandlers {
 
     public static void registerEventHandlers() {
@@ -62,9 +63,10 @@ public final class ModClientEventHandlers {
             }
 
             FreeLook freeLookData = (FreeLook) player;
-            PossessionComponent possessionData = ModComponents.POSSESSION.get(player);
+            PossessionManager possessionManager = player.getAttached(ModAttachmentTypes.POSSESSION);
             if (cameraEntity instanceof CameraPossessable cameraPossessable
-                    && !cameraEntity.isRemoved() && possessionData.isPossessing()) {
+                    && !cameraEntity.isRemoved() && possessionManager != null
+                    && possessionManager.isPossessing()) {
                 float yaw;
                 float pitch;
                 if (freeLookData.worldsinger$isFreeLookEnabled()) {

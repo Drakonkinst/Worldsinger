@@ -24,8 +24,8 @@
 package io.github.drakonkinst.worldsinger.event;
 
 import io.github.drakonkinst.worldsinger.block.LivingSporeGrowthBlock;
-import io.github.drakonkinst.worldsinger.component.MidnightAetherBondComponent;
 import io.github.drakonkinst.worldsinger.component.ModComponents;
+import io.github.drakonkinst.worldsinger.cosmere.lumar.MidnightAetherBondManager;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.SporeKillingManager;
 import io.github.drakonkinst.worldsinger.effect.ModStatusEffects;
 import io.github.drakonkinst.worldsinger.item.ModItemTags;
@@ -110,7 +110,7 @@ public final class ModEventHandlers {
                         ItemStack attackingItem = livingEntity.getMainHandStack();
 
                         if (attackingItem.isIn(ModItemTags.KILLS_SPORE_GROWTHS)) {
-                            MidnightAetherBondComponent midnightAetherBond = ModComponents.MIDNIGHT_AETHER_BOND.get(
+                            MidnightAetherBondManager midnightAetherBond = ModComponents.MIDNIGHT_AETHER_BOND.get(
                                     player);
                             if (midnightAetherBond.hasAnyBonds()) {
                                 midnightAetherBond.dispelAllBonds(true);

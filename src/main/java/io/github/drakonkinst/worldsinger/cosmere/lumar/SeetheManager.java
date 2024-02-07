@@ -21,21 +21,25 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.github.drakonkinst.worldsinger.component;
 
-import dev.onyxstudios.cca.api.v3.component.tick.CommonTickingComponent;
-import io.github.drakonkinst.worldsinger.entity.CameraPossessable;
-import org.jetbrains.annotations.Nullable;
+package io.github.drakonkinst.worldsinger.cosmere.lumar;
 
-public interface PossessionComponent extends CommonTickingComponent {
+import io.github.drakonkinst.worldsinger.api.SyncableAttachment;
+import net.minecraft.world.World;
 
-    @Nullable CameraPossessable getPossessionTarget();
+public interface SeetheManager extends SyncableAttachment {
 
-    void setPossessionTarget(CameraPossessable entity);
-
-    void resetPossessionTarget();
-
-    default boolean isPossessing() {
-        return getPossessionTarget() != null;
+    static boolean areSporesFluidized(World world) {
+        return ((SeetheManagerAccess) world).worldsinger$getSeetheManager().isSeething();
     }
+
+    void serverTick();
+
+    void startSeethe(int ticks);
+
+    void stopSeethe(int ticks);
+
+    boolean isSeething();
+
+    int getTicksUntilNextCycle();
 }

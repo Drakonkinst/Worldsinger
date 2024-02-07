@@ -21,24 +21,31 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.github.drakonkinst.worldsinger.component;
+
+package io.github.drakonkinst.worldsinger.cosmere;
 
 import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
 import dev.onyxstudios.cca.api.v3.component.tick.ServerTickingComponent;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 
-public interface MidnightAetherBondComponent extends AutoSyncedComponent, ServerTickingComponent {
+public interface ThirstManager extends AutoSyncedComponent, ServerTickingComponent {
 
-    void updateBond(int id);
+    // Call when consuming an item
+    void drink(Item item, ItemStack stack);
 
-    void removeBond(int id);
+    // Add exhaustion like hunger, which can lead to water loss
+    void addDehydration(float exhaustion);
 
-    void onDeath();
+    // Directly add water
+    void add(int water);
 
-    void dispelAllBonds(boolean playEffects);
+    // Directly remove water
+    void remove(int water);
 
-    int getBondCount();
+    int get();
 
-    default boolean hasAnyBonds() {
-        return getBondCount() > 0;
-    }
+    boolean isFull();
+
+    boolean isCritical();
 }

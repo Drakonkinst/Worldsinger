@@ -25,7 +25,7 @@ package io.github.drakonkinst.worldsinger.mixin.entity;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarSeethe;
+import io.github.drakonkinst.worldsinger.cosmere.lumar.SeetheManager;
 import io.github.drakonkinst.worldsinger.util.ModEnums;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -54,7 +54,7 @@ public abstract class MobEntityMixin extends LivingEntity {
             return original.call(instance);
         }
 
-        if (LumarSeethe.areSporesFluidized(this.getWorld())) {
+        if (SeetheManager.areSporesFluidized(this.getWorld())) {
             return original.call(instance);
         }
         return STILLING_PENALTY;

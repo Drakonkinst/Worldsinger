@@ -21,23 +21,35 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.github.drakonkinst.worldsinger.block;
 
-import io.github.drakonkinst.worldsinger.cosmere.lumar.SeetheManager;
-import net.minecraft.block.BlockState;
-import net.minecraft.fluid.Fluids;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.state.property.Properties;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.random.Random;
+package io.github.drakonkinst.worldsinger.entity;
 
-public interface SporeGrowthBlock {
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-    // Spore growth blocks decay if not persistent, is not raining, and seethe is on.
-    // They decay faster if open to sky or above a fluid.
-    static boolean canDecay(ServerWorld world, BlockPos pos, BlockState state, Random random) {
-        return SeetheManager.areSporesFluidized(world) && !state.get(Properties.PERSISTENT)
-                && !world.isRaining() && (world.isSkyVisible(pos.up()) || !world.getFluidState(
-                pos.down()).isOf(Fluids.EMPTY) || random.nextInt(5) == 0);
+// Contrary to the name, the component is not limited to being used just for boats
+// However, we don't want to store type information (max durability) in the component, so
+// it gets its own special class instead. This leaves room for other entities to be silver-lined
+// with their own durability values.
+public class SilverLinedBoatData extends SilverLinedEntityData {
+
+    public static final int MAX_DURABILITY = 2500;
+    public static Codec<SilverLinedBoatData> CODEC = RecordCodecBuilder.create(
+            instance -> instance.group(Codec.INT.fieldOf("silver_lined")
+                            .forGetter(SilverLinedEntityData::getSilverDurability))
+                    .apply(instance, SilverLinedBoatData::new));
+
+    public SilverLinedBoatData(int durability) {
+        setSilverDurability(durability);
+    }
+
+    @Override
+    public int getMaxSilverDurability() {
+        return MAX_DURABILITY;
+    }
+
+    @Override
+    public void sync() {
+        // TODO
     }
 }

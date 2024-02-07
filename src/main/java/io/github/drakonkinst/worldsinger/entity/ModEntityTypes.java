@@ -27,7 +27,7 @@ import io.github.drakonkinst.worldsinger.Worldsinger;
 import io.github.drakonkinst.worldsinger.block.ModBlockTags;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.MidnightCreatureManager;
 import io.github.drakonkinst.worldsinger.mixin.accessor.SpawnRestrictionAccessor;
-import io.github.drakonkinst.worldsinger.worldgen.dimension.ModDimensionTypes;
+import io.github.drakonkinst.worldsinger.worldgen.dimension.ModDimensions;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
 import net.minecraft.entity.Entity;
@@ -110,7 +110,7 @@ public final class ModEntityTypes {
             SpawnReason spawnReason, BlockPos pos, Random random) {
         DimensionType lumarDimension = world.getRegistryManager()
                 .get(RegistryKeys.DIMENSION_TYPE)
-                .get(ModDimensionTypes.LUMAR);
+                .get(ModDimensions.DIMENSION_TYPE_LUMAR);
         if (lumarDimension != null && lumarDimension.equals(world.getDimension())) {
             return world.getBlockState(pos.down()).isIn(ModBlockTags.SEAGULLS_SPAWNABLE_ON)
                     && world.getBaseLightLevel(pos, 0) > 8;

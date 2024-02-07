@@ -23,8 +23,8 @@
  */
 package io.github.drakonkinst.worldsinger.entity.data;
 
-import io.github.drakonkinst.worldsinger.component.MidnightAetherBondComponent;
 import io.github.drakonkinst.worldsinger.component.ModComponents;
+import io.github.drakonkinst.worldsinger.cosmere.lumar.MidnightAetherBondManager;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.MidnightCreatureManager;
 import io.github.drakonkinst.worldsinger.entity.MidnightCreatureEntity;
 import io.github.drakonkinst.worldsinger.registry.ModSoundEvents;
@@ -38,7 +38,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.world.World;
 
-public class MidnightAetherBondData implements MidnightAetherBondComponent {
+public class PlayerMidnightAetherBondManager implements MidnightAetherBondManager {
 
     private static final String BOND_COUNT_KEY = "Bonds";
     private static final int EXPIRY_TIME = MidnightCreatureManager.MAX_DRAIN_INTERVAL_TICKS * 2;
@@ -49,7 +49,7 @@ public class MidnightAetherBondData implements MidnightAetherBondComponent {
     private int bondCount = 0;
     private int updateTicks = 0;
 
-    public MidnightAetherBondData(PlayerEntity player) {
+    public PlayerMidnightAetherBondManager(PlayerEntity player) {
         this.player = player;
     }
 

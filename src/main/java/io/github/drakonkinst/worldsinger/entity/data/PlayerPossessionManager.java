@@ -24,24 +24,27 @@
 package io.github.drakonkinst.worldsinger.entity.data;
 
 import io.github.drakonkinst.worldsinger.Worldsinger;
-import io.github.drakonkinst.worldsinger.component.PossessionComponent;
+import io.github.drakonkinst.worldsinger.cosmere.PossessionManager;
 import io.github.drakonkinst.worldsinger.entity.CameraPossessable;
 import io.github.drakonkinst.worldsinger.mixin.accessor.PlayerEntityInvoker;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.command.argument.EntityAnchorArgumentType.EntityAnchor;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.jetbrains.annotations.Nullable;
 
-public class PossessionPlayerData implements PossessionComponent {
+public class PlayerPossessionManager implements PossessionManager {
 
     private final PlayerEntity player;
     private CameraPossessable possessionTarget;
     private boolean shouldResetCamera = false;
 
-    public PossessionPlayerData(PlayerEntity player) {
+    public static PlayerPossessionManager create(PlayerEntity player) {
+        return new PlayerPossessionManager(player);
+    }
+
+    public PlayerPossessionManager(PlayerEntity player) {
         this.player = player;
     }
 
@@ -78,16 +81,6 @@ public class PossessionPlayerData implements PossessionComponent {
     @Nullable
     public CameraPossessable getPossessionTarget() {
         return possessionTarget;
-    }
-
-    @Override
-    public void readFromNbt(NbtCompound tag) {
-        // Intentionally empty
-    }
-
-    @Override
-    public void writeToNbt(NbtCompound tag) {
-        // Intentionally empty
     }
 
     @Override
@@ -130,10 +123,5 @@ public class PossessionPlayerData implements PossessionComponent {
     private boolean isInRange(LivingEntity entity) {
         final float maxPossessionDistance = possessionTarget.getMaxPossessionDistance();
         return entity.squaredDistanceTo(player) <= maxPossessionDistance * maxPossessionDistance;
-    }
-
-    @Override
-    public void tick() {
-
     }
 }

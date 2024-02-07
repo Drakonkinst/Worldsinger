@@ -23,8 +23,8 @@
  */
 package io.github.drakonkinst.worldsinger.item;
 
-import io.github.drakonkinst.worldsinger.component.MidnightAetherBondComponent;
 import io.github.drakonkinst.worldsinger.component.ModComponents;
+import io.github.drakonkinst.worldsinger.cosmere.lumar.MidnightAetherBondManager;
 import io.github.drakonkinst.worldsinger.entity.SilverVulnerable;
 import io.github.drakonkinst.worldsinger.material.ModToolMaterials;
 import io.github.drakonkinst.worldsinger.mixin.accessor.LivingEntityAccessor;
@@ -61,7 +61,7 @@ public class SilverKnifeItem extends KnifeItem {
     public ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity,
             Hand hand) {
         if (!user.getWorld().isClient() && entity instanceof PlayerEntity targetPlayer) {
-            MidnightAetherBondComponent midnightAetherBondData = ModComponents.MIDNIGHT_AETHER_BOND.get(
+            MidnightAetherBondManager midnightAetherBondData = ModComponents.MIDNIGHT_AETHER_BOND.get(
                     targetPlayer);
             if (midnightAetherBondData.hasAnyBonds()) {
                 midnightAetherBondData.dispelAllBonds(true);
@@ -76,7 +76,7 @@ public class SilverKnifeItem extends KnifeItem {
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
         if (!user.getWorld().isClient()) {
-            MidnightAetherBondComponent midnightAetherBondData = ModComponents.MIDNIGHT_AETHER_BOND.get(
+            MidnightAetherBondManager midnightAetherBondData = ModComponents.MIDNIGHT_AETHER_BOND.get(
                     user);
             ItemStack stack = user.getStackInHand(hand);
             if (midnightAetherBondData.hasAnyBonds()) {

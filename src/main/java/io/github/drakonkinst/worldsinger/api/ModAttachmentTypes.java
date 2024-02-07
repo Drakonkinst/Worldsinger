@@ -21,16 +21,23 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.github.drakonkinst.worldsinger.component;
 
-import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
-import io.github.drakonkinst.worldsinger.cosmere.SilverLined;
+package io.github.drakonkinst.worldsinger.api;
 
-public interface SilverLinedComponent extends AutoSyncedComponent, SilverLined {
+import io.github.drakonkinst.worldsinger.Worldsinger;
+import io.github.drakonkinst.worldsinger.entity.SilverLinedBoatData;
+import io.github.drakonkinst.worldsinger.entity.data.PlayerPossessionManager;
+import net.fabricmc.fabric.api.attachment.v1.AttachmentRegistry;
+import net.fabricmc.fabric.api.attachment.v1.AttachmentType;
 
-    int getSilverDurability();
+@SuppressWarnings("UnstableApiUsage")
+public class ModAttachmentTypes {
 
-    int getMaxSilverDurability();
+    public static final AttachmentType<SilverLinedBoatData> SILVER_LINED_BOAT = AttachmentRegistry.<SilverLinedBoatData>builder()
+            .persistent(SilverLinedBoatData.CODEC)
+            .initializer(() -> new SilverLinedBoatData(0))
+            .buildAndRegister(Worldsinger.id("silver_lined_boat"));
+    public static final AttachmentType<PlayerPossessionManager> POSSESSION = AttachmentRegistry.create(
+            Worldsinger.id("possession"));
 
-    void setSilverDurability(int durability);
 }

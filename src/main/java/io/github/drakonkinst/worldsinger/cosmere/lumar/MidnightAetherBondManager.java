@@ -21,22 +21,25 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.github.drakonkinst.worldsinger.component;
+
+package io.github.drakonkinst.worldsinger.cosmere.lumar;
 
 import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
 import dev.onyxstudios.cca.api.v3.component.tick.ServerTickingComponent;
 
-public interface SeetheComponent extends ServerTickingComponent, AutoSyncedComponent {
+public interface MidnightAetherBondManager extends AutoSyncedComponent, ServerTickingComponent {
 
-    void startSeethe();
+    void updateBond(int id);
 
-    void startSeethe(int ticks);
+    void removeBond(int id);
 
-    void stopSeethe();
+    void onDeath();
 
-    void stopSeethe(int ticks);
+    void dispelAllBonds(boolean playEffects);
 
-    boolean isSeething();
+    int getBondCount();
 
-    int getTicksUntilNextCycle();
+    default boolean hasAnyBonds() {
+        return getBondCount() > 0;
+    }
 }

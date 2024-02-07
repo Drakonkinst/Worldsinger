@@ -25,11 +25,11 @@ package io.github.drakonkinst.worldsinger.mixin.entity;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import io.github.drakonkinst.worldsinger.api.ModAttachmentTypes;
 import io.github.drakonkinst.worldsinger.block.ModBlockTags;
 import io.github.drakonkinst.worldsinger.block.SporeKillable;
-import io.github.drakonkinst.worldsinger.component.ModComponents;
-import io.github.drakonkinst.worldsinger.component.SilverLinedComponent;
-import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarSeethe;
+import io.github.drakonkinst.worldsinger.cosmere.SilverLined;
+import io.github.drakonkinst.worldsinger.cosmere.lumar.SeetheManager;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.SporeKillingManager;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.SporeParticleSpawner;
 import io.github.drakonkinst.worldsinger.fluid.AetherSporeFluid;
@@ -64,6 +64,7 @@ import org.spongepowered.asm.mixin.injection.Slice;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+@SuppressWarnings("UnstableApiUsage")
 @Mixin(BoatEntity.class)
 public abstract class BoatEntityMovementMixin extends VehicleEntity {
 
@@ -78,8 +79,6 @@ public abstract class BoatEntityMovementMixin extends VehicleEntity {
     private boolean inSporeSea;
     @Unique
     private AetherSporeFluid lastAetherSporeFluid = null;
-    @Unique
-    private SilverLinedComponent silverData;
     @Shadow
     private double waterLevel;
     @Shadow
@@ -96,12 +95,6 @@ public abstract class BoatEntityMovementMixin extends VehicleEntity {
 
     @Shadow
     public abstract boolean isPaddleMoving(int paddle);
-
-    @Inject(method = "<init>(Lnet/minecraft/entity/EntityType;Lnet/minecraft/world/World;)V", at = @At("TAIL"))
-    private void cacheSilverData(EntityType<? extends BoatEntity> entityType, World world,
-            CallbackInfo ci) {
-        this.silverData = ModComponents.SILVER_LINED.get(this);
-    }
 
     @Inject(method = "tick", at = @At("TAIL"))
     private void injectTick(CallbackInfo ci) {
@@ -130,7 +123,9 @@ public abstract class BoatEntityMovementMixin extends VehicleEntity {
         if (!this.inSporeSea) {
             return;
         }
-        if (silverData.getSilverDurability() <= 0) {
+        SilverLined silverData = this.getAttachedOrCreate(ModAttachmentTypes.SILVER_LINED_BOAT);
+        int silverDurability = silverData.getSilverDurability();
+        if (silverDurability <= 0) {
             return;
         }
 
@@ -152,7 +147,7 @@ public abstract class BoatEntityMovementMixin extends VehicleEntity {
                 (this.location == Location.UNDER_FLOWING_WATER ? UNDER_SPORES_SILVER_PENALTY_TICK
                         : 0) + sporesKilled;
         if (silverDamage > 0) {
-            silverData.setSilverDurability(silverData.getSilverDurability() - silverDamage);
+            silverData.setSilverDurability(silverDurability - silverDamage);
         }
     }
 
@@ -204,7 +199,7 @@ public abstract class BoatEntityMovementMixin extends VehicleEntity {
             this.inSporeSea = true;
             double fluidHeight = this.getFluidHeight(ModFluidTags.AETHER_SPORES);
             World world = this.getWorld();
-            if (!LumarSeethe.areSporesFluidized(world)
+            if (!SeetheManager.areSporesFluidized(world)
                     && fluidHeight <= MAX_FLUID_HEIGHT_TO_NOT_EMBED) {
                 cir.setReturnValue(Location.ON_LAND);
             } else {
@@ -286,7 +281,7 @@ public abstract class BoatEntityMovementMixin extends VehicleEntity {
 
     @Inject(method = "updateVelocity", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/vehicle/BoatEntity;setVelocity(DDD)V"), slice = @Slice(to = @At(value = "FIELD", opcode = Opcodes.PUTFIELD, target = "Lnet/minecraft/entity/vehicle/BoatEntity;yawVelocity:F")))
     private void addSporeSeaVelocityLogic(CallbackInfo ci) {
-        if (this.inSporeSea && !LumarSeethe.areSporesFluidized(this.getWorld())) {
+        if (this.inSporeSea && !SeetheManager.areSporesFluidized(this.getWorld())) {
             this.velocityDecay = 0.0f;
         }
     }
@@ -294,8 +289,8 @@ public abstract class BoatEntityMovementMixin extends VehicleEntity {
     @WrapOperation(method = "updatePaddles", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/vehicle/BoatEntity;setVelocity(Lnet/minecraft/util/math/Vec3d;)V"))
     private void restrictMovementInSporeSea(BoatEntity instance, Vec3d velocity,
             Operation<Void> original) {
-        if (this.inSporeSea && this.location != Location.ON_LAND && !LumarSeethe.areSporesFluidized(
-                this.getWorld())) {
+        if (this.inSporeSea && this.location != Location.ON_LAND
+                && !SeetheManager.areSporesFluidized(this.getWorld())) {
             return;
         }
         original.call(instance, velocity);
@@ -305,7 +300,7 @@ public abstract class BoatEntityMovementMixin extends VehicleEntity {
     private void restrictMovementInSporeSeaPassenger(CallbackInfo ci) {
         if (this.inSporeSea && this.location != Location.ON_LAND) {
             World world = this.getWorld();
-            if (!LumarSeethe.areSporesFluidized(world)) {
+            if (!SeetheManager.areSporesFluidized(world)) {
                 ci.cancel();
             }
         }
