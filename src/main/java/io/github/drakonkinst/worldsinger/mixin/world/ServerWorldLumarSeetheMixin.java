@@ -24,28 +24,33 @@
 
 package io.github.drakonkinst.worldsinger.mixin.world;
 
-import com.llamalad7.mixinextras.injector.ModifyReturnValue;
-import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarSeetheManager;
-import io.github.drakonkinst.worldsinger.cosmere.lumar.NullSeetheManager;
-import io.github.drakonkinst.worldsinger.worldgen.dimension.ModDimensions;
-import java.util.function.Supplier;
-import net.minecraft.registry.DynamicRegistryManager;
+import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
+import io.github.drakonkinst.worldsinger.cosmere.lumar.ServerLumarSeetheManager;
+import io.github.drakonkinst.worldsinger.network.packet.SeetheUpdatePayload;
+import java.util.List;
+import java.util.concurrent.Executor;
+import net.minecraft.network.packet.CustomPayload;
+import net.minecraft.network.packet.s2c.common.CustomPayloadS2CPacket;
 import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.WorldGenerationProgressListener;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.profiler.Profiler;
-import net.minecraft.world.MutableWorldProperties;
+import net.minecraft.util.math.random.RandomSequencesState;
 import net.minecraft.world.PersistentStateManager;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.World;
-import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.world.dimension.DimensionOptions;
+import net.minecraft.world.level.ServerWorldProperties;
+import net.minecraft.world.level.storage.LevelStorage.Session;
+import net.minecraft.world.spawner.SpecialSpawner;
+import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@SuppressWarnings("UnstableApiUsage")
 @Mixin(ServerWorld.class)
 public abstract class ServerWorldLumarSeetheMixin extends WorldLumarMixin implements
         StructureWorldAccess {
@@ -53,20 +58,24 @@ public abstract class ServerWorldLumarSeetheMixin extends WorldLumarMixin implem
     @Shadow
     public abstract PersistentStateManager getPersistentStateManager();
 
-    @Override
-    protected void worldsinger$initializeLumar(MutableWorldProperties properties,
-            RegistryKey<World> registryRef, DynamicRegistryManager registryManager,
-            RegistryEntry<DimensionType> dimensionEntry, Supplier<Profiler> profiler,
-            boolean isClient, boolean debugWorld, long biomeAccess, int maxChainedNeighborUpdates,
-            CallbackInfo ci) {
-        isLumar = registryRef.equals(ModDimensions.WORLD_LUMAR);
+    @Shadow
+    public abstract @NotNull MinecraftServer getServer();
+
+    @Unique
+    private boolean syncedSeething;
+
+    @Inject(method = "<init>", at = @At("TAIL"))
+    private void initializeLumar(MinecraftServer server, Executor workerExecutor, Session session,
+            ServerWorldProperties properties, RegistryKey<World> worldKey,
+            DimensionOptions dimensionOptions,
+            WorldGenerationProgressListener worldGenerationProgressListener, boolean debugWorld,
+            long seed, List<SpecialSpawner> spawners, boolean shouldTickTime,
+            RandomSequencesState randomSequencesState, CallbackInfo ci) {
         if (isLumar) {
             // Create the seethe manager using PersistentState instead
             seetheManager = this.getPersistentStateManager()
-                    .getOrCreate(LumarSeetheManager.getPersistentStateType(),
-                            LumarSeetheManager.NAME);
-        } else {
-            seetheManager = new NullSeetheManager();
+                    .getOrCreate(ServerLumarSeetheManager.getPersistentStateType(),
+                            ServerLumarSeetheManager.NAME);
         }
     }
 
@@ -74,10 +83,23 @@ public abstract class ServerWorldLumarSeetheMixin extends WorldLumarMixin implem
     private void tickSeethe(CallbackInfo ci) {
         if (isLumar) {
             seetheManager.serverTick();
+
+            // Sync seething
+            // For now, we only care about whether the seethe state is changed
+            boolean isSeething = seetheManager.isSeething();
+            if (isSeething != syncedSeething) {
+                syncedSeething = isSeething;
+                CustomPayload payload = isSeething ? SeetheUpdatePayload.SEETHE_START
+                        : SeetheUpdatePayload.SEETHE_STOP;
+                this.getServer()
+                        .getPlayerManager()
+                        .sendToDimension(new CustomPayloadS2CPacket(payload),
+                                this.getRegistryKey());
+            }
         }
     }
 
-    @ModifyReturnValue(method = "tickWeather", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/GameRules;getBoolean(Lnet/minecraft/world/GameRules$Key;)Z"))
+    @ModifyExpressionValue(method = "tickWeather", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/GameRules;getBoolean(Lnet/minecraft/world/GameRules$Key;)Z"))
     private boolean disableRainTickOnLumar(boolean original) {
         return original && !isLumar;
     }

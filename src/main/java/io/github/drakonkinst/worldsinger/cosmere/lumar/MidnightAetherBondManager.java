@@ -24,18 +24,20 @@
 
 package io.github.drakonkinst.worldsinger.cosmere.lumar;
 
-import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
-import dev.onyxstudios.cca.api.v3.component.tick.ServerTickingComponent;
+import io.github.drakonkinst.worldsinger.api.sync.SyncableAttachment;
+import net.minecraft.entity.player.PlayerEntity;
 
-public interface MidnightAetherBondManager extends AutoSyncedComponent, ServerTickingComponent {
+public interface MidnightAetherBondManager extends SyncableAttachment {
+
+    void serverTick(PlayerEntity player);
 
     void updateBond(int id);
 
     void removeBond(int id);
 
-    void onDeath();
+    void onDeath(PlayerEntity player);
 
-    void dispelAllBonds(boolean playEffects);
+    void dispelAllBonds(PlayerEntity player, boolean playEffects);
 
     int getBondCount();
 

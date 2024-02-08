@@ -16,10 +16,6 @@ repositories {
         url = "https://jitpack.io/"
     }
     maven {
-        name = "Ladysnake Mods"
-        url = "https://maven.ladysnake.org/releases"
-    }
-    maven {
         name = "ModMenu"
         url = "https://maven.terraformersmc.com/releases"
     }
@@ -65,30 +61,21 @@ dependencies {
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
     include(implementation("com.github.Chocohead:Fabric-ASM:${project.fabric_asm_version}"))
     include(modImplementation("com.github.Drakonkinst:DataTables:${project.data_tables_version}")) {
-        exclude(group: "net.fabricmc")
+        exclude(group: "net.fabricmc.fabric-api")
     }
 
-    modImplementation "net.tslat.smartbrainlib:SmartBrainLib-fabric-${project.sbl_version}"
+    modImplementation("net.tslat.smartbrainlib:SmartBrainLib-fabric-${project.sbl_version}") {
+        exclude(group: "net.fabricmc.fabric-api")
+    }
 
     // Mod Menu Integration (Optional)
     modApi("com.terraformersmc:modmenu:${project.modmenu_version}") {
-        exclude(group: "net.fabricmc")
+        exclude(group: "net.fabricmc.fabric-api")
     }
 
     // YACL (Optional)
     modCompileOnly("dev.isxander.yacl:yet-another-config-lib-fabric:${project.yacl_version}") {
-        exclude(group: "net.fabricmc")
-    }
-
-    // Cardinal Components
-    include(modImplementation("dev.onyxstudios.cardinal-components-api:cardinal-components-base:${project.cardinal_components_version}")) {
-        exclude(group: "net.fabricmc")
-    }
-    include(modImplementation("dev.onyxstudios.cardinal-components-api:cardinal-components-entity:${project.cardinal_components_version}")) {
-        exclude(group: "net.fabricmc")
-    }
-    include(modImplementation("dev.onyxstudios.cardinal-components-api:cardinal-components-scoreboard:${project.cardinal_components_version}")) {
-        exclude(group: "net.fabricmc")
+        exclude(group: "net.fabricmc.fabric-api")
     }
 }
 

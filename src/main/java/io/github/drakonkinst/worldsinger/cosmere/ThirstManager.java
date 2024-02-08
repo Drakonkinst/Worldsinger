@@ -24,11 +24,12 @@
 
 package io.github.drakonkinst.worldsinger.cosmere;
 
+import io.github.drakonkinst.worldsinger.api.sync.SyncableAttachment;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
-public interface ThirstManager {
+public interface ThirstManager extends SyncableAttachment {
 
     void update(LivingEntity entity);
 

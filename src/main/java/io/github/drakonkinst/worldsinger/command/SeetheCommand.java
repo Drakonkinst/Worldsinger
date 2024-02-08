@@ -56,7 +56,6 @@ public class SeetheCommand {
         seethe.startSeethe(-1);
         // TODO: Make these translatable
         context.getSource().sendFeedback(() -> Text.literal("Set seethe to ACTIVE"), true);
-        SeetheCommand.getSeethe(context).sync();
         return 1;
     }
 
@@ -68,7 +67,6 @@ public class SeetheCommand {
                 .sendFeedback(() -> Text.literal(
                                 "Set seethe to ACTIVE for " + seethe.getTicksUntilNextCycle() + " ticks"),
                         true);
-        SeetheCommand.getSeethe(context).sync();
         return 1;
     }
 
@@ -77,7 +75,6 @@ public class SeetheCommand {
         seethe.stopSeethe(-1);
         // TODO: Make these translatable
         context.getSource().sendFeedback(() -> Text.literal("Set seethe to INACTIVE"), true);
-        SeetheCommand.getSeethe(context).sync();
         return 1;
     }
 
@@ -89,7 +86,6 @@ public class SeetheCommand {
                 .sendFeedback(() -> Text.literal(
                                 "Set seethe to INACTIVE for " + seethe.getTicksUntilNextCycle() + " ticks"),
                         true);
-        SeetheCommand.getSeethe(context).sync();
         return 1;
     }
 
@@ -103,7 +99,6 @@ public class SeetheCommand {
                         "Seethe is " + (isSeething ? "ACTIVE" : "INACTIVE") + " for the next "
                                 + cycleTicks + " ticks, or " + (MathHelper.floor(
                                 cycleTicks * ModConstants.TICKS_TO_SECONDS)) + " seconds"));
-        SeetheCommand.getSeethe(context).sync();
         return 1;
     }
 

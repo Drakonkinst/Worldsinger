@@ -21,27 +21,29 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.github.drakonkinst.worldsinger.event;
 
-import net.fabricmc.fabric.api.event.Event;
-import net.fabricmc.fabric.api.event.EventFactory;
-import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.player.PlayerEntity;
+package io.github.drakonkinst.worldsinger.mixin.sync;
 
-// Called on server-side only, along with the entity_hurt_player advancement criterion.
-// Contains more information than ServerLivingEntityEvents.ALLOW_DAMAGE, but cannot cancel
-// the damage event.
-@FunctionalInterface
-public interface ServerPlayerHurtCallback {
+import io.github.drakonkinst.worldsinger.event.StartTrackingEntityCallback;
+import net.minecraft.entity.Entity;
+import net.minecraft.server.network.EntityTrackerEntry;
+import net.minecraft.server.network.ServerPlayerEntity;
+import org.spongepowered.asm.mixin.Final;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-    Event<ServerPlayerHurtCallback> EVENT = EventFactory.createArrayBacked(
-            ServerPlayerHurtCallback.class,
-            (listeners) -> (player, source, damageDealt, damageTaken, wasBlocked) -> {
-                for (ServerPlayerHurtCallback listener : listeners) {
-                    listener.onHurt(player, source, damageDealt, damageTaken, wasBlocked);
-                }
-            });
+@Mixin(EntityTrackerEntry.class)
+public class EntityTrackerEntryMixin {
 
-    void onHurt(PlayerEntity player, DamageSource source, float damageDealt, float damageTaken,
-            boolean wasBlocked);
+    @Shadow
+    @Final
+    private Entity entity;
+
+    @Inject(method = "startTracking", at = @At("RETURN"))
+    private void fireStartTrackingEntityEvent(ServerPlayerEntity player, CallbackInfo ci) {
+        StartTrackingEntityCallback.EVENT.invoker().onStartTracking(player, this.entity);
+    }
 }

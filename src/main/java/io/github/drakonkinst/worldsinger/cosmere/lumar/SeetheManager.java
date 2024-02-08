@@ -24,15 +24,17 @@
 
 package io.github.drakonkinst.worldsinger.cosmere.lumar;
 
-import io.github.drakonkinst.worldsinger.api.ServerTickableAttachment;
-import io.github.drakonkinst.worldsinger.api.SyncableAttachment;
 import net.minecraft.world.World;
 
-public interface SeetheManager extends SyncableAttachment, ServerTickableAttachment {
+public interface SeetheManager {
+
+    SeetheManager NULL = new NullSeetheManager();
 
     static boolean areSporesFluidized(World world) {
         return ((SeetheManagerAccess) world).worldsinger$getSeetheManager().isSeething();
     }
+
+    void serverTick();
 
     void startSeethe(int ticks);
 

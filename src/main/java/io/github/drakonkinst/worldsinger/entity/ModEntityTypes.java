@@ -26,7 +26,6 @@ package io.github.drakonkinst.worldsinger.entity;
 import io.github.drakonkinst.worldsinger.Worldsinger;
 import io.github.drakonkinst.worldsinger.block.ModBlockTags;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.MidnightCreatureManager;
-import io.github.drakonkinst.worldsinger.mixin.accessor.SpawnRestrictionAccessor;
 import io.github.drakonkinst.worldsinger.worldgen.dimension.ModDimensions;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
@@ -35,9 +34,6 @@ import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.entity.SpawnReason;
-import net.minecraft.entity.SpawnRestriction.Entry;
-import net.minecraft.entity.SpawnRestriction.Location;
-import net.minecraft.entity.SpawnRestriction.SpawnPredicate;
 import net.minecraft.entity.passive.AnimalEntity;
 import net.minecraft.entity.passive.ChickenEntity;
 import net.minecraft.registry.Registries;
@@ -45,7 +41,6 @@ import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
-import net.minecraft.world.Heightmap;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.dimension.DimensionType;
 
@@ -91,22 +86,12 @@ public final class ModEntityTypes {
                     .build());
 
     public static void initialize() {
-        // Overwrite chicken spawn restriction
-        // TODO: We're using chickens as a long-term stand-in for seagulls.
-        // Once we add a seagull mob sometime in the future, all this can be removed--along with
-        // the mixins and access wideners that helped make this happen.
-        // This is bad bad code and I'm sorry
-        SpawnRestrictionAccessor.worldsinger$getSpawnRestrictionsMap()
-                .put(EntityType.CHICKEN,
-                        new Entry(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, Location.ON_GROUND,
-                                (SpawnPredicate<ChickenEntity>) ModEntityTypes::canChickensSpawn));
-
         // Register attributes
         FabricDefaultAttributeRegistry.register(ModEntityTypes.MIDNIGHT_CREATURE,
                 MidnightCreatureManager.createMidnightCreatureAttributes());
     }
 
-    private static boolean canChickensSpawn(EntityType<ChickenEntity> type, WorldAccess world,
+    public static boolean canSeagullSpawn(EntityType<ChickenEntity> type, WorldAccess world,
             SpawnReason spawnReason, BlockPos pos, Random random) {
         DimensionType lumarDimension = world.getRegistryManager()
                 .get(RegistryKeys.DIMENSION_TYPE)

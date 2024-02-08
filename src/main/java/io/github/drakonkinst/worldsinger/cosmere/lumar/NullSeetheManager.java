@@ -51,9 +51,4 @@ public class NullSeetheManager implements SeetheManager {
     public void serverTick() {
         // Do nothing
     }
-
-    @Override
-    public void sync() {
-        // Do nothing
-    }
 }

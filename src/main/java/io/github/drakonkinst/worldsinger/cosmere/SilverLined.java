@@ -26,13 +26,12 @@ package io.github.drakonkinst.worldsinger.cosmere;
 import io.github.drakonkinst.worldsinger.Worldsinger;
 import io.github.drakonkinst.worldsinger.api.ModApi;
 import io.github.drakonkinst.worldsinger.api.ModAttachmentTypes;
-import io.github.drakonkinst.worldsinger.api.SyncableAttachment;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.item.ItemStack;
 
 @SuppressWarnings("UnstableApiUsage")
-public interface SilverLined extends SyncableAttachment {
+public interface SilverLined {
 
     static void transferDataFromEntityToItemStack(Entity entity, ItemStack itemStack) {
         SilverLined silverEntityData = entity.getAttached(ModAttachmentTypes.SILVER_LINED_BOAT);

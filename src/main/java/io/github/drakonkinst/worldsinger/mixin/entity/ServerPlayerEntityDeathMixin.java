@@ -24,7 +24,7 @@
 package io.github.drakonkinst.worldsinger.mixin.entity;
 
 import com.mojang.authlib.GameProfile;
-import io.github.drakonkinst.worldsinger.component.ModComponents;
+import io.github.drakonkinst.worldsinger.api.ModAttachmentTypes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -45,6 +45,6 @@ public abstract class ServerPlayerEntityDeathMixin extends PlayerEntity {
 
     @Inject(method = "onDeath", at = @At("TAIL"))
     private void callDeathEvents(DamageSource damageSource, CallbackInfo ci) {
-        ModComponents.MIDNIGHT_AETHER_BOND.get(this).onDeath();
+        this.getAttachedOrCreate(ModAttachmentTypes.MIDNIGHT_AETHER_BOND).onDeath(this);
     }
 }

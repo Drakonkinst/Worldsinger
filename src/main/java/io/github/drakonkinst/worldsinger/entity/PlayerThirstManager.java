@@ -36,18 +36,23 @@ import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.world.Difficulty;
 
 // Similar to Hunger, but uses different names.
 // Thirst is simpler, and has no saturation equivalent. It goes down faster than hunger by default.
 public class PlayerThirstManager implements ThirstManager {
 
+    private static final String KEY_THIRST_LEVEL = "thirst_level";
+    private static final String KEY_DEHYDRATION_LEVEL = "dehydration_level";
+    private static final String KEY_DEHYDRATION_TICK_TIMER = "dehydration_tick_timer";
+
     public static final Codec<PlayerThirstManager> CODEC = RecordCodecBuilder.create(
             instance -> instance.group(
-                            Codec.INT.fieldOf("thirst_level").forGetter(PlayerThirstManager::get),
-                            Codec.FLOAT.fieldOf("dehydration_level")
+                            Codec.INT.fieldOf(KEY_THIRST_LEVEL).forGetter(PlayerThirstManager::get),
+                            Codec.FLOAT.fieldOf(KEY_DEHYDRATION_LEVEL)
                                     .forGetter(playerThirstManager -> playerThirstManager.dehydration),
-                            Codec.INT.fieldOf("dehydration_tick_timer")
+                            Codec.INT.fieldOf(KEY_DEHYDRATION_TICK_TIMER)
                                     .forGetter(
                                             playerThirstManager -> playerThirstManager.dehydrationTickTimer))
                     .apply(instance, PlayerThirstManager::new));
@@ -79,12 +84,6 @@ public class PlayerThirstManager implements ThirstManager {
         this.thirstLevel = thirstLevel;
         this.dehydration = dehydration;
         this.dehydrationTickTimer = dehydrationTickTimer;
-    }
-
-    // Used for syncing only, should not be used by any other methods
-    // For now, only thirst level needs to be synced -- the others do not produce any visual updates
-    public void setThirstLevel(int thirstLevel) {
-        this.thirstLevel = thirstLevel;
     }
 
     @Override
@@ -174,5 +173,15 @@ public class PlayerThirstManager implements ThirstManager {
     @Override
     public boolean isCritical() {
         return thirstLevel < MIN_NATURAL_THIRST;
+    }
+
+    @Override
+    public void syncToNbt(NbtCompound nbt) {
+        nbt.putInt(KEY_THIRST_LEVEL, thirstLevel);
+    }
+
+    @Override
+    public void syncFromNbt(NbtCompound nbt) {
+        thirstLevel = nbt.getInt(KEY_THIRST_LEVEL);
     }
 }

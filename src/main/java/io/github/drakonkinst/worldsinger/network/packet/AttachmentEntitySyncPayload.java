@@ -22,36 +22,36 @@
  * SOFTWARE.
  */
 
-package io.github.drakonkinst.worldsinger.entity;
+package io.github.drakonkinst.worldsinger.network.packet;
 
-import io.github.drakonkinst.worldsinger.api.sync.SyncableAttachment;
-import io.github.drakonkinst.worldsinger.cosmere.SilverLined;
+import io.github.drakonkinst.worldsinger.network.ModPayloadRegistry;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.RegistryByteBuf;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.packet.CustomPayload;
+import net.minecraft.util.Identifier;
 
-public abstract class SilverLinedEntityData implements SilverLined, SyncableAttachment {
+public record AttachmentEntitySyncPayload(int entityId, Identifier attachmentId,
+                                          NbtCompound nbt) implements CustomPayload {
 
-    protected static final String KEY_SILVER_LINED = "silver_lined";
+    public static final Id<AttachmentEntitySyncPayload> ID = ModPayloadRegistry.id(
+            "attachment_entity_sync");
+    public static final PacketCodec<RegistryByteBuf, AttachmentEntitySyncPayload> CODEC = CustomPayload.codecOf(
+            AttachmentEntitySyncPayload::write, AttachmentEntitySyncPayload::new);
 
-    private int silverDurability = 0;
+    public AttachmentEntitySyncPayload(PacketByteBuf buf) {
+        this(buf.readVarInt(), buf.readIdentifier(), buf.readNbt());
+    }
 
-    @Override
-    public void setSilverDurability(int durability) {
-        silverDurability = MathHelper.clamp(durability, 0, getMaxSilverDurability());
+    private void write(PacketByteBuf buf) {
+        buf.writeVarInt(entityId);
+        buf.writeIdentifier(attachmentId);
+        buf.writeNbt(nbt);
     }
 
     @Override
-    public int getSilverDurability() {
-        return silverDurability;
-    }
-
-    @Override
-    public void syncToNbt(NbtCompound nbt) {
-        nbt.putInt(KEY_SILVER_LINED, silverDurability);
-    }
-
-    @Override
-    public void syncFromNbt(NbtCompound nbt) {
-        silverDurability = nbt.getInt(KEY_SILVER_LINED);
+    public Id<? extends CustomPayload> getId() {
+        return ID;
     }
 }

@@ -21,27 +21,19 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.github.drakonkinst.worldsinger.event;
 
-import net.fabricmc.fabric.api.event.Event;
-import net.fabricmc.fabric.api.event.EventFactory;
-import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.player.PlayerEntity;
+package io.github.drakonkinst.worldsinger.api.sync;
 
-// Called on server-side only, along with the entity_hurt_player advancement criterion.
-// Contains more information than ServerLivingEntityEvents.ALLOW_DAMAGE, but cannot cancel
-// the damage event.
-@FunctionalInterface
-public interface ServerPlayerHurtCallback {
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.server.network.ServerPlayerEntity;
 
-    Event<ServerPlayerHurtCallback> EVENT = EventFactory.createArrayBacked(
-            ServerPlayerHurtCallback.class,
-            (listeners) -> (player, source, damageDealt, damageTaken, wasBlocked) -> {
-                for (ServerPlayerHurtCallback listener : listeners) {
-                    listener.onHurt(player, source, damageDealt, damageTaken, wasBlocked);
-                }
-            });
+public interface SyncableAttachment {
 
-    void onHurt(PlayerEntity player, DamageSource source, float damageDealt, float damageTaken,
-            boolean wasBlocked);
+    void syncToNbt(NbtCompound nbt);
+
+    void syncFromNbt(NbtCompound nbt);
+
+    default boolean shouldSyncWith(ServerPlayerEntity entity) {
+        return true;
+    }
 }

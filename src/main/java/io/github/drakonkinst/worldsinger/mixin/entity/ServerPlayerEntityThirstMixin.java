@@ -2,12 +2,12 @@ package io.github.drakonkinst.worldsinger.mixin.entity;
 
 import com.mojang.authlib.GameProfile;
 import io.github.drakonkinst.worldsinger.api.ModAttachmentTypes;
+import io.github.drakonkinst.worldsinger.api.sync.AttachmentSync;
 import io.github.drakonkinst.worldsinger.entity.PlayerThirstManager;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import org.apache.commons.lang3.NotImplementedException;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -32,8 +32,7 @@ public abstract class ServerPlayerEntityThirstMixin extends PlayerEntity {
         PlayerThirstManager thirstManager = this.getAttachedOrCreate(ModAttachmentTypes.THIRST);
         if (syncedThirstLevel != thirstManager.get()) {
             syncedThirstLevel = thirstManager.get();
-            // TODO: Sync
-            throw new NotImplementedException();
+            AttachmentSync.sync(this, ModAttachmentTypes.THIRST, thirstManager);
         }
 
     }

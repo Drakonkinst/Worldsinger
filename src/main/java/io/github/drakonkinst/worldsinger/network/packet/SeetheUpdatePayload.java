@@ -21,20 +21,25 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.github.drakonkinst.worldsinger.mixin.accessor;
 
-import java.util.Map;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.SpawnRestriction;
-import net.minecraft.entity.SpawnRestriction.Entry;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.gen.Accessor;
+package io.github.drakonkinst.worldsinger.network.packet;
 
-@Mixin(SpawnRestriction.class)
-public interface SpawnRestrictionAccessor {
+import io.github.drakonkinst.worldsinger.network.ModPayloadRegistry;
+import io.netty.buffer.ByteBuf;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
+import net.minecraft.network.packet.CustomPayload;
 
-    @Accessor("RESTRICTIONS")
-    static Map<EntityType<?>, Entry> worldsinger$getSpawnRestrictionsMap() {
-        throw new AssertionError();
+public record SeetheUpdatePayload(boolean isSeething) implements CustomPayload {
+
+    public static final SeetheUpdatePayload SEETHE_START = new SeetheUpdatePayload(true);
+    public static final SeetheUpdatePayload SEETHE_STOP = new SeetheUpdatePayload(false);
+    public static final Id<SeetheUpdatePayload> ID = ModPayloadRegistry.id("seethe_update");
+    public static final PacketCodec<ByteBuf, SeetheUpdatePayload> CODEC = PacketCodecs.BOOL.xmap(
+            SeetheUpdatePayload::new, SeetheUpdatePayload::isSeething);
+
+    @Override
+    public Id<? extends CustomPayload> getId() {
+        return ID;
     }
 }

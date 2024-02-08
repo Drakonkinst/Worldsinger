@@ -25,27 +25,27 @@ package io.github.drakonkinst.worldsinger.cosmere.lumar;
 
 import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.math.intprovider.BiasedToBottomIntProvider;
 import net.minecraft.util.math.intprovider.IntProvider;
 import net.minecraft.util.math.intprovider.UniformIntProvider;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.PersistentState;
-import org.apache.commons.lang3.NotImplementedException;
 
-public class LumarSeetheManager extends PersistentState implements SeetheManager {
+public class ServerLumarSeetheManager extends PersistentState implements SeetheManager {
 
     public static final String NAME = "seethe";
     private static final String NBT_TICKS_REMAINING = "ticksRemaining";
     private static final String NBT_CYCLES_UNTIL_NEXT_LONG_STILLING = "cyclesUntilNextLongStilling";
     private static final String NBT_IS_SEETHING = "isSeething";
 
-    public static PersistentState.Type<LumarSeetheManager> getPersistentStateType() {
-        return new PersistentState.Type<>(LumarSeetheManager::new, LumarSeetheManager::fromNbt,
-                DataFixTypes.LEVEL);
+    public static PersistentState.Type<ServerLumarSeetheManager> getPersistentStateType() {
+        return new PersistentState.Type<>(ServerLumarSeetheManager::new,
+                (nbt, registryLookup) -> ServerLumarSeetheManager.fromNbt(nbt), DataFixTypes.LEVEL);
     }
 
-    private static LumarSeetheManager fromNbt(NbtCompound nbt) {
-        LumarSeetheManager seetheManager = new LumarSeetheManager();
+    private static ServerLumarSeetheManager fromNbt(NbtCompound nbt) {
+        ServerLumarSeetheManager seetheManager = new ServerLumarSeetheManager();
         seetheManager.isSeething = nbt.getBoolean(NBT_IS_SEETHING);
         seetheManager.ticksRemaining = nbt.getInt(NBT_TICKS_REMAINING);
         seetheManager.cyclesUntilLongStilling = nbt.getInt(NBT_CYCLES_UNTIL_NEXT_LONG_STILLING);
@@ -71,14 +71,14 @@ public class LumarSeetheManager extends PersistentState implements SeetheManager
     private int ticksRemaining;
     private int cyclesUntilLongStilling;
 
-    public LumarSeetheManager() {
+    public ServerLumarSeetheManager() {
         // Default values
         this.startSeethe(-1);
         this.cyclesUntilLongStilling = STILLING_LONG_CYCLE_PROVIDER.get(this.random);
     }
 
     @Override
-    public NbtCompound writeNbt(NbtCompound nbt) {
+    public NbtCompound writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
         nbt.putBoolean(NBT_IS_SEETHING, isSeething);
         nbt.putInt(NBT_TICKS_REMAINING, ticksRemaining);
         nbt.putInt(NBT_CYCLES_UNTIL_NEXT_LONG_STILLING, cyclesUntilLongStilling);
@@ -107,7 +107,7 @@ public class LumarSeetheManager extends PersistentState implements SeetheManager
                 this.startSeethe(-1);
             }
         }
-        sync();
+        this.markDirty();
     }
 
     @Override
@@ -140,10 +140,4 @@ public class LumarSeetheManager extends PersistentState implements SeetheManager
         return ticksRemaining;
     }
 
-    @Override
-    public void sync() {
-        this.markDirty();
-        // TODO: Send a packet if there's a noticeable display change
-        throw new NotImplementedException();
-    }
 }

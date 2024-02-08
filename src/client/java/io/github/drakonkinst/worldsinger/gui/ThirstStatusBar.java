@@ -25,7 +25,6 @@ package io.github.drakonkinst.worldsinger.gui;
 
 import io.github.drakonkinst.worldsinger.Worldsinger;
 import io.github.drakonkinst.worldsinger.api.ModAttachmentTypes;
-import io.github.drakonkinst.worldsinger.component.ModComponents;
 import io.github.drakonkinst.worldsinger.effect.ModStatusEffects;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
@@ -85,7 +84,8 @@ public class ThirstStatusBar {
     // TODO: Should typically show when equipping a water-based power
     // TODO: Or maybe when holding an item that changes thirst?
     public static boolean shouldRenderThirstBar(PlayerEntity player) {
-        return player.getAttachedOrCreate(ModAttachmentTypes.THIRST).isCritical()
-                || ModComponents.MIDNIGHT_AETHER_BOND.get(player).getBondCount() > 0;
+        return player.getAttachedOrCreate(ModAttachmentTypes.THIRST).isCritical() ||
+                player.getAttachedOrCreate(ModAttachmentTypes.MIDNIGHT_AETHER_BOND).getBondCount()
+                        > 0;
     }
 }

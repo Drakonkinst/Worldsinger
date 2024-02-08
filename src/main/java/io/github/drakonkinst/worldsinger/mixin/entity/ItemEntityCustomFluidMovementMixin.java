@@ -23,8 +23,7 @@
  */
 package io.github.drakonkinst.worldsinger.mixin.entity;
 
-import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
-import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import com.llamalad7.mixinextras.injector.WrapWithCondition;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.SeetheManager;
 import io.github.drakonkinst.worldsinger.fluid.ModFluidTags;
 import io.github.drakonkinst.worldsinger.util.EntityUtil;
@@ -65,23 +64,23 @@ public abstract class ItemEntityCustomFluidMovementMixin extends Entity {
     @Shadow
     protected abstract void applyLavaBuoyancy();
 
-    @WrapOperation(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/ItemEntity;hasNoGravity()Z"))
-    private boolean injectCustomFluidCheck(ItemEntity instance, Operation<Boolean> original) {
+    @WrapWithCondition(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/ItemEntity;applyGravity()V"))
+    private boolean injectCustomFluidCheck(ItemEntity instance) {
         double height = this.getStandingEyeHeight() - HEIGHT_OFFSET;
         if (EntityUtil.isSubmergedInSporeSea(this)
                 && this.getFluidHeight(ModFluidTags.AETHER_SPORES) > height) {
             this.applySporeSeaBuoyancy();
             // Skip original gravity
-            return true;
+            return false;
         }
 
         if (EntityUtil.isSubmergedInFluid(this, ModFluidTags.SUNLIGHT)
                 && this.getFluidHeight(ModFluidTags.SUNLIGHT) > height) {
             // Identical to lava buoyancy
             this.applyLavaBuoyancy();
-            return true;
+            return false;
         }
-        return original.call(instance);
+        return true;
     }
 
     @Unique

@@ -26,6 +26,7 @@ package io.github.drakonkinst.worldsinger.entity;
 import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.data.DataTracker;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.world.World;
@@ -43,7 +44,7 @@ public abstract class ServerSideEntity extends Entity {
     }
 
     @Override
-    protected void initDataTracker() {
+    protected void initDataTracker(DataTracker.Builder builder) {
         // Track no data by default, can be overridden
     }
 

@@ -1,9 +1,11 @@
 package io.github.drakonkinst.worldsinger.network;
 
 import io.github.drakonkinst.worldsinger.Worldsinger;
+import io.github.drakonkinst.worldsinger.network.packet.AttachmentEntitySyncPayload;
 import io.github.drakonkinst.worldsinger.network.packet.PossessAttackPayload;
 import io.github.drakonkinst.worldsinger.network.packet.PossessSetPayload;
 import io.github.drakonkinst.worldsinger.network.packet.PossessUpdatePayload;
+import io.github.drakonkinst.worldsinger.network.packet.SeetheUpdatePayload;
 import io.github.drakonkinst.worldsinger.network.packet.ShapeshiftAttackPayload;
 import io.github.drakonkinst.worldsinger.network.packet.ShapeshiftSyncPayload;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
@@ -25,6 +27,9 @@ public final class ModPayloadRegistry {
                 .register(ShapeshiftSyncPayload.ID, ShapeshiftSyncPayload.CODEC);
         PayloadTypeRegistry.playS2C()
                 .register(ShapeshiftAttackPayload.ID, ShapeshiftAttackPayload.CODEC);
+        PayloadTypeRegistry.playS2C()
+                .register(AttachmentEntitySyncPayload.ID, AttachmentEntitySyncPayload.CODEC);
+        PayloadTypeRegistry.playS2C().register(SeetheUpdatePayload.ID, SeetheUpdatePayload.CODEC);
     }
 
     private ModPayloadRegistry() {}

@@ -23,6 +23,8 @@
  */
 package io.github.drakonkinst.worldsinger.item;
 
+import static io.github.drakonkinst.worldsinger.registry.ModArmorMaterials.STEEL_DURABILITY_MULTIPLIER;
+
 import io.github.drakonkinst.worldsinger.Worldsinger;
 import io.github.drakonkinst.worldsinger.block.ModBlocks;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.AetherSpores;
@@ -34,10 +36,10 @@ import io.github.drakonkinst.worldsinger.cosmere.lumar.SunlightSpores;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.VerdantSpores;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.ZephyrSpores;
 import io.github.drakonkinst.worldsinger.entity.ModEntityTypes;
-import io.github.drakonkinst.worldsinger.material.ModArmorMaterials;
-import io.github.drakonkinst.worldsinger.material.ModToolMaterials;
+import io.github.drakonkinst.worldsinger.registry.ModArmorMaterials;
 import io.github.drakonkinst.worldsinger.registry.ModFoodComponents;
 import io.github.drakonkinst.worldsinger.registry.ModSoundEvents;
+import io.github.drakonkinst.worldsinger.registry.ModToolMaterials;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.minecraft.block.Block;
@@ -140,13 +142,21 @@ public final class ModItems {
     public static final Item STEEL_INGOT = register("steel_ingot", new Item(new Item.Settings()));
     public static final Item STEEL_NUGGET = register("steel_nugget", new Item(new Item.Settings()));
     public static final Item STEEL_HELMET = register("steel_helmet",
-            new ArmorItem(ModArmorMaterials.STEEL, ArmorItem.Type.HELMET, new Item.Settings()));
+            new ArmorItem(ModArmorMaterials.STEEL, ArmorItem.Type.HELMET,
+                    new Item.Settings().maxDamageIfAbsent(
+                            ArmorItem.Type.HELMET.getMaxDamage(STEEL_DURABILITY_MULTIPLIER))));
     public static final Item STEEL_CHESTPLATE = register("steel_chestplate",
-            new ArmorItem(ModArmorMaterials.STEEL, ArmorItem.Type.CHESTPLATE, new Item.Settings()));
+            new ArmorItem(ModArmorMaterials.STEEL, ArmorItem.Type.CHESTPLATE,
+                    new Item.Settings().maxDamageIfAbsent(
+                            ArmorItem.Type.CHESTPLATE.getMaxDamage(STEEL_DURABILITY_MULTIPLIER))));
     public static final Item STEEL_LEGGINGS = register("steel_leggings",
-            new ArmorItem(ModArmorMaterials.STEEL, ArmorItem.Type.LEGGINGS, new Item.Settings()));
+            new ArmorItem(ModArmorMaterials.STEEL, ArmorItem.Type.LEGGINGS,
+                    new Item.Settings().maxDamageIfAbsent(
+                            ArmorItem.Type.LEGGINGS.getMaxDamage(STEEL_DURABILITY_MULTIPLIER))));
     public static final Item STEEL_BOOTS = register("steel_boots",
-            new ArmorItem(ModArmorMaterials.STEEL, ArmorItem.Type.BOOTS, new Item.Settings()));
+            new ArmorItem(ModArmorMaterials.STEEL, ArmorItem.Type.BOOTS,
+                    new Item.Settings().maxDamageIfAbsent(
+                            ArmorItem.Type.BOOTS.getMaxDamage(STEEL_DURABILITY_MULTIPLIER))));
     public static final Item STEEL_SWORD = register("steel_sword",
             new SwordItem(ModToolMaterials.STEEL, 3, -2.4f, new Item.Settings()));
     public static final Item STEEL_PICKAXE = register("steel_pickaxe",

@@ -27,6 +27,7 @@ package io.github.drakonkinst.worldsinger.api;
 import io.github.drakonkinst.worldsinger.Worldsinger;
 import io.github.drakonkinst.worldsinger.entity.PlayerThirstManager;
 import io.github.drakonkinst.worldsinger.entity.SilverLinedBoatData;
+import io.github.drakonkinst.worldsinger.entity.data.PlayerMidnightAetherBondManager;
 import io.github.drakonkinst.worldsinger.entity.data.PlayerPossessionManager;
 import net.fabricmc.fabric.api.attachment.v1.AttachmentRegistry;
 import net.fabricmc.fabric.api.attachment.v1.AttachmentType;
@@ -44,5 +45,7 @@ public class ModAttachmentTypes {
             .persistent(PlayerThirstManager.CODEC)
             .initializer(PlayerThirstManager::new)
             .buildAndRegister(Worldsinger.id("thirst"));
-
+    public static final AttachmentType<PlayerMidnightAetherBondManager> MIDNIGHT_AETHER_BOND = AttachmentRegistry.<PlayerMidnightAetherBondManager>builder()
+            .initializer(PlayerMidnightAetherBondManager::new)
+            .buildAndRegister(Worldsinger.id("midnight_aether_bond"));
 }

@@ -25,18 +25,29 @@ package io.github.drakonkinst.worldsinger.network;
 
 import io.github.drakonkinst.worldsinger.Worldsinger;
 import io.github.drakonkinst.worldsinger.api.ModAttachmentTypes;
+import io.github.drakonkinst.worldsinger.api.sync.SyncableAttachment;
 import io.github.drakonkinst.worldsinger.cosmere.PossessionManager;
 import io.github.drakonkinst.worldsinger.cosmere.ShapeshiftingManager;
+import io.github.drakonkinst.worldsinger.cosmere.lumar.SeetheManagerAccess;
 import io.github.drakonkinst.worldsinger.entity.CameraPossessable;
 import io.github.drakonkinst.worldsinger.entity.Shapeshifter;
 import io.github.drakonkinst.worldsinger.entity.data.PlayerPossessionManager;
+import io.github.drakonkinst.worldsinger.network.packet.AttachmentEntitySyncPayload;
 import io.github.drakonkinst.worldsinger.network.packet.PossessSetPayload;
+import io.github.drakonkinst.worldsinger.network.packet.SeetheUpdatePayload;
 import io.github.drakonkinst.worldsinger.network.packet.ShapeshiftAttackPayload;
 import io.github.drakonkinst.worldsinger.network.packet.ShapeshiftSyncPayload;
 import io.github.drakonkinst.worldsinger.util.PossessionClientUtil;
+import io.github.drakonkinst.worldsinger.worldgen.dimension.ModDimensions;
+import net.fabricmc.fabric.api.attachment.v1.AttachmentType;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.fabricmc.fabric.impl.attachment.AttachmentRegistryImpl;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.world.World;
 
 @SuppressWarnings({ "UnqualifiedStaticUsage", "UnstableApiUsage" })
 public final class ClientNetworkHandler {
@@ -44,6 +55,51 @@ public final class ClientNetworkHandler {
     public static void registerPacketHandlers() {
         registerShapeshiftingPacketHandlers();
         registerPossessionPacketHandlers();
+        ClientPlayNetworking.registerGlobalReceiver(AttachmentEntitySyncPayload.ID,
+                (payload, context) -> {
+                    AttachmentType<?> attachmentType = AttachmentRegistryImpl.get(
+                            payload.attachmentId());
+                    if (attachmentType == null) {
+                        Worldsinger.LOGGER.warn(
+                                "Could not process entity attachment sync packet because attachment type does not exist");
+                        return;
+                    }
+                    // ClientPlayerEntity player = context.player(); // This is null for some reason?
+                    ClientPlayerEntity player = MinecraftClient.getInstance().player;
+                    if (player == null) {
+                        Worldsinger.LOGGER.warn(
+                                "Could not process entity attachment sync packet because player is null");
+                        return;
+                    }
+                    Entity entity = player.getWorld().getEntityById(payload.entityId());
+                    if (entity == null) {
+                        Worldsinger.LOGGER.warn(
+                                "Could not process entity attachment sync packet because entity does not exist");
+                        return;
+                    }
+                    Object obj = entity.getAttachedOrCreate(attachmentType);
+                    if (obj instanceof SyncableAttachment attachment) {
+                        attachment.syncFromNbt(payload.nbt());
+                        Worldsinger.LOGGER.info("Attachment synced");
+                    } else {
+                        Worldsinger.LOGGER.warn(
+                                "Could not process entity attachment sync because attachment is not syncable");
+                    }
+                });
+        ClientPlayNetworking.registerGlobalReceiver(SeetheUpdatePayload.ID, (payload, context) -> {
+            // World world = context.player().getWorld();
+            World world = MinecraftClient.getInstance().world;
+            if (world == null) {
+                return;
+            }
+            if (world.getRegistryKey().equals(ModDimensions.WORLD_LUMAR)) {
+                if (payload.isSeething()) {
+                    ((SeetheManagerAccess) world).worldsinger$getSeetheManager().startSeethe(0);
+                } else {
+                    ((SeetheManagerAccess) world).worldsinger$getSeetheManager().stopSeethe(0);
+                }
+            }
+        });
     }
 
     private static void registerShapeshiftingPacketHandlers() {
@@ -53,7 +109,14 @@ public final class ClientNetworkHandler {
                     final String entityType = payload.entityType();
                     final NbtCompound entityData = payload.entityData();
 
-                    Entity entity = context.player().getWorld().getEntityById(id);
+                    // Entity entity = context.player().getWorld().getEntityById(id);
+                    World world = MinecraftClient.getInstance().world;
+                    if(world == null) {
+                        Worldsinger.LOGGER.warn(
+                                "Failed to process sync packet since world is null");
+                        return;
+                    }
+                    Entity entity = MinecraftClient.getInstance().world.getEntityById(id);
                     if (entity == null) {
                         Worldsinger.LOGGER.warn(
                                 "Failed to process sync packet since entity with ID " + id
@@ -81,7 +144,14 @@ public final class ClientNetworkHandler {
                 (payload, context) -> {
                     final int id = payload.entityId();
 
-                    Entity entity = context.player().getWorld().getEntityById(id);
+                    // Entity entity = context.player().getWorld().getEntityById(id);
+                    World world = MinecraftClient.getInstance().world;
+                    if(world == null) {
+                        Worldsinger.LOGGER.warn(
+                                "Failed to process sync packet since world is null");
+                        return;
+                    }
+                    Entity entity = MinecraftClient.getInstance().world.getEntityById(id);
                     if (entity == null) {
                         Worldsinger.LOGGER.warn(
                                 "Failed to process attack packet since entity with ID " + id
@@ -101,9 +171,14 @@ public final class ClientNetworkHandler {
     private static void registerPossessionPacketHandlers() {
         ClientPlayNetworking.registerGlobalReceiver(PossessSetPayload.ID, (payload, context) -> {
             final int entityIdToPossess = payload.entityId();
-            PossessionManager possessionManager = context.player()
+            // ClientPlayerEntity player = context.player();
+            ClientPlayerEntity player = MinecraftClient.getInstance().player;
+            if(player == null) {
+                return;
+            }
+            PossessionManager possessionManager = player
                     .getAttachedOrCreate(ModAttachmentTypes.POSSESSION,
-                            () -> PlayerPossessionManager.create(context.player()));
+                            () -> PlayerPossessionManager.create(player));
             if (entityIdToPossess < 0) {
                 possessionManager.resetPossessionTarget();
             } else {
@@ -116,7 +191,7 @@ public final class ClientNetworkHandler {
                     // Already set
                     return;
                 }
-                Entity entity = context.player().getWorld().getEntityById(entityIdToPossess);
+                Entity entity = player.getWorld().getEntityById(entityIdToPossess);
                 if (entity instanceof CameraPossessable cameraPossessable) {
                     possessionManager.setPossessionTarget(cameraPossessable);
                 }

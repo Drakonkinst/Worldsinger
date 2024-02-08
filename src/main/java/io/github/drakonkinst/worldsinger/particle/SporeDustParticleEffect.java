@@ -46,7 +46,7 @@ public class SporeDustParticleEffect extends AbstractDustParticleEffect {
             PacketCodecs.VECTOR3F, effect -> effect.color, PacketCodecs.FLOAT,
             effect -> effect.scale, SporeDustParticleEffect::new);
 
-    public static final ParticleEffect.Factory<SporeDustParticleEffect> PARAMETERS_FACTORY = (particleType, stringReader) -> {
+    public static final ParticleEffect.Factory<SporeDustParticleEffect> PARAMETERS_FACTORY = (particleType, stringReader, wrapperLookup) -> {
         Vector3f vector3f = AbstractDustParticleEffect.readColor(stringReader);
         stringReader.expect(' ');
         float f = stringReader.readFloat();

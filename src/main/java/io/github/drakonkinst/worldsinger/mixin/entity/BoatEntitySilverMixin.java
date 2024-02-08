@@ -25,7 +25,9 @@ package io.github.drakonkinst.worldsinger.mixin.entity;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import io.github.drakonkinst.worldsinger.api.ModAttachmentTypes;
+import io.github.drakonkinst.worldsinger.api.sync.AttachmentSync;
 import io.github.drakonkinst.worldsinger.cosmere.SilverLined;
+import io.github.drakonkinst.worldsinger.entity.SilverLinedEntityData;
 import io.github.drakonkinst.worldsinger.item.ModItemTags;
 import io.github.drakonkinst.worldsinger.registry.ModSoundEvents;
 import net.minecraft.entity.EntityType;
@@ -56,14 +58,17 @@ public abstract class BoatEntitySilverMixin extends VehicleEntity {
     @Inject(method = "interact", at = @At("HEAD"), cancellable = true)
     private void addSilverLining(PlayerEntity player, Hand hand,
             CallbackInfoReturnable<ActionResult> cir) {
-        SilverLined silverData = this.getAttachedOrCreate(ModAttachmentTypes.SILVER_LINED_BOAT);
+        SilverLinedEntityData silverData = this.getAttachedOrCreate(
+                ModAttachmentTypes.SILVER_LINED_BOAT);
         ItemStack itemStack = player.getStackInHand(hand);
         int silverDurability = silverData.getSilverDurability();
         if (itemStack.isIn(ModItemTags.SILVER_INGOTS)
                 && silverDurability < silverData.getMaxSilverDurability()) {
             // Set data
             silverData.setSilverDurability(silverDurability + SILVER_REPAIR_AMOUNT);
-            silverData.sync();
+            if (!this.getWorld().isClient()) {
+                AttachmentSync.sync(this, ModAttachmentTypes.SILVER_LINED_BOAT, silverData);
+            }
 
             // Play sound
             float pitch = 1.0f + (this.random.nextFloat() - this.random.nextFloat()) * 0.2f;

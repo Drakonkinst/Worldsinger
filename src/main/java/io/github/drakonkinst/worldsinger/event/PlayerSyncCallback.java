@@ -1,6 +1,7 @@
 /*
  * MIT License
  *
+ * Copyright (c) 2019-2023 Ladysnake
  * Copyright (c) 2023-2024 Drakonkinst
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -21,27 +22,24 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+
 package io.github.drakonkinst.worldsinger.event;
 
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
-import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.server.network.ServerPlayerEntity;
 
-// Called on server-side only, along with the entity_hurt_player advancement criterion.
-// Contains more information than ServerLivingEntityEvents.ALLOW_DAMAGE, but cannot cancel
-// the damage event.
+// Called when a player e.g. joins the server or changes dimension, can be used to synchronize the
+// player's own data
 @FunctionalInterface
-public interface ServerPlayerHurtCallback {
+public interface PlayerSyncCallback {
 
-    Event<ServerPlayerHurtCallback> EVENT = EventFactory.createArrayBacked(
-            ServerPlayerHurtCallback.class,
-            (listeners) -> (player, source, damageDealt, damageTaken, wasBlocked) -> {
-                for (ServerPlayerHurtCallback listener : listeners) {
-                    listener.onHurt(player, source, damageDealt, damageTaken, wasBlocked);
+    Event<PlayerSyncCallback> EVENT = EventFactory.createArrayBacked(PlayerSyncCallback.class,
+            (p) -> {}, listeners -> (player) -> {
+                for (PlayerSyncCallback callback : listeners) {
+                    callback.onPlayerSync(player);
                 }
             });
-
-    void onHurt(PlayerEntity player, DamageSource source, float damageDealt, float damageTaken,
-            boolean wasBlocked);
+    
+    void onPlayerSync(ServerPlayerEntity player);
 }

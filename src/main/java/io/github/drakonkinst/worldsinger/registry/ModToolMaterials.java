@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.github.drakonkinst.worldsinger.material;
+package io.github.drakonkinst.worldsinger.registry;
 
 import com.google.common.base.Suppliers;
 import io.github.drakonkinst.worldsinger.item.ModItems;

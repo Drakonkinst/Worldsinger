@@ -24,8 +24,8 @@
 package io.github.drakonkinst.worldsinger.event;
 
 import io.github.drakonkinst.worldsinger.api.ModAttachmentTypes;
+import io.github.drakonkinst.worldsinger.api.sync.AttachmentSync;
 import io.github.drakonkinst.worldsinger.block.LivingSporeGrowthBlock;
-import io.github.drakonkinst.worldsinger.component.ModComponents;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.MidnightAetherBondManager;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.SporeKillingManager;
 import io.github.drakonkinst.worldsinger.effect.ModStatusEffects;
@@ -111,14 +111,19 @@ public final class ModEventHandlers {
                         ItemStack attackingItem = livingEntity.getMainHandStack();
 
                         if (attackingItem.isIn(ModItemTags.KILLS_SPORE_GROWTHS)) {
-                            MidnightAetherBondManager midnightAetherBond = ModComponents.MIDNIGHT_AETHER_BOND.get(
-                                    player);
+                            MidnightAetherBondManager midnightAetherBond = player.getAttachedOrCreate(
+                                    ModAttachmentTypes.MIDNIGHT_AETHER_BOND);
                             if (midnightAetherBond.hasAnyBonds()) {
-                                midnightAetherBond.dispelAllBonds(true);
+                                midnightAetherBond.dispelAllBonds(player, true);
                             }
                         }
                     }
                 });
+
+        // Sync entity attachments
+        StartTrackingEntityCallback.EVENT.register(AttachmentSync::syncEntityAttachments);
+        PlayerSyncCallback.EVENT.register(
+                (player -> AttachmentSync.syncEntityAttachments(player, player)));
     }
 
     private ModEventHandlers() {}

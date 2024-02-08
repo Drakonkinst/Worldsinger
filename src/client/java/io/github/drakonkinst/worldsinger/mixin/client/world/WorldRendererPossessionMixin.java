@@ -43,10 +43,7 @@ public abstract class WorldRendererPossessionMixin {
     // Allow the player model to still be rendered while possessing another mob
     @SuppressWarnings("InvalidInjectorMethodSignature")
     @ModifyConstant(method = "render", constant = @Constant(classValue = ClientPlayerEntity.class))
-    private static boolean allowRenderPlayerModel(Object obj, Class<?> clazz, MatrixStack matrices,
-            float tickDelta, long limitTime, boolean renderBlockOutline, Camera camera,
-            GameRenderer gameRenderer, LightmapTextureManager lightmapTextureManager,
-            Matrix4f projectionMatrix) {
+    private static boolean allowRenderPlayerModel(Object obj, Class<?> clazz, float tickDelta, long limitTime, boolean renderBlockOutline, Camera camera, GameRenderer gameRenderer, LightmapTextureManager lightmapTextureManager, Matrix4f matrix4f, Matrix4f matrix4f2) {
         CameraPossessable possessedEntity = PossessionClientUtil.getPossessedEntity();
         if (possessedEntity != null) {
 

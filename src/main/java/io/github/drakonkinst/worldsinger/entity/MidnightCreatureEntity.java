@@ -27,7 +27,6 @@ import io.github.drakonkinst.worldsinger.Worldsinger;
 import io.github.drakonkinst.worldsinger.api.ModAttachmentTypes;
 import io.github.drakonkinst.worldsinger.block.ModBlockTags;
 import io.github.drakonkinst.worldsinger.block.ModBlocks;
-import io.github.drakonkinst.worldsinger.component.ModComponents;
 import io.github.drakonkinst.worldsinger.cosmere.PossessionManager;
 import io.github.drakonkinst.worldsinger.cosmere.ThirstManager;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.AetherSpores;
@@ -210,9 +209,9 @@ public class MidnightCreatureEntity extends ShapeshiftingEntity implements
 
     // Data Tracker
     @Override
-    protected void initDataTracker() {
-        super.initDataTracker();
-        this.dataTracker.startTracking(CONTROLLER_UUID, Optional.empty());
+    protected void initDataTracker(DataTracker.Builder builder) {
+        super.initDataTracker(builder);
+        builder.add(CONTROLLER_UUID, Optional.empty());
     }
 
     @Override
@@ -546,7 +545,8 @@ public class MidnightCreatureEntity extends ShapeshiftingEntity implements
     private void drainWaterFromHost(PlayerEntity host, boolean isInitial) {
         ThirstManager thirstManager = host.getAttachedOrCreate(ModAttachmentTypes.THIRST);
         int currentWaterLevel = thirstManager.get();
-        MidnightAetherBondManager bondData = ModComponents.MIDNIGHT_AETHER_BOND.get(host);
+        MidnightAetherBondManager bondData = host.getAttachedOrCreate(
+                ModAttachmentTypes.MIDNIGHT_AETHER_BOND);
         if (currentWaterLevel <= 0) {
             PossessionManager possessionManager = host.getAttached(ModAttachmentTypes.POSSESSION);
             if (possessionManager != null && this.equals(possessionManager.getPossessionTarget())) {
@@ -590,8 +590,9 @@ public class MidnightCreatureEntity extends ShapeshiftingEntity implements
             } else {
                 PlayerEntity formerController = getController();
                 if (formerController != null) {
-                    ModComponents.MIDNIGHT_AETHER_BOND.get(formerController)
-                            .removeBond(this.getId());
+                    MidnightAetherBondManager midnightBondManager = formerController.getAttachedOrCreate(
+                            ModAttachmentTypes.MIDNIGHT_AETHER_BOND);
+                    midnightBondManager.removeBond(this.getId());
                 }
             }
         }
@@ -978,5 +979,10 @@ public class MidnightCreatureEntity extends ShapeshiftingEntity implements
 
     public int getMidnightEssenceAmount() {
         return midnightEssenceAmount;
+    }
+
+    @Override
+    public LivingEntity toEntity() {
+        return this;
     }
 }

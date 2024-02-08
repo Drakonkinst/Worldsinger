@@ -23,7 +23,8 @@
  */
 package io.github.drakonkinst.worldsinger.entity.data;
 
-import io.github.drakonkinst.worldsinger.component.ModComponents;
+import io.github.drakonkinst.worldsinger.api.ModAttachmentTypes;
+import io.github.drakonkinst.worldsinger.api.sync.AttachmentSync;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.MidnightAetherBondManager;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.MidnightCreatureManager;
 import io.github.drakonkinst.worldsinger.entity.MidnightCreatureEntity;
@@ -40,63 +41,52 @@ import net.minecraft.world.World;
 
 public class PlayerMidnightAetherBondManager implements MidnightAetherBondManager {
 
-    private static final String BOND_COUNT_KEY = "Bonds";
+    private static final String KEY_BOND_COUNT = "bond_count";
     private static final int EXPIRY_TIME = MidnightCreatureManager.MAX_DRAIN_INTERVAL_TICKS * 2;
     private static final int UPDATE_INTERVAL = 20;
 
-    private final PlayerEntity player;
     private final Int2LongMap expiryMap = new Int2LongOpenHashMap();
     private int bondCount = 0;
-    private int updateTicks = 0;
-
-    public PlayerMidnightAetherBondManager(PlayerEntity player) {
-        this.player = player;
-    }
+    private long age = 0;
+    private boolean isDirty = false;
 
     @Override
-    public void serverTick() {
-        ++updateTicks;
-        if (updateTicks >= UPDATE_INTERVAL) {
+    public void serverTick(PlayerEntity player) {
+        ++age;
+        if (age % UPDATE_INTERVAL == 0) {
             clearExpiredEntries();
-            updateTicks = 0;
+        }
+        if (isDirty) {
+            AttachmentSync.sync(player, ModAttachmentTypes.MIDNIGHT_AETHER_BOND, this);
+            isDirty = false;
         }
     }
 
     @Override
-    public void readFromNbt(NbtCompound tag) {
-        this.bondCount = tag.getInt(BOND_COUNT_KEY);
-    }
-
-    @Override
-    public void writeToNbt(NbtCompound tag) {
-        tag.putInt(BOND_COUNT_KEY, bondCount);
-    }
-
-    @Override
     public void updateBond(int id) {
-        expiryMap.put(id, player.getWorld().getTime());
+        expiryMap.put(id, age);
         bondCount = expiryMap.size();
-        ModComponents.MIDNIGHT_AETHER_BOND.sync(player);
     }
 
     @Override
     public void removeBond(int id) {
         expiryMap.remove(id);
         bondCount = expiryMap.size();
-        ModComponents.MIDNIGHT_AETHER_BOND.sync(player);
+        isDirty = true;
     }
 
     private void clearExpiredEntries() {
-        long currentTime = player.getWorld().getTime();
-        expiryMap.int2LongEntrySet()
-                .removeIf(entry -> currentTime > entry.getLongValue() + EXPIRY_TIME);
+        boolean anyRemoved = expiryMap.int2LongEntrySet()
+                .removeIf(entry -> age > entry.getLongValue() + EXPIRY_TIME);
+        if (anyRemoved) {
+            isDirty = true;
+        }
         bondCount = expiryMap.size();
-        ModComponents.MIDNIGHT_AETHER_BOND.sync(player);
     }
 
     @Override
     // Called on server-side
-    public void onDeath() {
+    public void onDeath(PlayerEntity player) {
         World world = player.getWorld();
         for (Entry entry : expiryMap.int2LongEntrySet()) {
             Entity entity = world.getEntityById(entry.getIntKey());
@@ -106,11 +96,11 @@ public class PlayerMidnightAetherBondManager implements MidnightAetherBondManage
         }
         expiryMap.clear();
         bondCount = 0;
-        ModComponents.MIDNIGHT_AETHER_BOND.sync(player);
+        isDirty = true;
     }
 
     @Override
-    public void dispelAllBonds(boolean playEffects) {
+    public void dispelAllBonds(PlayerEntity player, boolean playEffects) {
         if (!(player.getWorld() instanceof ServerWorld world)) {
             return;
         }
@@ -128,11 +118,21 @@ public class PlayerMidnightAetherBondManager implements MidnightAetherBondManage
         }
         expiryMap.clear();
         bondCount = 0;
-        ModComponents.MIDNIGHT_AETHER_BOND.sync(player);
+        isDirty = true;
     }
 
     @Override
     public int getBondCount() {
         return bondCount;
+    }
+
+    @Override
+    public void syncToNbt(NbtCompound nbt) {
+        nbt.putInt(KEY_BOND_COUNT, bondCount);
+    }
+
+    @Override
+    public void syncFromNbt(NbtCompound nbt) {
+        this.bondCount = nbt.getInt(KEY_BOND_COUNT);
     }
 }

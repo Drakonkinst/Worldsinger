@@ -36,9 +36,4 @@ public class SilverLinedBoatItemData extends SilverLinedItemData {
     public int getMaxSilverDurability() {
         return SilverLinedBoatData.MAX_DURABILITY;
     }
-
-    @Override
-    public void sync() {
-        // Item does not sync
-    }
 }

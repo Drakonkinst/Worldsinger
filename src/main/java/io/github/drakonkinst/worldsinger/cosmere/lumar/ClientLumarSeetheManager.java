@@ -21,27 +21,40 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.github.drakonkinst.worldsinger.event;
+package io.github.drakonkinst.worldsinger.cosmere.lumar;
 
-import net.fabricmc.fabric.api.event.Event;
-import net.fabricmc.fabric.api.event.EventFactory;
-import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.player.PlayerEntity;
+public class ClientLumarSeetheManager implements SeetheManager {
 
-// Called on server-side only, along with the entity_hurt_player advancement criterion.
-// Contains more information than ServerLivingEntityEvents.ALLOW_DAMAGE, but cannot cancel
-// the damage event.
-@FunctionalInterface
-public interface ServerPlayerHurtCallback {
+    private boolean isSeething;
 
-    Event<ServerPlayerHurtCallback> EVENT = EventFactory.createArrayBacked(
-            ServerPlayerHurtCallback.class,
-            (listeners) -> (player, source, damageDealt, damageTaken, wasBlocked) -> {
-                for (ServerPlayerHurtCallback listener : listeners) {
-                    listener.onHurt(player, source, damageDealt, damageTaken, wasBlocked);
-                }
-            });
+    public ClientLumarSeetheManager() {
+        // Default values
+        this.startSeethe(-1);
+    }
 
-    void onHurt(PlayerEntity player, DamageSource source, float damageDealt, float damageTaken,
-            boolean wasBlocked);
+    @Override
+    public void startSeethe(int ticks) {
+        isSeething = true;
+    }
+
+    @Override
+    public void serverTick() {
+        // Do nothing
+    }
+
+    @Override
+    public void stopSeethe(int ticks) {
+        isSeething = false;
+    }
+
+    @Override
+    public boolean isSeething() {
+        return isSeething;
+    }
+
+    @Override
+    public int getTicksUntilNextCycle() {
+        return 0;
+    }
+
 }
