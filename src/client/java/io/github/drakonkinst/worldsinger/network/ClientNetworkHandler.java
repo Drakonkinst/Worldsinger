@@ -45,7 +45,6 @@ import net.fabricmc.fabric.impl.attachment.AttachmentRegistryImpl;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.world.World;
 
@@ -111,7 +110,7 @@ public final class ClientNetworkHandler {
 
                     // Entity entity = context.player().getWorld().getEntityById(id);
                     World world = MinecraftClient.getInstance().world;
-                    if(world == null) {
+                    if (world == null) {
                         Worldsinger.LOGGER.warn(
                                 "Failed to process sync packet since world is null");
                         return;
@@ -146,7 +145,7 @@ public final class ClientNetworkHandler {
 
                     // Entity entity = context.player().getWorld().getEntityById(id);
                     World world = MinecraftClient.getInstance().world;
-                    if(world == null) {
+                    if (world == null) {
                         Worldsinger.LOGGER.warn(
                                 "Failed to process sync packet since world is null");
                         return;
@@ -173,12 +172,11 @@ public final class ClientNetworkHandler {
             final int entityIdToPossess = payload.entityId();
             // ClientPlayerEntity player = context.player();
             ClientPlayerEntity player = MinecraftClient.getInstance().player;
-            if(player == null) {
+            if (player == null) {
                 return;
             }
-            PossessionManager possessionManager = player
-                    .getAttachedOrCreate(ModAttachmentTypes.POSSESSION,
-                            () -> PlayerPossessionManager.create(player));
+            PossessionManager possessionManager = player.getAttachedOrCreate(
+                    ModAttachmentTypes.POSSESSION, () -> PlayerPossessionManager.create(player));
             if (entityIdToPossess < 0) {
                 possessionManager.resetPossessionTarget();
             } else {

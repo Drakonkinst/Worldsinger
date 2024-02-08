@@ -40,6 +40,6 @@ public interface PlayerSyncCallback {
                     callback.onPlayerSync(player);
                 }
             });
-    
+
     void onPlayerSync(ServerPlayerEntity player);
 }
