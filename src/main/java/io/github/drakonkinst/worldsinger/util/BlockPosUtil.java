@@ -72,7 +72,7 @@ public final class BlockPosUtil {
     }
 
     // Iterates over all blocks in an entity's bounding box. Number of blocks iterated is consistent
-    // per entity type, regardless of position. Starts from the minimum y (entity's position).
+    // per entity type, regardless of position. Starts from the minimum noiseY (entity's position).
     public static Iterable<BlockPos> iterateBoundingBoxForEntity(Entity entity) {
         return BlockPosUtil.iterateBoundingBoxForEntity(entity,
                 BlockPosUtil.toRoundedBlockPos(entity.getPos()));

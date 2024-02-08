@@ -21,31 +21,25 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.github.drakonkinst.worldsinger.mixin.worldgen;
 
-import com.llamalad7.mixinextras.injector.ModifyReturnValue;
-import io.github.drakonkinst.worldsinger.worldgen.lumar.LumarChunkGenerator;
-import net.minecraft.block.BlockState;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.gen.carver.Carver;
-import net.minecraft.world.gen.carver.CarverConfig;
-import net.minecraft.world.gen.carver.CarverContext;
-import net.minecraft.world.gen.chunk.AquiferSampler;
-import org.jetbrains.annotations.Nullable;
+package io.github.drakonkinst.worldsinger.mixin.world;
+
+import io.github.drakonkinst.worldsinger.world.LunagreeDataReceiver;
+import net.minecraft.server.network.ChunkDataSender;
+import net.minecraft.server.network.ServerPlayerEntity;
+import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(Carver.class)
-public abstract class CarverMixin<C extends CarverConfig> {
+@Mixin(ChunkDataSender.class)
+public abstract class ChunkDataSenderMixin {
 
-    @Nullable
-    @ModifyReturnValue(method = "getState", at = @At("RETURN"))
-    private BlockState modifySporeSeaState(@Nullable BlockState state, CarverContext context,
-            C config, BlockPos pos, AquiferSampler sampler) {
-        if (state != null && state.isOf(LumarChunkGenerator.PLACEHOLDER_BLOCK)) {
-            return LumarChunkGenerator.getSporeSeaBlockAtPos(context.getNoiseConfig(), pos.getX(),
-                    pos.getZ());
-        }
-        return state;
+    // We don't want to introduce more lag to the chunk update code, but we signal the player that
+    // they might want to be sent new Lumar update data
+    @Inject(method = "sendChunkBatches", at = @At(value = "FIELD", target = "Lnet/minecraft/network/packet/s2c/play/StartChunkSendS2CPacket;INSTANCE:Lnet/minecraft/network/packet/s2c/play/StartChunkSendS2CPacket;"))
+    private void setChunkDataUpdated(ServerPlayerEntity player, CallbackInfo ci) {
+        ((LunagreeDataReceiver) player).worldsinger$setShouldCheckPosition();
     }
 }

@@ -21,18 +21,18 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.github.drakonkinst.worldsinger.dimension;
 
-import io.github.drakonkinst.worldsinger.mixin.client.accessor.DimensionEffectsAccessor;
-import io.github.drakonkinst.worldsinger.worldgen.dimension.ModDimensions;
-import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
-import net.minecraft.client.render.DimensionEffects;
-import net.minecraft.util.Identifier;
+package io.github.drakonkinst.worldsinger.cosmere;
 
-public class ModDimensionEffects {
+import io.github.drakonkinst.worldsinger.cosmere.lumar.LunagreeManager.LunagreeLocation;
+import java.util.ArrayList;
+import java.util.List;
 
-    public static void initialize() {
-        Object2ObjectMap<Identifier, DimensionEffects> dimensionEffectsMap = DimensionEffectsAccessor.worldsinger$getDimensionEffectsMap();
-        dimensionEffectsMap.put(ModDimensions.LUMAR, new LumarDimensionEffects());
+public class LunagreeData {
+
+    private final List<LunagreeLocation> knownLunagreeLocations = new ArrayList<>();
+
+    public List<LunagreeLocation> getKnownLunagreeLocations() {
+        return knownLunagreeLocations;
     }
 }

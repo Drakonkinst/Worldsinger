@@ -37,11 +37,11 @@ import com.mojang.brigadier.arguments.FloatArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
-import com.mojang.brigadier.suggestion.SuggestionProvider;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.AetherSpores;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.SporeParticleManager;
 import java.util.Optional;
-import net.minecraft.command.CommandSource;
+import net.minecraft.command.argument.RegistryEntryArgumentType;
 import net.minecraft.command.argument.Vec3ArgumentType;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
@@ -49,14 +49,11 @@ import net.minecraft.util.math.Vec3d;
 
 public class SporeCommand {
 
-    private static final SuggestionProvider<ServerCommandSource> SUGGESTION_PROVIDER = (context, builder) -> CommandSource.suggestMatching(
-            AetherSpores.getAetherSporeMap().keySet(), builder);
-
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         dispatcher.register(literal("spore").requires(
                         source -> source.hasPermissionLevel(ModCommands.PERMISSION_LEVEL_GAMEMASTER))
                 .then(argument("spore_type", StringArgumentType.word()).suggests(
-                                SUGGESTION_PROVIDER)
+                                ModCommands.AETHER_SPORE_TYPE_SUGGESTION_PROVIDER)
                         .then(argument("pos", Vec3ArgumentType.vec3()).then(
                                 argument("horizontal_radius",
                                         DoubleArgumentType.doubleArg(0.0)).then(
@@ -69,15 +66,14 @@ public class SporeCommand {
                                                                 SporeCommand::spawnSporeParticle))))))));
     }
 
-    public static int spawnSporeParticle(CommandContext<ServerCommandSource> context) {
+    public static int spawnSporeParticle(CommandContext<ServerCommandSource> context)
+            throws CommandSyntaxException {
         String aetherSporeTypeStr = getString(context, "spore_type");
-        Optional<AetherSpores> aetherSporeType = SporeCommand.getAetherSporeTypeFromString(
+        Optional<AetherSpores> aetherSporeType = AetherSpores.getAetherSporeTypeFromString(
                 aetherSporeTypeStr);
         if (aetherSporeType.isEmpty()) {
-            context.getSource()
-                    .sendError(Text.literal(
-                            "Unknown aether spore type \"" + aetherSporeTypeStr + "\""));
-            return 0;
+            throw RegistryEntryArgumentType.NOT_FOUND_EXCEPTION.create(aetherSporeTypeStr,
+                    "spore_sea");
         }
         Vec3d pos = getVec3(context, "pos");
         double horizontalRadius = getDouble(context, "horizontal_radius");
@@ -88,18 +84,8 @@ public class SporeCommand {
                 aetherSporeType.get(), pos.x, pos.y, pos.z, horizontalRadius, height, size, count,
                 false);
         context.getSource()
-                .sendFeedback(() -> Text.literal(
-                                "Spawned aether spore particle of type " + aetherSporeType.get().getName()),
-                        true);
+                .sendFeedback(() -> Text.translatable("commands.spore.success",
+                        aetherSporeType.get().getName()), true);
         return 1;
-    }
-
-    private static Optional<AetherSpores> getAetherSporeTypeFromString(String str) {
-        for (AetherSpores aetherSporeType : AetherSpores.getAetherSporeMap().values()) {
-            if (aetherSporeType.getName().equals(str)) {
-                return Optional.of(aetherSporeType);
-            }
-        }
-        return Optional.empty();
     }
 }

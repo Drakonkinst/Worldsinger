@@ -21,19 +21,37 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.github.drakonkinst.worldsinger.worldgen;
 
-import io.github.drakonkinst.worldsinger.Worldsinger;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.world.biome.Biome;
+package io.github.drakonkinst.worldsinger.cosmere.lumar;
 
-public class ModBiomes {
+import java.io.File;
+import net.minecraft.server.network.ServerPlayerEntity;
 
-    public static final RegistryKey<Biome> SPORE_SEA = ModBiomes.of("spore_sea");
-    public static final RegistryKey<Biome> DEEP_SPORE_SEA = ModBiomes.of("deep_spore_sea");
+public class NullLunagreeManager extends LunagreeManager {
 
-    private static RegistryKey<Biome> of(String id) {
-        return RegistryKey.of(RegistryKeys.BIOME, Worldsinger.id(id));
+    @Override
+    public void loadBytesFromFile(File file) {
+        // Do nothing
+    }
+
+    @Override
+    public void saveBytesToFile(File file) {
+        // Do nothing
+    }
+
+    @Override
+    public void updateLunagreeDataForPlayer(ServerPlayerEntity player) {
+        // Do nothing
+    }
+
+    @Override
+    public long getKeyForPos(int blockX, int blockZ) {
+        // Key should never change
+        return 0;
+    }
+
+    @Override
+    public boolean isNull() {
+        return true;
     }
 }

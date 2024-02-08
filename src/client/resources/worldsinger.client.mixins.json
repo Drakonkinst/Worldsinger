@@ -3,11 +3,12 @@
   "package": "io.github.drakonkinst.worldsinger.mixin.client",
   "compatibilityLevel": "JAVA_17",
   "client": [
-    "accessor.DimensionEffectsAccessor",
     "accessor.EntityRendererAccessor",
+    "accessor.WorldRendererAccessor",
     "block.FluidRendererMixin",
     "entity.BoatEntityRendererMixin",
     "entity.ClientPlayerEntityFreeLookMixin",
+    "entity.ClientPlayerEntityLunagreeMixin",
     "entity.ClientPlayerEntityPossessionMixin",
     "entity.EntityRenderDispatcherMixin",
     "entity.EyesFeatureRendererMixin",

@@ -21,19 +21,12 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.github.drakonkinst.worldsinger.worldgen;
 
-import io.github.drakonkinst.worldsinger.Worldsinger;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.world.biome.Biome;
+package io.github.drakonkinst.worldsinger.entity;
 
-public class ModBiomes {
+import io.github.drakonkinst.worldsinger.cosmere.LunagreeData;
 
-    public static final RegistryKey<Biome> SPORE_SEA = ModBiomes.of("spore_sea");
-    public static final RegistryKey<Biome> DEEP_SPORE_SEA = ModBiomes.of("deep_spore_sea");
+public interface LunagreeDataAccess {
 
-    private static RegistryKey<Biome> of(String id) {
-        return RegistryKey.of(RegistryKeys.BIOME, Worldsinger.id(id));
-    }
+    LunagreeData worldsinger$getLunagreeData();
 }

@@ -36,6 +36,7 @@ import io.github.drakonkinst.worldsinger.item.SporeBottleItem;
 import io.github.drakonkinst.worldsinger.registry.ModDamageTypes;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import net.minecraft.block.Block;
@@ -51,6 +52,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.text.Text;
 import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -177,6 +179,15 @@ public abstract class AetherSpores implements Comparable<AetherSpores> {
                 && !playerEntity.isSpectator());
     }
 
+    public static Optional<AetherSpores> getAetherSporeTypeFromString(String str) {
+        for (AetherSpores aetherSporeType : AETHER_SPORE_MAP.values()) {
+            if (aetherSporeType.getName().equals(str)) {
+                return Optional.of(aetherSporeType);
+            }
+        }
+        return Optional.empty();
+    }
+
     protected AetherSpores() {
         AETHER_SPORE_MAP.put(this.getName(), this);
     }
@@ -226,6 +237,10 @@ public abstract class AetherSpores implements Comparable<AetherSpores> {
     @Nullable
     public BlockState getFluidCollisionState() {
         return null;
+    }
+
+    public Text getSeaDisplayName() {
+        return Text.translatable("cosmere.worldsinger.spore_sea." + getName());
     }
 
     public boolean isDead() {

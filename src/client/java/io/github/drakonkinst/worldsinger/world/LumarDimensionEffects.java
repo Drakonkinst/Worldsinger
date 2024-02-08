@@ -21,19 +21,28 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.github.drakonkinst.worldsinger.worldgen;
+package io.github.drakonkinst.worldsinger.world;
 
-import io.github.drakonkinst.worldsinger.Worldsinger;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.world.biome.Biome;
+import io.github.drakonkinst.worldsinger.registry.ModClientEnums;
+import net.minecraft.client.render.DimensionEffects;
+import net.minecraft.util.math.Vec3d;
 
-public class ModBiomes {
+public class LumarDimensionEffects extends DimensionEffects {
 
-    public static final RegistryKey<Biome> SPORE_SEA = ModBiomes.of("spore_sea");
-    public static final RegistryKey<Biome> DEEP_SPORE_SEA = ModBiomes.of("deep_spore_sea");
+    private static final float CLOUD_HEIGHT = 384.0f;
 
-    private static RegistryKey<Biome> of(String id) {
-        return RegistryKey.of(RegistryKeys.BIOME, Worldsinger.id(id));
+    public LumarDimensionEffects() {
+        super(CLOUD_HEIGHT, true, ModClientEnums.SkyType.LUMAR, false, false);
+    }
+
+    @Override
+    public Vec3d adjustFogColor(Vec3d color, float sunHeight) {
+        return color.multiply(sunHeight * 0.94f + 0.06f, sunHeight * 0.94f + 0.06f,
+                sunHeight * 0.91f + 0.09f);
+    }
+
+    @Override
+    public boolean useThickFog(int camX, int camY) {
+        return false;
     }
 }

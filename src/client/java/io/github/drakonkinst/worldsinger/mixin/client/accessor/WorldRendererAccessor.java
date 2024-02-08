@@ -21,28 +21,22 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.github.drakonkinst.worldsinger.dimension;
 
-import io.github.drakonkinst.worldsinger.registry.ModClientEnums;
-import net.minecraft.client.render.DimensionEffects;
-import net.minecraft.util.math.Vec3d;
+package io.github.drakonkinst.worldsinger.mixin.client.accessor;
 
-public class LumarDimensionEffects extends DimensionEffects {
+import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.render.WorldRenderer;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.gen.Invoker;
 
-    private static final float CLOUD_HEIGHT = 384.0f;
+@Mixin(WorldRenderer.class)
+public interface WorldRendererAccessor {
 
-    public LumarDimensionEffects() {
-        super(CLOUD_HEIGHT, true, ModClientEnums.SkyType.LUMAR, false, false);
+    @Invoker("renderSky")
+    static BufferBuilder.BuiltBuffer worldsinger$renderSky(BufferBuilder builder, float f) {
+        throw new UnsupportedOperationException();
     }
 
-    @Override
-    public Vec3d adjustFogColor(Vec3d color, float sunHeight) {
-        return color.multiply(sunHeight * 0.94f + 0.06f, sunHeight * 0.94f + 0.06f,
-                sunHeight * 0.91f + 0.09f);
-    }
-
-    @Override
-    public boolean useThickFog(int camX, int camY) {
-        return false;
-    }
+    @Invoker("renderStars")
+    BufferBuilder.BuiltBuffer worldsinger$renderStars(BufferBuilder builder);
 }

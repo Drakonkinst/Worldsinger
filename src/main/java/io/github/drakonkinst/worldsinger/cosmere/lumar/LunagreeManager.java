@@ -21,19 +21,30 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.github.drakonkinst.worldsinger.mixin.client.accessor;
 
-import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
-import net.minecraft.client.render.DimensionEffects;
-import net.minecraft.util.Identifier;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.gen.Accessor;
+package io.github.drakonkinst.worldsinger.cosmere.lumar;
 
-@Mixin(DimensionEffects.class)
-public interface DimensionEffectsAccessor {
+import io.github.drakonkinst.worldsinger.world.PersistentByteData;
+import net.minecraft.server.network.ServerPlayerEntity;
 
-    @Accessor("BY_IDENTIFIER")
-    static Object2ObjectMap<Identifier, DimensionEffects> worldsinger$getDimensionEffectsMap() {
-        throw new UnsupportedOperationException();
+public abstract class LunagreeManager extends PersistentByteData {
+
+    public static final String NAME = "lunagrees";
+
+    public record LunagreeLocation(int blockX, int blockZ, int sporeId) {
+
+        public double distSqTo(double x, double z) {
+            final double deltaX = blockX - x;
+            final double deltaZ = blockZ - z;
+            return deltaX * deltaX + deltaZ * deltaZ;
+        }
+    }
+
+    public abstract void updateLunagreeDataForPlayer(ServerPlayerEntity player);
+
+    public abstract long getKeyForPos(int blockX, int blockZ);
+
+    public boolean isNull() {
+        return false;
     }
 }

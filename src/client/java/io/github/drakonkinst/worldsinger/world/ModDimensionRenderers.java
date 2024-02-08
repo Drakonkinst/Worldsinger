@@ -21,19 +21,20 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.github.drakonkinst.worldsinger.worldgen;
+package io.github.drakonkinst.worldsinger.world;
 
-import io.github.drakonkinst.worldsinger.Worldsinger;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.world.biome.Biome;
+import io.github.drakonkinst.worldsinger.worldgen.dimension.ModDimensions;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
+import net.fabricmc.fabric.api.client.rendering.v1.DimensionRenderingRegistry;
 
-public class ModBiomes {
+public class ModDimensionRenderers {
 
-    public static final RegistryKey<Biome> SPORE_SEA = ModBiomes.of("spore_sea");
-    public static final RegistryKey<Biome> DEEP_SPORE_SEA = ModBiomes.of("deep_spore_sea");
-
-    private static RegistryKey<Biome> of(String id) {
-        return RegistryKey.of(RegistryKeys.BIOME, Worldsinger.id(id));
+    public static void initialize() {
+        DimensionRenderingRegistry.registerDimensionEffects(ModDimensions.LUMAR,
+                new LumarDimensionEffects());
+        ClientLifecycleEvents.CLIENT_STARTED.register(client -> {
+            DimensionRenderingRegistry.registerSkyRenderer(ModDimensions.WORLD_LUMAR,
+                    new LumarSkyRenderer());
+        });
     }
 }

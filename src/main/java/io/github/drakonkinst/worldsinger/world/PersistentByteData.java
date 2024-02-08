@@ -21,19 +21,32 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.github.drakonkinst.worldsinger.worldgen;
 
-import io.github.drakonkinst.worldsinger.Worldsinger;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.world.biome.Biome;
+package io.github.drakonkinst.worldsinger.world;
 
-public class ModBiomes {
+import java.io.File;
+import java.util.function.Supplier;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.world.PersistentState;
 
-    public static final RegistryKey<Biome> SPORE_SEA = ModBiomes.of("spore_sea");
-    public static final RegistryKey<Biome> DEEP_SPORE_SEA = ModBiomes.of("deep_spore_sea");
+// A variation of PersistentState that stores a byte array instead of NBT
+public abstract class PersistentByteData extends PersistentState {
 
-    private static RegistryKey<Biome> of(String id) {
-        return RegistryKey.of(RegistryKeys.BIOME, Worldsinger.id(id));
+    public record ByteDataType<T extends PersistentState>(Supplier<T> constructor) {}
+
+    public abstract void loadBytesFromFile(File file);
+
+    public abstract void saveBytesToFile(File file);
+
+    @Override
+    public void save(File file, RegistryWrapper.WrapperLookup registryLookup) {
+        saveBytesToFile(file);
+    }
+
+    // Does not use NBT
+    @Override
+    public NbtCompound writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
+        throw new UnsupportedOperationException();
     }
 }
