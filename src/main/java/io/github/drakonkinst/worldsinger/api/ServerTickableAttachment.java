@@ -21,21 +21,10 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.github.drakonkinst.worldsinger.entity;
 
-import io.github.drakonkinst.worldsinger.entity.data.SilverLinedEntityData;
-import net.minecraft.entity.vehicle.BoatEntity;
+package io.github.drakonkinst.worldsinger.api;
 
-public class SilverLinedBoatEntityData extends SilverLinedEntityData {
+public interface ServerTickableAttachment {
 
-    public static final int MAX_DURABILITY = 2500;
-
-    public SilverLinedBoatEntityData(BoatEntity boatEntity) {
-        super(boatEntity);
-    }
-
-    @Override
-    public int getMaxSilverDurability() {
-        return MAX_DURABILITY;
-    }
+    void serverTick();
 }

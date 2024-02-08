@@ -25,8 +25,8 @@ package io.github.drakonkinst.worldsinger.entity.render;
 
 import com.mojang.datafixers.util.Pair;
 import io.github.drakonkinst.worldsinger.Worldsinger;
-import io.github.drakonkinst.worldsinger.component.ModComponents;
-import io.github.drakonkinst.worldsinger.component.SilverLinedComponent;
+import io.github.drakonkinst.worldsinger.api.ModAttachmentTypes;
+import io.github.drakonkinst.worldsinger.cosmere.SilverLined;
 import io.github.drakonkinst.worldsinger.cosmere.SilverLiningLevel;
 import java.util.Map;
 import net.minecraft.client.render.OverlayTexture;
@@ -76,7 +76,11 @@ public class BoatSilverLiningFeatureRenderer extends FeatureRenderer<BoatEntity,
     // Chest = 1 bit, Raft = 1 bit, Silver Lining State = 2 bits
     // Returns a negative number if not silver-lined
     private static int encodeBoatVariant(BoatEntity entity) {
-        SilverLinedComponent silverData = ModComponents.SILVER_LINED.get(entity);
+        SilverLined silverData = entity.getAttached(ModAttachmentTypes.SILVER_LINED_BOAT);
+        if (silverData == null) {
+            return -1;
+        }
+
         float durabilityFraction =
                 (float) silverData.getSilverDurability() / silverData.getMaxSilverDurability();
         SilverLiningLevel level = SilverLiningLevel.fromDurability(durabilityFraction);

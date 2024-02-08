@@ -21,34 +21,33 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.github.drakonkinst.worldsinger.mixin.item;
 
-import com.llamalad7.mixinextras.injector.ModifyReturnValue;
-import io.github.drakonkinst.worldsinger.item.KnifeItem;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.EnchantmentTarget;
+package io.github.drakonkinst.worldsinger.cosmere;
+
+import io.github.drakonkinst.worldsinger.api.sync.SyncableAttachment;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import org.spongepowered.asm.mixin.Final;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.At;
 
-@Mixin(Enchantment.class)
-public class EnchantmentMixin {
+public interface ThirstManager extends SyncableAttachment {
 
-    @Shadow
-    @Final
-    public EnchantmentTarget target;
+    void update(LivingEntity entity);
 
-    @ModifyReturnValue(method = "isAcceptableItem", at = @At("RETURN"))
-    private boolean considerKnivesAsWeapons(boolean original, ItemStack stack) {
-        if (original) {
-            return true;
-        }
+    // Call when consuming an item
+    void drink(Item item, ItemStack stack);
 
-        if (this.target == EnchantmentTarget.WEAPON) {
-            return stack.getItem() instanceof KnifeItem;
-        }
-        return false;
-    }
+    // Add exhaustion like hunger, which can lead to water loss
+    void addDehydration(float exhaustion);
+
+    // Directly add water
+    void add(int water);
+
+    // Directly remove water
+    void remove(int water);
+
+    int get();
+
+    boolean isFull();
+
+    boolean isCritical();
 }

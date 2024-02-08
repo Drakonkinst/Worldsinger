@@ -24,6 +24,7 @@
 package io.github.drakonkinst.worldsinger.block;
 
 import com.mojang.serialization.MapCodec;
+import io.github.drakonkinst.worldsinger.mixin.accessor.AbstractBlockAccessor;
 import io.github.drakonkinst.worldsinger.registry.ModDamageTypes;
 import io.github.drakonkinst.worldsinger.util.ModProperties;
 import io.github.drakonkinst.worldsinger.util.VoxelShapeUtil;
@@ -86,7 +87,7 @@ public class CrimsonSpikeBlock extends Block implements Waterloggable, SporeGrow
 
             Block block = state.getBlock();
             long hashCode = MathHelper.hashCode(pos.getX(), 0, pos.getZ());
-            float maxOffset = block.getMaxHorizontalModelOffset();
+            float maxOffset = ((AbstractBlockAccessor) block).worldsinger$getMaxHorizontalModelOffset();
             double xOffset = MathHelper.clamp(
                     ((double) ((float) (hashCode & 0xFL) / 15.0f) - 0.5) * 0.5, -maxOffset,
                     maxOffset);

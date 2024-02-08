@@ -23,11 +23,11 @@
  */
 package io.github.drakonkinst.worldsinger.item;
 
-import io.github.drakonkinst.worldsinger.component.MidnightAetherBondComponent;
-import io.github.drakonkinst.worldsinger.component.ModComponents;
+import io.github.drakonkinst.worldsinger.api.ModAttachmentTypes;
+import io.github.drakonkinst.worldsinger.cosmere.lumar.MidnightAetherBondManager;
 import io.github.drakonkinst.worldsinger.entity.SilverVulnerable;
-import io.github.drakonkinst.worldsinger.material.ModToolMaterials;
 import io.github.drakonkinst.worldsinger.mixin.accessor.LivingEntityAccessor;
+import io.github.drakonkinst.worldsinger.registry.ModToolMaterials;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -61,12 +61,12 @@ public class SilverKnifeItem extends KnifeItem {
     public ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity,
             Hand hand) {
         if (!user.getWorld().isClient() && entity instanceof PlayerEntity targetPlayer) {
-            MidnightAetherBondComponent midnightAetherBondData = ModComponents.MIDNIGHT_AETHER_BOND.get(
-                    targetPlayer);
+            MidnightAetherBondManager midnightAetherBondData = targetPlayer.getAttachedOrCreate(
+                    ModAttachmentTypes.MIDNIGHT_AETHER_BOND);
             if (midnightAetherBondData.hasAnyBonds()) {
-                midnightAetherBondData.dispelAllBonds(true);
-                stack.damage(1, user, e -> e.sendEquipmentBreakStatus(
-                        hand == Hand.MAIN_HAND ? EquipmentSlot.MAINHAND : EquipmentSlot.OFFHAND));
+                midnightAetherBondData.dispelAllBonds(targetPlayer, true);
+                stack.damage(1, user,
+                        hand == Hand.MAIN_HAND ? EquipmentSlot.MAINHAND : EquipmentSlot.OFFHAND);
                 return ActionResult.success(true);
             }
         }
@@ -76,13 +76,13 @@ public class SilverKnifeItem extends KnifeItem {
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
         if (!user.getWorld().isClient()) {
-            MidnightAetherBondComponent midnightAetherBondData = ModComponents.MIDNIGHT_AETHER_BOND.get(
-                    user);
+            MidnightAetherBondManager midnightAetherBondData = user.getAttachedOrCreate(
+                    ModAttachmentTypes.MIDNIGHT_AETHER_BOND);
             ItemStack stack = user.getStackInHand(hand);
             if (midnightAetherBondData.hasAnyBonds()) {
-                midnightAetherBondData.dispelAllBonds(true);
-                stack.damage(1, user, e -> e.sendEquipmentBreakStatus(
-                        hand == Hand.MAIN_HAND ? EquipmentSlot.MAINHAND : EquipmentSlot.OFFHAND));
+                midnightAetherBondData.dispelAllBonds(user, true);
+                stack.damage(1, user,
+                        hand == Hand.MAIN_HAND ? EquipmentSlot.MAINHAND : EquipmentSlot.OFFHAND);
                 return TypedActionResult.success(stack);
             }
         }

@@ -23,23 +23,34 @@
  */
 package io.github.drakonkinst.worldsinger.cosmere.lumar;
 
-import io.github.drakonkinst.worldsinger.component.ModComponents;
-import io.github.drakonkinst.worldsinger.component.SeetheComponent;
+import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.scoreboard.Scoreboard;
-import net.minecraft.server.MinecraftServer;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.math.intprovider.BiasedToBottomIntProvider;
 import net.minecraft.util.math.intprovider.IntProvider;
 import net.minecraft.util.math.intprovider.UniformIntProvider;
 import net.minecraft.util.math.random.Random;
-import net.minecraft.world.World;
-import org.jetbrains.annotations.Nullable;
+import net.minecraft.world.PersistentState;
 
-public class LumarSeethe implements SeetheComponent {
+public class ServerLumarSeetheManager extends PersistentState implements SeetheManager {
 
+    public static final String NAME = "seethe";
     private static final String NBT_TICKS_REMAINING = "ticksRemaining";
     private static final String NBT_CYCLES_UNTIL_NEXT_LONG_STILLING = "cyclesUntilNextLongStilling";
     private static final String NBT_IS_SEETHING = "isSeething";
+
+    public static PersistentState.Type<ServerLumarSeetheManager> getPersistentStateType() {
+        return new PersistentState.Type<>(ServerLumarSeetheManager::new,
+                (nbt, registryLookup) -> ServerLumarSeetheManager.fromNbt(nbt), DataFixTypes.LEVEL);
+    }
+
+    private static ServerLumarSeetheManager fromNbt(NbtCompound nbt) {
+        ServerLumarSeetheManager seetheManager = new ServerLumarSeetheManager();
+        seetheManager.isSeething = nbt.getBoolean(NBT_IS_SEETHING);
+        seetheManager.ticksRemaining = nbt.getInt(NBT_TICKS_REMAINING);
+        seetheManager.cyclesUntilLongStilling = nbt.getInt(NBT_CYCLES_UNTIL_NEXT_LONG_STILLING);
+        return seetheManager;
+    }
 
     private static final int SECONDS_TO_TICKS = 20;
     private static final int MINUTES_TO_SECONDS = 60;
@@ -55,37 +66,34 @@ public class LumarSeethe implements SeetheComponent {
     private static final IntProvider STILLING_LONG_CYCLE_PROVIDER = BiasedToBottomIntProvider.create(
             2, 5);
 
-    public static boolean areSporesFluidized(World world) {
-        return LumarSeethe.areSporesFluidized(world.getScoreboard());
-    }
-
-    public static boolean areSporesFluidized(Scoreboard scoreboard) {
-        return ModComponents.LUMAR_SEETHE.get(scoreboard).isSeething();
-    }
-
     private final Random random = Random.create();
-    private final Object provider;
     private boolean isSeething;
     private int ticksRemaining;
     private int cyclesUntilLongStilling;
 
-    public LumarSeethe(Scoreboard scoreboard, @Nullable MinecraftServer server) {
-        this.provider = scoreboard;
-
+    public ServerLumarSeetheManager() {
         // Default values
-        this.startSeethe();
+        this.startSeethe(-1);
         this.cyclesUntilLongStilling = STILLING_LONG_CYCLE_PROVIDER.get(this.random);
     }
 
     @Override
-    public void startSeethe() {
-        startSeethe(SEETHE_DURATION_PROVIDER.get(this.random));
+    public NbtCompound writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
+        nbt.putBoolean(NBT_IS_SEETHING, isSeething);
+        nbt.putInt(NBT_TICKS_REMAINING, ticksRemaining);
+        nbt.putInt(NBT_CYCLES_UNTIL_NEXT_LONG_STILLING, cyclesUntilLongStilling);
+        return nbt;
     }
 
+    // Use negative values to randomize value
     @Override
     public void startSeethe(int ticks) {
         isSeething = true;
-        ticksRemaining = ticks;
+        if (ticks < 0) {
+            ticksRemaining = SEETHE_DURATION_PROVIDER.get(this.random);
+        } else {
+            ticksRemaining = ticks;
+        }
     }
 
     @Override
@@ -94,23 +102,12 @@ public class LumarSeethe implements SeetheComponent {
             --ticksRemaining;
         } else {
             if (isSeething) {
-                this.stopSeethe();
+                this.stopSeethe(-1);
             } else {
-                this.startSeethe();
+                this.startSeethe(-1);
             }
         }
-        ModComponents.LUMAR_SEETHE.sync(this.provider);
-    }
-
-    @Override
-    public void stopSeethe() {
-        int stillingTime;
-        if (cyclesUntilLongStilling <= 0) {
-            stillingTime = STILLING_LONG_DURATION_PROVIDER.get(this.random);
-        } else {
-            stillingTime = STILLING_NORMAL_DURATION_PROVIDER.get(this.random);
-        }
-        stopSeethe(stillingTime);
+        this.markDirty();
     }
 
     @Override
@@ -121,21 +118,16 @@ public class LumarSeethe implements SeetheComponent {
         } else {
             --cyclesUntilLongStilling;
         }
-        ticksRemaining = ticks;
-    }
-
-    @Override
-    public void readFromNbt(NbtCompound tag) {
-        isSeething = tag.getBoolean(NBT_IS_SEETHING);
-        ticksRemaining = tag.getInt(NBT_TICKS_REMAINING);
-        cyclesUntilLongStilling = tag.getInt(NBT_CYCLES_UNTIL_NEXT_LONG_STILLING);
-    }
-
-    @Override
-    public void writeToNbt(NbtCompound tag) {
-        tag.putBoolean(NBT_IS_SEETHING, isSeething);
-        tag.putInt(NBT_TICKS_REMAINING, ticksRemaining);
-        tag.putInt(NBT_CYCLES_UNTIL_NEXT_LONG_STILLING, cyclesUntilLongStilling);
+        // Set ticks till next cycle
+        if (ticks < 0) {
+            if (cyclesUntilLongStilling <= 0) {
+                ticksRemaining = STILLING_LONG_DURATION_PROVIDER.get(this.random);
+            } else {
+                ticksRemaining = STILLING_NORMAL_DURATION_PROVIDER.get(this.random);
+            }
+        } else {
+            ticksRemaining = ticks;
+        }
     }
 
     @Override
@@ -147,4 +139,5 @@ public class LumarSeethe implements SeetheComponent {
     public int getTicksUntilNextCycle() {
         return ticksRemaining;
     }
+
 }

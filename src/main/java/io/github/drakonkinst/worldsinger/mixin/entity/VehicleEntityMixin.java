@@ -41,7 +41,7 @@ public abstract class VehicleEntityMixin {
             Operation<ItemEntity> original) {
         if (instance instanceof BoatEntity boatEntity) {
             // Modify the item stack to include silver data
-            SilverLined.transferSilverLinedDataFromEntityToItemStack(boatEntity, itemStack);
+            SilverLined.transferDataFromEntityToItemStack(boatEntity, itemStack);
         }
         return original.call(instance, itemStack);
     }

@@ -103,9 +103,9 @@ public abstract class ShapeshiftingEntity extends PathAwareEntity implements Sha
     }
 
     @Override
-    protected void initDataTracker() {
-        super.initDataTracker();
-        this.dataTracker.startTracking(MORPH, new NbtCompound());
+    protected void initDataTracker(DataTracker.Builder builder) {
+        super.initDataTracker(builder);
+        builder.add(MORPH, new NbtCompound());
     }
 
     @Override
@@ -163,11 +163,6 @@ public abstract class ShapeshiftingEntity extends PathAwareEntity implements Sha
     @Nullable
     public LivingEntity getMorph() {
         return morph;
-    }
-
-    @Override
-    public LivingEntity toEntity() {
-        return this;
     }
 
     @Override

@@ -30,6 +30,7 @@ import net.minecraft.item.ItemStack;
 
 // Fabric hasn't made one of these yet, so guess it's up to me
 // Fired whenever an item is successfully eaten, so it cannot cancel the consumption.
+@FunctionalInterface
 public interface FinishConsumingItemCallback {
 
     Event<FinishConsumingItemCallback> EVENT = EventFactory.createArrayBacked(

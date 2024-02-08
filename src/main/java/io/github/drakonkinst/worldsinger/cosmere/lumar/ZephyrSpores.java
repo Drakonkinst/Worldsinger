@@ -66,6 +66,7 @@ public class ZephyrSpores extends AetherSpores {
 
     public static final String NAME = "zephyr";
     public static final int ID = 4;
+    public static final WindChargeEntity.WindChargeExplosionBehavior EXPLOSION_BEHAVIOR = new WindChargeEntity.WindChargeExplosionBehavior();
 
     private static final ZephyrSpores INSTANCE = new ZephyrSpores();
     private static final int COLOR = 0x4b9bb7;
@@ -87,10 +88,10 @@ public class ZephyrSpores extends AetherSpores {
     public static void explode(World world, Vec3d centerPos, float radius,
             float globalKnockbackMultiplier) {
         world.emitGameEvent(null, GameEvent.EXPLODE, centerPos);
-        Explosion explosion = new Explosion(world, null, null, WindChargeEntity.EXPLOSION_BEHAVIOR,
+        Explosion explosion = new Explosion(world, null, null, ZephyrSpores.EXPLOSION_BEHAVIOR,
                 centerPos.getX(), centerPos.getY(), centerPos.getZ(), radius * 0.5f, false,
                 Explosion.DestructionType.TRIGGER_BLOCK, ParticleTypes.GUST,
-                ParticleTypes.GUST_EMITTER, ModSoundEvents.BLOCK_ZEPHYR_SEA_CATALYZE);
+                ParticleTypes.GUST_EMITTER_LARGE, ModSoundEvents.BLOCK_ZEPHYR_SEA_CATALYZE);
         ZephyrSpores.collectBlocks(world, centerPos, radius, explosion);
         ZephyrSpores.affectEntities(world, centerPos, radius, explosion, globalKnockbackMultiplier);
         ZephyrSpores.affectBlocks(world, explosion);

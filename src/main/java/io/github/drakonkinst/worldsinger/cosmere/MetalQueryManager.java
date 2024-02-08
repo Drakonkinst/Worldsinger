@@ -26,6 +26,7 @@ package io.github.drakonkinst.worldsinger.cosmere;
 import io.github.drakonkinst.datatables.DataTable;
 import io.github.drakonkinst.worldsinger.item.ModItemTags;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 
@@ -48,23 +49,25 @@ public final class MetalQueryManager {
             ironContent += entityDataTable.getIntForEntity(entity);
         }
 
-        for (ItemStack itemStack : entity.getHandItems()) {
-            if (!itemStack.isEmpty() && itemStack.isIn(metal.getItemTag())) {
-                ironContent += HELD_ITEM_METAL_VALUE;
+        if (entity instanceof LivingEntity livingEntity) {
+            for (ItemStack itemStack : livingEntity.getHandItems()) {
+                if (!itemStack.isEmpty() && itemStack.isIn(metal.getItemTag())) {
+                    ironContent += HELD_ITEM_METAL_VALUE;
+                }
             }
-        }
 
-        for (ItemStack itemStack : entity.getArmorItems()) {
-            if (!itemStack.isEmpty() && itemStack.isIn(metal.getItemTag())) {
-                ironContent += armorDataTable.getIntForItem(itemStack.getItem());
+            for (ItemStack itemStack : livingEntity.getArmorItems()) {
+                if (!itemStack.isEmpty() && itemStack.isIn(metal.getItemTag())) {
+                    ironContent += armorDataTable.getIntForItem(itemStack.getItem());
+                }
             }
-        }
 
-        if (entity instanceof PlayerEntity playerEntity) {
-            ItemStack activeItem = playerEntity.getActiveItem();
-            if (!activeItem.isEmpty() && activeItem.isIn(metal.getItemTag())) {
-                if (activeItem.isIn(ModItemTags.SHIELDS)) {
-                    ironContent += USING_SHIELD_BONUS;
+            if (entity instanceof PlayerEntity playerEntity) {
+                ItemStack activeItem = playerEntity.getActiveItem();
+                if (!activeItem.isEmpty() && activeItem.isIn(metal.getItemTag())) {
+                    if (activeItem.isIn(ModItemTags.SHIELDS)) {
+                        ironContent += USING_SHIELD_BONUS;
+                    }
                 }
             }
         }

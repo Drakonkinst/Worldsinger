@@ -26,7 +26,7 @@ package io.github.drakonkinst.worldsinger.mixin.entity;
 import io.github.drakonkinst.worldsinger.block.LivingAetherSporeBlock;
 import io.github.drakonkinst.worldsinger.block.ModBlockTags;
 import io.github.drakonkinst.worldsinger.block.SteelAnvilBlock;
-import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarSeethe;
+import io.github.drakonkinst.worldsinger.cosmere.lumar.SeetheManager;
 import io.github.drakonkinst.worldsinger.fluid.ModFluidTags;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ConcretePowderBlock;
@@ -116,7 +116,7 @@ public abstract class FallingBlockEntityMixin extends Entity {
     @Inject(method = "tick", at = @At("RETURN"))
     private void destroyIfInSporeSea(CallbackInfo ci) {
         World world = this.getWorld();
-        if (!LumarSeethe.areSporesFluidized(world)) {
+        if (!SeetheManager.areSporesFluidized(world)) {
             // Let normal fluid hitbox handle this
             return;
         }

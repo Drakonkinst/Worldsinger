@@ -23,9 +23,10 @@
  */
 package io.github.drakonkinst.worldsinger.entity;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.drakonkinst.datatables.DataTableRegistry;
-import io.github.drakonkinst.worldsinger.component.ModComponents;
-import io.github.drakonkinst.worldsinger.component.ThirstManagerComponent;
+import io.github.drakonkinst.worldsinger.cosmere.ThirstManager;
 import io.github.drakonkinst.worldsinger.registry.ModDamageTypes;
 import io.github.drakonkinst.worldsinger.registry.ModDataTables;
 import net.minecraft.entity.LivingEntity;
@@ -40,12 +41,21 @@ import net.minecraft.world.Difficulty;
 
 // Similar to Hunger, but uses different names.
 // Thirst is simpler, and has no saturation equivalent. It goes down faster than hunger by default.
-public class ThirstManager implements ThirstManagerComponent {
+public class PlayerThirstManager implements ThirstManager {
 
-    // NBT Keys
-    private static final String KEY_THIRST_LEVEL = "ThirstLevel";
-    private static final String KEY_DEHYDRATION_LEVEL = "DehydrationLevel";
-    private static final String KEY_DEHYDRATION_TICK_TIMER = "DehydrationTickTimer";
+    private static final String KEY_THIRST_LEVEL = "thirst_level";
+    private static final String KEY_DEHYDRATION_LEVEL = "dehydration_level";
+    private static final String KEY_DEHYDRATION_TICK_TIMER = "dehydration_tick_timer";
+
+    public static final Codec<PlayerThirstManager> CODEC = RecordCodecBuilder.create(
+            instance -> instance.group(
+                            Codec.INT.fieldOf(KEY_THIRST_LEVEL).forGetter(PlayerThirstManager::get),
+                            Codec.FLOAT.fieldOf(KEY_DEHYDRATION_LEVEL)
+                                    .forGetter(playerThirstManager -> playerThirstManager.dehydration),
+                            Codec.INT.fieldOf(KEY_DEHYDRATION_TICK_TIMER)
+                                    .forGetter(
+                                            playerThirstManager -> playerThirstManager.dehydrationTickTimer))
+                    .apply(instance, PlayerThirstManager::new));
 
     // Constants that probably won't change
     private static final int MAX_THIRST_LEVEL = 20;
@@ -60,19 +70,24 @@ public class ThirstManager implements ThirstManagerComponent {
     private static final float DRAIN_MULTIPLIER = 0.75f;
     private static final float DAMAGE_FROM_THIRST = 1.0f;
 
-    private final LivingEntity entity;
-    private final DamageSource thirstDamageSource;
-    private int thirstLevel = MAX_THIRST_LEVEL;
-    private int dehydrationTickTimer;
+    private int thirstLevel;
     private float dehydration;
+    private int dehydrationTickTimer;
 
-    public ThirstManager(LivingEntity entity) {
-        this.entity = entity;
-        thirstDamageSource = ModDamageTypes.createSource(entity.getWorld(), ModDamageTypes.THIRST);
+    public PlayerThirstManager() {
+        this.thirstLevel = MAX_THIRST_LEVEL;
+        this.dehydration = 0.0f;
+        this.dehydrationTickTimer = 0;
+    }
+
+    public PlayerThirstManager(int thirstLevel, float dehydration, int dehydrationTickTimer) {
+        this.thirstLevel = thirstLevel;
+        this.dehydration = dehydration;
+        this.dehydrationTickTimer = dehydrationTickTimer;
     }
 
     @Override
-    public void serverTick() {
+    public void update(LivingEntity entity) {
         if (dehydration > DEHYDRATION_PER_THIRST_LEVEL) {
             dehydration -= DEHYDRATION_PER_THIRST_LEVEL;
             if (thirstLevel > MIN_NATURAL_THIRST) {
@@ -95,6 +110,8 @@ public class ThirstManager implements ThirstManagerComponent {
         if (thirstLevel <= 0) {
             ++dehydrationTickTimer;
             if (dehydrationTickTimer >= DAMAGE_TICK_INTERVAL) {
+                DamageSource thirstDamageSource = ModDamageTypes.createSource(entity.getWorld(),
+                        ModDamageTypes.THIRST);
                 if (entity instanceof PlayerEntity) {
                     // Respect difficulty settings
                     Difficulty difficulty = entity.getWorld().getDifficulty();
@@ -116,20 +133,17 @@ public class ThirstManager implements ThirstManagerComponent {
     @Override
     public void add(int water) {
         thirstLevel = Math.min(thirstLevel + water, MAX_THIRST_LEVEL);
-        ModComponents.THIRST_MANAGER.sync(entity);
     }
 
     @Override
     public void remove(int water) {
         thirstLevel = Math.max(0, thirstLevel - water);
-        ModComponents.THIRST_MANAGER.sync(entity);
     }
 
     @Override
     public void addDehydration(float dehydration) {
         this.dehydration = Math.min(this.dehydration + dehydration * DRAIN_MULTIPLIER,
                 MAX_EXHAUSTION);
-        ModComponents.THIRST_MANAGER.sync(entity);
     }
 
     public void drink(Item item, ItemStack stack) {
@@ -147,20 +161,6 @@ public class ThirstManager implements ThirstManagerComponent {
     }
 
     @Override
-    public void readFromNbt(NbtCompound nbt) {
-        thirstLevel = nbt.getInt(KEY_THIRST_LEVEL);
-        dehydration = nbt.getFloat(KEY_DEHYDRATION_LEVEL);
-        dehydrationTickTimer = nbt.getInt(KEY_DEHYDRATION_TICK_TIMER);
-    }
-
-    @Override
-    public void writeToNbt(NbtCompound nbt) {
-        nbt.putInt(KEY_THIRST_LEVEL, thirstLevel);
-        nbt.putFloat(KEY_DEHYDRATION_LEVEL, dehydration);
-        nbt.putInt(KEY_DEHYDRATION_TICK_TIMER, dehydrationTickTimer);
-    }
-
-    @Override
     public int get() {
         return thirstLevel;
     }
@@ -173,5 +173,15 @@ public class ThirstManager implements ThirstManagerComponent {
     @Override
     public boolean isCritical() {
         return thirstLevel < MIN_NATURAL_THIRST;
+    }
+
+    @Override
+    public void syncToNbt(NbtCompound nbt) {
+        nbt.putInt(KEY_THIRST_LEVEL, thirstLevel);
+    }
+
+    @Override
+    public void syncFromNbt(NbtCompound nbt) {
+        thirstLevel = nbt.getInt(KEY_THIRST_LEVEL);
     }
 }

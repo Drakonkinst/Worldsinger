@@ -26,12 +26,13 @@ package io.github.drakonkinst.worldsinger.cosmere.lumar;
 import io.github.drakonkinst.datatables.DataTable;
 import io.github.drakonkinst.datatables.DataTableRegistry;
 import io.github.drakonkinst.worldsinger.api.ModApi;
+import io.github.drakonkinst.worldsinger.api.ModAttachmentTypes;
+import io.github.drakonkinst.worldsinger.api.sync.AttachmentSync;
 import io.github.drakonkinst.worldsinger.block.LivingSporeGrowthBlock;
 import io.github.drakonkinst.worldsinger.block.ModBlockTags;
 import io.github.drakonkinst.worldsinger.block.SporeKillable;
-import io.github.drakonkinst.worldsinger.component.ModComponents;
-import io.github.drakonkinst.worldsinger.component.SilverLinedComponent;
 import io.github.drakonkinst.worldsinger.cosmere.SilverLined;
+import io.github.drakonkinst.worldsinger.entity.SilverLinedEntityData;
 import io.github.drakonkinst.worldsinger.fluid.Fluidlogged;
 import io.github.drakonkinst.worldsinger.fluid.ModFluidTags;
 import io.github.drakonkinst.worldsinger.fluid.ModFluids;
@@ -55,6 +56,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
+@SuppressWarnings("UnstableApiUsage")
 public final class SporeKillingManager {
 
     public static final int MAX_BLOCK_RADIUS = 5;
@@ -75,8 +77,8 @@ public final class SporeKillingManager {
                 silverLinedData.setSilverDurability(silverLinedData.getSilverDurability() - 1);
             } else {
                 // Assume it is a tool and damage its durability
-                stack.damage(1, player, e -> e.sendEquipmentBreakStatus(
-                        hand == Hand.MAIN_HAND ? EquipmentSlot.MAINHAND : EquipmentSlot.OFFHAND));
+                stack.damage(1, player,
+                        hand == Hand.MAIN_HAND ? EquipmentSlot.MAINHAND : EquipmentSlot.OFFHAND);
             }
             // Kill the block
             world.setBlockState(pos, SporeKillingManager.convertToDeadVariant(sporeGrowth, state));
@@ -164,11 +166,15 @@ public final class SporeKillingManager {
     private static boolean checkNearbyEntitiesInBox(World world, Box box) {
         List<BoatEntity> entitiesInRange = world.getEntitiesByClass(BoatEntity.class, box,
                 boatEntity -> {
-                    SilverLinedComponent silverData = ModComponents.SILVER_LINED.get(boatEntity);
-                    boolean hasSilver = silverData.getSilverDurability() > 0;
+                    SilverLinedEntityData silverData = boatEntity.getAttached(
+                            ModAttachmentTypes.SILVER_LINED_BOAT);
+                    boolean hasSilver = silverData != null && silverData.getSilverDurability() > 0;
                     if (hasSilver) {
                         silverData.setSilverDurability(silverData.getSilverDurability() - 1);
-                        ModComponents.SILVER_LINED.sync(boatEntity);
+                        if (!world.isClient()) {
+                            AttachmentSync.sync(boatEntity, ModAttachmentTypes.SILVER_LINED_BOAT,
+                                    silverData);
+                        }
                     }
                     return hasSilver;
                 });

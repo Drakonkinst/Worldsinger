@@ -21,22 +21,19 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.github.drakonkinst.worldsinger.component;
 
-import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
-import dev.onyxstudios.cca.api.v3.component.tick.ServerTickingComponent;
+package io.github.drakonkinst.worldsinger.api.sync;
 
-public interface SeetheComponent extends ServerTickingComponent, AutoSyncedComponent {
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.server.network.ServerPlayerEntity;
 
-    void startSeethe();
+public interface SyncableAttachment {
 
-    void startSeethe(int ticks);
+    void syncToNbt(NbtCompound nbt);
 
-    void stopSeethe();
+    void syncFromNbt(NbtCompound nbt);
 
-    void stopSeethe(int ticks);
-
-    boolean isSeething();
-
-    int getTicksUntilNextCycle();
+    default boolean shouldSyncWith(ServerPlayerEntity entity) {
+        return true;
+    }
 }

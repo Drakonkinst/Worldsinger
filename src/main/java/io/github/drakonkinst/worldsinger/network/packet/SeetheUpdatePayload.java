@@ -21,21 +21,25 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.github.drakonkinst.worldsinger.component;
 
-import dev.onyxstudios.cca.api.v3.component.tick.CommonTickingComponent;
-import io.github.drakonkinst.worldsinger.entity.CameraPossessable;
-import org.jetbrains.annotations.Nullable;
+package io.github.drakonkinst.worldsinger.network.packet;
 
-public interface PossessionComponent extends CommonTickingComponent {
+import io.github.drakonkinst.worldsinger.network.ModPayloadRegistry;
+import io.netty.buffer.ByteBuf;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
+import net.minecraft.network.packet.CustomPayload;
 
-    @Nullable CameraPossessable getPossessionTarget();
+public record SeetheUpdatePayload(boolean isSeething) implements CustomPayload {
 
-    void setPossessionTarget(CameraPossessable entity);
+    public static final SeetheUpdatePayload SEETHE_START = new SeetheUpdatePayload(true);
+    public static final SeetheUpdatePayload SEETHE_STOP = new SeetheUpdatePayload(false);
+    public static final Id<SeetheUpdatePayload> ID = ModPayloadRegistry.id("seethe_update");
+    public static final PacketCodec<ByteBuf, SeetheUpdatePayload> CODEC = PacketCodecs.BOOL.xmap(
+            SeetheUpdatePayload::new, SeetheUpdatePayload::isSeething);
 
-    void resetPossessionTarget();
-
-    default boolean isPossessing() {
-        return getPossessionTarget() != null;
+    @Override
+    public Id<? extends CustomPayload> getId() {
+        return ID;
     }
 }

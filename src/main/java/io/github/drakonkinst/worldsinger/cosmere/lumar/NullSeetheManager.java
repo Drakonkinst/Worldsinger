@@ -21,47 +21,34 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.github.drakonkinst.worldsinger.entity.data;
 
-import io.github.drakonkinst.worldsinger.component.ModComponents;
-import io.github.drakonkinst.worldsinger.component.SilverLinedComponent;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.vehicle.BoatEntity;
-import net.minecraft.nbt.NbtCompound;
+package io.github.drakonkinst.worldsinger.cosmere.lumar;
 
-public abstract class SilverLinedEntityData implements SilverLinedComponent {
+public class NullSeetheManager implements SeetheManager {
 
-    private static final String NBT_KEY = "SilverDurability";
-
-    private final Entity entity;
-    private int silverDurability;
-
-    public SilverLinedEntityData(BoatEntity boatEntity) {
-        this.entity = boatEntity;
+    @Override
+    public void startSeethe(int ticks) {
+        // Do nothing
     }
 
     @Override
-    public void setSilverDurability(int durability) {
-        this.silverDurability = Math.max(0, Math.min(durability, this.getMaxSilverDurability()));
-        ModComponents.SILVER_LINED.sync(entity);
+    public void stopSeethe(int ticks) {
+        // Do nothing
+    }
+
+    // Should always default to true on other worlds
+    @Override
+    public boolean isSeething() {
+        return true;
     }
 
     @Override
-    public int getSilverDurability() {
-        return silverDurability;
+    public int getTicksUntilNextCycle() {
+        return 0;
     }
 
     @Override
-    public void readFromNbt(NbtCompound tag) {
-        this.silverDurability = tag.getInt(NBT_KEY);
-    }
-
-    @Override
-    public void writeToNbt(NbtCompound tag) {
-        tag.putInt(NBT_KEY, this.silverDurability);
-    }
-
-    public Entity getEntity() {
-        return entity;
+    public void serverTick() {
+        // Do nothing
     }
 }

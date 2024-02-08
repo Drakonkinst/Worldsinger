@@ -83,7 +83,7 @@ public abstract class WorldRendererSkyMixin {
     @Shadow
     private @Nullable VertexBuffer darkSkyBuffer;
 
-    @ModifyExpressionValue(method = "renderSky(Lnet/minecraft/client/util/math/MatrixStack;Lorg/joml/Matrix4f;FLnet/minecraft/client/render/Camera;ZLjava/lang/Runnable;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/Camera;getSubmersionType()Lnet/minecraft/client/render/CameraSubmersionType;"))
+    @ModifyExpressionValue(method = "renderSky(Lorg/joml/Matrix4f;Lorg/joml/Matrix4f;FLnet/minecraft/client/render/Camera;ZLjava/lang/Runnable;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/Camera;getSubmersionType()Lnet/minecraft/client/render/CameraSubmersionType;"))
     private CameraSubmersionType skipRenderingInSporeFluid(CameraSubmersionType original) {
         // Treat spore sea camera like lava, so that it skips sky rendering when submerged
         if (original == ModClientEnums.CameraSubmersionType.SPORE_SEA) {
@@ -92,8 +92,8 @@ public abstract class WorldRendererSkyMixin {
         return original;
     }
 
-    @Inject(method = "renderSky(Lnet/minecraft/client/util/math/MatrixStack;Lorg/joml/Matrix4f;FLnet/minecraft/client/render/Camera;ZLjava/lang/Runnable;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/DimensionEffects;getSkyType()Lnet/minecraft/client/render/DimensionEffects$SkyType;"), cancellable = true)
-    private void addLumarSky(MatrixStack matrices, Matrix4f projectionMatrix, float tickDelta,
+    @Inject(method = "renderSky(Lorg/joml/Matrix4f;Lorg/joml/Matrix4f;FLnet/minecraft/client/render/Camera;ZLjava/lang/Runnable;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/DimensionEffects;getSkyType()Lnet/minecraft/client/render/DimensionEffects$SkyType;"), cancellable = true)
+    private void addLumarSky(Matrix4f matrix4f, Matrix4f projectionMatrix, float tickDelta,
             Camera camera, boolean thickFog, Runnable fogCallback, CallbackInfo ci) {
         ClientWorld world = this.world;
         if (world == null) {
@@ -101,7 +101,9 @@ public abstract class WorldRendererSkyMixin {
         }
 
         if (world.getDimensionEffects().getSkyType() == ModClientEnums.SkyType.LUMAR) {
-            renderLumarSky(world, matrices, projectionMatrix, tickDelta, fogCallback);
+            MatrixStack matrixStack = new MatrixStack();
+            matrixStack.multiplyPositionMatrix(matrix4f);
+            renderLumarSky(world, matrixStack, projectionMatrix, tickDelta, fogCallback);
             ci.cancel();
         }
     }

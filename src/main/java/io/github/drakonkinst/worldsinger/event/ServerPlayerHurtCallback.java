@@ -31,6 +31,7 @@ import net.minecraft.entity.player.PlayerEntity;
 // Called on server-side only, along with the entity_hurt_player advancement criterion.
 // Contains more information than ServerLivingEntityEvents.ALLOW_DAMAGE, but cannot cancel
 // the damage event.
+@FunctionalInterface
 public interface ServerPlayerHurtCallback {
 
     Event<ServerPlayerHurtCallback> EVENT = EventFactory.createArrayBacked(

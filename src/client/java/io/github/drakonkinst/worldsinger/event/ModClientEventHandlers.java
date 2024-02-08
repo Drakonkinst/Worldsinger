@@ -23,11 +23,13 @@
  */
 package io.github.drakonkinst.worldsinger.event;
 
-import io.github.drakonkinst.worldsinger.component.ModComponents;
-import io.github.drakonkinst.worldsinger.component.PossessionComponent;
+import io.github.drakonkinst.worldsinger.api.ModAttachmentTypes;
+import io.github.drakonkinst.worldsinger.cosmere.PossessionManager;
 import io.github.drakonkinst.worldsinger.entity.CameraPossessable;
 import io.github.drakonkinst.worldsinger.entity.CameraPossessable.AttackOrigin;
 import io.github.drakonkinst.worldsinger.entity.freelook.FreeLook;
+import io.github.drakonkinst.worldsinger.network.packet.PossessAttackPayload;
+import io.github.drakonkinst.worldsinger.network.packet.PossessUpdatePayload;
 import io.github.drakonkinst.worldsinger.util.PossessionClientUtil;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
@@ -45,6 +47,7 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.math.MathHelper;
 
+@SuppressWarnings("UnstableApiUsage")
 public final class ModClientEventHandlers {
 
     public static void registerEventHandlers() {
@@ -60,9 +63,10 @@ public final class ModClientEventHandlers {
             }
 
             FreeLook freeLookData = (FreeLook) player;
-            PossessionComponent possessionData = ModComponents.POSSESSION.get(player);
+            PossessionManager possessionManager = player.getAttached(ModAttachmentTypes.POSSESSION);
             if (cameraEntity instanceof CameraPossessable cameraPossessable
-                    && !cameraEntity.isRemoved() && possessionData.isPossessing()) {
+                    && !cameraEntity.isRemoved() && possessionManager != null
+                    && possessionManager.isPossessing()) {
                 float yaw;
                 float pitch;
                 if (freeLookData.worldsinger$isFreeLookEnabled()) {
@@ -80,10 +84,9 @@ public final class ModClientEventHandlers {
                         sprinting);
 
                 // Rotation should be wrapped between [-180, 180] on server-side
-                ClientPlayNetworking.send(CameraPossessable.POSSESS_UPDATE_PACKET_ID,
-                        CameraPossessable.createUpdatePacket(MathHelper.wrapDegrees(yaw),
-                                MathHelper.wrapDegrees(pitch), forwardSpeed, sidewaysSpeed, jumping,
-                                sprinting));
+                ClientPlayNetworking.send(new PossessUpdatePayload(MathHelper.wrapDegrees(yaw),
+                        MathHelper.wrapDegrees(pitch), forwardSpeed, sidewaysSpeed, jumping,
+                        sprinting));
             }
         });
 
@@ -151,8 +154,7 @@ public final class ModClientEventHandlers {
                 } else if (attackOrigin == AttackOrigin.POSSESSED) {
                     // We're on the client side and tryAttack() only works from the server side,
                     // so we need to send a packet
-                    ClientPlayNetworking.send(CameraPossessable.POSSESS_ATTACK_PACKET_ID,
-                            CameraPossessable.createAttackPacket(entity));
+                    ClientPlayNetworking.send(new PossessAttackPayload(entity.getId()));
                     // Don't send the original packet
                     return ActionResult.FAIL;
                 }

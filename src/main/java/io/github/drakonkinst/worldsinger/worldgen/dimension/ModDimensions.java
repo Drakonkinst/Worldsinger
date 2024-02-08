@@ -21,38 +21,35 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.github.drakonkinst.worldsinger.mixin.world;
+package io.github.drakonkinst.worldsinger.worldgen.dimension;
 
-import com.llamalad7.mixinextras.injector.ModifyReturnValue;
-import io.github.drakonkinst.worldsinger.worldgen.dimension.ModDimensionTypes;
+import io.github.drakonkinst.worldsinger.Worldsinger;
+import io.github.drakonkinst.worldsinger.worldgen.lumar.LumarChunkGenerator;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
-import org.spongepowered.asm.mixin.Final;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.At;
 
-@Mixin(World.class)
-public abstract class WorldMixin {
+public class ModDimensions {
 
-    @Shadow
-    @Final
-    private RegistryKey<DimensionType> dimension;
+    public static final Identifier LUMAR = Worldsinger.id("lumar");
+    public static final RegistryKey<DimensionType> DIMENSION_TYPE_LUMAR = ModDimensions.registerDimension(
+            LUMAR);
+    public static final RegistryKey<World> WORLD_LUMAR = ModDimensions.registerWorld(LUMAR);
 
-    @ModifyReturnValue(method = "getRainGradient", at = @At("RETURN"))
-    private float removeCustomDimensionRainGradient(float originalValue) {
-        if (this.dimension.equals(ModDimensionTypes.LUMAR)) {
-            return 0.0f;
-        }
-        return originalValue;
+    public static void initialize() {
+        Registry.register(Registries.CHUNK_GENERATOR, Worldsinger.id("lumar"),
+                LumarChunkGenerator.CODEC);
     }
 
-    @ModifyReturnValue(method = "getThunderGradient", at = @At("RETURN"))
-    private float removeCustomDimensionThunderGradient(float originalValue) {
-        if (this.dimension.equals(ModDimensionTypes.LUMAR)) {
-            return 0.0f;
-        }
-        return originalValue;
+    private static RegistryKey<DimensionType> registerDimension(Identifier id) {
+        return RegistryKey.of(RegistryKeys.DIMENSION_TYPE, id);
+    }
+
+    private static RegistryKey<World> registerWorld(Identifier id) {
+        return RegistryKey.of(RegistryKeys.WORLD, id);
     }
 }

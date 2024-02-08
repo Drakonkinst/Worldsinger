@@ -52,5 +52,7 @@ public interface Shapeshifter {
 
     @Nullable LivingEntity getMorph();
 
-    LivingEntity toEntity();
+    default LivingEntity toEntity() {
+        return (LivingEntity) this;
+    }
 }

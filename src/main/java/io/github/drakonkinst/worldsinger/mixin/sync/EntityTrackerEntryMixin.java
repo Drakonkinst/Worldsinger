@@ -21,16 +21,29 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.github.drakonkinst.worldsinger.component;
 
-import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
-import io.github.drakonkinst.worldsinger.cosmere.SilverLined;
+package io.github.drakonkinst.worldsinger.mixin.sync;
 
-public interface SilverLinedComponent extends AutoSyncedComponent, SilverLined {
+import io.github.drakonkinst.worldsinger.event.StartTrackingEntityCallback;
+import net.minecraft.entity.Entity;
+import net.minecraft.server.network.EntityTrackerEntry;
+import net.minecraft.server.network.ServerPlayerEntity;
+import org.spongepowered.asm.mixin.Final;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-    int getSilverDurability();
+@Mixin(EntityTrackerEntry.class)
+public class EntityTrackerEntryMixin {
 
-    int getMaxSilverDurability();
+    @Shadow
+    @Final
+    private Entity entity;
 
-    void setSilverDurability(int durability);
+    @Inject(method = "startTracking", at = @At("RETURN"))
+    private void fireStartTrackingEntityEvent(ServerPlayerEntity player, CallbackInfo ci) {
+        StartTrackingEntityCallback.EVENT.invoker().onStartTracking(player, this.entity);
+    }
 }

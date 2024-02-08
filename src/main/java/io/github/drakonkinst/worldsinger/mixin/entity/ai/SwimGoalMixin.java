@@ -23,7 +23,7 @@
  */
 package io.github.drakonkinst.worldsinger.mixin.entity.ai;
 
-import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarSeethe;
+import io.github.drakonkinst.worldsinger.cosmere.lumar.SeetheManager;
 import io.github.drakonkinst.worldsinger.fluid.ModFluidTags;
 import net.minecraft.entity.ai.goal.SwimGoal;
 import net.minecraft.entity.mob.MobEntity;
@@ -45,7 +45,7 @@ public abstract class SwimGoalMixin {
     @Inject(method = "canStart", at = @At("RETURN"), cancellable = true)
     private void checkForSporeFluid(CallbackInfoReturnable<Boolean> cir) {
         World world = this.mob.getWorld();
-        if (!LumarSeethe.areSporesFluidized(world)) {
+        if (!SeetheManager.areSporesFluidized(world)) {
             return;
         }
         if (this.mob.getFluidHeight(ModFluidTags.AETHER_SPORES) > this.mob.getSwimHeight()) {

@@ -33,7 +33,8 @@ import io.github.drakonkinst.worldsinger.mixin.accessor.IronGolemEntityAccessor;
 import io.github.drakonkinst.worldsinger.mixin.accessor.LivingEntityAccessor;
 import io.github.drakonkinst.worldsinger.mixin.accessor.RavagerEntityAccessor;
 import io.github.drakonkinst.worldsinger.mixin.accessor.ShulkerEntityAccessor;
-import io.netty.buffer.Unpooled;
+import io.github.drakonkinst.worldsinger.network.packet.ShapeshiftAttackPayload;
+import io.github.drakonkinst.worldsinger.network.packet.ShapeshiftSyncPayload;
 import java.util.Optional;
 import java.util.UUID;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
@@ -54,13 +55,11 @@ import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.passive.TropicalFishEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientCommonPacketListener;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.registry.Registries;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
@@ -69,10 +68,6 @@ public final class ShapeshiftingManager {
 
     public static final String EMPTY_MORPH = "minecraft:empty";
     public static final String ID_PLAYER = "minecraft:player";
-    public static final Identifier SHAPESHIFTER_SYNC_PACKET_ID = Worldsinger.id(
-            "shapeshifter_sync");
-    public static final Identifier SHAPESHIFTER_ATTACK_PACKET_ID = Worldsinger.id(
-            "shapeshifter_attack");
     private static final int ATTACK_TICKS = 10;
     private static final float GUARDIAN_TAIL_SPEED = 2.0f;
     private static final float GUARDIAN_SPIKE_SPEED = 0.06f;
@@ -87,37 +82,33 @@ public final class ShapeshiftingManager {
 
     public static void syncToNearbyPlayers(ServerWorld world, Shapeshifter shapeshifter) {
         Packet<ClientCommonPacketListener> packet = ServerPlayNetworking.createS2CPacket(
-                SHAPESHIFTER_SYNC_PACKET_ID, ShapeshiftingManager.createSyncPacket(shapeshifter));
+                ShapeshiftingManager.createSyncPacket(shapeshifter));
         world.getChunkManager().sendToNearbyPlayers(shapeshifter.toEntity(), packet);
     }
 
     public static void syncToPlayer(ServerPlayerEntity playerEntity, Shapeshifter shapeshifter) {
-        ServerPlayNetworking.send(playerEntity, SHAPESHIFTER_SYNC_PACKET_ID,
+        ServerPlayNetworking.send(playerEntity,
                 ShapeshiftingManager.createSyncPacket(shapeshifter));
     }
 
-    private static PacketByteBuf createSyncPacket(Shapeshifter shapeshifter) {
-        PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
-        NbtCompound entityTag = new NbtCompound();
+    private static ShapeshiftSyncPayload createSyncPacket(Shapeshifter shapeshifter) {
+        NbtCompound entityData = new NbtCompound();
 
         LivingEntity morph = shapeshifter.getMorph();
         if (morph != null) {
-            morph.writeNbt(entityTag);
+            morph.writeNbt(entityData);
         }
 
         LivingEntity shapeshifterEntity = shapeshifter.toEntity();
-        buf.writeVarInt(shapeshifterEntity.getId());
-        buf.writeString(morph == null ? EMPTY_MORPH
-                : Registries.ENTITY_TYPE.getId(morph.getType()).toString());
-        buf.writeNbt(entityTag);
-        return buf;
+        int id = shapeshifterEntity.getId();
+        String entityType = morph == null ? EMPTY_MORPH
+                : Registries.ENTITY_TYPE.getId(morph.getType()).toString();
+        return new ShapeshiftSyncPayload(id, entityType, entityData);
     }
 
     private static void sendAttackPacket(ServerWorld world, Shapeshifter shapeshifter) {
-        PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
-        buf.writeVarInt(shapeshifter.toEntity().getId());
         Packet<ClientCommonPacketListener> packet = ServerPlayNetworking.createS2CPacket(
-                SHAPESHIFTER_ATTACK_PACKET_ID, buf);
+                new ShapeshiftAttackPayload(shapeshifter.toEntity().getId()));
         world.getChunkManager().sendToNearbyPlayers(shapeshifter.toEntity(), packet);
     }
 

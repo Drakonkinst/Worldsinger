@@ -24,7 +24,8 @@
 package io.github.drakonkinst.worldsinger.mixin.client.entity;
 
 import com.mojang.authlib.GameProfile;
-import io.github.drakonkinst.worldsinger.component.ModComponents;
+import io.github.drakonkinst.worldsinger.api.ModAttachmentTypes;
+import io.github.drakonkinst.worldsinger.cosmere.PossessionManager;
 import io.github.drakonkinst.worldsinger.entity.CameraPossessable;
 import io.github.drakonkinst.worldsinger.entity.freelook.FreeLook;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
@@ -33,6 +34,7 @@ import net.minecraft.client.world.ClientWorld;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 
+@SuppressWarnings("UnstableApiUsage")
 @Mixin(ClientPlayerEntity.class)
 public abstract class ClientPlayerEntityFreeLookMixin extends AbstractClientPlayerEntity implements
         FreeLook {
@@ -60,8 +62,11 @@ public abstract class ClientPlayerEntityFreeLookMixin extends AbstractClientPlay
     public boolean worldsinger$isFreeLookEnabled() {
         // Can add more conditions here, including a manual on/off, though this currently isn't
         // needed
-        CameraPossessable possessionTarget = ModComponents.POSSESSION.get(this)
-                .getPossessionTarget();
+        PossessionManager possessionManager = this.getAttached(ModAttachmentTypes.POSSESSION);
+        if (possessionManager == null) {
+            return false;
+        }
+        CameraPossessable possessionTarget = possessionManager.getPossessionTarget();
         return possessionTarget != null && possessionTarget.canFreeLook();
     }
 

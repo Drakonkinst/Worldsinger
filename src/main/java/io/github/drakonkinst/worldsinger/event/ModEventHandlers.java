@@ -23,9 +23,10 @@
  */
 package io.github.drakonkinst.worldsinger.event;
 
+import io.github.drakonkinst.worldsinger.api.ModAttachmentTypes;
+import io.github.drakonkinst.worldsinger.api.sync.AttachmentSync;
 import io.github.drakonkinst.worldsinger.block.LivingSporeGrowthBlock;
-import io.github.drakonkinst.worldsinger.component.MidnightAetherBondComponent;
-import io.github.drakonkinst.worldsinger.component.ModComponents;
+import io.github.drakonkinst.worldsinger.cosmere.lumar.MidnightAetherBondManager;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.SporeKillingManager;
 import io.github.drakonkinst.worldsinger.effect.ModStatusEffects;
 import io.github.drakonkinst.worldsinger.item.ModItemTags;
@@ -46,7 +47,7 @@ public final class ModEventHandlers {
         // Add Thirst-related effects when consuming an item
         FinishConsumingItemCallback.EVENT.register((entity, stack) -> {
             if (entity instanceof PlayerEntity player) {
-                ModComponents.THIRST_MANAGER.get(player).drink(stack.getItem(), stack);
+                player.getAttachedOrCreate(ModAttachmentTypes.THIRST).drink(stack.getItem(), stack);
 
                 // Status effects should only be added on server side
                 if (!entity.getWorld().isClient()) {
@@ -110,14 +111,19 @@ public final class ModEventHandlers {
                         ItemStack attackingItem = livingEntity.getMainHandStack();
 
                         if (attackingItem.isIn(ModItemTags.KILLS_SPORE_GROWTHS)) {
-                            MidnightAetherBondComponent midnightAetherBond = ModComponents.MIDNIGHT_AETHER_BOND.get(
-                                    player);
+                            MidnightAetherBondManager midnightAetherBond = player.getAttachedOrCreate(
+                                    ModAttachmentTypes.MIDNIGHT_AETHER_BOND);
                             if (midnightAetherBond.hasAnyBonds()) {
-                                midnightAetherBond.dispelAllBonds(true);
+                                midnightAetherBond.dispelAllBonds(player, true);
                             }
                         }
                     }
                 });
+
+        // Sync entity attachments
+        StartTrackingEntityCallback.EVENT.register(AttachmentSync::syncEntityAttachments);
+        PlayerSyncCallback.EVENT.register(
+                (player -> AttachmentSync.syncEntityAttachments(player, player)));
     }
 
     private ModEventHandlers() {}

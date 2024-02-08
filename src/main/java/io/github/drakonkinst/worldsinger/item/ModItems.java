@@ -23,6 +23,8 @@
  */
 package io.github.drakonkinst.worldsinger.item;
 
+import static io.github.drakonkinst.worldsinger.registry.ModArmorMaterials.STEEL_DURABILITY_MULTIPLIER;
+
 import io.github.drakonkinst.worldsinger.Worldsinger;
 import io.github.drakonkinst.worldsinger.block.ModBlocks;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.AetherSpores;
@@ -34,11 +36,10 @@ import io.github.drakonkinst.worldsinger.cosmere.lumar.SunlightSpores;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.VerdantSpores;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.ZephyrSpores;
 import io.github.drakonkinst.worldsinger.entity.ModEntityTypes;
-import io.github.drakonkinst.worldsinger.material.ModArmorMaterials;
-import io.github.drakonkinst.worldsinger.material.ModToolMaterials;
+import io.github.drakonkinst.worldsinger.registry.ModArmorMaterials;
 import io.github.drakonkinst.worldsinger.registry.ModFoodComponents;
 import io.github.drakonkinst.worldsinger.registry.ModSoundEvents;
-import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
+import io.github.drakonkinst.worldsinger.registry.ModToolMaterials;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.minecraft.block.Block;
@@ -119,75 +120,74 @@ public final class ModItems {
             createSporeSplashBottleItem(MidnightSpores.getInstance()));
 
     public static final Item VERDANT_VINE = register("verdant_vine",
-            new Item(new FabricItemSettings().food(new FoodComponent.Builder()
+            new Item(new Item.Settings().food(new FoodComponent.Builder()
                     // Same as Dried Kelp
                     .hunger(1).saturationModifier(0.3f).snack().build())));
     public static final Item CRIMSON_SPINE = register("crimson_spine",
-            new Item(new FabricItemSettings()));
+            new Item(new Item.Settings()));
     public static final Item ROSEITE_CRYSTAL = register("roseite_crystal",
-            new Item(new FabricItemSettings()));
-    public static final Item ROSEITE_BEAD = register("roseite_bead",
-            new Item(new FabricItemSettings()));
+            new Item(new Item.Settings()));
+    public static final Item ROSEITE_BEAD = register("roseite_bead", new Item(new Item.Settings()));
     public static final Item SALT = register("salt",
-            new SaltItem(new FabricItemSettings().food(ModFoodComponents.SALT)));
+            new SaltItem(new Item.Settings().food(ModFoodComponents.SALT)));
 
     // Silver
-    public static final Item RAW_SILVER = register("raw_silver",
-            new Item(new FabricItemSettings()));
-    public static final Item SILVER_INGOT = register("silver_ingot",
-            new Item(new FabricItemSettings()));
+    public static final Item RAW_SILVER = register("raw_silver", new Item(new Item.Settings()));
+    public static final Item SILVER_INGOT = register("silver_ingot", new Item(new Item.Settings()));
     public static final Item SILVER_NUGGET = register("silver_nugget",
-            new Item(new FabricItemSettings()));
+            new Item(new Item.Settings()));
 
     // Steel
-    public static final Item CRUDE_IRON = register("crude_iron",
-            new Item(new FabricItemSettings()));
-    public static final Item STEEL_INGOT = register("steel_ingot",
-            new Item(new FabricItemSettings()));
-    public static final Item STEEL_NUGGET = register("steel_nugget",
-            new Item(new FabricItemSettings()));
+    public static final Item CRUDE_IRON = register("crude_iron", new Item(new Item.Settings()));
+    public static final Item STEEL_INGOT = register("steel_ingot", new Item(new Item.Settings()));
+    public static final Item STEEL_NUGGET = register("steel_nugget", new Item(new Item.Settings()));
     public static final Item STEEL_HELMET = register("steel_helmet",
             new ArmorItem(ModArmorMaterials.STEEL, ArmorItem.Type.HELMET,
-                    new FabricItemSettings()));
+                    new Item.Settings().maxDamageIfAbsent(
+                            ArmorItem.Type.HELMET.getMaxDamage(STEEL_DURABILITY_MULTIPLIER))));
     public static final Item STEEL_CHESTPLATE = register("steel_chestplate",
             new ArmorItem(ModArmorMaterials.STEEL, ArmorItem.Type.CHESTPLATE,
-                    new FabricItemSettings()));
+                    new Item.Settings().maxDamageIfAbsent(
+                            ArmorItem.Type.CHESTPLATE.getMaxDamage(STEEL_DURABILITY_MULTIPLIER))));
     public static final Item STEEL_LEGGINGS = register("steel_leggings",
             new ArmorItem(ModArmorMaterials.STEEL, ArmorItem.Type.LEGGINGS,
-                    new FabricItemSettings()));
+                    new Item.Settings().maxDamageIfAbsent(
+                            ArmorItem.Type.LEGGINGS.getMaxDamage(STEEL_DURABILITY_MULTIPLIER))));
     public static final Item STEEL_BOOTS = register("steel_boots",
-            new ArmorItem(ModArmorMaterials.STEEL, ArmorItem.Type.BOOTS, new FabricItemSettings()));
+            new ArmorItem(ModArmorMaterials.STEEL, ArmorItem.Type.BOOTS,
+                    new Item.Settings().maxDamageIfAbsent(
+                            ArmorItem.Type.BOOTS.getMaxDamage(STEEL_DURABILITY_MULTIPLIER))));
     public static final Item STEEL_SWORD = register("steel_sword",
-            new SwordItem(ModToolMaterials.STEEL, 3, -2.4f, new FabricItemSettings()));
+            new SwordItem(ModToolMaterials.STEEL, 3, -2.4f, new Item.Settings()));
     public static final Item STEEL_PICKAXE = register("steel_pickaxe",
-            new PickaxeItem(ModToolMaterials.STEEL, 1, -2.8f, new FabricItemSettings()));
+            new PickaxeItem(ModToolMaterials.STEEL, 1, -2.8f, new Item.Settings()));
     public static final Item STEEL_AXE = register("steel_axe",
-            new AxeItem(ModToolMaterials.STEEL, 6.0f, -3.1f, new FabricItemSettings()));
+            new AxeItem(ModToolMaterials.STEEL, 6.0f, -3.1f, new Item.Settings()));
     public static final Item STEEL_SHOVEL = register("steel_shovel",
-            new ShovelItem(ModToolMaterials.STEEL, 1.5f, -3.0f, new FabricItemSettings()));
+            new ShovelItem(ModToolMaterials.STEEL, 1.5f, -3.0f, new Item.Settings()));
     public static final Item STEEL_HOE = register("steel_hoe",
-            new HoeItem(ModToolMaterials.STEEL, -2, -1.0f, new FabricItemSettings()));
+            new HoeItem(ModToolMaterials.STEEL, -2, -1.0f, new Item.Settings()));
 
     // Aluminum
     public static final Item ALUMINUM_INGOT = register("aluminum_ingot",
-            new Item(new FabricItemSettings()));
+            new Item(new Item.Settings()));
     public static final Item ALUMINUM_NUGGET = register("aluminum_nugget",
-            new Item(new FabricItemSettings()));
+            new Item(new Item.Settings()));
 
     // Tools
     public static final Item QUARTZ_AND_STEEL = register("quartz_and_steel",
-            new FlintAndSteelItem(new FabricItemSettings().maxDamage(88)));
+            new FlintAndSteelItem(new Item.Settings().maxDamage(88)));
     public static final Item FLINT_AND_IRON = register("flint_and_iron",
-            new FaultyFirestarterItem(0.33f, new FabricItemSettings().maxDamage(64)));
+            new FaultyFirestarterItem(0.33f, new Item.Settings().maxDamage(64)));
     public static final Item QUARTZ_AND_IRON = register("quartz_and_iron",
-            new FaultyFirestarterItem(0.33f, new FabricItemSettings().maxDamage(88)));
+            new FaultyFirestarterItem(0.33f, new Item.Settings().maxDamage(88)));
     public static final Item SILVER_KNIFE = register("silver_knife",
-            new SilverKnifeItem(1.0f, -2.0f, new FabricItemSettings()));
+            new SilverKnifeItem(1.0f, -2.0f, new Item.Settings()));
 
     // Admin
     public static final Item MIDNIGHT_CREATURE_SPAWN_EGG = register("midnight_creature_spawn_egg",
             new SpawnEggItem(ModEntityTypes.MIDNIGHT_CREATURE, 0x000000, 0x111111,
-                    new FabricItemSettings()));
+                    new Item.Settings()));
 
     // Item Groups
     private static final ItemGroup WORLDSINGER_ITEM_GROUP = FabricItemGroup.builder()
@@ -197,18 +197,18 @@ public final class ModItems {
 
     private static Item createSporeBucketItem(Block sporeBlock) {
         return new AetherSporeBucketItem(sporeBlock, ModSoundEvents.BLOCK_SPORE_BLOCK_PLACE,
-                new FabricItemSettings().recipeRemainder(Items.BUCKET).maxCount(1));
+                new Item.Settings().recipeRemainder(Items.BUCKET).maxCount(1));
     }
 
     private static Item createSporeBottleItem(AetherSpores sporeType) {
         return new SporeBottleItem(sporeType,
-                new FabricItemSettings().recipeRemainder(Items.GLASS_BOTTLE)
+                new Item.Settings().recipeRemainder(Items.GLASS_BOTTLE)
                         .maxCount(Items.POTION.getMaxCount()));
     }
 
     private static Item createSporeSplashBottleItem(AetherSpores sporeType) {
         return new SplashSporeBottleItem(sporeType,
-                new FabricItemSettings().maxCount(Items.SPLASH_POTION.getMaxCount()));
+                new Item.Settings().maxCount(Items.SPLASH_POTION.getMaxCount()));
     }
 
     public static <T extends Item> T register(String id, T item) {

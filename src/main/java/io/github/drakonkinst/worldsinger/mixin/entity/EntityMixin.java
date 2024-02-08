@@ -28,7 +28,7 @@ import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import io.github.drakonkinst.worldsinger.block.ModBlockTags;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.AetherSpores;
-import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarSeethe;
+import io.github.drakonkinst.worldsinger.cosmere.lumar.SeetheManager;
 import io.github.drakonkinst.worldsinger.fluid.AetherSporeFluid;
 import io.github.drakonkinst.worldsinger.fluid.ModFluidTags;
 import net.minecraft.block.BlockRenderType;
@@ -73,8 +73,8 @@ public abstract class EntityMixin {
     private BlockRenderType showSprintingParticlesForCustomFluid(BlockState instance,
             Operation<BlockRenderType> original) {
         World world = this.getWorld();
-        if (!instance.isIn(ModBlockTags.AETHER_SPORE_SEA_BLOCKS) || LumarSeethe.areSporesFluidized(
-                world)) {
+        if (!instance.isIn(ModBlockTags.AETHER_SPORE_SEA_BLOCKS)
+                || SeetheManager.areSporesFluidized(world)) {
             return original.call(instance);
         }
         return BlockRenderType.MODEL;

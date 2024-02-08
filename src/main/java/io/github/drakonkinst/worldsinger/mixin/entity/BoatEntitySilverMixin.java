@@ -24,9 +24,10 @@
 package io.github.drakonkinst.worldsinger.mixin.entity;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
-import io.github.drakonkinst.worldsinger.component.ModComponents;
-import io.github.drakonkinst.worldsinger.component.SilverLinedComponent;
+import io.github.drakonkinst.worldsinger.api.ModAttachmentTypes;
+import io.github.drakonkinst.worldsinger.api.sync.AttachmentSync;
 import io.github.drakonkinst.worldsinger.cosmere.SilverLined;
+import io.github.drakonkinst.worldsinger.entity.SilverLinedEntityData;
 import io.github.drakonkinst.worldsinger.item.ModItemTags;
 import io.github.drakonkinst.worldsinger.registry.ModSoundEvents;
 import net.minecraft.entity.EntityType;
@@ -43,6 +44,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+@SuppressWarnings("UnstableApiUsage")
 @Mixin(BoatEntity.class)
 public abstract class BoatEntitySilverMixin extends VehicleEntity {
 
@@ -56,13 +58,23 @@ public abstract class BoatEntitySilverMixin extends VehicleEntity {
     @Inject(method = "interact", at = @At("HEAD"), cancellable = true)
     private void addSilverLining(PlayerEntity player, Hand hand,
             CallbackInfoReturnable<ActionResult> cir) {
-        SilverLinedComponent silverData = ModComponents.SILVER_LINED.get(this);
+        SilverLinedEntityData silverData = this.getAttachedOrCreate(
+                ModAttachmentTypes.SILVER_LINED_BOAT);
         ItemStack itemStack = player.getStackInHand(hand);
+        int silverDurability = silverData.getSilverDurability();
         if (itemStack.isIn(ModItemTags.SILVER_INGOTS)
-                && silverData.getSilverDurability() < silverData.getMaxSilverDurability()) {
-            silverData.setSilverDurability(silverData.getSilverDurability() + SILVER_REPAIR_AMOUNT);
+                && silverDurability < silverData.getMaxSilverDurability()) {
+            // Set data
+            silverData.setSilverDurability(silverDurability + SILVER_REPAIR_AMOUNT);
+            if (!this.getWorld().isClient()) {
+                AttachmentSync.sync(this, ModAttachmentTypes.SILVER_LINED_BOAT, silverData);
+            }
+
+            // Play sound
             float pitch = 1.0f + (this.random.nextFloat() - this.random.nextFloat()) * 0.2f;
             this.playSound(ModSoundEvents.ENTITY_BOAT_LINE_SILVER, 1.0f, pitch);
+
+            // Consume silver
             if (!player.getAbilities().creativeMode) {
                 itemStack.decrement(1);
             }
@@ -77,7 +89,7 @@ public abstract class BoatEntitySilverMixin extends VehicleEntity {
 
     @Unique
     private ItemStack addSilverData(ItemStack itemStack) {
-        SilverLined.transferSilverLinedDataFromEntityToItemStack(this, itemStack);
+        SilverLined.transferDataFromEntityToItemStack(this, itemStack);
         return itemStack;
     }
 }

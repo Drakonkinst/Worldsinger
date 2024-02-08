@@ -36,6 +36,7 @@ import io.github.drakonkinst.worldsinger.fluid.Fluidlogged;
 import io.github.drakonkinst.worldsinger.fluid.ModFluids;
 import io.github.drakonkinst.worldsinger.item.ModItems;
 import io.github.drakonkinst.worldsinger.network.CommonProxy;
+import io.github.drakonkinst.worldsinger.network.ModPayloadRegistry;
 import io.github.drakonkinst.worldsinger.network.ServerNetworkHandler;
 import io.github.drakonkinst.worldsinger.particle.ModParticleTypes;
 import io.github.drakonkinst.worldsinger.registry.ModDispenserBehaviors;
@@ -43,7 +44,7 @@ import io.github.drakonkinst.worldsinger.registry.ModPotions;
 import io.github.drakonkinst.worldsinger.registry.ModSoundEvents;
 import io.github.drakonkinst.worldsinger.util.ModConstants;
 import io.github.drakonkinst.worldsinger.util.ModProperties;
-import io.github.drakonkinst.worldsinger.worldgen.dimension.ModDimensionTypes;
+import io.github.drakonkinst.worldsinger.worldgen.dimension.ModDimensions;
 import io.github.drakonkinst.worldsinger.worldgen.structure.ModStructurePieceTypes;
 import io.github.drakonkinst.worldsinger.worldgen.structure.ModStructureTypes;
 import net.fabricmc.api.ModInitializer;
@@ -84,7 +85,7 @@ public class Worldsinger implements ModInitializer {
         ModPotions.initialize();
         ModCauldronBehaviors.initialize();
         ModDispenserBehaviors.register();
-        ModDimensionTypes.initialize();
+        ModDimensions.initialize();
         ModStructurePieceTypes.initialize();
         ModStructureTypes.initialize();
         ModEventHandlers.initialize();
@@ -94,7 +95,8 @@ public class Worldsinger implements ModInitializer {
         ModSensors.initialize();
         ModActivities.initialize();
 
-        ServerNetworkHandler.registerPacketHandler();
+        ModPayloadRegistry.initialize();
+        ServerNetworkHandler.initialize();
 
         ModApi.initialize();
     }

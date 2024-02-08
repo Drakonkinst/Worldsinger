@@ -1,6 +1,7 @@
 /*
  * MIT License
  *
+ * Copyright (c) 2019-2023 Ladysnake
  * Copyright (c) 2023-2024 Drakonkinst
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -21,20 +22,23 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.github.drakonkinst.worldsinger.mixin.accessor;
 
-import java.util.Map;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.SpawnRestriction;
-import net.minecraft.entity.SpawnRestriction.Entry;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.gen.Accessor;
+package io.github.drakonkinst.worldsinger.event;
 
-@Mixin(SpawnRestriction.class)
-public interface SpawnRestrictionAccessor {
+import net.fabricmc.fabric.api.event.Event;
+import net.fabricmc.fabric.api.event.EventFactory;
+import net.minecraft.entity.Entity;
+import net.minecraft.server.network.ServerPlayerEntity;
 
-    @Accessor("RESTRICTIONS")
-    static Map<EntityType<?>, Entry> worldsinger$getSpawnRestrictionsMap() {
-        throw new AssertionError();
-    }
+@FunctionalInterface
+public interface StartTrackingEntityCallback {
+
+    Event<StartTrackingEntityCallback> EVENT = EventFactory.createArrayBacked(
+            StartTrackingEntityCallback.class, (listeners) -> (player, entity) -> {
+                for (StartTrackingEntityCallback listener : listeners) {
+                    listener.onStartTracking(player, entity);
+                }
+            });
+
+    void onStartTracking(ServerPlayerEntity player, Entity entity);
 }

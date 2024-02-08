@@ -24,7 +24,8 @@
 package io.github.drakonkinst.worldsinger.util;
 
 import io.github.drakonkinst.worldsinger.Worldsinger;
-import io.github.drakonkinst.worldsinger.component.ModComponents;
+import io.github.drakonkinst.worldsinger.api.ModAttachmentTypes;
+import io.github.drakonkinst.worldsinger.cosmere.PossessionManager;
 import io.github.drakonkinst.worldsinger.entity.CameraPossessable;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
@@ -43,7 +44,11 @@ public final class PossessionClientUtil {
         if (player == null) {
             return null;
         }
-        return ModComponents.POSSESSION.get(player).getPossessionTarget();
+        PossessionManager possessionManager = player.getAttached(ModAttachmentTypes.POSSESSION);
+        if (possessionManager == null) {
+            return null;
+        }
+        return possessionManager.getPossessionTarget();
     }
 
     public static void displayPossessStartText() {

@@ -26,7 +26,7 @@ package io.github.drakonkinst.worldsinger.fluid;
 import io.github.drakonkinst.worldsinger.block.ModBlocks;
 import io.github.drakonkinst.worldsinger.cosmere.WaterReactionManager;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.AetherSpores;
-import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarSeethe;
+import io.github.drakonkinst.worldsinger.cosmere.lumar.SeetheManager;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.SporeKillingManager;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -66,7 +66,7 @@ public abstract class LivingAetherSporeFluid extends AetherSporeFluid implements
             this.reactToWater(world, pos, state, Integer.MAX_VALUE, random);
         }
 
-        if (!LumarSeethe.areSporesFluidized(world)) {
+        if (!SeetheManager.areSporesFluidized(world)) {
             return;
         }
 

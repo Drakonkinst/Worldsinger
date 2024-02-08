@@ -23,7 +23,7 @@
  */
 package io.github.drakonkinst.worldsinger.mixin.entity;
 
-import io.github.drakonkinst.worldsinger.component.ModComponents;
+import io.github.drakonkinst.worldsinger.api.ModAttachmentTypes;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -40,8 +40,13 @@ public abstract class PlayerEntityThirstMixin extends LivingEntity {
         super(entityType, world);
     }
 
+    @Inject(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/HungerManager;update(Lnet/minecraft/entity/player/PlayerEntity;)V"))
+    private void updateThirst(CallbackInfo ci) {
+        this.getAttachedOrCreate(ModAttachmentTypes.THIRST).update(this);
+    }
+
     @Inject(method = "addExhaustion", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/HungerManager;addExhaustion(F)V"))
     private void addThirstExhaustion(float exhaustion, CallbackInfo ci) {
-        ModComponents.THIRST_MANAGER.get(this).addDehydration(exhaustion);
+        this.getAttachedOrCreate(ModAttachmentTypes.THIRST).addDehydration(exhaustion);
     }
 }

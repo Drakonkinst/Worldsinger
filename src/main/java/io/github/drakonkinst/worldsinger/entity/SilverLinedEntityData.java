@@ -21,24 +21,37 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.github.drakonkinst.worldsinger.component;
 
-import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
-import dev.onyxstudios.cca.api.v3.component.tick.ServerTickingComponent;
+package io.github.drakonkinst.worldsinger.entity;
 
-public interface MidnightAetherBondComponent extends AutoSyncedComponent, ServerTickingComponent {
+import io.github.drakonkinst.worldsinger.api.sync.SyncableAttachment;
+import io.github.drakonkinst.worldsinger.cosmere.SilverLined;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.util.math.MathHelper;
 
-    void updateBond(int id);
+public abstract class SilverLinedEntityData implements SilverLined, SyncableAttachment {
 
-    void removeBond(int id);
+    protected static final String KEY_SILVER_LINED = "silver_lined";
 
-    void onDeath();
+    private int silverDurability = 0;
 
-    void dispelAllBonds(boolean playEffects);
+    @Override
+    public void setSilverDurability(int durability) {
+        silverDurability = MathHelper.clamp(durability, 0, getMaxSilverDurability());
+    }
 
-    int getBondCount();
+    @Override
+    public int getSilverDurability() {
+        return silverDurability;
+    }
 
-    default boolean hasAnyBonds() {
-        return getBondCount() > 0;
+    @Override
+    public void syncToNbt(NbtCompound nbt) {
+        nbt.putInt(KEY_SILVER_LINED, silverDurability);
+    }
+
+    @Override
+    public void syncFromNbt(NbtCompound nbt) {
+        silverDurability = nbt.getInt(KEY_SILVER_LINED);
     }
 }

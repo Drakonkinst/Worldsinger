@@ -23,9 +23,6 @@
     "mm:early_risers": [
       "io.github.drakonkinst.worldsinger.EarlyRiser"
     ],
-    "cardinal-components": [
-      "io.github.drakonkinst.worldsinger.component.ModComponents"
-    ],
     "fabric-datagen": [
       "io.github.drakonkinst.worldsinger.datagen.ModDataGenerator"
     ],
@@ -50,14 +47,6 @@
     "yet_another_config_lib_v3": ">=3.1.1"
   },
   "custom": {
-    "cardinal-components": [
-      "worldsinger:lumar_seethe",
-      "worldsinger:silver_lined",
-      "worldsinger:spore_growth",
-      "worldsinger:thirst_manager",
-      "worldsinger:midnight_aether_bond",
-      "worldsinger:possession"
-    ],
     "modmenu": {
     }
   },

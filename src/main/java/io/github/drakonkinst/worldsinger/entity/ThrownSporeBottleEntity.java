@@ -117,8 +117,8 @@ public class ThrownSporeBottleEntity extends ThrownItemEntity implements FlyingI
     }
 
     @Override
-    protected float getGravity() {
-        return 0.05f;
+    protected double getGravity() {
+        return 0.05;
     }
 
     @Override
