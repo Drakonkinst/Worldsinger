@@ -25,14 +25,18 @@ package io.github.drakonkinst.worldsinger.mixin.worldgen;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import io.github.drakonkinst.worldsinger.block.SporeKillable;
 import io.github.drakonkinst.worldsinger.fluid.ModFluidTags;
 import io.github.drakonkinst.worldsinger.worldgen.lumar.LumarChunkGenerator;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.WorldChunk;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Slice;
 
 @Mixin(WorldChunk.class)
 public abstract class WorldChunkMixin {
@@ -48,4 +52,18 @@ public abstract class WorldChunkMixin {
         }
         original.call(instance, world, pos);
     }
+
+    // If the block is different from what was actually placed when executing setBlockState,
+    // it will act as if the block is placed unsuccessfully. Since SporeKillable blocks can be
+    // killed immediately on placement, add a check that allows them to be placed normally.
+    @WrapOperation(method = "setBlockState", at = @At(value = "INVOKE", target = "Lnet/minecraft/block/BlockState;isOf(Lnet/minecraft/block/Block;)Z"), slice = @Slice(from = @At(value = "INVOKE", target = "Lnet/minecraft/world/chunk/WorldChunk;removeBlockEntity(Lnet/minecraft/util/math/BlockPos;)V"), to = @At(value = "INVOKE", target = "Lnet/minecraft/block/BlockState;onBlockAdded(Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/BlockState;Z)V")))
+    private boolean allowSporeKilledBlocks(BlockState instance, Block desiredBlock,
+            Operation<Boolean> original) {
+        if (original.call(instance, desiredBlock)) {
+            return true;
+        }
+
+        return (desiredBlock instanceof SporeKillable sporeKillable && instance.isOf(sporeKillable.getDeadSporeBlock()));
+    }
+
 }

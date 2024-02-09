@@ -26,7 +26,7 @@ package io.github.drakonkinst.worldsinger.block;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.AetherSpores;
-import io.github.drakonkinst.worldsinger.cosmere.lumar.SporeKillingManager;
+import io.github.drakonkinst.worldsinger.cosmere.lumar.SporeKillingUtil;
 import io.github.drakonkinst.worldsinger.mixin.accessor.FluidBlockAccessor;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
@@ -55,8 +55,8 @@ public class LivingAetherSporeFluidBlock extends AetherSporeFluidBlock implement
     @Override
     public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
         super.scheduledTick(state, world, pos, random);
-        if (SporeKillingManager.isSporeKillingBlockNearby(world, pos)) {
-            world.setBlockState(pos, SporeKillingManager.convertToDeadVariant(this, state));
+        if (SporeKillingUtil.isSporeKillingBlockNearby(world, pos)) {
+            world.setBlockState(pos, SporeKillingUtil.convertToDeadVariant(this, state));
         }
     }
 

@@ -27,7 +27,7 @@ import io.github.drakonkinst.worldsinger.block.ModBlocks;
 import io.github.drakonkinst.worldsinger.cosmere.WaterReactionManager;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.AetherSpores;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.SeetheManager;
-import io.github.drakonkinst.worldsinger.cosmere.lumar.SporeKillingManager;
+import io.github.drakonkinst.worldsinger.cosmere.lumar.SporeKillingUtil;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -79,7 +79,7 @@ public abstract class LivingAetherSporeFluid extends AetherSporeFluid implements
 
             BlockPos blockPos = pos.add(offsetX, offsetY, offsetZ);
             if (world.getBlockState(blockPos).isOf(ModBlocks.DEAD_SPORE_SEA) && world.getFluidState(
-                    blockPos).isStill() && !SporeKillingManager.isSporeKillingBlockNearby(world,
+                    blockPos).isStill() && !SporeKillingUtil.isSporeKillingBlockNearby(world,
                     blockPos)) {
                 world.setBlockState(blockPos, blockState);
             }

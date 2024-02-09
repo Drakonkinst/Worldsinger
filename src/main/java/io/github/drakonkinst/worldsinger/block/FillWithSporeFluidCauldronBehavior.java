@@ -24,7 +24,7 @@
 package io.github.drakonkinst.worldsinger.block;
 
 import com.google.common.base.Suppliers;
-import io.github.drakonkinst.worldsinger.cosmere.lumar.SporeKillingManager;
+import io.github.drakonkinst.worldsinger.cosmere.lumar.SporeKillingUtil;
 import io.github.drakonkinst.worldsinger.registry.ModSoundEvents;
 import java.util.function.Supplier;
 import net.minecraft.block.Block;
@@ -51,7 +51,7 @@ public class FillWithSporeFluidCauldronBehavior extends FillWithFluidCauldronBeh
     @Override
     public ItemActionResult interact(BlockState state, World world, BlockPos pos,
             PlayerEntity player, Hand hand, ItemStack stack) {
-        if (SporeKillingManager.isSporeKillingBlockNearby(world, pos)) {
+        if (SporeKillingUtil.isSporeKillingBlockNearby(world, pos)) {
             return CauldronBehavior.fillCauldron(world, pos, player, hand, stack,
                     deadSporeCauldronBlock.get()
                             .getDefaultState()

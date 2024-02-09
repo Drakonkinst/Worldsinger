@@ -30,7 +30,7 @@ import io.github.drakonkinst.worldsinger.block.ModBlockTags;
 import io.github.drakonkinst.worldsinger.block.SporeKillable;
 import io.github.drakonkinst.worldsinger.cosmere.SilverLined;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.SeetheManager;
-import io.github.drakonkinst.worldsinger.cosmere.lumar.SporeKillingManager;
+import io.github.drakonkinst.worldsinger.cosmere.lumar.SporeKillingUtil;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.SporeParticleSpawner;
 import io.github.drakonkinst.worldsinger.fluid.AetherSporeFluid;
 import io.github.drakonkinst.worldsinger.fluid.ModFluidTags;
@@ -135,7 +135,7 @@ public abstract class BoatEntityMovementMixin extends VehicleEntity {
             BlockState state = world.getBlockState(pos);
             if (state.isIn(ModBlockTags.AETHER_SPORE_SEA_BLOCKS)
                     && state.getBlock() instanceof SporeKillable sporeKillable) {
-                BlockState newBlockState = SporeKillingManager.convertToDeadVariant(sporeKillable,
+                BlockState newBlockState = SporeKillingUtil.convertToDeadVariant(sporeKillable,
                         state);
                 if (world.setBlockState(pos, newBlockState)) {
                     sporesKilled += 1;

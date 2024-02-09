@@ -79,7 +79,6 @@ public final class ClientNetworkHandler {
                     Object obj = entity.getAttachedOrCreate(attachmentType);
                     if (obj instanceof SyncableAttachment attachment) {
                         attachment.syncFromNbt(payload.nbt());
-                        Worldsinger.LOGGER.info("Attachment synced");
                     } else {
                         Worldsinger.LOGGER.warn(
                                 "Could not process entity attachment sync because attachment is not syncable");

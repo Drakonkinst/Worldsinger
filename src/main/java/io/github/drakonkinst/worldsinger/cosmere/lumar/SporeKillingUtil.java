@@ -57,7 +57,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 @SuppressWarnings("UnstableApiUsage")
-public final class SporeKillingManager {
+public final class SporeKillingUtil {
 
     public static final int MAX_BLOCK_RADIUS = 5;
     public static final double BOAT_RADIUS = 2.0;
@@ -81,7 +81,7 @@ public final class SporeKillingManager {
                         hand == Hand.MAIN_HAND ? EquipmentSlot.MAINHAND : EquipmentSlot.OFFHAND);
             }
             // Kill the block
-            world.setBlockState(pos, SporeKillingManager.convertToDeadVariant(sporeGrowth, state));
+            world.setBlockState(pos, SporeKillingUtil.convertToDeadVariant(sporeGrowth, state));
             return true;
         }
         return false;
@@ -106,7 +106,7 @@ public final class SporeKillingManager {
                 if (BlockPosUtil.isInvestitureBlocked(world, pos, currentPos)) {
                     continue;
                 }
-                blockState = SporeKillingManager.convertToDeadVariant(sporeKillable, blockState);
+                blockState = SporeKillingUtil.convertToDeadVariant(sporeKillable, blockState);
                 wasChanged = true;
             }
 
@@ -160,7 +160,7 @@ public final class SporeKillingManager {
 
     public static boolean checkNearbyEntities(World world, Vec3d pos) {
         Box box = Box.of(pos, BOAT_RADIUS, BOAT_RADIUS, BOAT_RADIUS);
-        return SporeKillingManager.checkNearbyEntitiesInBox(world, box);
+        return SporeKillingUtil.checkNearbyEntitiesInBox(world, box);
     }
 
     private static boolean checkNearbyEntitiesInBox(World world, Box box) {
@@ -185,12 +185,12 @@ public final class SporeKillingManager {
             double minZ, double maxX, double maxY, double maxZ) {
         Box box = new Box(minX - BOAT_RADIUS, minY - BOAT_RADIUS, minZ - BOAT_RADIUS,
                 maxX + BOAT_RADIUS, maxY + BOAT_RADIUS, maxZ + BOAT_RADIUS);
-        return SporeKillingManager.checkNearbyEntitiesInBox(world, box);
+        return SporeKillingUtil.checkNearbyEntitiesInBox(world, box);
     }
 
     public static boolean isSporeKillingBlockNearbyForRange(World world, double minX, double minY,
             double minZ, double maxX, double maxY, double maxZ) {
-        return SporeKillingManager.isSporeKillingBlockNearbyForRange(world, MathHelper.floor(minX),
+        return SporeKillingUtil.isSporeKillingBlockNearbyForRange(world, MathHelper.floor(minX),
                 MathHelper.floor(minY), MathHelper.floor(minZ), MathHelper.ceil(maxX),
                 MathHelper.ceil(maxY), MathHelper.ceil(maxZ));
     }
@@ -214,7 +214,7 @@ public final class SporeKillingManager {
                 continue;
             }
 
-            SporeKillingManager.calcClosestPointOnCuboid(searchPos.getX(), searchPos.getY(),
+            SporeKillingUtil.calcClosestPointOnCuboid(searchPos.getX(), searchPos.getY(),
                     searchPos.getZ(), minX, minY, minZ, maxX, maxY, maxZ, closestPos);
             int distance = BlockPosUtil.getDistance(searchPos, closestPos);
             if (dataTable.getIntForBlock(blockState) < distance) {
@@ -231,9 +231,9 @@ public final class SporeKillingManager {
 
     private static void calcClosestPointOnCuboid(int x, int y, int z, int minX, int minY, int minZ,
             int maxX, int maxY, int maxZ, BlockPos.Mutable mutable) {
-        int closestX = SporeKillingManager.clamp(x, minX, maxX);
-        int closestY = SporeKillingManager.clamp(y, minY, maxY);
-        int closestZ = SporeKillingManager.clamp(z, minZ, maxZ);
+        int closestX = SporeKillingUtil.clamp(x, minX, maxX);
+        int closestY = SporeKillingUtil.clamp(y, minY, maxY);
+        int closestZ = SporeKillingUtil.clamp(z, minZ, maxZ);
         mutable.set(closestX, closestY, closestZ);
     }
 
@@ -243,11 +243,11 @@ public final class SporeKillingManager {
 
     private static int getDistanceBetweenPointAndCube(int x, int y, int z, int minX, int minY,
             int minZ, int maxX, int maxY, int maxZ) {
-        int closestX = SporeKillingManager.clamp(x, minX, maxX);
-        int closestY = SporeKillingManager.clamp(y, minY, maxY);
-        int closestZ = SporeKillingManager.clamp(z, minZ, maxZ);
+        int closestX = SporeKillingUtil.clamp(x, minX, maxX);
+        int closestY = SporeKillingUtil.clamp(y, minY, maxY);
+        int closestZ = SporeKillingUtil.clamp(z, minZ, maxZ);
         return BlockPosUtil.getDistance(x, y, z, closestX, closestY, closestZ);
     }
 
-    private SporeKillingManager() {}
+    private SporeKillingUtil() {}
 }

@@ -26,7 +26,7 @@ package io.github.drakonkinst.worldsinger.entity;
 import io.github.drakonkinst.worldsinger.block.ModBlockTags;
 import io.github.drakonkinst.worldsinger.cosmere.WaterReactionManager;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.SporeGrowthMovement;
-import io.github.drakonkinst.worldsinger.cosmere.lumar.SporeKillingManager;
+import io.github.drakonkinst.worldsinger.cosmere.lumar.SporeKillingUtil;
 import io.github.drakonkinst.worldsinger.util.ModConstants;
 import io.github.drakonkinst.worldsinger.util.ModProperties;
 import io.github.drakonkinst.worldsinger.util.math.Int3;
@@ -255,7 +255,7 @@ public abstract class SporeGrowthEntity extends ServerSideEntity {
         BlockPos pos = this.getBlockPos();
 
         // Drain spores rapidly if near a spore-killing block
-        if (SporeKillingManager.isSporeKillingBlockNearby(world, pos)) {
+        if (SporeKillingUtil.isSporeKillingBlockNearby(world, pos)) {
             this.drainSpores(SPORE_DRAIN_NEAR_SPORE_KILLABLE);
         }
 

@@ -134,13 +134,13 @@ public final class SporeParticleManager {
         }
 
         // Should be dead if a spore-killing block is nearby
-        if (SporeKillingManager.isSporeKillingBlockNearbyForRange(world, minX, minY, minZ, maxX,
+        if (SporeKillingUtil.isSporeKillingBlockNearbyForRange(world, minX, minY, minZ, maxX,
                 maxY, maxZ)) {
             return true;
         }
 
         // Should be dead if a spore-killing entity is nearby
-        return SporeKillingManager.checkNearbyEntitiesForRange(world, minX, minY, minZ, maxX, maxY,
+        return SporeKillingUtil.checkNearbyEntitiesForRange(world, minX, minY, minZ, maxX, maxY,
                 maxZ);
     }
 
@@ -255,8 +255,8 @@ public final class SporeParticleManager {
     public static void spawnDisplayParticles(World world, AetherSpores sporeType, double x,
             double y, double z, float particleSize) {
         if (!sporeType.isDead() && (
-                SporeKillingManager.isSporeKillingBlockNearby(world, BlockPos.ofFloored(x, y, z))
-                        || SporeKillingManager.checkNearbyEntities(world, new Vec3d(x, y, z)))) {
+                SporeKillingUtil.isSporeKillingBlockNearby(world, BlockPos.ofFloored(x, y, z))
+                        || SporeKillingUtil.checkNearbyEntities(world, new Vec3d(x, y, z)))) {
             sporeType = DeadSpores.getInstance();
         }
 

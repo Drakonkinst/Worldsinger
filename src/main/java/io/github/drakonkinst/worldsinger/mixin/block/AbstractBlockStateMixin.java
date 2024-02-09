@@ -28,7 +28,7 @@ import io.github.drakonkinst.datatables.DataTable;
 import io.github.drakonkinst.datatables.DataTableRegistry;
 import io.github.drakonkinst.worldsinger.block.ModBlockTags;
 import io.github.drakonkinst.worldsinger.block.SporeKillable;
-import io.github.drakonkinst.worldsinger.cosmere.lumar.SporeKillingManager;
+import io.github.drakonkinst.worldsinger.cosmere.lumar.SporeKillingUtil;
 import io.github.drakonkinst.worldsinger.fluid.FluidShapes;
 import io.github.drakonkinst.worldsinger.fluid.Fluidlogged;
 import io.github.drakonkinst.worldsinger.mixin.accessor.AbstractBlockAccessor;
@@ -172,7 +172,7 @@ public abstract class AbstractBlockStateMixin {
         if (radius <= 0) {
             return;
         }
-        SporeKillingManager.killNearbySpores(world, pos, radius);
+        SporeKillingUtil.killNearbySpores(world, pos, radius);
     }
 
     @Unique

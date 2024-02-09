@@ -23,6 +23,7 @@
  */
 package io.github.drakonkinst.worldsinger.item;
 
+import io.github.drakonkinst.worldsinger.Worldsinger;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BlockItem;

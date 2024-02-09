@@ -26,7 +26,7 @@ package io.github.drakonkinst.worldsinger.block;
 import com.mojang.serialization.MapCodec;
 import io.github.drakonkinst.worldsinger.cosmere.WaterReactionManager;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.CrimsonSpores;
-import io.github.drakonkinst.worldsinger.cosmere.lumar.SporeKillingManager;
+import io.github.drakonkinst.worldsinger.cosmere.lumar.SporeKillingUtil;
 import io.github.drakonkinst.worldsinger.util.ModProperties;
 import io.github.drakonkinst.worldsinger.util.math.Int3;
 import net.minecraft.block.AbstractBlock;
@@ -118,10 +118,10 @@ public class LivingTallCrimsonSpinesBlock extends TallCrimsonSpinesBlock impleme
     }
 
     public void checkKillSporeBlock(World world, BlockPos pos, BlockState state) {
-        if (!SporeKillingManager.isSporeKillingBlockNearby(world, pos)) {
+        if (!SporeKillingUtil.isSporeKillingBlockNearby(world, pos)) {
             return;
         }
-        BlockState newBlockState = SporeKillingManager.convertToDeadVariant(this, state);
+        BlockState newBlockState = SporeKillingUtil.convertToDeadVariant(this, state);
         if (state.get(Properties.DOUBLE_BLOCK_HALF) == DoubleBlockHalf.LOWER) {
             TallCrimsonSpinesBlock.placeAt(world, newBlockState, pos, Block.NOTIFY_ALL);
         } else {

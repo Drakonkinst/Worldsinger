@@ -27,7 +27,7 @@ import io.github.drakonkinst.worldsinger.api.ModAttachmentTypes;
 import io.github.drakonkinst.worldsinger.api.sync.AttachmentSync;
 import io.github.drakonkinst.worldsinger.block.LivingSporeGrowthBlock;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.MidnightAetherBondManager;
-import io.github.drakonkinst.worldsinger.cosmere.lumar.SporeKillingManager;
+import io.github.drakonkinst.worldsinger.cosmere.lumar.SporeKillingUtil;
 import io.github.drakonkinst.worldsinger.effect.ModStatusEffects;
 import io.github.drakonkinst.worldsinger.item.ModItemTags;
 import net.fabricmc.fabric.api.event.player.AttackBlockCallback;
@@ -74,7 +74,7 @@ public final class ModEventHandlers {
                 return ActionResult.PASS;
             }
 
-            if (SporeKillingManager.killSporeGrowthUsingTool(world, sporeGrowth, state, pos, player,
+            if (SporeKillingUtil.killSporeGrowthUsingTool(world, sporeGrowth, state, pos, player,
                     hand)) {
                 return ActionResult.success(true);
             }
@@ -92,7 +92,7 @@ public final class ModEventHandlers {
                 return ActionResult.PASS;
             }
 
-            if (SporeKillingManager.killSporeGrowthUsingTool(world, sporeGrowth, state, pos, player,
+            if (SporeKillingUtil.killSporeGrowthUsingTool(world, sporeGrowth, state, pos, player,
                     hand)) {
                 return ActionResult.success(true);
             }
