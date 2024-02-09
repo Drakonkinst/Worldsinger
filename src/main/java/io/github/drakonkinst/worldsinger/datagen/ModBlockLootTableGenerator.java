@@ -21,18 +21,24 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+
 package io.github.drakonkinst.worldsinger.datagen;
 
-import net.fabricmc.fabric.api.datagen.v1.DataGeneratorEntrypoint;
-import net.fabricmc.fabric.api.datagen.v1.FabricDataGenerator;
+import java.util.concurrent.CompletableFuture;
+import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
+import net.fabricmc.fabric.api.datagen.v1.provider.FabricBlockLootTableProvider;
+import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 
-public class ModDataGenerator implements DataGeneratorEntrypoint {
+public class ModBlockLootTableGenerator extends FabricBlockLootTableProvider {
+
+    protected ModBlockLootTableGenerator(FabricDataOutput dataOutput,
+            CompletableFuture<WrapperLookup> registryLookup) {
+        super(dataOutput, registryLookup);
+    }
 
     @Override
-    public void onInitializeDataGenerator(FabricDataGenerator dataGenerator) {
-        FabricDataGenerator.Pack pack = dataGenerator.createPack();
-        pack.addProvider(ModModelGenerator::new);
-        pack.addProvider(ModRecipeGenerator::new);
-        pack.addProvider(ModBlockLootTableGenerator::new);
+    public void generate() {
+        // Not going to use this for now since it doesn't add random sequence for some reason?
+        // addDrop(ModBlocks.ALUMINUM_BLOCK);
     }
 }

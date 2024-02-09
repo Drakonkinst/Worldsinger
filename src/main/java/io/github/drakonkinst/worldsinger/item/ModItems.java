@@ -46,7 +46,6 @@ import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.fluid.FlowableFluid;
-import net.minecraft.fluid.Fluid;
 import net.minecraft.item.ArmorItem;
 import net.minecraft.item.AxeItem;
 import net.minecraft.item.FlintAndSteelItem;
@@ -199,7 +198,8 @@ public final class ModItems {
             .build();
 
     private static Item createSporeBucketItem(Block sporeBlock, FlowableFluid sporeFluid) {
-        return new AetherSporeBucketItem(sporeBlock, sporeFluid, ModSoundEvents.BLOCK_SPORE_BLOCK_PLACE,
+        return new AetherSporeBucketItem(sporeBlock, sporeFluid,
+                ModSoundEvents.BLOCK_SPORE_BLOCK_PLACE,
                 new Item.Settings().recipeRemainder(Items.BUCKET).maxCount(1));
     }
 
@@ -276,6 +276,8 @@ public final class ModItems {
                     ModBlocks.CHIPPED_STEEL_ANVIL, ModBlocks.DAMAGED_STEEL_ANVIL);
             itemGroup.addAfter(Blocks.MAGMA_BLOCK, ModBlocks.MAGMA_VENT);
             itemGroup.addAfter(Items.END_CRYSTAL, ModBlocks.MIDNIGHT_ESSENCE);
+            // Only added here, not in Redstone tab, because it is not a distinct Redstone component
+            itemGroup.addAfter(Blocks.CAULDRON, ModBlocks.ALUMINUM_CAULDRON);
         });
 
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.TOOLS).register((itemGroup) -> {
