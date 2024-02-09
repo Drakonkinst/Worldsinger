@@ -68,6 +68,8 @@ and significant changes in our mod are included.
     * Changes
         * Modified to make shapeshifting mobs appear as other mobs, rather than changing the
           player's appearance.
+* Cardinal Components (to be added)
+* The Salt (to be added)
 
 ### Library Mods
 

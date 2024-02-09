@@ -48,6 +48,8 @@ public final class ModPotions {
 
         BrewingRecipeRegistry.registerItemRecipe(Items.POTION, ModItems.ZEPHYR_SPORES_BOTTLE,
                 Items.SPLASH_POTION);
+        BrewingRecipeRegistry.registerItemRecipe(Items.SPLASH_POTION, ModItems.CRIMSON_SPINE,
+                Items.POTION);
 
         ModPotions.registerCustomSplashPotion(ModItems.DEAD_SPORES_BOTTLE,
                 ModItems.DEAD_SPORES_SPLASH_BOTTLE);
@@ -68,6 +70,8 @@ public final class ModPotions {
 
     private static void registerCustomSplashPotion(Item regularPotion, Item splashPotion) {
         BrewingRecipeRegistry.registerItemRecipe(regularPotion, Items.GUNPOWDER, splashPotion);
+        BrewingRecipeRegistry.registerItemRecipe(splashPotion, ModItems.CRIMSON_SPINE,
+                regularPotion);
         BrewingRecipeRegistry.registerItemRecipe(regularPotion, ModItems.ZEPHYR_SPORES_BOTTLE,
                 splashPotion);
     }

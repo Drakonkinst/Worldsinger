@@ -205,8 +205,7 @@ public final class ModItems {
 
     private static Item createSporeBottleItem(AetherSpores sporeType) {
         return new SporeBottleItem(sporeType,
-                new Item.Settings().recipeRemainder(Items.GLASS_BOTTLE)
-                        .maxCount(Items.POTION.getMaxCount()));
+                new Item.Settings().recipeRemainder(Items.GLASS_BOTTLE).maxCount(16));
     }
 
     private static Item createSporeSplashBottleItem(AetherSpores sporeType) {
