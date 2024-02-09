@@ -24,10 +24,14 @@
 package io.github.drakonkinst.worldsinger.registry;
 
 import net.minecraft.sound.BlockSoundGroup;
+import net.minecraft.sound.SoundEvents;
 
 public final class ModSoundGroups {
 
-    public static final BlockSoundGroup SPORES = BlockSoundGroup.SAND;
+    public static final BlockSoundGroup SPORES = new BlockSoundGroup(1.0F, 1.0F,
+            SoundEvents.BLOCK_SAND_BREAK, SoundEvents.BLOCK_SAND_STEP,
+            ModSoundEvents.BLOCK_SPORE_BLOCK_PLACE, SoundEvents.BLOCK_SAND_HIT,
+            SoundEvents.BLOCK_SAND_FALL);
     public static final BlockSoundGroup SALT = BlockSoundGroup.CALCITE;
     public static final BlockSoundGroup SALTSTONE = BlockSoundGroup.NETHERRACK;
     public static final BlockSoundGroup ROSEITE = BlockSoundGroup.GLASS;

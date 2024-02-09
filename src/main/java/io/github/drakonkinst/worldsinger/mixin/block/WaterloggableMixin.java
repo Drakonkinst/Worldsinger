@@ -23,6 +23,7 @@
  */
 package io.github.drakonkinst.worldsinger.mixin.block;
 
+import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import io.github.drakonkinst.worldsinger.Worldsinger;
 import io.github.drakonkinst.worldsinger.fluid.Fluidlogged;
 import io.github.drakonkinst.worldsinger.util.ModProperties;
@@ -35,7 +36,6 @@ import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemStack;
-import net.minecraft.registry.Registries;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
@@ -50,29 +50,21 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(Waterloggable.class)
 public interface WaterloggableMixin {
 
-    @Inject(method = "canFillWithFluid", at = @At("HEAD"), cancellable = true)
-    private void canFillWithAnyFluid(@Nullable PlayerEntity player, BlockView world, BlockPos pos,
-            BlockState state, Fluid fluid, CallbackInfoReturnable<Boolean> cir) {
-        if (state.contains(ModProperties.FLUIDLOGGED)) {
-            cir.setReturnValue(
-                    state.get(ModProperties.FLUIDLOGGED) == 0 && !state.get(Properties.WATERLOGGED)
-                            && (fluid.equals(Fluids.WATER)
-                            || Fluidlogged.WATERLOGGABLE_FLUIDS.contains(
-                            Registries.FLUID.getId(fluid))));
-        } else {
-            cir.setReturnValue(!state.get(Properties.WATERLOGGED) && (fluid.equals(Fluids.WATER)));
-        }
+    @ModifyReturnValue(method = "canFillWithFluid", at = @At("RETURN"))
+    private boolean canFillWithAnyFluid(boolean original, @Nullable PlayerEntity player,
+            BlockView world, BlockPos pos, BlockState state, Fluid fluid) {
+        return original || Fluidlogged.getFluidIndex(fluid) > 0;
     }
 
     @Inject(method = "tryFillWithFluid", at = @At("HEAD"), cancellable = true)
     private void tryFillWithAnyFluid(WorldAccess world, BlockPos pos, BlockState state,
             FluidState fluidState, CallbackInfoReturnable<Boolean> cir) {
         Fluid fluid = fluidState.getFluid();
-        if (state.contains(ModProperties.FLUIDLOGGED) && !state.get(Properties.WATERLOGGED)
-                && state.get(ModProperties.FLUIDLOGGED) == 0) {
+        boolean isWater = fluid.equals(Fluids.WATER);
+        if (state.contains(ModProperties.FLUIDLOGGED)) {
             if (!world.isClient()) {
                 BlockState newState = state;
-                if (fluid.equals(Fluids.WATER)) {
+                if (isWater) {
                     newState = newState.with(Properties.WATERLOGGED, true);
                 }
                 int index = Fluidlogged.getFluidIndex(fluid);
@@ -81,12 +73,12 @@ public interface WaterloggableMixin {
                     cir.setReturnValue(false);
                     return;
                 }
-                world.setBlockState(pos, newState.with(ModProperties.FLUIDLOGGED, index),
-                        Block.NOTIFY_ALL);
+                world.setBlockState(pos, newState.with(ModProperties.FLUIDLOGGED, index)
+                        .with(Properties.WATERLOGGED, isWater), Block.NOTIFY_ALL);
                 world.scheduleFluidTick(pos, fluid, fluid.getTickRate(world));
             }
             cir.setReturnValue(true);
-        } else if (!state.get(Properties.WATERLOGGED)) {
+        } else if (!state.get(Properties.WATERLOGGED) && isWater) {
             if (!world.isClient()) {
                 world.setBlockState(pos, state.with(Properties.WATERLOGGED, true),
                         Block.NOTIFY_ALL);

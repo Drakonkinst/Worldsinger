@@ -44,7 +44,6 @@ import net.minecraft.block.ShapeContext;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
-import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
@@ -121,13 +120,9 @@ public abstract class AbstractBlockStateMixin {
     @Inject(method = "getFluidState", at = @At("RETURN"), cancellable = true)
     private void worldsinger$supportMultipleFluidsInState(CallbackInfoReturnable<FluidState> cir) {
         BlockState state = this.asBlockState();
-        boolean isVanillaWaterlogged =
-                state.contains(Properties.WATERLOGGED) && state.get(Properties.WATERLOGGED);
-        if (!isVanillaWaterlogged && state.contains(ModProperties.FLUIDLOGGED)) {
-            Fluid fluid = Fluidlogged.getFluid(state);
-            if (fluid != null) {
-                cir.setReturnValue(fluid.getDefaultState());
-            }
+        Fluid fluid = Fluidlogged.getFluid(state);
+        if (fluid != null) {
+            cir.setReturnValue(fluid.getDefaultState());
         }
     }
 

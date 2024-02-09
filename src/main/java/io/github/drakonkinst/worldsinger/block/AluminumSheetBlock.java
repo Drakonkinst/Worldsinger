@@ -30,11 +30,13 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Waterloggable;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
+import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.WorldAccess;
+import org.jetbrains.annotations.Nullable;
 
 public class AluminumSheetBlock extends MultifaceBlock implements Waterloggable {
 
@@ -50,6 +52,16 @@ public class AluminumSheetBlock extends MultifaceBlock implements Waterloggable 
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
         super.appendProperties(builder);
         builder.add(Properties.WATERLOGGED);
+    }
+
+    @Nullable
+    @Override
+    public BlockState getPlacementState(ItemPlacementContext ctx) {
+        BlockState state = super.getPlacementState(ctx);
+        if (state == null) {
+            return null;
+        }
+        return state.with(Properties.WATERLOGGED, ctx.getWorld().isWater(ctx.getBlockPos()));
     }
 
     @Override

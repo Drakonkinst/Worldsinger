@@ -36,6 +36,7 @@ import io.github.drakonkinst.worldsinger.cosmere.lumar.SunlightSpores;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.VerdantSpores;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.ZephyrSpores;
 import io.github.drakonkinst.worldsinger.entity.ModEntityTypes;
+import io.github.drakonkinst.worldsinger.fluid.ModFluids;
 import io.github.drakonkinst.worldsinger.registry.ModArmorMaterials;
 import io.github.drakonkinst.worldsinger.registry.ModFoodComponents;
 import io.github.drakonkinst.worldsinger.registry.ModSoundEvents;
@@ -44,6 +45,8 @@ import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
+import net.minecraft.fluid.FlowableFluid;
+import net.minecraft.fluid.Fluid;
 import net.minecraft.item.ArmorItem;
 import net.minecraft.item.AxeItem;
 import net.minecraft.item.FlintAndSteelItem;
@@ -73,19 +76,19 @@ public final class ModItems {
 
     // Spore Buckets
     public static final Item DEAD_SPORES_BUCKET = register("dead_spores_bucket",
-            createSporeBucketItem(ModBlocks.DEAD_SPORE_BLOCK));
+            createSporeBucketItem(ModBlocks.DEAD_SPORE_BLOCK, ModFluids.DEAD_SPORES));
     public static final Item VERDANT_SPORES_BUCKET = register("verdant_spores_bucket",
-            createSporeBucketItem(ModBlocks.VERDANT_SPORE_BLOCK));
+            createSporeBucketItem(ModBlocks.VERDANT_SPORE_BLOCK, ModFluids.VERDANT_SPORES));
     public static final Item CRIMSON_SPORES_BUCKET = register("crimson_spores_bucket",
-            createSporeBucketItem(ModBlocks.CRIMSON_SPORE_BLOCK));
+            createSporeBucketItem(ModBlocks.CRIMSON_SPORE_BLOCK, ModFluids.CRIMSON_SPORES));
     public static final Item ZEPHYR_SPORES_BUCKET = register("zephyr_spores_bucket",
-            createSporeBucketItem(ModBlocks.ZEPHYR_SPORE_BLOCK));
+            createSporeBucketItem(ModBlocks.ZEPHYR_SPORE_BLOCK, ModFluids.ZEPHYR_SPORES));
     public static final Item SUNLIGHT_SPORES_BUCKET = register("sunlight_spores_bucket",
-            createSporeBucketItem(ModBlocks.SUNLIGHT_SPORE_BLOCK));
+            createSporeBucketItem(ModBlocks.SUNLIGHT_SPORE_BLOCK, ModFluids.SUNLIGHT_SPORES));
     public static final Item ROSEITE_SPORES_BUCKET = register("roseite_spores_bucket",
-            createSporeBucketItem(ModBlocks.ROSEITE_SPORE_BLOCK));
+            createSporeBucketItem(ModBlocks.ROSEITE_SPORE_BLOCK, ModFluids.ROSEITE_SPORES));
     public static final Item MIDNIGHT_SPORES_BUCKET = register("midnight_spores_bucket",
-            createSporeBucketItem(ModBlocks.MIDNIGHT_SPORE_BLOCK));
+            createSporeBucketItem(ModBlocks.MIDNIGHT_SPORE_BLOCK, ModFluids.MIDNIGHT_SPORES));
 
     // Spore Bottles
     public static final Item DEAD_SPORES_BOTTLE = register("dead_spores_bottle",
@@ -195,8 +198,8 @@ public final class ModItems {
             .displayName(Text.translatable("itemGroup.worldsinger.worldsinger"))
             .build();
 
-    private static Item createSporeBucketItem(Block sporeBlock) {
-        return new AetherSporeBucketItem(sporeBlock, ModSoundEvents.BLOCK_SPORE_BLOCK_PLACE,
+    private static Item createSporeBucketItem(Block sporeBlock, FlowableFluid sporeFluid) {
+        return new AetherSporeBucketItem(sporeBlock, sporeFluid, ModSoundEvents.BLOCK_SPORE_BLOCK_PLACE,
                 new Item.Settings().recipeRemainder(Items.BUCKET).maxCount(1));
     }
 
