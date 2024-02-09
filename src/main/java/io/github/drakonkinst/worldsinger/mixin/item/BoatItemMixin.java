@@ -39,6 +39,7 @@ import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.text.TextColor;
 import net.minecraft.util.Hand;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
@@ -80,8 +81,12 @@ public abstract class BoatItemMixin extends Item {
         }
 
         if (context.isAdvanced()) {
-            tooltip.add(Text.translatable("item.silver_durability", silverDurability,
-                    silverItemData.getMaxSilverDurability()).setStyle(SILVER_TEXT_STYLE));
+            int maxDurability = MathHelper.floor(silverItemData.getMaxSilverDurability()
+                    * SilverLinedBoatData.VISUAL_SCALE_FACTOR);
+            int durability = MathHelper.floor(
+                    silverDurability * SilverLinedBoatData.VISUAL_SCALE_FACTOR);
+            tooltip.add(Text.translatable("item.silver_durability", durability, maxDurability)
+                    .setStyle(SILVER_TEXT_STYLE));
         } else {
             tooltip.add(Text.translatable("item.silver_lined").setStyle(SILVER_TEXT_STYLE));
         }

@@ -33,7 +33,10 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 // with their own durability values.
 public class SilverLinedBoatData extends SilverLinedEntityData {
 
-    public static final int MAX_DURABILITY = 2500;
+    public static final int MAX_DURABILITY = 45000;
+    public static final int SILVER_REPAIR_AMOUNT = MAX_DURABILITY / 4;
+    public static final float VISUAL_SCALE_FACTOR = 1.0f / 100.0f;
+
     public static Codec<SilverLinedBoatData> CODEC = RecordCodecBuilder.create(
             instance -> instance.group(Codec.INT.fieldOf(KEY_SILVER_LINED)
                             .forGetter(SilverLinedEntityData::getSilverDurability))
