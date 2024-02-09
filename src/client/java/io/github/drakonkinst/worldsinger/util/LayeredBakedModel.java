@@ -26,35 +26,28 @@
 package io.github.drakonkinst.worldsinger.util;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.BakedQuad;
 import net.minecraft.client.render.model.json.ModelOverrideList;
 import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.texture.Sprite;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
 import org.jetbrains.annotations.Nullable;
 
 public class LayeredBakedModel implements BakedModel {
 
-    public static class Cache {
+    private static final List<LayeredBakedModelCache> CACHES = new ArrayList<>();
 
-        private static final Map<Identifier, BakedModel> cache = new HashMap<>(256);
+    public static LayeredBakedModelCache registerCache(LayeredBakedModelCache cache) {
+        CACHES.add(cache);
+        return cache;
+    }
 
-        public static void add(Identifier key, BakedModel model) {
-            cache.put(key, model);
-        }
-
-        public static @Nullable BakedModel get(Identifier key) {
-            return cache.get(key);
-        }
-
-        public static void clear() {
+    public static void clearCaches() {
+        for (LayeredBakedModelCache cache : CACHES) {
             cache.clear();
         }
     }

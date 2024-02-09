@@ -22,20 +22,29 @@
  * SOFTWARE.
  */
 
-package io.github.drakonkinst.worldsinger.mixin.client.item;
+package io.github.drakonkinst.worldsinger.util;
 
-import io.github.drakonkinst.worldsinger.util.LayeredBakedModel;
-import net.minecraft.client.render.item.ItemModels;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import java.util.HashMap;
+import java.util.Map;
+import net.minecraft.client.render.model.BakedModel;
+import net.minecraft.util.Identifier;
+import org.jetbrains.annotations.Nullable;
 
-@Mixin(ItemModels.class)
-public class ItemModelsMixin {
+public class LayeredBakedModelCache {
 
-    @Inject(method = "reloadModels", at = @At("TAIL"))
-    private void reloadLayeredBakedModelCache(CallbackInfo ci) {
-        LayeredBakedModel.clearCaches();
+    private final Map<Identifier, BakedModel> cache = new HashMap<>(256);
+
+    public LayeredBakedModelCache() {}
+
+    public void add(Identifier key, BakedModel model) {
+        cache.put(key, model);
+    }
+
+    public @Nullable BakedModel get(Identifier key) {
+        return cache.get(key);
+    }
+
+    public void clear() {
+        cache.clear();
     }
 }

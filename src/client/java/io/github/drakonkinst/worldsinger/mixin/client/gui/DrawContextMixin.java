@@ -55,7 +55,7 @@ public class DrawContextMixin {
         if (SaltedFoodUtil.isSalted(stack)) {
             // Note: Should use separate caches if we implement this multiple times
             Identifier itemId = Registries.ITEM.getId(stack.getItem());
-            BakedModel cachedModel = LayeredBakedModel.Cache.get(itemId);
+            BakedModel cachedModel = ModItemRendering.SALT_OVERLAY_CACHE.get(itemId);
             if (cachedModel != null) {
                 return cachedModel;
             } else {
@@ -68,7 +68,7 @@ public class DrawContextMixin {
                 }
                 LayeredBakedModel layeredModel = new LayeredBakedModel(
                         List.of(original, saltOverlayModel));
-                LayeredBakedModel.Cache.add(itemId, layeredModel);
+                ModItemRendering.SALT_OVERLAY_CACHE.add(itemId, layeredModel);
                 return layeredModel;
             }
         }
