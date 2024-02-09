@@ -24,7 +24,7 @@
 package io.github.drakonkinst.worldsinger.api;
 
 import io.github.drakonkinst.worldsinger.Worldsinger;
-import io.github.drakonkinst.worldsinger.api.fluid.FluidVariantApi;
+import io.github.drakonkinst.worldsinger.api.fluid.VariantApi;
 import io.github.drakonkinst.worldsinger.block.ModBlocks;
 import io.github.drakonkinst.worldsinger.cosmere.SilverLined;
 import io.github.drakonkinst.worldsinger.item.SilverLinedBoatItemData;
@@ -46,7 +46,7 @@ public class ModApi {
                 Items.ACACIA_CHEST_BOAT, Items.BIRCH_CHEST_BOAT, Items.CHERRY_CHEST_BOAT,
                 Items.DARK_OAK_CHEST_BOAT, Items.JUNGLE_CHEST_BOAT, Items.MANGROVE_CHEST_BOAT,
                 Items.OAK_CHEST_BOAT, Items.SPRUCE_CHEST_BOAT, Items.BAMBOO_CHEST_RAFT);
-        FluidVariantApi.registerCauldronVariants(ModBlocks.ALUMINUM_CAULDRON, new HashMap<>() {{
+        VariantApi.registerBlockVariants(ModBlocks.ALUMINUM_CAULDRON, new HashMap<>() {{
             put(Blocks.CAULDRON, ModBlocks.ALUMINUM_CAULDRON);
             put(Blocks.WATER_CAULDRON, ModBlocks.ALUMINUM_WATER_CAULDRON);
             put(Blocks.LAVA_CAULDRON, ModBlocks.ALUMINUM_LAVA_CAULDRON);

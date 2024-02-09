@@ -25,7 +25,7 @@ package io.github.drakonkinst.worldsinger.mixin.block;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import io.github.drakonkinst.worldsinger.api.fluid.FluidVariantApi;
+import io.github.drakonkinst.worldsinger.api.fluid.VariantApi;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.CauldronBlock;
@@ -43,8 +43,7 @@ public class CauldronBlockMixin {
     private BlockState supportPrecipitationCauldronVariants(Block instance,
             Operation<BlockState> original, BlockState state, World world, BlockPos pos,
             Biome.Precipitation precipitation) {
-        Block targetBlock = FluidVariantApi.getCauldronVariant(state.getBlock(), instance)
-                .orElse(instance);
+        Block targetBlock = VariantApi.getBlockVariant(state.getBlock(), instance).orElse(instance);
         return original.call(targetBlock);
     }
 
@@ -52,8 +51,7 @@ public class CauldronBlockMixin {
     private BlockState supportDripstoneCauldronVariants(Block instance,
             Operation<BlockState> original, BlockState state, World world, BlockPos pos,
             Fluid fluid) {
-        Block targetBlock = FluidVariantApi.getCauldronVariant(state.getBlock(), instance)
-                .orElse(instance);
+        Block targetBlock = VariantApi.getBlockVariant(state.getBlock(), instance).orElse(instance);
         return original.call(targetBlock);
     }
 }

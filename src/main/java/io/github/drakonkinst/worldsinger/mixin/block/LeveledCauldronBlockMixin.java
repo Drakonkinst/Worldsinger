@@ -25,8 +25,7 @@ package io.github.drakonkinst.worldsinger.mixin.block;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import io.github.drakonkinst.worldsinger.api.fluid.CauldronVariantBlock;
-import io.github.drakonkinst.worldsinger.api.fluid.FluidVariantApi;
+import io.github.drakonkinst.worldsinger.api.fluid.VariantApi;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.LeveledCauldronBlock;
@@ -36,19 +35,19 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
 @Mixin(LeveledCauldronBlock.class)
-public abstract class LeveledCauldronBlockMixin implements CauldronVariantBlock {
+public abstract class LeveledCauldronBlockMixin {
 
     @WrapOperation(method = "decrementFluidLevel", at = @At(value = "INVOKE", target = "Lnet/minecraft/block/Block;getDefaultState()Lnet/minecraft/block/BlockState;"))
     private static BlockState decrementCauldronVariants(Block instance,
             Operation<BlockState> original, BlockState state, World world, BlockPos pos) {
         return original.call(
-                FluidVariantApi.getCauldronVariant(state.getBlock(), instance).orElse(instance));
+                VariantApi.getBlockVariant(state.getBlock(), instance).orElse(instance));
     }
 
     @WrapOperation(method = "onFireCollision", at = @At(value = "INVOKE", target = "Lnet/minecraft/block/Block;getDefaultState()Lnet/minecraft/block/BlockState;"))
     private BlockState meltCauldronVariants(Block instance, Operation<BlockState> original,
             BlockState state, World world, BlockPos pos) {
         return original.call(
-                FluidVariantApi.getCauldronVariant(state.getBlock(), instance).orElse(instance));
+                VariantApi.getBlockVariant(state.getBlock(), instance).orElse(instance));
     }
 }

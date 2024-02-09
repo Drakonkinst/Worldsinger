@@ -25,10 +25,8 @@ package io.github.drakonkinst.worldsinger.block;
 
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import io.github.drakonkinst.worldsinger.api.fluid.CauldronVariantBlock;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.AetherSpores;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.SporeParticleSpawner;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.LeveledCauldronBlock;
 import net.minecraft.block.cauldron.CauldronBehavior;
@@ -42,8 +40,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.biome.Biome.Precipitation;
 
-public class SporeCauldronBlock extends LeveledCauldronBlock implements SporeEmitting,
-        CauldronVariantBlock {
+public class SporeCauldronBlock extends LeveledCauldronBlock implements SporeEmitting {
 
     // Unused Codec
     public static final MapCodec<SporeCauldronBlock> CODEC = RecordCodecBuilder.mapCodec(
@@ -51,18 +48,14 @@ public class SporeCauldronBlock extends LeveledCauldronBlock implements SporeEmi
                             CauldronBehavior.CODEC.fieldOf("interactions")
                                     .forGetter(block -> block.behaviorMap),
                             AetherSpores.CODEC.fieldOf("sporeType")
-                                    .forGetter(SporeCauldronBlock::getSporeType),
-                            Block.CODEC.fieldOf("baseBlock")
-                                    .forGetter(SporeCauldronBlock::worldsinger$getBaseBlock))
+                                    .forGetter(SporeCauldronBlock::getSporeType))
                     .apply(instance, SporeCauldronBlock::new));
 
     protected final AetherSpores sporeType;
-    protected final Block baseCauldronBlock;
 
     public SporeCauldronBlock(Settings settings, CauldronBehaviorMap behaviorMap,
-            AetherSpores sporeType, Block baseCauldronBlock) {
+            AetherSpores sporeType) {
         super(Precipitation.NONE, behaviorMap, settings);
-        this.baseCauldronBlock = baseCauldronBlock;
         this.sporeType = sporeType;
     }
 
@@ -96,16 +89,6 @@ public class SporeCauldronBlock extends LeveledCauldronBlock implements SporeEmi
     @Override
     public AetherSpores getSporeType() {
         return sporeType;
-    }
-
-    @Override
-    public Block worldsinger$getBaseBlock() {
-        return baseCauldronBlock;
-    }
-
-    @Override
-    public void worldsinger$setBaseBlock(Block block) {
-        throw new UnsupportedOperationException();
     }
 
     // @Override

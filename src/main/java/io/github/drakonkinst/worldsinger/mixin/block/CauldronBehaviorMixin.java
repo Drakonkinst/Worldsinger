@@ -25,12 +25,12 @@ package io.github.drakonkinst.worldsinger.mixin.block;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import io.github.drakonkinst.worldsinger.api.fluid.CauldronVariantBlock;
-import io.github.drakonkinst.worldsinger.api.fluid.FluidVariantApi;
+import io.github.drakonkinst.worldsinger.api.fluid.VariantApi;
 import java.util.Optional;
 import java.util.function.Predicate;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.block.cauldron.CauldronBehavior;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -49,8 +49,7 @@ public interface CauldronBehaviorMixin {
             Operation<Boolean> original) {
 
         Block interactedBlock = instance.getBlockState(pos).getBlock();
-        Optional<Block> newBlock = FluidVariantApi.getCauldronVariant(interactedBlock,
-                state.getBlock());
+        Optional<Block> newBlock = VariantApi.getBlockVariant(interactedBlock, state.getBlock());
         if (newBlock.isPresent()) {
             return original.call(instance, pos, newBlock.get().getStateWithProperties(state));
         }
@@ -63,9 +62,9 @@ public interface CauldronBehaviorMixin {
             BlockPos originalPos, PlayerEntity player, Hand hand, ItemStack stack, ItemStack output,
             Predicate<BlockState> fullPredicate, SoundEvent soundEvent) {
         Block interactedBlock = originalState.getBlock();
-        if (interactedBlock instanceof CauldronVariantBlock cauldronVariantBlock) {
-            return original.call(instance, pos,
-                    cauldronVariantBlock.worldsinger$getBaseBlock().getDefaultState());
+        Optional<Block> variantBlock = VariantApi.getBlockVariant(interactedBlock, Blocks.CAULDRON);
+        if (variantBlock.isPresent()) {
+            return original.call(instance, pos, variantBlock.get().getDefaultState());
         }
         return original.call(instance, pos, newState);
     }
