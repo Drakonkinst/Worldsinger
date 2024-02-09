@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "#": {
+      "item": "worldsinger:aluminum_sheet"
+    },
+    "C": {
+      "item": "minecraft:cauldron"
+    }
+  },
+  "pattern": [
+    " # ",
+    "#C#",
+    " # "
+  ],
+  "result": {
+    "count": 1,
+    "item": "worldsinger:aluminum_cauldron"
+  }
+}
