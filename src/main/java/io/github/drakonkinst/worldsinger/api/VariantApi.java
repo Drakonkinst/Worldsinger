@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.github.drakonkinst.worldsinger.api.fluid;
+package io.github.drakonkinst.worldsinger.api;
 
 import it.unimi.dsi.fastutil.Pair;
 import java.util.HashMap;

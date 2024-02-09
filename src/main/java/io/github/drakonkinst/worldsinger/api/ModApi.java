@@ -24,7 +24,6 @@
 package io.github.drakonkinst.worldsinger.api;
 
 import io.github.drakonkinst.worldsinger.Worldsinger;
-import io.github.drakonkinst.worldsinger.api.fluid.VariantApi;
 import io.github.drakonkinst.worldsinger.block.ModBlocks;
 import io.github.drakonkinst.worldsinger.cosmere.SilverLined;
 import io.github.drakonkinst.worldsinger.item.SilverLinedBoatItemData;

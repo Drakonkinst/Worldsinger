@@ -25,7 +25,7 @@ package io.github.drakonkinst.worldsinger.mixin.block;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import io.github.drakonkinst.worldsinger.api.fluid.VariantApi;
+import io.github.drakonkinst.worldsinger.api.VariantApi;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.CauldronBlock;

@@ -25,7 +25,7 @@ package io.github.drakonkinst.worldsinger.block;
 
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import io.github.drakonkinst.worldsinger.api.fluid.VariantApi;
+import io.github.drakonkinst.worldsinger.api.VariantApi;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.AetherSpores;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;

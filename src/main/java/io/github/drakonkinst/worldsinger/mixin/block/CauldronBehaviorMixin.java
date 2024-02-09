@@ -25,7 +25,7 @@ package io.github.drakonkinst.worldsinger.mixin.block;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import io.github.drakonkinst.worldsinger.api.fluid.VariantApi;
+import io.github.drakonkinst.worldsinger.api.VariantApi;
 import java.util.Optional;
 import java.util.function.Predicate;
 import net.minecraft.block.Block;
@@ -67,5 +67,17 @@ public interface CauldronBehaviorMixin {
             return original.call(instance, pos, variantBlock.get().getDefaultState());
         }
         return original.call(instance, pos, newState);
+    }
+
+    // Mixin to anonymous method that provides behavior for EMPTY_CAULDRON_BEHAVIOR and Items.POTION
+    @WrapOperation(method = "method_32222", at = @At(value = "INVOKE", target = "Lnet/minecraft/block/Block;getDefaultState()Lnet/minecraft/block/BlockState;"))
+    private static BlockState fillVariantCauldronWithPotion(Block instance,
+            Operation<BlockState> original, BlockState state, World world, BlockPos pos,
+            PlayerEntity player, Hand hand, ItemStack stack) {
+        Optional<Block> variantBlock = VariantApi.getBlockVariant(state.getBlock(), instance);
+        if (variantBlock.isPresent()) {
+            return original.call(variantBlock.get());
+        }
+        return original.call(instance);
     }
 }

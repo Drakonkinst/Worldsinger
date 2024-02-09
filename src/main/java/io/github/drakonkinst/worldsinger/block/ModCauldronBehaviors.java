@@ -23,6 +23,7 @@
  */
 package io.github.drakonkinst.worldsinger.block;
 
+import io.github.drakonkinst.worldsinger.api.VariantApi;
 import io.github.drakonkinst.worldsinger.item.ModItems;
 import io.github.drakonkinst.worldsinger.registry.ModSoundEvents;
 import java.util.Map;
@@ -145,7 +146,9 @@ public final class ModCauldronBehaviors {
                                 new ItemStack(Items.GLASS_BOTTLE)));
                         player.incrementStat(Stats.USE_CAULDRON);
                         player.incrementStat(Stats.USED.getOrCreateStat(item));
-                        world.setBlockState(pos, cauldronBlock.getDefaultState());
+                        Block variantBlock = VariantApi.getBlockVariant(state.getBlock(),
+                                cauldronBlock).orElse(cauldronBlock);
+                        world.setBlockState(pos, variantBlock.getDefaultState());
                         world.playSound(null, pos, ModCauldronBehaviors.FILL_SPORE_BOTTLE_SOUND,
                                 SoundCategory.BLOCKS, 1.0f, 1.0f);
                         world.emitGameEvent(null, GameEvent.FLUID_PLACE, pos);
