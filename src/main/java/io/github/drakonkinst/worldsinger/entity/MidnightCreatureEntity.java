@@ -164,6 +164,7 @@ public class MidnightCreatureEntity extends ShapeshiftingEntity implements
     // Particles
     private static final int AMBIENT_PARTICLE_INTERVAL = 10;
     private static final int NUM_DAMAGE_PARTICLES = 16;
+    private static final int TRAIL_INTERVAL = 3;
     private static final int NUM_TRANSFORM_PARTICLES = 32;
     private static final int NUM_TRAIL_PARTICLES = 16;
     private static final float TRAIL_PARTICLE_SPEED = 0.1f;
@@ -489,24 +490,21 @@ public class MidnightCreatureEntity extends ShapeshiftingEntity implements
 
         // Update client controller
         PlayerEntity controller = getController();
-
         if (controller != null) {
             Vec3d start = controller.getEyePos().add(0.0, MOUTH_OFFSET, 0.0);
             Vec3d destination = EntityUtil.getCenterPos(this);
             Vec3d direction = destination.subtract(start).normalize();
-            addTrailParticle(start, destination, 0, direction);
-            addTrailParticle(start, destination, NUM_TRAIL_PARTICLES / 2, direction);
+            for(int i = this.age % TRAIL_INTERVAL; i < NUM_TRAIL_PARTICLES; i += TRAIL_INTERVAL) {
+                addTrailParticle(start, destination, i, direction);
+            }
         }
     }
 
     private void addTrailParticle(Vec3d start, Vec3d destination, int offset, Vec3d direction) {
-        double delta = (double) ((this.age + offset) % NUM_TRAIL_PARTICLES) / NUM_TRAIL_PARTICLES;
+        double delta = (double) offset / NUM_TRAIL_PARTICLES;
         Vec3d pos = start.lerp(destination, delta);
         this.getWorld()
-                .addParticle(ModParticleTypes.MIDNIGHT_TRAIL, pos.getX(), pos.getY(), pos.getZ(),
-                        direction.getX() * TRAIL_PARTICLE_SPEED,
-                        direction.getY() * TRAIL_PARTICLE_SPEED,
-                        direction.getZ() * TRAIL_PARTICLE_SPEED);
+                .addParticle(ModParticleTypes.MIDNIGHT_TRAIL, pos.getX(), pos.getY(), pos.getZ(), direction.getX() * TRAIL_PARTICLE_SPEED, direction.getY() * TRAIL_PARTICLE_SPEED, direction.getZ() * TRAIL_PARTICLE_SPEED);
     }
 
     // Luhel Bond

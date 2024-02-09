@@ -35,15 +35,13 @@ public class MidnightTrailParticle extends MidnightParticle {
             double velocityX, double velocityY, double velocityZ, SpriteProvider spriteProvider) {
         super(world, x, y, z, velocityX, velocityY, velocityZ, spriteProvider);
         this.scale = 0.1f;
-        this.maxAge = 20;
+        this.maxAge = 5;
     }
 
     @Override
     public void tick() {
         super.tick();
         if (!this.dead) {
-            this.setSpriteForAge(this.spriteProvider);
-
             // Fade out to 50%
             if (this.age < this.maxAge / 2) {
                 this.setAlpha(1.0F - (float) (this.age) / this.maxAge);
