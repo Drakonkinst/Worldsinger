@@ -30,7 +30,7 @@ import net.minecraft.block.Block;
 import net.minecraft.client.color.world.BiomeColors;
 import net.minecraft.client.render.RenderLayer;
 
-public final class ModBlockRenderers {
+public final class ModBlockRendering {
 
     public static void register() {
         final Block[] cutoutBlocks = {
@@ -68,5 +68,5 @@ public final class ModBlockRenderers {
         }, ModBlocks.ALUMINUM_WATER_CAULDRON);
     }
 
-    private ModBlockRenderers() {}
+    private ModBlockRendering() {}
 }

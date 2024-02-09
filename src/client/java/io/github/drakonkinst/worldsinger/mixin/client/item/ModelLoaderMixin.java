@@ -21,33 +21,38 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+
 package io.github.drakonkinst.worldsinger.mixin.client.item;
 
-import io.github.drakonkinst.worldsinger.cosmere.lumar.AetherSpores;
-import io.github.drakonkinst.worldsinger.item.ModItems;
+import io.github.drakonkinst.worldsinger.registry.ModItemRendering;
+import java.util.List;
+import java.util.Map;
 import net.minecraft.client.color.block.BlockColors;
-import net.minecraft.client.color.item.ItemColors;
+import net.minecraft.client.render.model.ModelLoader;
+import net.minecraft.client.render.model.ModelLoader.SourceTrackedData;
+import net.minecraft.client.render.model.json.JsonUnbakedModel;
+import net.minecraft.client.util.ModelIdentifier;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.profiler.Profiler;
+import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(ItemColors.class)
-public abstract class ItemColorsMixin {
+@Mixin(ModelLoader.class)
+public abstract class ModelLoaderMixin {
 
-    @Inject(method = "create", at = @At("RETURN"), cancellable = true)
-    private static void addSporePotionItemColors(BlockColors blockColors,
-            CallbackInfoReturnable<ItemColors> cir) {
-        ItemColors itemColors = cir.getReturnValue();
-        itemColors.register(
-                (stack, tintIndex) -> tintIndex > 0 ? -1 : AetherSpores.getBottleColor(stack),
-                ModItems.DEAD_SPORES_BOTTLE, ModItems.VERDANT_SPORES_BOTTLE,
-                ModItems.CRIMSON_SPORES_BOTTLE, ModItems.ZEPHYR_SPORES_BOTTLE,
-                ModItems.SUNLIGHT_SPORES_BOTTLE, ModItems.ROSEITE_SPORES_BOTTLE,
-                ModItems.MIDNIGHT_SPORES_BOTTLE, ModItems.DEAD_SPORES_SPLASH_BOTTLE,
-                ModItems.VERDANT_SPORES_SPLASH_BOTTLE, ModItems.CRIMSON_SPORES_SPLASH_BOTTLE,
-                ModItems.ZEPHYR_SPORES_SPLASH_BOTTLE, ModItems.SUNLIGHT_SPORES_SPLASH_BOTTLE,
-                ModItems.ROSEITE_SPORES_SPLASH_BOTTLE, ModItems.MIDNIGHT_SPORES_SPLASH_BOTTLE);
-        cir.setReturnValue(itemColors);
+    @Shadow
+    protected abstract void addModel(ModelIdentifier modelId);
+
+    // Inject right before baking
+    // Officially only injecting at constructor's tail is supported, but this works?
+    @Inject(method = "<init>", at = @At(value = "FIELD", opcode = Opcodes.GETFIELD, target = "Lnet/minecraft/client/render/model/ModelLoader;modelsToBake:Ljava/util/Map;"))
+    private void loadAdditionalModels(BlockColors blockColors, Profiler profiler,
+            Map<Identifier, JsonUnbakedModel> jsonUnbakedModels,
+            Map<Identifier, List<SourceTrackedData>> blockStates, CallbackInfo ci) {
+        this.addModel(ModItemRendering.SALT_OVERLAY);
     }
 }

@@ -31,7 +31,7 @@ import net.minecraft.client.render.RenderLayer;
 import net.minecraft.fluid.Fluid;
 
 @SuppressWarnings("UnqualifiedStaticUsage")
-public final class ModFluidRenderers {
+public final class ModFluidRendering {
 
     public static void register() {
         registerFluidRenderer(ModFluids.DEAD_SPORES, ModFluids.FLOWING_DEAD_SPORES,
@@ -68,5 +68,5 @@ public final class ModFluidRenderers {
                 new StillFluidRenderHandler(Worldsinger.id(texturePath), shaded));
     }
 
-    private ModFluidRenderers() {}
+    private ModFluidRendering() {}
 }

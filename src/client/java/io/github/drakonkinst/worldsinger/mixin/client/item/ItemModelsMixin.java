@@ -21,21 +21,21 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.github.drakonkinst.worldsinger.registry;
 
-import io.github.drakonkinst.worldsinger.entity.ModEntityTypes;
-import io.github.drakonkinst.worldsinger.entity.render.MidnightCreatureEntityRenderer;
-import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
-import net.minecraft.client.render.entity.FlyingItemEntityRenderer;
+package io.github.drakonkinst.worldsinger.mixin.client.item;
 
-public final class ModEntityRenderers {
+import io.github.drakonkinst.worldsinger.util.LayeredBakedModel;
+import net.minecraft.client.render.item.ItemModels;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-    public static void register() {
-        EntityRendererRegistry.register(ModEntityTypes.THROWN_SPORE_BOTTLE,
-                FlyingItemEntityRenderer::new);
-        EntityRendererRegistry.register(ModEntityTypes.MIDNIGHT_CREATURE,
-                MidnightCreatureEntityRenderer::new);
+@Mixin(ItemModels.class)
+public class ItemModelsMixin {
+
+    @Inject(method = "reloadModels", at = @At("TAIL"))
+    private void reloadLayeredBakedModelCache(CallbackInfo ci) {
+        LayeredBakedModel.Cache.clear();
     }
-
-    private ModEntityRenderers() {}
 }

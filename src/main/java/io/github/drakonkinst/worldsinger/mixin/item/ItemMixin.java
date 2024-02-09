@@ -23,18 +23,30 @@
  */
 package io.github.drakonkinst.worldsinger.mixin.item;
 
+import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import io.github.drakonkinst.datatables.DataTableRegistry;
+import io.github.drakonkinst.worldsinger.Worldsinger;
 import io.github.drakonkinst.worldsinger.api.ModAttachmentTypes;
+import io.github.drakonkinst.worldsinger.cosmere.SaltedFoodUtil;
+import io.github.drakonkinst.worldsinger.item.ModItemTags;
 import io.github.drakonkinst.worldsinger.registry.ModDataTables;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.text.Text;
+import net.minecraft.util.Util;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 
 @Mixin(Item.class)
 public class ItemMixin {
+
+    @Unique
+    private static final String SALTED_FOOD_NAME_KEY = Util.createTranslationKey("items",
+            Worldsinger.id("salted_food"));
 
     @WrapOperation(method = "use", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerEntity;canConsume(Z)Z"))
     private boolean allowEatingIfAffectsThirst(PlayerEntity instance, boolean ignoreHunger,
@@ -45,5 +57,13 @@ public class ItemMixin {
         return !instance.getAttachedOrCreate(ModAttachmentTypes.THIRST).isFull()
                 && DataTableRegistry.INSTANCE.get(ModDataTables.CONSUMABLE_HYDRATION)
                 .contains((Item) (Object) this);
+    }
+
+    @ModifyReturnValue(method = "getName(Lnet/minecraft/item/ItemStack;)Lnet/minecraft/text/Text;", at = @At(value = "RETURN"))
+    private Text addSaltedDescriptor(Text original, ItemStack stack) {
+        if (SaltedFoodUtil.isSalted(stack) && stack.isIn(ModItemTags.CAN_BE_SALTED)) {
+            return Text.translatable(SALTED_FOOD_NAME_KEY, original);
+        }
+        return original;
     }
 }

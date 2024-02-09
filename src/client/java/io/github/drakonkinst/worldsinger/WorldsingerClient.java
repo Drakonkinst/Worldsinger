@@ -24,12 +24,13 @@
 package io.github.drakonkinst.worldsinger;
 
 import io.github.drakonkinst.worldsinger.event.ModClientEventHandlers;
-import io.github.drakonkinst.worldsinger.fluid.ModFluidRenderers;
+import io.github.drakonkinst.worldsinger.fluid.ModFluidRendering;
 import io.github.drakonkinst.worldsinger.network.ClientNetworkHandler;
 import io.github.drakonkinst.worldsinger.network.ClientProxy;
 import io.github.drakonkinst.worldsinger.particle.ModParticleManager;
-import io.github.drakonkinst.worldsinger.registry.ModBlockRenderers;
-import io.github.drakonkinst.worldsinger.registry.ModEntityRenderers;
+import io.github.drakonkinst.worldsinger.registry.ModBlockRendering;
+import io.github.drakonkinst.worldsinger.registry.ModEntityRendering;
+import io.github.drakonkinst.worldsinger.registry.ModItemRendering;
 import io.github.drakonkinst.worldsinger.registry.ModModelPredicates;
 import io.github.drakonkinst.worldsinger.world.ModDimensionRenderers;
 import net.fabricmc.api.ClientModInitializer;
@@ -40,9 +41,10 @@ public class WorldsingerClient implements ClientModInitializer {
     public void onInitializeClient() {
         Worldsinger.PROXY = new ClientProxy();
 
-        ModFluidRenderers.register();
-        ModBlockRenderers.register();
-        ModEntityRenderers.register();
+        ModFluidRendering.register();
+        ModBlockRendering.register();
+        ModEntityRendering.register();
+        ModItemRendering.register();
 
         // Register particles
         ModParticleManager.register();
