@@ -146,8 +146,8 @@ public final class ModCauldronBehaviors {
                         player.incrementStat(Stats.USE_CAULDRON);
                         player.incrementStat(Stats.USED.getOrCreateStat(item));
                         world.setBlockState(pos, cauldronBlock.getDefaultState());
-                        world.playSound(null, pos, FILL_SPORE_BOTTLE_SOUND, SoundCategory.BLOCKS,
-                                1.0f, 1.0f);
+                        world.playSound(null, pos, ModCauldronBehaviors.FILL_SPORE_BOTTLE_SOUND,
+                                SoundCategory.BLOCKS, 1.0f, 1.0f);
                         world.emitGameEvent(null, GameEvent.FLUID_PLACE, pos);
                     }
                     return ItemActionResult.success(world.isClient);
@@ -156,7 +156,7 @@ public final class ModCauldronBehaviors {
                 (state, world, pos, player, hand, stack) -> CauldronBehavior.emptyCauldron(state,
                         world, pos, player, hand, stack, new ItemStack(bucketItem),
                         statex -> statex.get(LeveledCauldronBlock.LEVEL) == 3,
-                        FILL_SPORE_BUCKET_SOUND));
+                        ModCauldronBehaviors.FILL_SPORE_BUCKET_SOUND));
         behavior.put(Items.GLASS_BOTTLE, (state, world, pos, player, hand, stack) -> {
             if (!world.isClient) {
                 Item item = stack.getItem();
@@ -165,8 +165,8 @@ public final class ModCauldronBehaviors {
                 player.incrementStat(Stats.USE_CAULDRON);
                 player.incrementStat(Stats.USED.getOrCreateStat(item));
                 LeveledCauldronBlock.decrementFluidLevel(state, world, pos);
-                world.playSound(null, pos, FILL_SPORE_BOTTLE_SOUND, SoundCategory.BLOCKS, 1.0f,
-                        1.0f);
+                world.playSound(null, pos, ModCauldronBehaviors.FILL_SPORE_BOTTLE_SOUND,
+                        SoundCategory.BLOCKS, 1.0f, 1.0f);
                 world.emitGameEvent(null, GameEvent.FLUID_PICKUP, pos);
             }
             return ItemActionResult.success(world.isClient);

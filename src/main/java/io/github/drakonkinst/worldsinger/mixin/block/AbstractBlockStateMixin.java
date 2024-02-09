@@ -172,7 +172,8 @@ public abstract class AbstractBlockStateMixin {
 
     @Unique
     private void checkSporeKilledOnPlace(World world, BlockPos pos, BlockState state) {
-        if (state.getBlock() instanceof SporeKillable sporeKillable) {
+        if (state.getBlock() instanceof SporeKillable sporeKillable
+                && sporeKillable.isSporeKillable(world, pos, state)) {
             sporeKillable.checkKillSporeBlock(world, pos, state);
         }
     }

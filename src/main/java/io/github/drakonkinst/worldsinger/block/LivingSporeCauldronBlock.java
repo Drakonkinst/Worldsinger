@@ -25,6 +25,7 @@ package io.github.drakonkinst.worldsinger.block;
 
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import io.github.drakonkinst.worldsinger.api.fluid.FluidVariantApi;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.AetherSpores;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -46,13 +47,15 @@ public class LivingSporeCauldronBlock extends SporeCauldronBlock implements Spor
                             CauldronBehavior.CODEC.fieldOf("interactions")
                                     .forGetter(block -> block.behaviorMap),
                             AetherSpores.CODEC.fieldOf("sporeType")
-                                    .forGetter(LivingSporeCauldronBlock::getSporeType))
+                                    .forGetter(LivingSporeCauldronBlock::getSporeType),
+                            Block.CODEC.fieldOf("baseBlock")
+                                    .forGetter(SporeCauldronBlock::worldsinger$getBaseBlock))
                     .apply(instance, LivingSporeCauldronBlock::new));
     private static final int CATALYZE_VALUE_PER_LEVEL = 80;
 
     public LivingSporeCauldronBlock(Settings settings, CauldronBehaviorMap behaviorMap,
-            AetherSpores sporeType) {
-        super(settings, behaviorMap, sporeType);
+            AetherSpores sporeType, Block baseBlock) {
+        super(settings, behaviorMap, sporeType, baseBlock);
     }
 
     @Override
@@ -82,7 +85,9 @@ public class LivingSporeCauldronBlock extends SporeCauldronBlock implements Spor
                 ModBlockTags.SPORES_CAN_BREAK)) {
             return false;
         }
-        world.setBlockState(pos, Blocks.CAULDRON.getStateWithProperties(state));
+        Block emptyCauldronBlock = FluidVariantApi.getCauldronVariant(state.getBlock(),
+                Blocks.CAULDRON).orElse(Blocks.CAULDRON);
+        world.setBlockState(pos, emptyCauldronBlock.getStateWithProperties(state));
         int catalyzeValue = CATALYZE_VALUE_PER_LEVEL * state.get(LEVEL);
         sporeType.doReactionFromFluidContainer(world, pos, catalyzeValue, waterAmount, random);
         return true;
@@ -91,5 +96,10 @@ public class LivingSporeCauldronBlock extends SporeCauldronBlock implements Spor
     @Override
     public Type getReactiveType() {
         return AetherSpores.getReactiveTypeFromSpore(sporeType);
+    }
+
+    @Override
+    public boolean isSporeKillable(World world, BlockPos pos, BlockState state) {
+        return !state.isIn(ModBlockTags.HAS_ALUMINUM);
     }
 }

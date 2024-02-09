@@ -24,6 +24,7 @@
 package io.github.drakonkinst.worldsinger.block;
 
 import io.github.drakonkinst.worldsinger.Worldsinger;
+import io.github.drakonkinst.worldsinger.api.fluid.CauldronVariantBlock;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.CrimsonSpores;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.DeadSpores;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.MidnightSpores;
@@ -37,8 +38,12 @@ import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.AbstractBlock.Offsetter;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.CauldronBlock;
 import net.minecraft.block.ExperienceDroppingBlock;
+import net.minecraft.block.LavaCauldronBlock;
+import net.minecraft.block.LeveledCauldronBlock;
 import net.minecraft.block.MapColor;
+import net.minecraft.block.cauldron.CauldronBehavior;
 import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
@@ -48,6 +53,7 @@ import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.intprovider.ConstantIntProvider;
 import net.minecraft.util.math.intprovider.UniformIntProvider;
+import net.minecraft.world.biome.Biome;
 
 @SuppressWarnings("UnqualifiedStaticUsage")
 public final class ModBlocks {
@@ -60,10 +66,6 @@ public final class ModBlocks {
             new AetherSporeBlock(DeadSpores.getInstance(), AbstractBlock.Settings.create()
                     // Same as sand
                     .strength(0.5f).mapColor(MapColor.GRAY).sounds(ModSoundGroups.SPORES)), false);
-    public static final Block DEAD_SPORE_CAULDRON = register("dead_spore_cauldron",
-            new SporeCauldronBlock(AbstractBlock.Settings.copy(Blocks.CAULDRON),
-                    ModCauldronBehaviors.DEAD_SPORE_CAULDRON_BEHAVIOR, DeadSpores.getInstance()),
-            false);
     public static final Block DEAD_VERDANT_VINE_BLOCK = register("dead_verdant_vine_block",
             new VerdantVineBlock(AbstractBlock.Settings.create()
                     // 0.5x strength of living version
@@ -174,11 +176,6 @@ public final class ModBlocks {
                     AbstractBlock.Settings.copy(ModBlocks.DEAD_SPORE_BLOCK)
                             .ticksRandomly()
                             .mapColor(MapColor.DARK_GREEN)), false);
-    public static final Block VERDANT_SPORE_CAULDRON = register("verdant_spore_cauldron",
-            new LivingSporeCauldronBlock(
-                    AbstractBlock.Settings.copy(Blocks.CAULDRON).ticksRandomly(),
-                    ModCauldronBehaviors.VERDANT_SPORE_CAULDRON_BEHAVIOR,
-                    VerdantSpores.getInstance()), false);
     public static final Block VERDANT_VINE_BLOCK = register("verdant_vine_block",
             new LivingVerdantVineBlock(
                     AbstractBlock.Settings.copy(ModBlocks.DEAD_VERDANT_VINE_BLOCK)
@@ -212,10 +209,6 @@ public final class ModBlocks {
                     AbstractBlock.Settings.copy(ModBlocks.DEAD_SPORE_BLOCK)
                             .ticksRandomly()
                             .mapColor(MapColor.DARK_RED)), false);
-    public static final Block CRIMSON_SPORE_CAULDRON = register("crimson_spore_cauldron",
-            new SporeCauldronBlock(AbstractBlock.Settings.copy(Blocks.CAULDRON).ticksRandomly(),
-                    ModCauldronBehaviors.CRIMSON_SPORE_CAULDRON_BEHAVIOR,
-                    CrimsonSpores.getInstance()), false);
     public static final Block CRIMSON_GROWTH = register("crimson_growth",
             new LivingCrimsonGrowthBlock(AbstractBlock.Settings.copy(ModBlocks.DEAD_CRIMSON_GROWTH)
                     // Double hardness, same resistance as dead version
@@ -247,11 +240,6 @@ public final class ModBlocks {
                     AbstractBlock.Settings.copy(ModBlocks.DEAD_SPORE_BLOCK)
                             .ticksRandomly()
                             .mapColor(MapColor.LIGHT_BLUE)), false);
-    public static final Block ZEPHYR_SPORE_CAULDRON = register("zephyr_spore_cauldron",
-            new LivingSporeCauldronBlock(
-                    AbstractBlock.Settings.copy(Blocks.CAULDRON).ticksRandomly(),
-                    ModCauldronBehaviors.ZEPHYR_SPORE_CAULDRON_BEHAVIOR,
-                    ZephyrSpores.getInstance()), false);
 
     // Sunlight Spores
     public static final Block SUNLIGHT_SPORE_SEA = register("sunlight_spore_sea",
@@ -262,11 +250,6 @@ public final class ModBlocks {
                     AbstractBlock.Settings.copy(ModBlocks.DEAD_SPORE_BLOCK)
                             .ticksRandomly()
                             .mapColor(MapColor.TERRACOTTA_YELLOW)), false);
-    public static final Block SUNLIGHT_SPORE_CAULDRON = register("sunlight_spore_cauldron",
-            new LivingSporeCauldronBlock(
-                    AbstractBlock.Settings.copy(Blocks.CAULDRON).ticksRandomly(),
-                    ModCauldronBehaviors.SUNLIGHT_SPORE_CAULDRON_BEHAVIOR,
-                    SunlightSpores.getInstance()), false);
     public static final Block SUNLIGHT = register("sunlight", new SunlightBlock(
             AbstractBlock.Settings.create()
                     .strength(100.0f)
@@ -288,11 +271,6 @@ public final class ModBlocks {
                     AbstractBlock.Settings.copy(ModBlocks.DEAD_SPORE_BLOCK)
                             .ticksRandomly()
                             .mapColor(MapColor.PINK)), false);
-    public static final Block ROSEITE_SPORE_CAULDRON = register("roseite_spore_cauldron",
-            new LivingSporeCauldronBlock(
-                    AbstractBlock.Settings.copy(Blocks.CAULDRON).ticksRandomly(),
-                    ModCauldronBehaviors.ROSEITE_SPORE_CAULDRON_BEHAVIOR,
-                    RoseiteSpores.getInstance()), false);
     public static final Block ROSEITE_BLOCK = register("roseite_block",
             new RoseiteBlock(AbstractBlock.Settings.create()
                     .nonOpaque()
@@ -337,11 +315,6 @@ public final class ModBlocks {
                     AbstractBlock.Settings.copy(ModBlocks.DEAD_SPORE_BLOCK)
                             .ticksRandomly()
                             .mapColor(MapColor.BLACK)), false);
-    public static final Block MIDNIGHT_SPORE_CAULDRON = register("midnight_spore_cauldron",
-            new LivingSporeCauldronBlock(
-                    AbstractBlock.Settings.copy(Blocks.CAULDRON).ticksRandomly(),
-                    ModCauldronBehaviors.MIDNIGHT_SPORE_CAULDRON_BEHAVIOR,
-                    MidnightSpores.getInstance()), false);
     public static final Block MIDNIGHT_ESSENCE = register("midnight_essence",
             new MidnightEssenceBlock(AbstractBlock.Settings.create()
                     // Impossible to break, but can be destroyed
@@ -352,6 +325,90 @@ public final class ModBlocks {
                     .solidBlock(Blocks::never)
                     .sounds(ModSoundGroups.MIDNIGHT_ESSENCE)
                     .pistonBehavior(PistonBehavior.DESTROY)), true);
+
+    // Spore Cauldrons
+    // Order matters! Be careful.
+    public static final Block DEAD_SPORE_CAULDRON = register("dead_spore_cauldron",
+            new SporeCauldronBlock(AbstractBlock.Settings.copy(Blocks.CAULDRON),
+                    ModCauldronBehaviors.DEAD_SPORE_CAULDRON_BEHAVIOR, DeadSpores.getInstance(),
+                    Blocks.CAULDRON), false);
+    public static final Block VERDANT_SPORE_CAULDRON = register("verdant_spore_cauldron",
+            new LivingSporeCauldronBlock(
+                    AbstractBlock.Settings.copy(Blocks.CAULDRON).ticksRandomly(),
+                    ModCauldronBehaviors.VERDANT_SPORE_CAULDRON_BEHAVIOR,
+                    VerdantSpores.getInstance(), Blocks.CAULDRON), false);
+    public static final Block CRIMSON_SPORE_CAULDRON = register("crimson_spore_cauldron",
+            new SporeCauldronBlock(AbstractBlock.Settings.copy(Blocks.CAULDRON).ticksRandomly(),
+                    ModCauldronBehaviors.CRIMSON_SPORE_CAULDRON_BEHAVIOR,
+                    CrimsonSpores.getInstance(), Blocks.CAULDRON), false);
+    public static final Block ZEPHYR_SPORE_CAULDRON = register("zephyr_spore_cauldron",
+            new LivingSporeCauldronBlock(
+                    AbstractBlock.Settings.copy(Blocks.CAULDRON).ticksRandomly(),
+                    ModCauldronBehaviors.ZEPHYR_SPORE_CAULDRON_BEHAVIOR, ZephyrSpores.getInstance(),
+                    Blocks.CAULDRON), false);
+    public static final Block SUNLIGHT_SPORE_CAULDRON = register("sunlight_spore_cauldron",
+            new LivingSporeCauldronBlock(
+                    AbstractBlock.Settings.copy(Blocks.CAULDRON).ticksRandomly(),
+                    ModCauldronBehaviors.SUNLIGHT_SPORE_CAULDRON_BEHAVIOR,
+                    SunlightSpores.getInstance(), Blocks.CAULDRON), false);
+    public static final Block ROSEITE_SPORE_CAULDRON = register("roseite_spore_cauldron",
+            new LivingSporeCauldronBlock(
+                    AbstractBlock.Settings.copy(Blocks.CAULDRON).ticksRandomly(),
+                    ModCauldronBehaviors.ROSEITE_SPORE_CAULDRON_BEHAVIOR,
+                    RoseiteSpores.getInstance(), Blocks.CAULDRON), false);
+    public static final Block MIDNIGHT_SPORE_CAULDRON = register("midnight_spore_cauldron",
+            new LivingSporeCauldronBlock(
+                    AbstractBlock.Settings.copy(Blocks.CAULDRON).ticksRandomly(),
+                    ModCauldronBehaviors.MIDNIGHT_SPORE_CAULDRON_BEHAVIOR,
+                    MidnightSpores.getInstance(), Blocks.CAULDRON), false);
+    public static final Block ALUMINUM_CAULDRON = register("aluminum_cauldron",
+            new CauldronBlock(AbstractBlock.Settings.copy(Blocks.CAULDRON)), true);
+    public static final Block ALUMINUM_WATER_CAULDRON = register("aluminum_water_cauldron",
+            new LeveledCauldronBlock(Biome.Precipitation.RAIN,
+                    CauldronBehavior.WATER_CAULDRON_BEHAVIOR,
+                    AbstractBlock.Settings.copy(Blocks.CAULDRON)), false);
+    public static final Block ALUMINUM_LAVA_CAULDRON = register("aluminum_lava_cauldron",
+            new LavaCauldronBlock(
+                    AbstractBlock.Settings.copy(Blocks.CAULDRON).luminance(state -> 15)), false);
+    public static final Block ALUMINUM_POWDER_SNOW_CAULDRON = register(
+            "aluminum_powder_snow_cauldron", new LeveledCauldronBlock(Biome.Precipitation.SNOW,
+                    CauldronBehavior.POWDER_SNOW_CAULDRON_BEHAVIOR,
+                    AbstractBlock.Settings.copy(Blocks.CAULDRON)), false);
+    public static final Block ALUMINUM_DEAD_SPORE_CAULDRON = register(
+            "aluminum_dead_spore_cauldron",
+            new SporeCauldronBlock(AbstractBlock.Settings.copy(Blocks.CAULDRON),
+                    ModCauldronBehaviors.DEAD_SPORE_CAULDRON_BEHAVIOR, DeadSpores.getInstance(),
+                    ModBlocks.ALUMINUM_CAULDRON), false);
+    public static final Block ALUMINUM_VERDANT_SPORE_CAULDRON = register(
+            "aluminum_verdant_spore_cauldron", new LivingSporeCauldronBlock(
+                    AbstractBlock.Settings.copy(Blocks.CAULDRON).ticksRandomly(),
+                    ModCauldronBehaviors.VERDANT_SPORE_CAULDRON_BEHAVIOR,
+                    VerdantSpores.getInstance(), ModBlocks.ALUMINUM_CAULDRON), false);
+    public static final Block ALUMINUM_CRIMSON_SPORE_CAULDRON = register(
+            "aluminum_crimson_spore_cauldron",
+            new SporeCauldronBlock(AbstractBlock.Settings.copy(Blocks.CAULDRON).ticksRandomly(),
+                    ModCauldronBehaviors.CRIMSON_SPORE_CAULDRON_BEHAVIOR,
+                    CrimsonSpores.getInstance(), ModBlocks.ALUMINUM_CAULDRON), false);
+    public static final Block ALUMINUM_ZEPHYR_SPORE_CAULDRON = register(
+            "aluminum_zephyr_spore_cauldron", new LivingSporeCauldronBlock(
+                    AbstractBlock.Settings.copy(Blocks.CAULDRON).ticksRandomly(),
+                    ModCauldronBehaviors.ZEPHYR_SPORE_CAULDRON_BEHAVIOR, ZephyrSpores.getInstance(),
+                    ModBlocks.ALUMINUM_CAULDRON), false);
+    public static final Block ALUMINUM_SUNLIGHT_SPORE_CAULDRON = register(
+            "aluminum_sunlight_spore_cauldron", new LivingSporeCauldronBlock(
+                    AbstractBlock.Settings.copy(Blocks.CAULDRON).ticksRandomly(),
+                    ModCauldronBehaviors.SUNLIGHT_SPORE_CAULDRON_BEHAVIOR,
+                    SunlightSpores.getInstance(), ModBlocks.ALUMINUM_CAULDRON), false);
+    public static final Block ALUMINUM_ROSEITE_SPORE_CAULDRON = register(
+            "aluminum_roseite_spore_cauldron", new LivingSporeCauldronBlock(
+                    AbstractBlock.Settings.copy(Blocks.CAULDRON).ticksRandomly(),
+                    ModCauldronBehaviors.ROSEITE_SPORE_CAULDRON_BEHAVIOR,
+                    RoseiteSpores.getInstance(), ModBlocks.ALUMINUM_CAULDRON), false);
+    public static final Block ALUMINUM_MIDNIGHT_SPORE_CAULDRON = register(
+            "aluminum_midnight_spore_cauldron", new LivingSporeCauldronBlock(
+                    AbstractBlock.Settings.copy(Blocks.CAULDRON).ticksRandomly(),
+                    ModCauldronBehaviors.MIDNIGHT_SPORE_CAULDRON_BEHAVIOR,
+                    MidnightSpores.getInstance(), ModBlocks.ALUMINUM_CAULDRON), false);
 
     // Other
     public static final Block MAGMA_VENT = register("magma_vent",
@@ -467,7 +524,16 @@ public final class ModBlocks {
         return settings;
     }
 
-    public static void initialize() {}
+    public static void initialize() {
+        ((CauldronVariantBlock) ModBlocks.ALUMINUM_CAULDRON).worldsinger$setBaseBlock(
+                ModBlocks.ALUMINUM_CAULDRON);
+        ((CauldronVariantBlock) ModBlocks.ALUMINUM_WATER_CAULDRON).worldsinger$setBaseBlock(
+                ModBlocks.ALUMINUM_CAULDRON);
+        ((CauldronVariantBlock) ModBlocks.ALUMINUM_LAVA_CAULDRON).worldsinger$setBaseBlock(
+                ModBlocks.ALUMINUM_CAULDRON);
+        ((CauldronVariantBlock) ModBlocks.ALUMINUM_POWDER_SNOW_CAULDRON).worldsinger$setBaseBlock(
+                ModBlocks.ALUMINUM_CAULDRON);
+    }
 
     private ModBlocks() {}
 }

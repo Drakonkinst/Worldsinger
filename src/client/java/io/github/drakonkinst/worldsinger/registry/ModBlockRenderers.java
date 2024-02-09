@@ -25,7 +25,9 @@ package io.github.drakonkinst.worldsinger.registry;
 
 import io.github.drakonkinst.worldsinger.block.ModBlocks;
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
+import net.fabricmc.fabric.api.client.rendering.v1.ColorProviderRegistry;
 import net.minecraft.block.Block;
+import net.minecraft.client.color.world.BiomeColors;
 import net.minecraft.client.render.RenderLayer;
 
 public final class ModBlockRenderers {
@@ -57,6 +59,13 @@ public final class ModBlockRenderers {
                 ModBlocks.ROSEITE_BLOCK, ModBlocks.ROSEITE_STAIRS, ModBlocks.ROSEITE_SLAB
         };
         BlockRenderLayerMap.INSTANCE.putBlocks(RenderLayer.getTranslucent(), translucentBlocks);
+
+        ColorProviderRegistry.BLOCK.register((state, world, pos, tintIndex) -> {
+            if (world == null || pos == null) {
+                return -1;
+            }
+            return BiomeColors.getWaterColor(world, pos);
+        }, ModBlocks.ALUMINUM_WATER_CAULDRON);
     }
 
     private ModBlockRenderers() {}

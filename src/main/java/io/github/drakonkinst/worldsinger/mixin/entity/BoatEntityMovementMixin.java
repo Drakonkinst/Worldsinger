@@ -134,7 +134,8 @@ public abstract class BoatEntityMovementMixin extends VehicleEntity {
         for (BlockPos pos : BlockPosUtil.iterateBoundingBoxForEntity(this, this.getBlockPos())) {
             BlockState state = world.getBlockState(pos);
             if (state.isIn(ModBlockTags.AETHER_SPORE_SEA_BLOCKS)
-                    && state.getBlock() instanceof SporeKillable sporeKillable) {
+                    && state.getBlock() instanceof SporeKillable sporeKillable
+                    && sporeKillable.isSporeKillable(world, pos, state)) {
                 BlockState newBlockState = SporeKillingUtil.convertToDeadVariant(sporeKillable,
                         state);
                 if (world.setBlockState(pos, newBlockState)) {

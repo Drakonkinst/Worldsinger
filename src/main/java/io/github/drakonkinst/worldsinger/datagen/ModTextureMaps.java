@@ -21,25 +21,24 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.github.drakonkinst.worldsinger.block;
+package io.github.drakonkinst.worldsinger.datagen;
 
-import io.github.drakonkinst.worldsinger.cosmere.lumar.SporeKillingUtil;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import io.github.drakonkinst.worldsinger.block.ModBlocks;
+import net.minecraft.block.Blocks;
+import net.minecraft.data.client.TextureKey;
+import net.minecraft.data.client.TextureMap;
+import net.minecraft.util.Identifier;
 
-public interface SporeKillable {
+public final class ModTextureMaps {
 
-    Block getDeadSporeBlock();
-
-    default boolean isSporeKillable(World world, BlockPos pos, BlockState state) {
-        return true;
-    }
-
-    default void checkKillSporeBlock(World world, BlockPos pos, BlockState state) {
-        if (SporeKillingUtil.isSporeKillingBlockNearby(world, pos)) {
-            world.setBlockState(pos, SporeKillingUtil.convertToDeadVariant(this, state));
-        }
+    public static TextureMap aluminumCauldron(Identifier content) {
+        return new TextureMap().put(TextureKey.PARTICLE,
+                        TextureMap.getSubId(Blocks.CAULDRON, "_side"))
+                .put(TextureKey.SIDE, TextureMap.getSubId(Blocks.CAULDRON, "_side"))
+                .put(TextureKey.TOP, TextureMap.getSubId(Blocks.CAULDRON, "_top"))
+                .put(TextureKey.BOTTOM, TextureMap.getSubId(Blocks.CAULDRON, "_bottom"))
+                .put(TextureKey.INSIDE, TextureMap.getSubId(Blocks.CAULDRON, "_inner"))
+                .put(ModTextureKeys.ALUMINUM, TextureMap.getId(ModBlocks.ALUMINUM_BLOCK))
+                .put(TextureKey.CONTENT, content);
     }
 }

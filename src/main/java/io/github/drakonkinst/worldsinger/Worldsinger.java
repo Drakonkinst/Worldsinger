@@ -98,6 +98,7 @@ public class Worldsinger implements ModInitializer {
         ModPayloadRegistry.initialize();
         ServerNetworkHandler.initialize();
 
+        // Should always be last
         ModApi.initialize();
     }
 }

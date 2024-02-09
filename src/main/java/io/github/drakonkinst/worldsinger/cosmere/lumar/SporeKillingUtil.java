@@ -102,7 +102,8 @@ public final class SporeKillingUtil {
             boolean wasChanged = false;
 
             // Kill SporeKillable block
-            if (blockState.getBlock() instanceof SporeKillable sporeKillable) {
+            if (blockState.getBlock() instanceof SporeKillable sporeKillable
+                    && sporeKillable.isSporeKillable(world, pos, blockState)) {
                 if (BlockPosUtil.isInvestitureBlocked(world, pos, currentPos)) {
                     continue;
                 }

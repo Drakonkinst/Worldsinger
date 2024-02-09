@@ -21,25 +21,20 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.github.drakonkinst.worldsinger.block;
+package io.github.drakonkinst.worldsinger.mixin.item;
 
-import io.github.drakonkinst.worldsinger.cosmere.lumar.SporeKillingUtil;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import io.github.drakonkinst.worldsinger.api.fluid.BottleVariantItem;
+import net.minecraft.item.GlassBottleItem;
+import net.minecraft.item.Item;
+import net.minecraft.item.Items;
+import net.minecraft.item.PotionItem;
+import org.spongepowered.asm.mixin.Mixin;
 
-public interface SporeKillable {
+@Mixin({ GlassBottleItem.class, PotionItem.class })
+public abstract class BottleVariantItemMixin implements BottleVariantItem {
 
-    Block getDeadSporeBlock();
-
-    default boolean isSporeKillable(World world, BlockPos pos, BlockState state) {
-        return true;
-    }
-
-    default void checkKillSporeBlock(World world, BlockPos pos, BlockState state) {
-        if (SporeKillingUtil.isSporeKillingBlockNearby(world, pos)) {
-            world.setBlockState(pos, SporeKillingUtil.convertToDeadVariant(this, state));
-        }
+    @Override
+    public Item worldsinger$getContainerItem() {
+        return Items.GLASS_BOTTLE;
     }
 }

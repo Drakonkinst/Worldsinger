@@ -24,9 +24,13 @@
 package io.github.drakonkinst.worldsinger.api;
 
 import io.github.drakonkinst.worldsinger.Worldsinger;
+import io.github.drakonkinst.worldsinger.api.fluid.FluidVariantApi;
+import io.github.drakonkinst.worldsinger.block.ModBlocks;
 import io.github.drakonkinst.worldsinger.cosmere.SilverLined;
 import io.github.drakonkinst.worldsinger.item.SilverLinedBoatItemData;
+import java.util.HashMap;
 import net.fabricmc.fabric.api.lookup.v1.item.ItemApiLookup;
+import net.minecraft.block.Blocks;
 import net.minecraft.item.Items;
 
 public class ModApi {
@@ -42,5 +46,18 @@ public class ModApi {
                 Items.ACACIA_CHEST_BOAT, Items.BIRCH_CHEST_BOAT, Items.CHERRY_CHEST_BOAT,
                 Items.DARK_OAK_CHEST_BOAT, Items.JUNGLE_CHEST_BOAT, Items.MANGROVE_CHEST_BOAT,
                 Items.OAK_CHEST_BOAT, Items.SPRUCE_CHEST_BOAT, Items.BAMBOO_CHEST_RAFT);
+        FluidVariantApi.registerCauldronVariants(ModBlocks.ALUMINUM_CAULDRON, new HashMap<>() {{
+            put(Blocks.CAULDRON, ModBlocks.ALUMINUM_CAULDRON);
+            put(Blocks.WATER_CAULDRON, ModBlocks.ALUMINUM_WATER_CAULDRON);
+            put(Blocks.LAVA_CAULDRON, ModBlocks.ALUMINUM_LAVA_CAULDRON);
+            put(Blocks.POWDER_SNOW_CAULDRON, ModBlocks.ALUMINUM_POWDER_SNOW_CAULDRON);
+            put(ModBlocks.DEAD_SPORE_CAULDRON, ModBlocks.ALUMINUM_DEAD_SPORE_CAULDRON);
+            put(ModBlocks.VERDANT_SPORE_CAULDRON, ModBlocks.ALUMINUM_VERDANT_SPORE_CAULDRON);
+            put(ModBlocks.CRIMSON_SPORE_CAULDRON, ModBlocks.ALUMINUM_CRIMSON_SPORE_CAULDRON);
+            put(ModBlocks.ZEPHYR_SPORE_CAULDRON, ModBlocks.ALUMINUM_ZEPHYR_SPORE_CAULDRON);
+            put(ModBlocks.SUNLIGHT_SPORE_CAULDRON, ModBlocks.ALUMINUM_SUNLIGHT_SPORE_CAULDRON);
+            put(ModBlocks.ROSEITE_SPORE_CAULDRON, ModBlocks.ALUMINUM_ROSEITE_SPORE_CAULDRON);
+            put(ModBlocks.MIDNIGHT_SPORE_CAULDRON, ModBlocks.ALUMINUM_MIDNIGHT_SPORE_CAULDRON);
+        }});
     }
 }

@@ -21,25 +21,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.github.drakonkinst.worldsinger.block;
+package io.github.drakonkinst.worldsinger.api.fluid;
 
-import io.github.drakonkinst.worldsinger.cosmere.lumar.SporeKillingUtil;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.item.Item;
 
-public interface SporeKillable {
+public interface BottleVariantItem {
 
-    Block getDeadSporeBlock();
-
-    default boolean isSporeKillable(World world, BlockPos pos, BlockState state) {
-        return true;
-    }
-
-    default void checkKillSporeBlock(World world, BlockPos pos, BlockState state) {
-        if (SporeKillingUtil.isSporeKillingBlockNearby(world, pos)) {
-            world.setBlockState(pos, SporeKillingUtil.convertToDeadVariant(this, state));
-        }
-    }
+    Item worldsinger$getContainerItem();
 }

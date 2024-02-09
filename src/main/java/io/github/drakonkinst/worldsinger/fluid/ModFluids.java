@@ -66,7 +66,9 @@ public final class ModFluids {
         return Registry.register(Registries.FLUID, Worldsinger.id(id), fluid);
     }
 
-    public static void initialize() {}
+    public static void initialize() {
+
+    }
 
     private ModFluids() {}
 }

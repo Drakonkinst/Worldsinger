@@ -56,8 +56,9 @@ public final class ModBlockTags {
     public static final TagKey<Block> BLOCKS_INVESTITURE = ModBlockTags.of("blocks_investiture");
     public static final TagKey<Block> HAS_STEEL = ModBlockTags.of("has_steel");
     public static final TagKey<Block> HAS_IRON = ModBlockTags.of("has_iron");
-    public static final TagKey<Block> SILVER_WALKABLE = ModBlockTags.of("silver_walkable");
     public static final TagKey<Block> HAS_SILVER = ModBlockTags.of("has_silver");
+    public static final TagKey<Block> HAS_ALUMINUM = ModBlockTags.of("has_aluminum");
+    public static final TagKey<Block> SILVER_WALKABLE = ModBlockTags.of("silver_walkable");
     public static final TagKey<Block> SEAGULLS_SPAWNABLE_ON = ModBlockTags.of(
             "seagulls_spawnable_on");
 
