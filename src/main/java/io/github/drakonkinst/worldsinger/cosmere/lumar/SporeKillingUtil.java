@@ -32,6 +32,7 @@ import io.github.drakonkinst.worldsinger.block.LivingSporeGrowthBlock;
 import io.github.drakonkinst.worldsinger.block.ModBlockTags;
 import io.github.drakonkinst.worldsinger.block.SporeKillable;
 import io.github.drakonkinst.worldsinger.cosmere.SilverLined;
+import io.github.drakonkinst.worldsinger.cosmere.SilverLinedUtil;
 import io.github.drakonkinst.worldsinger.entity.SilverLinedEntityData;
 import io.github.drakonkinst.worldsinger.fluid.Fluidlogged;
 import io.github.drakonkinst.worldsinger.fluid.ModFluidTags;
@@ -73,9 +74,13 @@ public final class SporeKillingUtil {
                 if (silverLinedData.getSilverDurability() <= 0) {
                     return false;
                 }
-                // It is silver-lined, so decrement the silver durability
-                silverLinedData.setSilverDurability(silverLinedData.getSilverDurability() - 1);
-            } else {
+                if (!player.isCreative()) {
+                    // It is silver-lined, so decrement the silver durability
+                    if (!silverLinedData.decrementDurability()) {
+                        SilverLinedUtil.onSilverLinedItemBreak(world, player);
+                    }
+                }
+            } else if (!player.isCreative()) {
                 // Assume it is a tool and damage its durability
                 stack.damage(1, player,
                         hand == Hand.MAIN_HAND ? EquipmentSlot.MAINHAND : EquipmentSlot.OFFHAND);
@@ -171,7 +176,7 @@ public final class SporeKillingUtil {
                             ModAttachmentTypes.SILVER_LINED_BOAT);
                     boolean hasSilver = silverData != null && silverData.getSilverDurability() > 0;
                     if (hasSilver) {
-                        silverData.setSilverDurability(silverData.getSilverDurability() - 1);
+                        silverData.decrementDurability();
                         if (!world.isClient()) {
                             AttachmentSync.sync(boatEntity, ModAttachmentTypes.SILVER_LINED_BOAT,
                                     silverData);

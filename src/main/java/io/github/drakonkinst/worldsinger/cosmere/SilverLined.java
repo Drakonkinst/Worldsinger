@@ -59,5 +59,16 @@ public interface SilverLined {
 
     int getSilverDurability();
 
+    int getRepairAmount();
+
     int getMaxSilverDurability();
+
+    default boolean decrementDurability() {
+        setSilverDurability(getSilverDurability() - 1);
+        return getSilverDurability() > 0;
+    }
+
+    default void repair() {
+        setSilverDurability(getSilverDurability() + getRepairAmount());
+    }
 }

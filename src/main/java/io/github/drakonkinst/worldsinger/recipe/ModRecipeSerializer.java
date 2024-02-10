@@ -32,6 +32,9 @@ public final class ModRecipeSerializer {
 
     public static final RecipeSerializer<SaltedFoodRecipe> SALTED_FOOD = RecipeSerializer.register(
             Worldsinger.idStr("salted_food"), new SpecialRecipeSerializer<>(SaltedFoodRecipe::new));
+    public static final RecipeSerializer<SilverLinedItemRecipe> SILVER_LINED_ITEM = RecipeSerializer.register(
+            Worldsinger.idStr("silver_lined_item"),
+            new SpecialRecipeSerializer<>(SilverLinedItemRecipe::new));
 
     public static void initialize() {}
 

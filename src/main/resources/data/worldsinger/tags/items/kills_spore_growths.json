@@ -1,5 +1,7 @@
 {
   "values": [
-    "worldsinger:silver_knife"
+    "worldsinger:silver_knife",
+    "#c:axes",
+    "#minecraft:axes"
   ]
 }

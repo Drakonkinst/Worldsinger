@@ -22,34 +22,23 @@
  * SOFTWARE.
  */
 
-package io.github.drakonkinst.worldsinger.entity;
+package io.github.drakonkinst.worldsinger.item;
 
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
-import io.github.drakonkinst.worldsinger.item.SilverLinedBoatItemData;
+import net.minecraft.item.ItemStack;
 
-// Contrary to the name, the component is not limited to being used just for boats
-// However, we don't want to store type information (max durability) in the component, so
-// it gets its own special class instead. This leaves room for other entities to be silver-lined
-// with their own durability values.
-public class SilverLinedBoatData extends SilverLinedEntityData {
+public class SilverLinedAxeItemData extends SilverLinedItemData {
 
-    public static Codec<SilverLinedBoatData> CODEC = RecordCodecBuilder.create(
-            instance -> instance.group(Codec.INT.fieldOf(KEY_SILVER_LINED)
-                            .forGetter(SilverLinedEntityData::getSilverDurability))
-                    .apply(instance, SilverLinedBoatData::new));
-
-    public SilverLinedBoatData(int durability) {
-        setSilverDurability(durability);
+    public SilverLinedAxeItemData(ItemStack stack) {
+        super(stack);
     }
 
     @Override
     public int getRepairAmount() {
-        return SilverLinedBoatItemData.SILVER_REPAIR_AMOUNT;
+        return getMaxSilverDurability();
     }
 
     @Override
     public int getMaxSilverDurability() {
-        return SilverLinedBoatItemData.MAX_DURABILITY;
+        return stack.getItem().getMaxDamage();
     }
 }

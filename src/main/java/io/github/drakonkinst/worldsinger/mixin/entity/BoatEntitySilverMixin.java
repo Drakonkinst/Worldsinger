@@ -27,7 +27,6 @@ import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import io.github.drakonkinst.worldsinger.api.ModAttachmentTypes;
 import io.github.drakonkinst.worldsinger.api.sync.AttachmentSync;
 import io.github.drakonkinst.worldsinger.cosmere.SilverLined;
-import io.github.drakonkinst.worldsinger.entity.SilverLinedBoatData;
 import io.github.drakonkinst.worldsinger.entity.SilverLinedEntityData;
 import io.github.drakonkinst.worldsinger.item.ModItemTags;
 import io.github.drakonkinst.worldsinger.registry.ModSoundEvents;
@@ -63,8 +62,7 @@ public abstract class BoatEntitySilverMixin extends VehicleEntity {
         if (itemStack.isIn(ModItemTags.SILVER_INGOTS)
                 && silverDurability < silverData.getMaxSilverDurability()) {
             // Set data
-            silverData.setSilverDurability(
-                    silverDurability + SilverLinedBoatData.SILVER_REPAIR_AMOUNT);
+            silverData.repair();
             if (!this.getWorld().isClient()) {
                 AttachmentSync.sync(this, ModAttachmentTypes.SILVER_LINED_BOAT, silverData);
             }

@@ -23,17 +23,25 @@
  */
 package io.github.drakonkinst.worldsinger.item;
 
-import io.github.drakonkinst.worldsinger.entity.SilverLinedBoatData;
 import net.minecraft.item.ItemStack;
 
 public class SilverLinedBoatItemData extends SilverLinedItemData {
+
+    public static final int MAX_DURABILITY = 45000;
+    public static final int SILVER_REPAIR_AMOUNT = MAX_DURABILITY / 4;
+    public static final float VISUAL_SCALE_FACTOR = 1.0f / 100.0f;
 
     public SilverLinedBoatItemData(ItemStack stack) {
         super(stack);
     }
 
     @Override
+    public int getRepairAmount() {
+        return SILVER_REPAIR_AMOUNT;
+    }
+
+    @Override
     public int getMaxSilverDurability() {
-        return SilverLinedBoatData.MAX_DURABILITY;
+        return MAX_DURABILITY;
     }
 }

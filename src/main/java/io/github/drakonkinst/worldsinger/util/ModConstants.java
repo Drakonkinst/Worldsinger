@@ -35,6 +35,7 @@ public final class ModConstants {
     public static final Direction[] HORIZONTAL_DIRECTIONS = {
             Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST
     };
+    public static final int ITEM_DURABILITY_METER_MAX_STEPS = 13;
 
     private ModConstants() {}
 }

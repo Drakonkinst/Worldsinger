@@ -42,6 +42,8 @@ public final class ModItemTags {
             "kills_spore_growths");
 
     public static final TagKey<Item> CAN_BE_SALTED = ModItemTags.ofCommon("can_be_salted");
+    public static final TagKey<Item> EXCLUDE_SILVER_LINED = ModItemTags.ofCommon(
+            "exclude_silver_lined");
     public static final TagKey<Item> SALT = ModItemTags.ofCommon("salt");
     public static final TagKey<Item> SILVER_INGOTS = ModItemTags.ofCommon("silver_ingots");
     public static final TagKey<Item> SHIELDS = ModItemTags.ofCommon("shields");

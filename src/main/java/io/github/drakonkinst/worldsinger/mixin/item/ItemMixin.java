@@ -26,7 +26,6 @@ package io.github.drakonkinst.worldsinger.mixin.item;
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import io.github.drakonkinst.worldsinger.Worldsinger;
 import io.github.drakonkinst.worldsinger.api.ModAttachmentTypes;
 import io.github.drakonkinst.worldsinger.cosmere.SaltedFoodUtil;
 import io.github.drakonkinst.worldsinger.cosmere.ThirstManager;
@@ -35,18 +34,16 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
-import net.minecraft.util.Util;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 
 @Mixin(Item.class)
-public class ItemMixin {
+public abstract class ItemMixin {
 
     @Unique
-    private static final String SALTED_FOOD_NAME_KEY = Util.createTranslationKey("items",
-            Worldsinger.id("salted_food"));
+    private static final String SALTED_FOOD_NAME_KEY = "item.salted_food";
 
     @WrapOperation(method = "use", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerEntity;canConsume(Z)Z"))
     private boolean allowEatingIfAffectsThirst(PlayerEntity instance, boolean ignoreHunger,

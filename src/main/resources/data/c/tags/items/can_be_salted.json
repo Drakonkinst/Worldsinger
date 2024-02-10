@@ -1,18 +1,18 @@
 {
   "values": [
-    "minecraft:cooked_beef",
-    "minecraft:cooked_chicken",
-    "minecraft:cooked_mutton",
-    "minecraft:cooked_rabbit",
-    "minecraft:cooked_porkchop",
-    "minecraft:cooked_cod",
-    "minecraft:cooked_salmon",
+    "#c:cooked_meat",
+    "#c:raw_meat",
+    "minecraft:rotten_flesh",
+    "minecraft:carrot",
+    "minecraft:potato",
+    "minecraft:poisonous_potato",
+    "minecraft:beetroot",
     "minecraft:baked_potato",
     "minecraft:bread",
     "minecraft:suspicious_stew",
     "minecraft:beetroot_soup",
     "minecraft:mushroom_stew",
     "minecraft:rabbit_stew",
-    "minecraft:rotten_flesh"
+    "worldsinger:verdant_vine"
   ]
 }

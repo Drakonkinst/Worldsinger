@@ -1,7 +1,6 @@
 /*
  * MIT License
  *
- * Copyright (c) 2011-2017 mortuusars
  * Copyright (c) 2023-2024 Drakonkinst
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -25,7 +24,9 @@
 
 package io.github.drakonkinst.worldsinger.recipe;
 
-import io.github.drakonkinst.worldsinger.cosmere.SaltedFoodUtil;
+import io.github.drakonkinst.worldsinger.api.ModApi;
+import io.github.drakonkinst.worldsinger.cosmere.SilverLined;
+import io.github.drakonkinst.worldsinger.cosmere.SilverLinedUtil;
 import io.github.drakonkinst.worldsinger.item.ModItemTags;
 import net.minecraft.inventory.RecipeInputInventory;
 import net.minecraft.item.ItemStack;
@@ -35,73 +36,62 @@ import net.minecraft.recipe.book.CraftingRecipeCategory;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.world.World;
 
-public class SaltedFoodRecipe extends SpecialCraftingRecipe {
+public class SilverLinedItemRecipe extends SpecialCraftingRecipe {
 
-    public SaltedFoodRecipe(CraftingRecipeCategory category) {
+    public SilverLinedItemRecipe(CraftingRecipeCategory category) {
         super(category);
     }
 
     @Override
     public boolean matches(RecipeInputInventory inventory, World world) {
-
-        ItemStack foodItem = ItemStack.EMPTY;
-        boolean hasSalt = false;
-
+        ItemStack silverLinedItem = ItemStack.EMPTY;
+        int numSilverIngots = 0;
         for (int i = 0; i < inventory.size(); ++i) {
             ItemStack stack = inventory.getStack(i);
-            if (stack.isIn(ModItemTags.SALT)) {
-                if (hasSalt) {
-                    // Cannot have more than one salt slot
+            if (stack.isIn(ModItemTags.SILVER_INGOTS)) {
+                numSilverIngots += 1;
+            } else if (SilverLinedUtil.canBeSilverLined(stack)) {
+                if (!silverLinedItem.isEmpty()) {
+                    // Cannot have more than one silver lined slot
                     return false;
                 }
-                hasSalt = true;
-            } else if (SaltedFoodUtil.canBeSalted(stack)) {
-                if (!foodItem.isEmpty()) {
-                    // Cannot have more than one food slot
-                    return false;
-                }
-                foodItem = stack;
+                silverLinedItem = stack;
             } else if (!stack.isEmpty()) {
                 // Cannot have any other items
                 return false;
             }
         }
-
-        return !foodItem.isEmpty() && hasSalt;
+        return !silverLinedItem.isEmpty() && numSilverIngots > 0;
     }
 
     @Override
     public ItemStack craft(RecipeInputInventory inventory, DynamicRegistryManager registryManager) {
-        ItemStack foodItem = ItemStack.EMPTY;
-        boolean hasSalt = false;
-
+        ItemStack silverLinedItem = ItemStack.EMPTY;
+        int numSilverIngots = 0;
         for (int i = 0; i < inventory.size(); ++i) {
             ItemStack stack = inventory.getStack(i);
-            if (stack.isIn(ModItemTags.SALT)) {
-                if (hasSalt) {
-                    // Cannot have more than one salt slot
+            if (stack.isIn(ModItemTags.SILVER_INGOTS)) {
+                numSilverIngots += 1;
+            } else if (SilverLinedUtil.canBeSilverLined(stack)) {
+                if (!silverLinedItem.isEmpty()) {
+                    // Cannot have more than one silver lined slot
                     return ItemStack.EMPTY;
                 }
-                hasSalt = true;
-            } else if (SaltedFoodUtil.canBeSalted(stack)) {
-                if (!foodItem.isEmpty()) {
-                    // Cannot have more than one food slot
-                    return ItemStack.EMPTY;
-                }
-                foodItem = stack;
+                silverLinedItem = stack;
             } else if (!stack.isEmpty()) {
                 // Cannot have any other items
                 return ItemStack.EMPTY;
             }
         }
 
-        if (foodItem.isEmpty() || !hasSalt) {
+        ItemStack result = silverLinedItem.copy();
+        SilverLined silverData = ModApi.SILVER_LINED_ITEM.find(result, null);
+        if (silverData == null) {
             return ItemStack.EMPTY;
         }
-
-        ItemStack result = foodItem.copy();
-        result.setCount(1);
-        return SaltedFoodUtil.makeSalted(result);
+        silverData.setSilverDurability(
+                silverData.getSilverDurability() + numSilverIngots * silverData.getRepairAmount());
+        return result;
     }
 
     @Override
@@ -111,6 +101,6 @@ public class SaltedFoodRecipe extends SpecialCraftingRecipe {
 
     @Override
     public RecipeSerializer<?> getSerializer() {
-        return ModRecipeSerializer.SALTED_FOOD;
+        return ModRecipeSerializer.SILVER_LINED_ITEM;
     }
 }

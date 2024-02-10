@@ -74,6 +74,7 @@
     "entity.ai.SwimGoalMixin",
     "event.EntityHurtPlayerCriterionServerPlayerHurtMixin",
     "fluid.FlowableFluidMixin",
+    "item.AxeItemMixin",
     "item.BlockItemMixin",
     "item.BoatItemMixin",
     "item.BrushItemMixin",

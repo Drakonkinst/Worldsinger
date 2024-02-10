@@ -37,7 +37,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
 @Mixin(CauldronBlock.class)
-public class CauldronBlockMixin {
+public abstract class CauldronBlockMixin {
 
     @WrapOperation(method = "precipitationTick", at = @At(value = "INVOKE", target = "Lnet/minecraft/block/Block;getDefaultState()Lnet/minecraft/block/BlockState;"))
     private BlockState supportPrecipitationCauldronVariants(Block instance,
