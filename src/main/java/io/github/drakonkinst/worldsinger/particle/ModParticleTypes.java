@@ -35,7 +35,7 @@ import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 
 @SuppressWarnings("UnqualifiedStaticUsage")
-public class ModParticleTypes {
+public final class ModParticleTypes {
 
     public static final ParticleType<SporeDustParticleEffect> SPORE_DUST = register("spore_dust",
             true, SporeDustParticleEffect.PARAMETERS_FACTORY, SporeDustParticleEffect.CODEC,
@@ -58,4 +58,6 @@ public class ModParticleTypes {
         return Registry.register(Registries.PARTICLE_TYPE, Worldsinger.id(name),
                 FabricParticleTypes.complex(alwaysShow, factory, codec, packetCodec));
     }
+
+    private ModParticleTypes() {}
 }

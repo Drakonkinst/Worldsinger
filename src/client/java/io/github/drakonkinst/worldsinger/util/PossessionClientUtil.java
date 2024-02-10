@@ -32,6 +32,7 @@ import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Util;
 
+@SuppressWarnings("UnstableApiUsage")
 public final class PossessionClientUtil {
 
     private static final String ON_POSSESS_START_TRANSLATION_KEY = Util.createTranslationKey(

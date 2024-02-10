@@ -21,7 +21,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-
 package io.github.drakonkinst.worldsinger.mixin.command;
 
 import static net.minecraft.server.command.CommandManager.argument;
@@ -38,7 +37,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
 
 @Mixin(LocateCommand.class)
-public class LocateCommandMixin {
+public abstract class LocateCommandMixin {
 
     @ModifyArg(method = "register", at = @At(value = "INVOKE", target = "Lcom/mojang/brigadier/CommandDispatcher;register(Lcom/mojang/brigadier/builder/LiteralArgumentBuilder;)Lcom/mojang/brigadier/tree/LiteralCommandNode;"))
     private static LiteralArgumentBuilder<ServerCommandSource> addNewLocateArguments(

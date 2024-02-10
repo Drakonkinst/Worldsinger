@@ -30,7 +30,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
 @Mixin(HungerStatusEffect.class)
-public class HungerStatusEffectThirstMixin {
+public abstract class HungerStatusEffectThirstMixin {
 
     // Workaround for the issue where the Hunger status effect also affects Thirst.
     // However, this might cause issues with any other mod if they expect the Hunger effect to also

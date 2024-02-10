@@ -32,7 +32,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
 @Mixin(StayAboveWaterTask.class)
-public class StayAboveWaterTaskMixin {
+public abstract class StayAboveWaterTaskMixin {
 
     @ModifyReturnValue(method = "isUnderwater", at = @At("RETURN"))
     private static boolean checkForSporeFluid(boolean original, MobEntity entity) {

@@ -29,10 +29,10 @@ import io.github.drakonkinst.worldsinger.network.ClientNetworkHandler;
 import io.github.drakonkinst.worldsinger.network.ClientProxy;
 import io.github.drakonkinst.worldsinger.particle.ModParticleManager;
 import io.github.drakonkinst.worldsinger.registry.ModBlockRendering;
+import io.github.drakonkinst.worldsinger.registry.ModDimensionRenderers;
 import io.github.drakonkinst.worldsinger.registry.ModEntityRendering;
 import io.github.drakonkinst.worldsinger.registry.ModItemRendering;
 import io.github.drakonkinst.worldsinger.registry.ModModelPredicates;
-import io.github.drakonkinst.worldsinger.world.ModDimensionRenderers;
 import net.fabricmc.api.ClientModInitializer;
 
 public class WorldsingerClient implements ClientModInitializer {

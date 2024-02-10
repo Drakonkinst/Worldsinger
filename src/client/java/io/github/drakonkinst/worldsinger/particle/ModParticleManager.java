@@ -25,7 +25,7 @@ package io.github.drakonkinst.worldsinger.particle;
 
 import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry;
 
-public class ModParticleManager {
+public final class ModParticleManager {
 
     public static void register() {
         ParticleFactoryRegistry registry = ParticleFactoryRegistry.getInstance();

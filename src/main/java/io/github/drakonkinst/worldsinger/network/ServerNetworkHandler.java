@@ -36,7 +36,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.MathHelper;
 
 @SuppressWarnings({ "UnqualifiedStaticUsage", "UnstableApiUsage" })
-public class ServerNetworkHandler {
+public final class ServerNetworkHandler {
 
     public static void initialize() {
         registerPossessionPacketHandlers();
@@ -109,4 +109,6 @@ public class ServerNetworkHandler {
             }
         });
     }
+
+    private ServerNetworkHandler() {}
 }

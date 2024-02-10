@@ -32,7 +32,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ItemModels.class)
-public class ItemModelsMixin {
+public abstract class ItemModelsMixin {
 
     @Inject(method = "reloadModels", at = @At("TAIL"))
     private void reloadLayeredBakedModelCache(CallbackInfo ci) {

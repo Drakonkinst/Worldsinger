@@ -36,7 +36,7 @@ import io.github.drakonkinst.worldsinger.cosmere.lumar.MidnightSpores;
 import io.github.drakonkinst.worldsinger.effect.ModStatusEffects;
 import io.github.drakonkinst.worldsinger.entity.ai.PossessableEntityNavigation;
 import io.github.drakonkinst.worldsinger.entity.ai.PossessableMoveControl;
-import io.github.drakonkinst.worldsinger.entity.ai.behavior.MidnightCreatureImitation;
+import io.github.drakonkinst.worldsinger.entity.ai.behavior.MidnightCreatureImitate;
 import io.github.drakonkinst.worldsinger.entity.ai.behavior.OptionalAttackTarget;
 import io.github.drakonkinst.worldsinger.entity.ai.behavior.StudyTarget;
 import io.github.drakonkinst.worldsinger.entity.ai.sensor.ConditionalNearbyBlocksSensor;
@@ -322,7 +322,7 @@ public class MidnightCreatureEntity extends ShapeshiftingEntity implements
     @Override
     public BrainActivityGroup<? extends MidnightCreatureEntity> getCoreTasks() {
         return BrainActivityGroup.coreTasks(new FloatToSurfaceOfFluid<>(), new LookAtTarget<>(),
-                new MidnightCreatureImitation<>(),
+                new MidnightCreatureImitate<>(),
                 new FollowEntity<MidnightCreatureEntity, LivingEntity>().following(
                                 MidnightCreatureEntity::getController)
                         // Does not have as strict of a follow distance.
@@ -494,7 +494,7 @@ public class MidnightCreatureEntity extends ShapeshiftingEntity implements
             Vec3d start = controller.getEyePos().add(0.0, MOUTH_OFFSET, 0.0);
             Vec3d destination = EntityUtil.getCenterPos(this);
             Vec3d direction = destination.subtract(start).normalize();
-            for(int i = this.age % TRAIL_INTERVAL; i < NUM_TRAIL_PARTICLES; i += TRAIL_INTERVAL) {
+            for (int i = this.age % TRAIL_INTERVAL; i < NUM_TRAIL_PARTICLES; i += TRAIL_INTERVAL) {
                 addTrailParticle(start, destination, i, direction);
             }
         }
@@ -504,7 +504,10 @@ public class MidnightCreatureEntity extends ShapeshiftingEntity implements
         double delta = (double) offset / NUM_TRAIL_PARTICLES;
         Vec3d pos = start.lerp(destination, delta);
         this.getWorld()
-                .addParticle(ModParticleTypes.MIDNIGHT_TRAIL, pos.getX(), pos.getY(), pos.getZ(), direction.getX() * TRAIL_PARTICLE_SPEED, direction.getY() * TRAIL_PARTICLE_SPEED, direction.getZ() * TRAIL_PARTICLE_SPEED);
+                .addParticle(ModParticleTypes.MIDNIGHT_TRAIL, pos.getX(), pos.getY(), pos.getZ(),
+                        direction.getX() * TRAIL_PARTICLE_SPEED,
+                        direction.getY() * TRAIL_PARTICLE_SPEED,
+                        direction.getZ() * TRAIL_PARTICLE_SPEED);
     }
 
     // Luhel Bond

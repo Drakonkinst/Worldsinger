@@ -28,7 +28,7 @@ import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.world.biome.Biome;
 
-public class ModBiomes {
+public final class ModBiomes {
 
     public static final RegistryKey<Biome> SPORE_SEA = ModBiomes.of("spore_sea");
     public static final RegistryKey<Biome> DEEP_SPORE_SEA = ModBiomes.of("deep_spore_sea");
@@ -36,4 +36,6 @@ public class ModBiomes {
     private static RegistryKey<Biome> of(String id) {
         return RegistryKey.of(RegistryKeys.BIOME, Worldsinger.id(id));
     }
+
+    private ModBiomes() {}
 }

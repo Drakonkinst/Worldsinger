@@ -36,7 +36,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Util;
 
 // Optional dependency on YACL. If it does not exist, you are prompted to install it.
-public class ModConfigScreen {
+public final class ModConfigScreen {
 
     private static final String YACL_URL = "https://modrinth.com/mod/yacl/versions";
 
@@ -69,4 +69,6 @@ public class ModConfigScreen {
     private static Text getConfigText(String key) {
         return Text.translatable("config." + ModConstants.MOD_ID + ".yacl." + key);
     }
+
+    private ModConfigScreen() {}
 }

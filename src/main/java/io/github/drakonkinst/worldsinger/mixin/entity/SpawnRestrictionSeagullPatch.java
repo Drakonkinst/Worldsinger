@@ -42,7 +42,7 @@ import org.spongepowered.asm.mixin.injection.At;
 // TODO: We're using chickens as a long-term stand-in for seagulls.
 // Once we add a seagull mob sometime in the future, all this can be removed
 @Mixin(SpawnRestriction.class)
-public class SpawnRestrictionSeagullPatch {
+public abstract class SpawnRestrictionSeagullPatch {
 
     @WrapOperation(method = "canSpawn", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/SpawnRestriction$SpawnPredicate;test(Lnet/minecraft/entity/EntityType;Lnet/minecraft/world/ServerWorldAccess;Lnet/minecraft/entity/SpawnReason;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/util/math/random/Random;)Z"))
     private static <T extends Entity> boolean allowSeagullSpawning(SpawnPredicate<?> instance,

@@ -21,7 +21,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-
 package io.github.drakonkinst.worldsinger.mixin.client.gui;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
@@ -44,7 +43,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
 @Mixin(DrawContext.class)
-public class DrawContextMixin {
+public abstract class DrawContextMixin {
 
     // Mixing in directly to DrawContext because we want salted overlay to ONLY appear in the
     // inventory, not in hand.

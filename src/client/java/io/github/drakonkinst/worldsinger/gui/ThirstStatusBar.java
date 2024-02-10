@@ -31,7 +31,7 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Identifier;
 
-public class ThirstStatusBar {
+public final class ThirstStatusBar {
 
     private static final int HOTBAR_HEIGHT = 39;
     private static final int STATUS_BAR_HEIGHT = 10;
@@ -88,4 +88,6 @@ public class ThirstStatusBar {
                 player.getAttachedOrCreate(ModAttachmentTypes.MIDNIGHT_AETHER_BOND).getBondCount()
                         > 0;
     }
+
+    private ThirstStatusBar() {}
 }

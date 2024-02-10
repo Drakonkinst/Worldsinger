@@ -47,7 +47,7 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 
 @Mixin(ItemRenderer.class)
-public class ItemRendererMixin {
+public abstract class ItemRendererMixin {
 
     @ModifyReturnValue(method = "getModel", at = @At("RETURN"))
     private BakedModel addSilverLinedModelOverlays(BakedModel original, ItemStack stack,

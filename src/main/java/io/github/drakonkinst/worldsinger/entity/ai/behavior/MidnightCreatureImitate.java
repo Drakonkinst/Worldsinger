@@ -47,7 +47,7 @@ import net.tslat.smartbrainlib.registry.SBLMemoryTypes;
 import net.tslat.smartbrainlib.util.BrainUtils;
 import org.jetbrains.annotations.Nullable;
 
-public class MidnightCreatureImitation<E extends MidnightCreatureEntity> extends
+public class MidnightCreatureImitate<E extends MidnightCreatureEntity> extends
         ExtendedBehaviour<E> {
 
     private static final List<Pair<MemoryModuleType<?>, MemoryModuleState>> MEMORY_REQUIREMENTS = ObjectArrayList.of(

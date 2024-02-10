@@ -21,13 +21,15 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.github.drakonkinst.worldsinger.world;
+package io.github.drakonkinst.worldsinger.registry;
 
+import io.github.drakonkinst.worldsinger.world.LumarDimensionEffects;
+import io.github.drakonkinst.worldsinger.world.LumarSkyRenderer;
 import io.github.drakonkinst.worldsinger.worldgen.dimension.ModDimensions;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.DimensionRenderingRegistry;
 
-public class ModDimensionRenderers {
+public final class ModDimensionRenderers {
 
     public static void initialize() {
         DimensionRenderingRegistry.registerDimensionEffects(ModDimensions.LUMAR,
@@ -37,4 +39,6 @@ public class ModDimensionRenderers {
                     new LumarSkyRenderer());
         });
     }
+
+    private ModDimensionRenderers() {}
 }

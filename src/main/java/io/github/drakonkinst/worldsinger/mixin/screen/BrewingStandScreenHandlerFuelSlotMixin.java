@@ -30,7 +30,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
 @Mixin(targets = "net.minecraft.screen.BrewingStandScreenHandler$FuelSlot")
-public class BrewingStandScreenHandlerFuelSlotMixin {
+public abstract class BrewingStandScreenHandlerFuelSlotMixin {
 
     @ModifyReturnValue(method = "matches", at = @At("RETURN"))
     private static boolean allowCustomFuel(boolean originalValue, ItemStack stack) {

@@ -33,7 +33,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
 
-public class ModDimensions {
+public final class ModDimensions {
 
     public static final Identifier LUMAR = Worldsinger.id("lumar");
     public static final RegistryKey<DimensionType> DIMENSION_TYPE_LUMAR = ModDimensions.registerDimension(
@@ -52,4 +52,6 @@ public class ModDimensions {
     private static RegistryKey<World> registerWorld(Identifier id) {
         return RegistryKey.of(RegistryKeys.WORLD, id);
     }
+
+    private ModDimensions() {}
 }
