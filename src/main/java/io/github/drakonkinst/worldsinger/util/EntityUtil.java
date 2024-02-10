@@ -30,6 +30,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.TagKey;
@@ -143,6 +144,10 @@ public final class EntityUtil {
         while (entity.headYaw - entity.prevHeadYaw >= MAX_ROTATION) {
             entity.prevHeadYaw += FULL_DEGREE;
         }
+    }
+
+    public static boolean isNotCreativePlayer(LivingEntity entity) {
+        return !(entity instanceof PlayerEntity player) || !player.isCreative();
     }
 
     private EntityUtil() {}

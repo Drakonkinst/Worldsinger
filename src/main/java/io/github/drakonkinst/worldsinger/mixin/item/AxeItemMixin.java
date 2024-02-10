@@ -31,6 +31,7 @@ import io.github.drakonkinst.worldsinger.entity.SilverVulnerable;
 import io.github.drakonkinst.worldsinger.item.ModItemTags;
 import io.github.drakonkinst.worldsinger.item.SilverKnifeItem;
 import io.github.drakonkinst.worldsinger.mixin.accessor.LivingEntityAccessor;
+import io.github.drakonkinst.worldsinger.util.EntityUtil;
 import java.util.List;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -81,16 +82,21 @@ public abstract class AxeItemMixin extends MiningToolItem {
     public boolean postHit(ItemStack stack, LivingEntity target, LivingEntity attacker) {
         SilverLined silverData = ModApi.SILVER_LINED_ITEM.find(stack, null);
         if (silverData != null && silverData.getSilverDurability() > 0) {
+            boolean isNotCreativePlayer = EntityUtil.isNotCreativePlayer(attacker);
             if (target instanceof SilverVulnerable) {
                 // applyDamage() always applies the damage, versus damage() which only damages the mob
                 // with the highest damage value that frame. So this is ideal for bonus damage
                 ((LivingEntityAccessor) target).worldsinger$applyDamage(
                         attacker.getDamageSources().mobAttack(attacker),
                         SilverKnifeItem.SILVER_BONUS_DAMAGE);
-                silverData.decrementDurability();
+                if (isNotCreativePlayer) {
+                    silverData.decrementDurability();
+                }
             }
-            if (!silverData.decrementDurability()) {
-                SilverLinedUtil.onSilverLinedItemBreak(attacker.getWorld(), attacker);
+            if (isNotCreativePlayer) {
+                if (!silverData.decrementDurability()) {
+                    SilverLinedUtil.onSilverLinedItemBreak(attacker.getWorld(), attacker);
+                }
             }
         }
         return super.postHit(stack, target, attacker);
@@ -100,7 +106,8 @@ public abstract class AxeItemMixin extends MiningToolItem {
     public boolean postMine(ItemStack stack, World world, BlockState state, BlockPos pos,
             LivingEntity miner) {
         SilverLined silverData = ModApi.SILVER_LINED_ITEM.find(stack, null);
-        if (silverData != null && silverData.getSilverDurability() > 0) {
+        if (silverData != null && silverData.getSilverDurability() > 0
+                && EntityUtil.isNotCreativePlayer(miner)) {
             if (!silverData.decrementDurability()) {
                 SilverLinedUtil.onSilverLinedItemBreak(world, miner);
             }
