@@ -29,6 +29,7 @@ import io.github.drakonkinst.worldsinger.cosmere.lumar.AetherSpores;
 import io.github.drakonkinst.worldsinger.item.ModItems;
 import io.github.drakonkinst.worldsinger.util.LayeredBakedModel;
 import io.github.drakonkinst.worldsinger.util.LayeredBakedModelCache;
+import net.fabricmc.fabric.api.client.model.loading.v1.ModelLoadingPlugin;
 import net.fabricmc.fabric.api.client.rendering.v1.ColorProviderRegistry;
 import net.minecraft.client.util.ModelIdentifier;
 
@@ -36,7 +37,11 @@ public final class ModItemRendering {
 
     public static final ModelIdentifier SALT_OVERLAY = new ModelIdentifier(
             Worldsinger.id("salted_overlay"), "inventory");
+    public static final ModelIdentifier SILVER_LINED_AXE_OVERLAY = new ModelIdentifier(
+            Worldsinger.id("silver_lined_axe_overlay"), "inventory");
     public static final LayeredBakedModelCache SALT_OVERLAY_CACHE = LayeredBakedModel.registerCache(
+            new LayeredBakedModelCache());
+    public static final LayeredBakedModelCache SILVER_LINED_CACHE = LayeredBakedModel.registerCache(
             new LayeredBakedModelCache());
 
     public static void register() {
@@ -49,6 +54,10 @@ public final class ModItemRendering {
                 ModItems.VERDANT_SPORES_SPLASH_BOTTLE, ModItems.CRIMSON_SPORES_SPLASH_BOTTLE,
                 ModItems.ZEPHYR_SPORES_SPLASH_BOTTLE, ModItems.SUNLIGHT_SPORES_SPLASH_BOTTLE,
                 ModItems.ROSEITE_SPORES_SPLASH_BOTTLE, ModItems.MIDNIGHT_SPORES_SPLASH_BOTTLE);
+        ModelLoadingPlugin.register(pluginContext -> {
+            pluginContext.addModels(ModItemRendering.SALT_OVERLAY,
+                    ModItemRendering.SILVER_LINED_AXE_OVERLAY);
+        });
     }
 
     private ModItemRendering() {}
