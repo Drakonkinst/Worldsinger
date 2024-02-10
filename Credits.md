@@ -19,6 +19,9 @@
     * Steel Armor
     * Steel Tools
     * Flint and Steel Variants
+* mortuusars (The Salt)
+    * Salted Food Overlay
+    * Salt Ore
 
 ## Attributions
 

@@ -55,7 +55,7 @@ public class SaltedFoodRecipe extends SpecialCraftingRecipe {
                     return false;
                 }
                 hasSalt = true;
-            } else if (stack.isIn(ModItemTags.CAN_BE_SALTED)) {
+            } else if (SaltedFoodUtil.canBeSalted(stack)) {
                 if (!foodItem.isEmpty()) {
                     // Cannot have more than one food slot
                     return false;
@@ -80,7 +80,7 @@ public class SaltedFoodRecipe extends SpecialCraftingRecipe {
                     return ItemStack.EMPTY;
                 }
                 hasSalt = true;
-            } else if (stack.isIn(ModItemTags.CAN_BE_SALTED)) {
+            } else if (SaltedFoodUtil.canBeSalted(stack)) {
                 if (!foodItem.isEmpty()) {
                     // Cannot have more than one food slot
                     return ItemStack.EMPTY;

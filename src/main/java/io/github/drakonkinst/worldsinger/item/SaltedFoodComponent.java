@@ -1,7 +1,6 @@
 /*
  * MIT License
  *
- * Copyright (c) 2011-2017 mortuusars
  * Copyright (c) 2023-2024 Drakonkinst
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,30 +22,27 @@
  * SOFTWARE.
  */
 
-package io.github.drakonkinst.worldsinger.cosmere;
+package io.github.drakonkinst.worldsinger.item;
 
-import io.github.drakonkinst.worldsinger.item.ModItemTags;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
+import java.util.HashMap;
+import java.util.Map;
+import net.minecraft.item.FoodComponent;
 
-public final class SaltedFoodUtil {
+public class SaltedFoodComponent extends FoodComponent {
 
-    private static final String KEY_SALTED = "Salted";
+    // Hardcoded constants for now
+    public static final int HUNGER_MODIFIER = 2;
+    public static final int THIRST_MODIFIER = -2;
+    public static final float SATURATION_MODIFIER = 0.0f;
+    private static final Map<FoodComponent, SaltedFoodComponent> CACHE = new HashMap<>();
 
-    public static boolean isSalted(ItemStack stack) {
-        NbtCompound nbt = stack.getNbt();
-        return nbt != null && nbt.getBoolean(KEY_SALTED);
+    public static SaltedFoodComponent of(FoodComponent component) {
+        return CACHE.computeIfAbsent(component, SaltedFoodComponent::new);
     }
 
-    public static boolean canBeSalted(ItemStack stack) {
-        return stack.isIn(ModItemTags.CAN_BE_SALTED);
+    protected SaltedFoodComponent(FoodComponent component) {
+        super(component.getHunger() + HUNGER_MODIFIER,
+                component.getSaturationModifier() + SATURATION_MODIFIER, component.isMeat(),
+                component.isAlwaysEdible(), component.isSnack(), component.getStatusEffects());
     }
-
-    public static ItemStack makeSalted(ItemStack stack) {
-        NbtCompound nbt = stack.getOrCreateNbt();
-        nbt.putBoolean(KEY_SALTED, true);
-        return stack;
-    }
-
-    private SaltedFoodUtil() {}
 }

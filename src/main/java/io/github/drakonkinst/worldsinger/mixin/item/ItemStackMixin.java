@@ -22,44 +22,29 @@
  * SOFTWARE.
  */
 
-package io.github.drakonkinst.worldsinger.cosmere;
+package io.github.drakonkinst.worldsinger.mixin.item;
 
-import io.github.drakonkinst.datatables.DataTableRegistry;
-import io.github.drakonkinst.worldsinger.api.sync.SyncableAttachment;
+import io.github.drakonkinst.worldsinger.cosmere.SaltedFoodUtil;
 import io.github.drakonkinst.worldsinger.item.SaltedFoodComponent;
-import io.github.drakonkinst.worldsinger.registry.ModDataTables;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.item.Item;
+import net.fabricmc.fabric.api.item.v1.FabricItemStack;
+import net.minecraft.item.FoodComponent;
 import net.minecraft.item.ItemStack;
+import org.jetbrains.annotations.Nullable;
+import org.spongepowered.asm.mixin.Mixin;
 
-public interface ThirstManager extends SyncableAttachment {
+@Mixin(ItemStack.class)
+public abstract class ItemStackMixin implements FabricItemStack {
 
-    static int getThirst(Item item, ItemStack stack) {
-        int water = DataTableRegistry.INSTANCE.get(ModDataTables.CONSUMABLE_HYDRATION)
-                .getIntForItem(item);
-        if (SaltedFoodUtil.canBeSalted(stack) && SaltedFoodUtil.isSalted(stack)) {
-            water += SaltedFoodComponent.THIRST_MODIFIER;
+    @Override
+    public @Nullable FoodComponent getFoodComponent() {
+        FoodComponent component = FabricItemStack.super.getFoodComponent();
+        if (component == null) {
+            return null;
         }
-        return water;
+        ItemStack stack = (ItemStack) (Object) this;
+        if (SaltedFoodUtil.canBeSalted(stack) && SaltedFoodUtil.isSalted(stack)) {
+            return SaltedFoodComponent.of(component);
+        }
+        return component;
     }
-
-    void update(LivingEntity entity);
-
-    // Call when consuming an item
-    void drink(Item item, ItemStack stack);
-
-    // Add exhaustion like hunger, which can lead to water loss
-    void addDehydration(float exhaustion);
-
-    // Directly add water
-    void add(int water);
-
-    // Directly remove water
-    void remove(int water);
-
-    int get();
-
-    boolean isFull();
-
-    boolean isCritical();
 }

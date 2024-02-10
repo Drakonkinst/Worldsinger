@@ -25,10 +25,8 @@ package io.github.drakonkinst.worldsinger.entity;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import io.github.drakonkinst.datatables.DataTableRegistry;
 import io.github.drakonkinst.worldsinger.cosmere.ThirstManager;
 import io.github.drakonkinst.worldsinger.registry.ModDamageTypes;
-import io.github.drakonkinst.worldsinger.registry.ModDataTables;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffectInstance;
@@ -147,8 +145,8 @@ public class PlayerThirstManager implements ThirstManager {
     }
 
     public void drink(Item item, ItemStack stack) {
-        int water = DataTableRegistry.INSTANCE.get(ModDataTables.CONSUMABLE_HYDRATION)
-                .getIntForItem(item);
+        int water = ThirstManager.getThirst(item, stack);
+
         if (water == 0) {
             return;
         }

@@ -81,6 +81,7 @@
     "item.DrinkableItemFinishConsumingItemMixin",
     "item.GlassBottleItemMixin",
     "item.ItemMixin",
+    "item.ItemStackMixin",
     "screen.AnvilScreenHandlerMixin",
     "screen.BrewingStandScreenHandlerFuelSlotMixin",
     "screen.BrewingStandScreenHandlerPotionSlotMixin",
