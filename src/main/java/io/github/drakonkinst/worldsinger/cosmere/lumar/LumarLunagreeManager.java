@@ -56,11 +56,12 @@ import org.apache.commons.io.FileUtils;
 public class LumarLunagreeManager extends LunagreeManager {
 
     public static final float TRAVEL_DISTANCE = 2000.0f;
-    // CELL_SIZE should always be less than TRAVEL_DISTANCE. A fraction of this value should be
-    // used to spawn a lunagree.
-    public static final float CELL_SIZE = 1800.0f;
+    public static final float CELL_SIZE = 1800.0f; // Should always be less than TRAVEL_DISTANCE
+    public static final int SEARCH_RADIUS = 1700;  // Should always be less than CELL_SIZE
     private static final int CENTER_X = 0;
     private static final int CENTER_Z = 0;
+
+    public static final int SEARCH_CHECK_INTERVAL = 64;
 
     private static final IntSet VALID_SPORE_IDS = IntSet.of(DeadSpores.ID, VerdantSpores.ID,
             CrimsonSpores.ID, ZephyrSpores.ID, SunlightSpores.ID, RoseiteSpores.ID,
@@ -188,15 +189,11 @@ public class LumarLunagreeManager extends LunagreeManager {
     }
 
     private Optional<LunagreeLocation> generateLunagreeFor(int q, int r) {
-        // TODO Set constants
-        final int RADIUS = 6400;
-        final int BLOCK_CHECK_INTERVAL = 64;
         // Find a good position
-
         IntSet possibleSporeIds = generatePossibleSporeIds(q, r);
         IntIntPair center = this.getCenterBlockPosForHexCell(q, r);
         Pair<BlockPos, SporeSeaEntry> result = LocateSporeSeaCommand.locateSporeSea(world,
-                center.firstInt(), center.secondInt(), RADIUS, BLOCK_CHECK_INTERVAL, false,
+                center.firstInt(), center.secondInt(), SEARCH_RADIUS, SEARCH_CHECK_INTERVAL, false,
                 possibleSporeIds,
                 biome -> ModBiomes.DEEP_SPORE_SEA.equals(biome.getKey().orElse(null)));
         if (result == null) {
