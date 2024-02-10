@@ -22,22 +22,42 @@
  * SOFTWARE.
  */
 
-package io.github.drakonkinst.worldsinger.cosmere;
+package io.github.drakonkinst.worldsinger.network.packet;
 
+import io.github.drakonkinst.worldsinger.Worldsinger;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LunagreeManager.LunagreeLocation;
 import java.util.ArrayList;
 import java.util.List;
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.RegistryByteBuf;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.packet.CustomPayload;
 
-public class LunagreeData {
+public record LunagreeSyncPayload(List<LunagreeLocation> locations) implements CustomPayload {
 
-    private final List<LunagreeLocation> knownLunagreeLocations = new ArrayList<>();
+    public static final Id<LunagreeSyncPayload> ID = new CustomPayload.Id<>(
+            Worldsinger.id("lunagree_sync"));
+    public static final PacketCodec<RegistryByteBuf, LunagreeSyncPayload> CODEC = CustomPayload.codecOf(
+            LunagreeSyncPayload::write, LunagreeSyncPayload::new);
 
-    public List<LunagreeLocation> getKnownLunagreeLocations() {
-        return knownLunagreeLocations;
+    private LunagreeSyncPayload(PacketByteBuf buf) {
+        this(new ArrayList<>());
+        int numLocations = buf.readVarInt();
+        for (int i = 0; i < numLocations; ++i) {
+            LunagreeLocation location = LunagreeLocation.fromPacket(buf);
+            locations.add(location);
+        }
     }
 
-    public void setKnownLunagreeLocations(List<LunagreeLocation> locations) {
-        knownLunagreeLocations.clear();
-        knownLunagreeLocations.addAll(locations);
+    private void write(PacketByteBuf buf) {
+        buf.writeVarInt(locations.size());
+        for (LunagreeLocation location : locations) {
+            LunagreeLocation.writePacket(location, buf);
+        }
+    }
+
+    @Override
+    public Id<? extends CustomPayload> getId() {
+        return ID;
     }
 }

@@ -2,6 +2,7 @@ package io.github.drakonkinst.worldsinger.network;
 
 import io.github.drakonkinst.worldsinger.Worldsinger;
 import io.github.drakonkinst.worldsinger.network.packet.AttachmentEntitySyncPayload;
+import io.github.drakonkinst.worldsinger.network.packet.LunagreeSyncPayload;
 import io.github.drakonkinst.worldsinger.network.packet.PossessAttackPayload;
 import io.github.drakonkinst.worldsinger.network.packet.PossessSetPayload;
 import io.github.drakonkinst.worldsinger.network.packet.PossessUpdatePayload;
@@ -29,6 +30,7 @@ public final class ModPayloadRegistry {
                 .register(ShapeshiftAttackPayload.ID, ShapeshiftAttackPayload.CODEC);
         PayloadTypeRegistry.playS2C()
                 .register(AttachmentEntitySyncPayload.ID, AttachmentEntitySyncPayload.CODEC);
+        PayloadTypeRegistry.playS2C().register(LunagreeSyncPayload.ID, LunagreeSyncPayload.CODEC);
         PayloadTypeRegistry.playS2C().register(SeetheUpdatePayload.ID, SeetheUpdatePayload.CODEC);
     }
 

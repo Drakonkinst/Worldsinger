@@ -27,6 +27,7 @@ package io.github.drakonkinst.worldsinger.cosmere.lumar;
 import com.mojang.datafixers.util.Pair;
 import io.github.drakonkinst.worldsinger.Worldsinger;
 import io.github.drakonkinst.worldsinger.command.LocateSporeSeaCommand;
+import io.github.drakonkinst.worldsinger.network.packet.LunagreeSyncPayload;
 import io.github.drakonkinst.worldsinger.worldgen.ModBiomes;
 import io.github.drakonkinst.worldsinger.worldgen.lumar.LumarChunkGenerator.SporeSeaEntry;
 import it.unimi.dsi.fastutil.ints.IntArraySet;
@@ -45,6 +46,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
@@ -67,7 +69,7 @@ public class LumarLunagreeManager extends LunagreeManager {
     private static final int[] DIRECTION_Q = { +1, +1, +0, -1, -1, +0 };
     private static final int[] DIRECTION_R = { +0, -1, -1, +0, +1, +1 };
     private static final float RAD_3 = MathHelper.sqrt(3);
-    private static final float RAD_3_OVER_3 = MathHelper.sqrt(3) / 3.0f;
+    private static final float RAD_3_OVER_3 = RAD_3 / 3.0f;
 
     public static ByteDataType<LumarLunagreeManager> getPersistentByteDataType(ServerWorld world) {
         return new ByteDataType<>(() -> new LumarLunagreeManager(world));
@@ -230,7 +232,7 @@ public class LumarLunagreeManager extends LunagreeManager {
         }
 
         // Send packet
-
+        ServerPlayNetworking.send(player, new LunagreeSyncPayload(locations));
         Worldsinger.LOGGER.info(
                 "Sending lunagree data in cell (" + q + ", " + r + "): " + locations);
     }
@@ -245,7 +247,8 @@ public class LumarLunagreeManager extends LunagreeManager {
     // Convert block pos to flat-top pixel coordinates, rounded
     private long getHexCellForBlockPos(int blockX, int blockZ) {
         float fracQ = (2.0f / 3.0f * (blockX - CENTER_X)) / CELL_SIZE;
-        float fracR = (-1.0f / 3.0f * (blockZ - CENTER_Z)) / CELL_SIZE;
+        float fracR = ((-1.0f / 3.0f) * (blockX - CENTER_X) + RAD_3_OVER_3 * (blockZ - CENTER_Z))
+                / CELL_SIZE;
         return LumarLunagreeManager.roundAxial(fracQ, fracR);
     }
 

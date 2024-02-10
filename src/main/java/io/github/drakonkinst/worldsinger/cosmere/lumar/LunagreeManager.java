@@ -25,6 +25,7 @@
 package io.github.drakonkinst.worldsinger.cosmere.lumar;
 
 import io.github.drakonkinst.worldsinger.world.PersistentByteData;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
 
 public abstract class LunagreeManager extends PersistentByteData {
@@ -32,6 +33,19 @@ public abstract class LunagreeManager extends PersistentByteData {
     public static final String NAME = "lunagrees";
 
     public record LunagreeLocation(int blockX, int blockZ, int sporeId) {
+
+        public static LunagreeLocation fromPacket(PacketByteBuf buf) {
+            int blockX = buf.readVarInt();
+            int blockZ = buf.readVarInt();
+            byte sporeId = buf.readByte();
+            return new LunagreeLocation(blockX, blockZ, sporeId);
+        }
+
+        public static void writePacket(LunagreeLocation location, PacketByteBuf buf) {
+            buf.writeVarInt(location.blockX);
+            buf.writeVarInt(location.blockZ);
+            buf.writeByte(location.sporeId);
+        }
 
         public double distSqTo(double x, double z) {
             final double deltaX = blockX - x;

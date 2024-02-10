@@ -26,13 +26,16 @@ package io.github.drakonkinst.worldsinger.network;
 import io.github.drakonkinst.worldsinger.Worldsinger;
 import io.github.drakonkinst.worldsinger.api.ModAttachmentTypes;
 import io.github.drakonkinst.worldsinger.api.sync.SyncableAttachment;
+import io.github.drakonkinst.worldsinger.cosmere.LunagreeData;
 import io.github.drakonkinst.worldsinger.cosmere.PossessionManager;
 import io.github.drakonkinst.worldsinger.cosmere.ShapeshiftingManager;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.SeetheManagerAccess;
 import io.github.drakonkinst.worldsinger.entity.CameraPossessable;
+import io.github.drakonkinst.worldsinger.entity.LunagreeDataAccess;
 import io.github.drakonkinst.worldsinger.entity.Shapeshifter;
 import io.github.drakonkinst.worldsinger.entity.data.PlayerPossessionManager;
 import io.github.drakonkinst.worldsinger.network.packet.AttachmentEntitySyncPayload;
+import io.github.drakonkinst.worldsinger.network.packet.LunagreeSyncPayload;
 import io.github.drakonkinst.worldsinger.network.packet.PossessSetPayload;
 import io.github.drakonkinst.worldsinger.network.packet.SeetheUpdatePayload;
 import io.github.drakonkinst.worldsinger.network.packet.ShapeshiftAttackPayload;
@@ -54,6 +57,7 @@ public final class ClientNetworkHandler {
     public static void registerPacketHandlers() {
         registerShapeshiftingPacketHandlers();
         registerPossessionPacketHandlers();
+
         ClientPlayNetworking.registerGlobalReceiver(AttachmentEntitySyncPayload.ID,
                 (payload, context) -> {
                     AttachmentType<?> attachmentType = AttachmentRegistryImpl.get(
@@ -84,6 +88,7 @@ public final class ClientNetworkHandler {
                                 "Could not process entity attachment sync because attachment is not syncable");
                     }
                 });
+
         ClientPlayNetworking.registerGlobalReceiver(SeetheUpdatePayload.ID, (payload, context) -> {
             // World world = context.player().getWorld();
             World world = MinecraftClient.getInstance().world;
@@ -97,6 +102,17 @@ public final class ClientNetworkHandler {
                     ((SeetheManagerAccess) world).worldsinger$getSeetheManager().stopSeethe(0);
                 }
             }
+        });
+
+        ClientPlayNetworking.registerGlobalReceiver(LunagreeSyncPayload.ID, (payload, context) -> {
+            ClientPlayerEntity player = MinecraftClient.getInstance().player;
+            if (player == null) {
+                Worldsinger.LOGGER.warn(
+                        "Could not process lunagree sync packet because player is null");
+                return;
+            }
+            LunagreeData data = ((LunagreeDataAccess) player).worldsinger$getLunagreeData();
+            data.setKnownLunagreeLocations(payload.locations());
         });
     }
 
