@@ -53,7 +53,9 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
 import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.NotNull;
+import org.joml.AxisAngle4d;
 import org.joml.Matrix4f;
+import org.joml.Quaternionf;
 
 public class LumarSkyRenderer implements SkyRenderer {
 
@@ -65,6 +67,7 @@ public class LumarSkyRenderer implements SkyRenderer {
 
     private static final float SUN_RADIUS = 30.0f;
     private static final float SUN_HEIGHT = 100.0f;
+    private static final float MOON_RADIUS = 300.0f;
     private static final int[] SPORE_ID_TO_MOON_INDEX = { -1, 0, 1, 2, 4, 5, 6 };
 
     private final VertexBuffer starsBuffer;
@@ -146,7 +149,7 @@ public class LumarSkyRenderer implements SkyRenderer {
         RenderSystem.defaultBlendFunc();
 
         // Draw dark sky
-        this.drawDarkSky(matrices, projectionMatrix, shaderProgram, world, tickDelta, player);
+        // this.drawDarkSky(matrices, projectionMatrix, shaderProgram, world, tickDelta, player);
 
         RenderSystem.depthMask(true);
     }
@@ -174,8 +177,7 @@ public class LumarSkyRenderer implements SkyRenderer {
     private void drawMoons(BufferBuilder bufferBuilder, MatrixStack matrices,
             @NotNull ClientPlayerEntity player, float tickDelta) {
         RenderSystem.setShaderTexture(0, LUMAR_MOON);
-        matrices.push();
-
+        // matrices.push();
         final LunagreeData lunagreeData = ((LunagreeDataAccess) player).worldsinger$getLunagreeData();
         final Vec3d playerPos = player.getCameraPosVec(tickDelta);
         for (LunagreeLocation location : lunagreeData.getKnownLunagreeLocations()) {
@@ -187,30 +189,7 @@ public class LumarSkyRenderer implements SkyRenderer {
             // Render moon
             drawMoonAtLocation(bufferBuilder, matrices, location, playerPos, distSq);
         }
-
-        Vec3d moonPos = Vec3d.ZERO;
-        double deltaX = playerPos.getX() - moonPos.getX();
-        double deltaZ = playerPos.getZ() - moonPos.getZ();
-        double distSq = deltaX * deltaX + deltaZ * deltaZ;
-        float distance = MathHelper.sqrt((float) distSq);
-        float multiplier = distance / LumarLunagreeManager.TRAVEL_DISTANCE;
-
-        float radius = 300.0f;
-        // float moonHeight = 200.0f;  // Can go from 100.0 to 200.0f
-        float moonHeight = MathHelper.lerp(multiplier, 100.0f, 500.0f);
-
-        // For some reason we need to flip the Z coordinate here
-        double angleRadians = MathHelper.atan2(playerPos.getZ() - moonPos.getZ(),
-                moonPos.getX() - playerPos.getX());
-        float horizontalAngle = (float) angleRadians * MathHelper.DEGREES_PER_RADIAN;
-
-        float verticalAngle = MathHelper.lerp(multiplier, 180.0f, 45.0f);
-
-        // drawMoon(bufferBuilder, matrices, 0, radius, moonHeight, horizontalAngle, verticalAngle);
-        // Worldsinger.LOGGER.info(
-        //         multiplier + " " + moonHeight + " " + horizontalAngle + " " + verticalAngle);
-
-        matrices.pop();
+        // matrices.pop();
     }
 
     private void drawMoonAtLocation(BufferBuilder bufferBuilder, MatrixStack matrices,
@@ -226,24 +205,35 @@ public class LumarSkyRenderer implements SkyRenderer {
         float multiplier = distance / LumarLunagreeManager.TRAVEL_DISTANCE;
 
         // Calculate shrink factor
-        // TODO
-        float radius = 300.0f;
-        float moonHeight = MathHelper.lerp(multiplier, 100.0f, 500.0f);
+        float moonSize = MathHelper.lerp(multiplier, 100.0f, 500.0f);
 
-        // Calculate vertical angle
-        float verticalAngle = MathHelper.lerp(multiplier, 180.0f, 45.0f);
+        // Calculate desired vertical angle
+        float verticalAngle =
+                MathHelper.lerp(multiplier, 90.0f, -45.0f) * MathHelper.RADIANS_PER_DEGREE;
 
-        // Calculate horizontal angle
-        double angleRadians = MathHelper.atan2(playerPos.getZ() - lunagreeLocation.blockZ(),
-                lunagreeLocation.blockX() - playerPos.getX());
-        float horizontalAngle = (float) angleRadians * MathHelper.DEGREES_PER_RADIAN;
+        // Solve for moon height given xz of moon, xyz of player, and desired vertical angle
+        double deltaX = lunagreeLocation.blockX() - playerPos.getX();
+        double deltaZ = lunagreeLocation.blockZ() - playerPos.getZ();
+        double horizontalDistance = Math.sqrt(deltaX * deltaX + deltaZ * deltaZ);
+        double moonY = playerPos.getY() + horizontalDistance * Math.tan(verticalAngle);
 
-        drawMoon(bufferBuilder, matrices, moonIndex, radius, moonHeight, horizontalAngle,
-                verticalAngle);
+        // Get desired rotation in axis-angle notation
+        double deltaY = moonY - playerPos.getY();
+        Vec3d targetDir = (new Vec3d(deltaX, deltaY, deltaZ)).normalize();
+        // Cross with the UP vector to get rotation axis
+        Vec3d rotationAxis = (new Vec3d(targetDir.z, 0.0, -targetDir.x)).normalize();
+        // Get angle
+        double rotationAngle = Math.acos(targetDir.y);
+
+        AxisAngle4d axisAngle = new AxisAngle4d(rotationAngle, rotationAxis.getX(),
+                rotationAxis.getY(), rotationAxis.getZ());
+        Quaternionf rotation = new Quaternionf(axisAngle);
+
+        drawMoon(bufferBuilder, matrices, moonIndex, MOON_RADIUS, moonSize, rotation);
     }
 
     private void drawMoon(BufferBuilder bufferBuilder, MatrixStack matrices, int moonIndex,
-            float radius, float height, float horizontalAngle, float verticalAngle) {
+            float radius, float height, Quaternionf quaternion) {
         int xIndex = moonIndex % MOON_TEXTURE_SECTIONS_X;
         int yIndex = moonIndex / MOON_TEXTURE_SECTIONS_X % MOON_TEXTURE_SECTIONS_Y;
         float x1 = (float) xIndex / MOON_TEXTURE_SECTIONS_X;
@@ -254,20 +244,17 @@ public class LumarSkyRenderer implements SkyRenderer {
         matrices.push();
 
         // Position the moon
-        // Horizontal position. 0 = West (-X) direction, then goes clockwise.
-        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(horizontalAngle));
-        // matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(verticalAngle));
-        // Vertical position. 180 = Directly upwards (+Y), 90 = Directly horizontal
-        matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(verticalAngle));
+        matrices.multiply(quaternion);
 
         // Draw moon
+        // Change coordinates to match the sun, since it should NOT be drawn on the
+        // other side of the screen.
         Matrix4f moonPosition = matrices.peek().getPositionMatrix();
         bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
-        // Height needs to be inverted for some reason, don't know why.
-        bufferBuilder.vertex(moonPosition, -radius, -height, radius).texture(x2, y2).next();
-        bufferBuilder.vertex(moonPosition, radius, -height, radius).texture(x1, y2).next();
-        bufferBuilder.vertex(moonPosition, radius, -height, -radius).texture(x1, y1).next();
-        bufferBuilder.vertex(moonPosition, -radius, -height, -radius).texture(x2, y1).next();
+        bufferBuilder.vertex(moonPosition, -radius, height, -radius).texture(x1, y1).next();
+        bufferBuilder.vertex(moonPosition, radius, height, -radius).texture(x2, y1).next();
+        bufferBuilder.vertex(moonPosition, radius, height, radius).texture(x2, y2).next();
+        bufferBuilder.vertex(moonPosition, -radius, height, radius).texture(x1, y2).next();
         BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
         matrices.pop();
     }
