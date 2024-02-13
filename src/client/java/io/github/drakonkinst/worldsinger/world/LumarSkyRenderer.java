@@ -63,19 +63,19 @@ public class LumarSkyRenderer implements SkyRenderer {
     private static final Identifier SUN = new Identifier("textures/environment/sun.png");
     private static final Identifier LUMAR_MOON = Worldsinger.id(
             "textures/environment/lumar_moon.png");
-    private static final int MOON_TEXTURE_SECTIONS_Y = 2;
-    private static final int MOON_TEXTURE_SECTIONS_X = 4;
+    private static final int MOON_TEXTURE_SECTIONS_Y = 1;
+    private static final int MOON_TEXTURE_SECTIONS_X = 6;
 
     private static final float SUN_RADIUS = 30.0f;
     private static final float SUN_HEIGHT = 100.0f;
-    private static final float MOON_RADIUS = 300.0f;
-    private static final int[] SPORE_ID_TO_MOON_INDEX = { -1, 0, 1, 2, 4, 5, 6 };
+    private static final float MOON_RADIUS = 200.0f;
+    private static final int[] SPORE_ID_TO_MOON_INDEX = { -1, 0, 1, 2, 3, 4, 5 };
     // 90 degrees above horizon (directly above)
     private static final float MOON_VERTICAL_ANGLE_START = 90.0f * MathHelper.RADIANS_PER_DEGREE;
     // 45 degrees below horizon
     private static final float MOON_VERTICAL_ANGLE_END = -45.0f * MathHelper.RADIANS_PER_DEGREE;
-    private static final float MOON_VISUAL_HEIGHT_START = 50.0f;
-    private static final float MOON_VISUAL_HEIGHT_END = 150.0f;
+    private static final float MOON_VISUAL_HEIGHT_START = 100.0f;
+    private static final float MOON_VISUAL_HEIGHT_END = 300.0f;
 
     private final VertexBuffer starsBuffer;
     private final VertexBuffer lightSkyBuffer;
@@ -151,9 +151,9 @@ public class LumarSkyRenderer implements SkyRenderer {
         this.drawSun(bufferBuilder, matrices);
         this.drawStars(matrices, projectionMatrix, world, gameRenderer, camera, tickDelta);
         matrices.pop();
-        this.drawMoons(bufferBuilder, matrices, player, tickDelta);
         RenderSystem.disableBlend();
         RenderSystem.defaultBlendFunc();
+        this.drawMoons(bufferBuilder, matrices, player, tickDelta);
 
         // Draw dark sky
         // this.drawDarkSky(matrices, projectionMatrix, shaderProgram, world, tickDelta, player);
