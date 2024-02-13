@@ -156,7 +156,7 @@ public class LumarSkyRenderer implements SkyRenderer {
         this.drawMoons(bufferBuilder, matrices, player, tickDelta);
 
         // Draw dark sky
-        // this.drawDarkSky(matrices, projectionMatrix, shaderProgram, world, tickDelta, player);
+        this.drawDarkSky(matrices, projectionMatrix, shaderProgram, world, tickDelta, player);
 
         RenderSystem.depthMask(true);
     }
@@ -207,7 +207,8 @@ public class LumarSkyRenderer implements SkyRenderer {
         int moonIndex = SPORE_ID_TO_MOON_INDEX[sporeId];
 
         float distance = Math.sqrt((float) distSq);
-        float multiplier = distance / LumarLunagreeManager.TRAVEL_DISTANCE;
+        float progress = distance / LumarLunagreeManager.TRAVEL_DISTANCE;
+        float multiplier = 1.0f - (float) Math.cos(progress * Math.PI * 0.5);
 
         // Calculate shrink factor
         float moonVisualDistance = Math.lerp(MOON_VISUAL_HEIGHT_START, MOON_VISUAL_HEIGHT_END,

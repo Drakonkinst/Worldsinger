@@ -57,7 +57,7 @@ public class LumarLunagreeManager extends LunagreeManager {
 
     public static final float TRAVEL_DISTANCE = 2000.0f;
     public static final float CELL_SIZE = 1800.0f; // Should always be less than TRAVEL_DISTANCE
-    public static final int SEARCH_RADIUS = 1700;  // Should always be less than CELL_SIZE
+    public static final int SEARCH_RADIUS = 1000;  // Should always be less than CELL_SIZE
     private static final int CENTER_X = 0;
     private static final int CENTER_Z = 0;
 
@@ -197,6 +197,7 @@ public class LumarLunagreeManager extends LunagreeManager {
                 possibleSporeIds,
                 biome -> ModBiomes.DEEP_SPORE_SEA.equals(biome.getKey().orElse(null)));
         if (result == null) {
+            Worldsinger.LOGGER.info("Failed to generate lunagree for (" + q + ", " + r + ")");
             return Optional.empty();
         }
 
@@ -205,6 +206,8 @@ public class LumarLunagreeManager extends LunagreeManager {
         int sporeId = result.getSecond().id();
         LunagreeLocation entry = new LunagreeLocation(lunagreePos.getX(), lunagreePos.getZ(),
                 sporeId);
+        Worldsinger.LOGGER.info(
+                "Generated lunagree of spore ID " + sporeId + " for (" + q + ", " + r + ")");
 
         // Store it in the map
         long key = LumarLunagreeManager.toKey(q, r);
