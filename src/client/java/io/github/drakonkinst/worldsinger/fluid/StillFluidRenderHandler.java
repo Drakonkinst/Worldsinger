@@ -245,7 +245,7 @@ public class StillFluidRenderHandler implements FluidRenderHandler {
         int l = j & (LightmapTextureManager.MAX_BLOCK_LIGHT_COORDINATE | 0xF);
         int m = i >> 16 & (LightmapTextureManager.MAX_BLOCK_LIGHT_COORDINATE | 0xF);
         int n = j >> 16 & (LightmapTextureManager.MAX_BLOCK_LIGHT_COORDINATE | 0xF);
-        return (k > l ? k : l) | (m > n ? m : n) << 16;
+        return (Math.max(k, l)) | (Math.max(m, n)) << 16;
     }
 
     private void vertex(VertexConsumer vertexConsumer, double x, double y, double z,

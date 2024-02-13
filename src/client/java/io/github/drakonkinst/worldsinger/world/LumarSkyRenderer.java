@@ -71,9 +71,11 @@ public class LumarSkyRenderer implements SkyRenderer {
     private static final float MOON_RADIUS = 300.0f;
     private static final int[] SPORE_ID_TO_MOON_INDEX = { -1, 0, 1, 2, 4, 5, 6 };
     // 90 degrees above horizon (directly above)
-    private static final float MAX_MOON_VERTICAL_ANGLE = 90.0f * MathHelper.RADIANS_PER_DEGREE;
+    private static final float MOON_VERTICAL_ANGLE_START = 90.0f * MathHelper.RADIANS_PER_DEGREE;
     // 45 degrees below horizon
-    private static final float MIN_MOON_VERTICAL_ANGLE = -45.0f * MathHelper.RADIANS_PER_DEGREE;
+    private static final float MOON_VERTICAL_ANGLE_END = -45.0f * MathHelper.RADIANS_PER_DEGREE;
+    private static final float MOON_VISUAL_HEIGHT_START = 50.0f;
+    private static final float MOON_VISUAL_HEIGHT_END = 150.0f;
 
     private final VertexBuffer starsBuffer;
     private final VertexBuffer lightSkyBuffer;
@@ -208,9 +210,10 @@ public class LumarSkyRenderer implements SkyRenderer {
         float multiplier = distance / LumarLunagreeManager.TRAVEL_DISTANCE;
 
         // Calculate shrink factor
-        float moonSize = Math.lerp(100.0f, 500.0f, multiplier);
+        float moonVisualDistance = Math.lerp(MOON_VISUAL_HEIGHT_START, MOON_VISUAL_HEIGHT_END,
+                multiplier);
         // Calculate desired vertical angle
-        float verticalAngle = Math.lerp(MAX_MOON_VERTICAL_ANGLE, MIN_MOON_VERTICAL_ANGLE,
+        float verticalAngle = Math.lerp(MOON_VERTICAL_ANGLE_START, MOON_VERTICAL_ANGLE_END,
                 multiplier);
 
         // Solve for moon height given xz of moon, xyz of player, and desired vertical angle
@@ -240,7 +243,7 @@ public class LumarSkyRenderer implements SkyRenderer {
         float w = (float) cos;
         Quaternionf rotation = new Quaternionf(x, y, z, w);
 
-        drawMoon(bufferBuilder, matrices, moonIndex, MOON_RADIUS, moonSize, rotation);
+        drawMoon(bufferBuilder, matrices, moonIndex, MOON_RADIUS, moonVisualDistance, rotation);
     }
 
     private void drawMoon(BufferBuilder bufferBuilder, MatrixStack matrices, int moonIndex,
@@ -276,7 +279,7 @@ public class LumarSkyRenderer implements SkyRenderer {
 
     private void drawStars(MatrixStack matrices, Matrix4f projectionMatrix, ClientWorld world,
             GameRenderer gameRenderer, Camera camera, float tickDelta) {
-        float starBrightness = world.method_23787(tickDelta);
+        float starBrightness = world.getStarBrightness(tickDelta);
         if (starBrightness > 0.0f) {
             RenderSystem.setShaderColor(starBrightness, starBrightness, starBrightness,
                     starBrightness);
