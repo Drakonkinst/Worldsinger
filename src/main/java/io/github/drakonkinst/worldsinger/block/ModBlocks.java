@@ -446,6 +446,17 @@ public final class ModBlocks {
             new Block(AbstractBlock.Settings.create().requiresTool()
                     // Same strength as Raw Gold Block
                     .strength(5.0f, 6.0f)), true);
+    public static final Block POTTED_VERDANT_VINE_SNARE = register("potted_verdant_vine_snare",
+            Blocks.createFlowerPotBlock(ModBlocks.VERDANT_VINE_SNARE), false);
+    public static final Block POTTED_DEAD_VERDANT_VINE_SNARE = register(
+            "potted_dead_verdant_vine_snare",
+            Blocks.createFlowerPotBlock(ModBlocks.DEAD_VERDANT_VINE_SNARE), false);
+    public static final Block POTTED_TWISTING_VERDANT_VINES = register(
+            "potted_twisting_verdant_vines",
+            Blocks.createFlowerPotBlock(ModBlocks.TWISTING_VERDANT_VINES), false);
+    public static final Block POTTED_DEAD_TWISTING_VERDANT_VINES = register(
+            "potted_dead_twisting_verdant_vines",
+            Blocks.createFlowerPotBlock(ModBlocks.DEAD_TWISTING_VERDANT_VINES), false);
 
     // Steel
     public static final Block STEEL_BLOCK = register("steel_block",

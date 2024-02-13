@@ -51,7 +51,11 @@ public final class ModBlockRendering {
                 ModBlocks.ROSEITE_CLUSTER,
                 ModBlocks.LARGE_ROSEITE_BUD,
                 ModBlocks.MEDIUM_ROSEITE_BUD,
-                ModBlocks.SMALL_ROSEITE_BUD
+                ModBlocks.SMALL_ROSEITE_BUD,
+                ModBlocks.POTTED_DEAD_TWISTING_VERDANT_VINES,
+                ModBlocks.POTTED_TWISTING_VERDANT_VINES,
+                ModBlocks.POTTED_DEAD_VERDANT_VINE_SNARE,
+                ModBlocks.POTTED_VERDANT_VINE_SNARE
         };
         BlockRenderLayerMap.INSTANCE.putBlocks(RenderLayer.getCutout(), cutoutBlocks);
 

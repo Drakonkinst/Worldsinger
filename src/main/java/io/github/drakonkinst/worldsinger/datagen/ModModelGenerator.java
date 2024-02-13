@@ -137,6 +137,15 @@ public class ModModelGenerator extends FabricModelProvider {
         registerUpFacingCrossBlock(blockStateModelGenerator, ModBlocks.VERDANT_VINE_SNARE);
         registerUpFacingCrossBlock(blockStateModelGenerator, ModBlocks.DEAD_VERDANT_VINE_SNARE);
 
+        registerFlowerPotBlock(blockStateModelGenerator, ModBlocks.VERDANT_VINE_SNARE,
+                ModBlocks.POTTED_VERDANT_VINE_SNARE, TintType.NOT_TINTED);
+        registerFlowerPotBlock(blockStateModelGenerator, ModBlocks.TWISTING_VERDANT_VINES,
+                ModBlocks.POTTED_TWISTING_VERDANT_VINES, TintType.NOT_TINTED);
+        registerFlowerPotBlock(blockStateModelGenerator, ModBlocks.DEAD_TWISTING_VERDANT_VINES,
+                ModBlocks.POTTED_DEAD_TWISTING_VERDANT_VINES, TintType.NOT_TINTED);
+        registerFlowerPotBlock(blockStateModelGenerator, ModBlocks.DEAD_TWISTING_VERDANT_VINES,
+                ModBlocks.POTTED_DEAD_TWISTING_VERDANT_VINES, TintType.NOT_TINTED);
+
         blockStateModelGenerator.registerAnvil(ModBlocks.STEEL_ANVIL);
         blockStateModelGenerator.registerAnvil(ModBlocks.CHIPPED_STEEL_ANVIL);
         blockStateModelGenerator.registerAnvil(ModBlocks.DAMAGED_STEEL_ANVIL);
@@ -210,6 +219,15 @@ public class ModModelGenerator extends FabricModelProvider {
                                         Models.CROSS.upload(block, TextureMap.cross(block),
                                                 blockStateModelGenerator.modelCollector)))
                 .coordinate(blockStateModelGenerator.createUpDefaultFacingVariantMap()));
+    }
+
+    private void registerFlowerPotBlock(BlockStateModelGenerator blockStateModelGenerator,
+            Block plantBlock, Block flowerPotBlock, BlockStateModelGenerator.TintType tintType) {
+        TextureMap textureMap = TextureMap.plant(plantBlock);
+        Identifier identifier = tintType.getFlowerPotCrossModel()
+                .upload(flowerPotBlock, textureMap, blockStateModelGenerator.modelCollector);
+        blockStateModelGenerator.blockStateCollector.accept(
+                BlockStateModelGenerator.createSingletonBlockState(flowerPotBlock, identifier));
     }
 
     private void registerLeveledCauldron(BlockStateModelGenerator blockStateModelGenerator,
