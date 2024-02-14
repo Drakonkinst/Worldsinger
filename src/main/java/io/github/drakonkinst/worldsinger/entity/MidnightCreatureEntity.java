@@ -516,7 +516,10 @@ public class MidnightCreatureEntity extends ShapeshiftingEntity implements
     protected ActionResult interactMob(PlayerEntity player, Hand hand) {
         ItemStack stack = player.getStackInHand(hand);
 
-        if (!player.shouldCancelInteraction() && stack.isEmpty() && getMorph() != null
+        // Only possess if BOTH hands are empty. This helps avoid issues like dispelling the
+        // creature and possessing it at the same time which can occur in singleplayer worlds.
+        if (!player.shouldCancelInteraction() && player.getStackInHand(Hand.MAIN_HAND).isEmpty()
+                && player.getStackInHand(Hand.OFF_HAND).isEmpty() && getMorph() != null
                 && player.getUuid().equals(this.getControllerUuid())) {
             // Lots of weird interactions happens when riding something, so don't do that
             if (player.hasVehicle()) {

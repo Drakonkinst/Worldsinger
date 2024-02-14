@@ -11,7 +11,7 @@ DEFAULT_OUT_PATH = os.path.join("out")
 DEFAULT_NAME = "resource_pack"
 
 # https://minecraft.wiki/w/Pack_format
-PACK_VERSION = 22
+PACK_VERSION = 26
 
 config = {
   "include_generated_assets": False,

@@ -55,20 +55,20 @@ public abstract class ClientPlayerEntityPossessionMixin extends AbstractClientPl
         }
     }
 
-    // TODO: Don't think this is needed anymore
-    // // Player drifts on the client side when they start possessing, since in vanilla cases if
-    // // the camera entity is not the player, the player doesn't exist in the world
-    // // But since it does for our purposes, we need to stop their movement.
-    // @Inject(method = "tickNewAi", at = @At("TAIL"))
-    // private void stopMovementInputWhenStartPossessing(CallbackInfo ci) {
-    //     // This is a better check than isCamera() because it doesn't interfere with other
-    //     // uses of camera, and also if this is true then the camera should be set properly anyway
-    //     if (ModComponents.POSSESSION.get(this).isPossessing()) {
-    //         this.sidewaysSpeed = 0.0f;
-    //         this.forwardSpeed = 0.0f;
-    //         this.jumping = false;
-    //     }
-    // }
+    // Player drifts on the client side when they start possessing, since in vanilla cases if
+    // the camera entity is not the player, the player doesn't exist in the world
+    // But since it does for our purposes, we need to stop their movement.
+    @Inject(method = "tickNewAi", at = @At("TAIL"))
+    private void stopMovementInputWhenStartPossessing(CallbackInfo ci) {
+        // This is a better check than isCamera() because it doesn't interfere with other
+        // uses of camera, and also if this is true then the camera should be set properly anyway
+        PossessionManager possessionManager = this.getAttached(ModAttachmentTypes.POSSESSION);
+        if (possessionManager != null && possessionManager.isPossessing()) {
+            this.sidewaysSpeed = 0.0f;
+            this.forwardSpeed = 0.0f;
+            this.jumping = false;
+        }
+    }
 
     @ModifyReturnValue(method = "canStartSprinting", at = @At("RETURN"))
     private boolean preventSprintingIfPossessing(boolean original) {
