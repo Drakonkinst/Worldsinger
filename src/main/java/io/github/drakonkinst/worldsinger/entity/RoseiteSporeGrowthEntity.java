@@ -262,9 +262,9 @@ public class RoseiteSporeGrowthEntity extends SporeGrowthEntity {
             weight = 125;
         } else if (this.canBreakHere(state)) {
             // Prefer not to break through blocks
-            weight = 10;
+            weight = 1;
         } else if (this.canGrowHere(state)) {
-            // Can grow through lesser vines
+            // Can grow through lesser blocks
             weight = 100;
         } else if (allowPassthrough && this.isGrowthBlock(state)) {
             // If allowPassthrough is true, we assume that no actual block will be placed

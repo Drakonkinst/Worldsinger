@@ -55,9 +55,9 @@ public class VerdantSporeGrowthEntity extends SporeGrowthEntity {
     private static final int WATER_SPLIT_MIN = 1;
     private static final int SPORE_WATER_THRESHOLD = 25;
 
-    private static final int COST_VERDANT_VINE_BLOCK = 10;
-    private static final int COST_VERDANT_VINE_BRANCH = 5;
-    private static final int COST_VERDANT_VINE_SNARE = 3;
+    private static final int COST_VERDANT_VINE_BLOCK = 7;
+    private static final int COST_VERDANT_VINE_BRANCH = 4;
+    private static final int COST_VERDANT_VINE_SNARE = 2;
     private static final int COST_TWISTING_VERDANT_VINES = 1;
 
     public VerdantSporeGrowthEntity(EntityType<?> entityType, World world) {

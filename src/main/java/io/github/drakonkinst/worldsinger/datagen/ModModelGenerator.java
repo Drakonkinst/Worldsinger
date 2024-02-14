@@ -141,8 +141,8 @@ public class ModModelGenerator extends FabricModelProvider {
                 ModBlocks.POTTED_VERDANT_VINE_SNARE, TintType.NOT_TINTED);
         registerFlowerPotBlock(blockStateModelGenerator, ModBlocks.TWISTING_VERDANT_VINES,
                 ModBlocks.POTTED_TWISTING_VERDANT_VINES, TintType.NOT_TINTED);
-        registerFlowerPotBlock(blockStateModelGenerator, ModBlocks.DEAD_TWISTING_VERDANT_VINES,
-                ModBlocks.POTTED_DEAD_TWISTING_VERDANT_VINES, TintType.NOT_TINTED);
+        registerFlowerPotBlock(blockStateModelGenerator, ModBlocks.DEAD_VERDANT_VINE_SNARE,
+                ModBlocks.POTTED_DEAD_VERDANT_VINE_SNARE, TintType.NOT_TINTED);
         registerFlowerPotBlock(blockStateModelGenerator, ModBlocks.DEAD_TWISTING_VERDANT_VINES,
                 ModBlocks.POTTED_DEAD_TWISTING_VERDANT_VINES, TintType.NOT_TINTED);
 

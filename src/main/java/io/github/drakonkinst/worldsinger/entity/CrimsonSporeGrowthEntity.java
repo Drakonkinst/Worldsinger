@@ -64,8 +64,8 @@ public class CrimsonSporeGrowthEntity extends SporeGrowthEntity {
     private static final int SPLIT_WATER_MIN = 140;
     private static final int SPLIT_AGE_MAX = 1;
 
-    private static final int COST_CRIMSON_GROWTH = 15;
-    private static final int COST_CRIMSON_SPIKE = 10;
+    private static final int COST_CRIMSON_GROWTH = 10;
+    private static final int COST_CRIMSON_SPIKE = 7;
     private static final int COST_TALL_CRIMSON_SPINES = 2;
     private static final int COST_CRIMSON_SPINES = 1;
 
