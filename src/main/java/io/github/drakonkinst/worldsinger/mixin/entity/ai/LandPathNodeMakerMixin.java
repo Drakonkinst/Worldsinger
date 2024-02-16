@@ -42,6 +42,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+// LandPathNodeTypesRegistry exists but only supports individual blocks, so we prefer a custom approach
 @Mixin(LandPathNodeMaker.class)
 public abstract class LandPathNodeMakerMixin extends PathNodeMaker {
 
