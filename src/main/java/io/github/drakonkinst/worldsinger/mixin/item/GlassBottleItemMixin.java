@@ -66,7 +66,7 @@ public abstract class GlassBottleItemMixin extends Item {
     private void fillSporeBottles(World world, PlayerEntity user, Hand hand,
             CallbackInfoReturnable<TypedActionResult<ItemStack>> cir) {
         ItemStack itemStack = user.getStackInHand(hand);
-        BlockHitResult blockHitResult = GlassBottleItem.raycast(world, user,
+        BlockHitResult blockHitResult = Item.raycast(world, user,
                 RaycastContext.FluidHandling.SOURCE_ONLY);
 
         if (blockHitResult.getType() != HitResult.Type.BLOCK) {

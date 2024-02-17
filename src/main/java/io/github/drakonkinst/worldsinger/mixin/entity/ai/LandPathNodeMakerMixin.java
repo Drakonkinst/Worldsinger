@@ -23,7 +23,6 @@
  */
 package io.github.drakonkinst.worldsinger.mixin.entity.ai;
 
-import com.llamalad7.mixinextras.sugar.Local;
 import io.github.drakonkinst.worldsinger.block.ModBlockTags;
 import io.github.drakonkinst.worldsinger.block.ModBlocks;
 import io.github.drakonkinst.worldsinger.fluid.ModFluidTags;
@@ -37,6 +36,7 @@ import net.minecraft.fluid.FluidState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockPos.Mutable;
 import net.minecraft.world.BlockView;
+import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -88,10 +88,10 @@ public abstract class LandPathNodeMakerMixin extends PathNodeMaker {
     }
 
     // Specifically runs after DANGER_OTHER and DANGER_FIRE, which should take precedence
-    @Inject(method = "getNodeTypeFromNeighbors", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/BlockView;getFluidState(Lnet/minecraft/util/math/BlockPos;)Lnet/minecraft/fluid/FluidState;"), cancellable = true)
+    @Inject(method = "getNodeTypeFromNeighbors", at = @At(value = "FIELD", opcode = Opcodes.GETSTATIC, target = "Lnet/minecraft/entity/ai/pathing/PathNodeType;WATER:Lnet/minecraft/entity/ai/pathing/PathNodeType;"), cancellable = true)
     private static void addSilverNodeTypes(BlockView world, Mutable pos, PathNodeType nodeType,
-            CallbackInfoReturnable<PathNodeType> cir, @Local BlockState blockState) {
-        if (blockState.isIn(ModBlockTags.HAS_SILVER)) {
+            CallbackInfoReturnable<PathNodeType> cir) {
+        if (nodeType == ModEnums.PathNodeType.DAMAGE_SILVER) {
             cir.setReturnValue(ModEnums.PathNodeType.DANGER_SILVER);
         }
     }
