@@ -27,21 +27,36 @@ import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleFactory;
 import net.minecraft.client.particle.SpriteProvider;
 import net.minecraft.client.world.ClientWorld;
+import net.minecraft.util.math.MathHelper;
 import org.jetbrains.annotations.Nullable;
 
-public class SporeDustParticle extends AbstractSporeDustParticle {
+public class FallingSporeDustParticle extends AbstractSporeDustParticle {
 
-    protected SporeDustParticle(ClientWorld world, double x, double y, double z, double velocityX,
-            double velocityY, double velocityZ, SporeDustParticleEffect parameters,
-            SpriteProvider spriteProvider) {
-        super(world, x, y, z, velocityX, velocityY, velocityZ, parameters, spriteProvider);
-        this.velocityMultiplier = 0.96F;
-        this.ascending = true;
+    protected FallingSporeDustParticle(ClientWorld clientWorld, double x, double y, double z,
+            double velocityX, double velocityY, double velocityZ,
+            FallingSporeDustParticleEffect parameters, SpriteProvider spriteProvider) {
+        super(clientWorld, x, y, z, velocityX, velocityY, velocityZ, parameters, spriteProvider);
+        this.gravityStrength = 0.45f;
+        this.velocityMultiplier = 0.9f;
+        this.ascending = false;
+        // Remove randomization in velocity
+        this.setVelocity(velocityX, velocityY, velocityZ);
         scaleVelocity();
-        this.scale *= 0.75F * parameters.getScale();
     }
 
-    public static class Factory implements ParticleFactory<SporeDustParticleEffect> {
+    @Override
+    protected void setRandomAge(float scale) {
+        int i = (int) (12.0 / (this.random.nextDouble() * 0.8 + 0.2));
+        this.maxAge = (int) Math.max((float) i * scale, 1.0F);
+    }
+
+    @Override
+    public float getSize(float tickDelta) {
+        return this.scale * MathHelper.clamp((this.age + tickDelta) / this.maxAge * 32.0F, 0.0F,
+                1.0F);
+    }
+
+    public static class Factory implements ParticleFactory<FallingSporeDustParticleEffect> {
 
         private final SpriteProvider spriteProvider;
 
@@ -51,10 +66,10 @@ public class SporeDustParticle extends AbstractSporeDustParticle {
 
         @Nullable
         @Override
-        public Particle createParticle(SporeDustParticleEffect parameters, ClientWorld world,
+        public Particle createParticle(FallingSporeDustParticleEffect parameters, ClientWorld world,
                 double x, double y, double z, double velocityX, double velocityY,
                 double velocityZ) {
-            return new SporeDustParticle(world, x, y, z, velocityX, velocityY, velocityZ,
+            return new FallingSporeDustParticle(world, x, y, z, velocityX, velocityY, velocityZ,
                     parameters, this.spriteProvider);
         }
     }

@@ -21,21 +21,28 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+
 package io.github.drakonkinst.worldsinger.particle;
 
-import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry;
+import io.github.drakonkinst.worldsinger.cosmere.lumar.AetherSpores;
+import java.util.Locale;
+import net.minecraft.particle.AbstractDustParticleEffect;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryWrapper.WrapperLookup;
+import net.minecraft.util.math.Vec3d;
 
-public final class ModParticleManager {
+public abstract class AbstractSporeDustParticleEffect extends AbstractDustParticleEffect {
 
-    public static void register() {
-        ParticleFactoryRegistry registry = ParticleFactoryRegistry.getInstance();
+    protected final AetherSpores sporeType;
 
-        registry.register(ModParticleTypes.SPORE_DUST, SporeDustParticle.Factory::new);
-        registry.register(ModParticleTypes.FALLING_SPORE_DUST,
-                FallingSporeDustParticle.Factory::new);
-        registry.register(ModParticleTypes.MIDNIGHT_ESSENCE, MidnightEssenceParticle.Factory::new);
-        registry.register(ModParticleTypes.MIDNIGHT_TRAIL, MidnightTrailParticle.Factory::new);
+    public AbstractSporeDustParticleEffect(AetherSpores sporeType, float scale) {
+        super(Vec3d.unpackRgb(sporeType.getParticleColor()).toVector3f(), scale);
+        this.sporeType = sporeType;
     }
 
-    private ModParticleManager() {}
+    @Override
+    public String asString(WrapperLookup registryLookup) {
+        return String.format(Locale.ROOT, "%s %s %.2f",
+                Registries.PARTICLE_TYPE.getId(this.getType()), sporeType.getName(), this.scale);
+    }
 }

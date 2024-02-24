@@ -27,13 +27,14 @@ import com.google.common.collect.ImmutableMap;
 import com.mojang.serialization.Codec;
 import io.github.drakonkinst.worldsinger.block.ModBlockTags;
 import io.github.drakonkinst.worldsinger.block.SporeEmitting;
-import io.github.drakonkinst.worldsinger.cosmere.WaterReactive.Type;
+import io.github.drakonkinst.worldsinger.cosmere.WaterReactive;
 import io.github.drakonkinst.worldsinger.effect.ModStatusEffects;
 import io.github.drakonkinst.worldsinger.entity.ModEntityTypeTags;
 import io.github.drakonkinst.worldsinger.fluid.AetherSporeFluid;
 import io.github.drakonkinst.worldsinger.fluid.ModFluidTags;
 import io.github.drakonkinst.worldsinger.item.SporeBottleItem;
 import io.github.drakonkinst.worldsinger.registry.ModDamageTypes;
+import io.netty.buffer.ByteBuf;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 import java.util.Map;
 import java.util.Optional;
@@ -49,6 +50,8 @@ import net.minecraft.fluid.FlowableFluid;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.server.world.ServerWorld;
@@ -67,6 +70,8 @@ public abstract class AetherSpores implements Comparable<AetherSpores> {
     private static final Map<String, AetherSpores> AETHER_SPORE_MAP = new Object2ObjectArrayMap<>();
     public static final Codec<AetherSpores> CODEC = Codecs.idChecked(AetherSpores::getName,
             AETHER_SPORE_MAP::get);
+    public static final PacketCodec<ByteBuf, AetherSpores> PACKET_CODEC = PacketCodecs.indexed(
+            AetherSpores::getAetherSporeTypeById, AetherSpores::getId);
 
     private static final Map<TagKey<Fluid>, RegistryEntry<StatusEffect>> FLUID_TO_STATUS_EFFECT = ImmutableMap.of(
             ModFluidTags.VERDANT_SPORES, ModStatusEffects.VERDANT_SPORES,
@@ -93,15 +98,15 @@ public abstract class AetherSpores implements Comparable<AetherSpores> {
         return -1;
     }
 
-    public static Type getReactiveTypeFromSpore(AetherSpores sporeType) {
+    public static WaterReactive.Type getReactiveTypeFromSpore(AetherSpores sporeType) {
         return switch (sporeType.getId()) {
-            case VerdantSpores.ID -> Type.VERDANT_SPORES;
-            case CrimsonSpores.ID -> Type.CRIMSON_SPORES;
-            case SunlightSpores.ID -> Type.SUNLIGHT_SPORES;
-            case ZephyrSpores.ID -> Type.ZEPHYR_SPORES;
-            case RoseiteSpores.ID -> Type.ROSEITE_SPORES;
-            case MidnightSpores.ID -> Type.MIDNIGHT_SPORES;
-            default -> Type.MISC;
+            case VerdantSpores.ID -> WaterReactive.Type.VERDANT_SPORES;
+            case CrimsonSpores.ID -> WaterReactive.Type.CRIMSON_SPORES;
+            case SunlightSpores.ID -> WaterReactive.Type.SUNLIGHT_SPORES;
+            case ZephyrSpores.ID -> WaterReactive.Type.ZEPHYR_SPORES;
+            case RoseiteSpores.ID -> WaterReactive.Type.ROSEITE_SPORES;
+            case MidnightSpores.ID -> WaterReactive.Type.MIDNIGHT_SPORES;
+            default -> WaterReactive.Type.MISC;
         };
     }
 
@@ -180,12 +185,17 @@ public abstract class AetherSpores implements Comparable<AetherSpores> {
     }
 
     public static Optional<AetherSpores> getAetherSporeTypeFromString(String str) {
+        return Optional.ofNullable(AETHER_SPORE_MAP.get(str));
+    }
+
+    @Nullable
+    public static AetherSpores getAetherSporeTypeById(int id) {
         for (AetherSpores aetherSporeType : AETHER_SPORE_MAP.values()) {
-            if (aetherSporeType.getName().equals(str)) {
-                return Optional.of(aetherSporeType);
+            if (aetherSporeType.getId() == (id)) {
+                return aetherSporeType;
             }
         }
-        return Optional.empty();
+        return null;
     }
 
     protected AetherSpores() {

@@ -40,6 +40,9 @@ public final class ModParticleTypes {
     public static final ParticleType<SporeDustParticleEffect> SPORE_DUST = register("spore_dust",
             true, SporeDustParticleEffect.PARAMETERS_FACTORY, SporeDustParticleEffect.CODEC,
             SporeDustParticleEffect.PACKET_CODEC);
+    public static final ParticleType<FallingSporeDustParticleEffect> FALLING_SPORE_DUST = register(
+            "falling_spore_dust", true, FallingSporeDustParticleEffect.PARAMETERS_FACTORY,
+            FallingSporeDustParticleEffect.CODEC, FallingSporeDustParticleEffect.PACKET_CODEC);
 
     public static final DefaultParticleType MIDNIGHT_ESSENCE = register("midnight_essence", false);
     public static final DefaultParticleType MIDNIGHT_TRAIL = register("midnight_trail", false);

@@ -25,7 +25,8 @@ package io.github.drakonkinst.worldsinger.cosmere.lumar;
 
 import io.github.drakonkinst.worldsinger.Worldsinger;
 import io.github.drakonkinst.worldsinger.entity.ModEntityTypeTags;
-import io.github.drakonkinst.worldsinger.particle.SporeDustParticleEffect;
+import io.github.drakonkinst.worldsinger.particle.AbstractSporeDustParticleEffect;
+import io.github.drakonkinst.worldsinger.particle.FallingSporeDustParticleEffect;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import java.util.List;
@@ -42,7 +43,6 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
-import org.joml.Vector3f;
 
 // Creates configurable spore particles that interact with entities.
 public final class SporeParticleManager {
@@ -50,7 +50,7 @@ public final class SporeParticleManager {
     public static final int SPORE_EFFECT_DURATION_TICKS_DEFAULT = 40;
 
     private static final float CACHED_SIZE_PRECISION = 20.0f;
-    private static final Int2ObjectMap<SporeDustParticleEffect> cachedDustParticleEffects = new Int2ObjectOpenHashMap<>();
+    private static final Int2ObjectMap<AbstractSporeDustParticleEffect> cachedDustParticleEffects = new Int2ObjectOpenHashMap<>();
     private static final int SPORE_EFFECT_DURATION_TICKS_MIN = 20;
     private static final float MIN_PARTICLE_SIZE = 0.3f;
     private static final float MAX_PARTICLE_SIZE = 10.0f;
@@ -134,8 +134,8 @@ public final class SporeParticleManager {
         }
 
         // Should be dead if a spore-killing block is nearby
-        if (SporeKillingUtil.isSporeKillingBlockNearbyForRange(world, minX, minY, minZ, maxX,
-                maxY, maxZ)) {
+        if (SporeKillingUtil.isSporeKillingBlockNearbyForRange(world, minX, minY, minZ, maxX, maxY,
+                maxZ)) {
             return true;
         }
 
@@ -178,8 +178,8 @@ public final class SporeParticleManager {
         SporeParticleManager.damageEntitiesInBox(world, sporeType, box, useDistance);
     }
 
-    private static SporeDustParticleEffect getCachedSporeParticleEffect(AetherSpores sporeType,
-            float size) {
+    private static AbstractSporeDustParticleEffect getCachedSporeParticleEffect(
+            AetherSpores sporeType, float size) {
         // Only cache particle effect if from the AetherSporeType enum
         int key = SporeParticleManager.hashTwoInts(sporeType.getId(),
                 (int) Math.floor(size * CACHED_SIZE_PRECISION));
@@ -231,7 +231,7 @@ public final class SporeParticleManager {
     }
 
     // Generate particle effect with given color and size
-    private static SporeDustParticleEffect createDustParticleEffect(AetherSpores sporeType,
+    private static AbstractSporeDustParticleEffect createDustParticleEffect(AetherSpores sporeType,
             float size) {
         // Only cache particle effect if from the AetherSporeType enum
         // Lock size to nearest cached size precision to prevent unintentional imprecision
@@ -240,9 +240,8 @@ public final class SporeParticleManager {
                 "Caching new dust particle effect (" + sporeType.getId() + ", " + size + "), " + (
                         cachedDustParticleEffects.size() + 1) + " particles cached");
 
-        // Calculate color and create particle effect
-        Vector3f particleColor = Vec3d.unpackRgb(sporeType.getParticleColor()).toVector3f();
-        return new SporeDustParticleEffect(particleColor, size);
+        // Create particle effect
+        return new FallingSporeDustParticleEffect(sporeType, size);
     }
 
     // Apply spore status effect to the entity for the duration

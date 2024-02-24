@@ -34,19 +34,19 @@ import net.minecraft.particle.AbstractDustParticleEffect;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleType;
 
-public class SporeDustParticleEffect extends AbstractSporeDustParticleEffect {
+public class FallingSporeDustParticleEffect extends AbstractSporeDustParticleEffect {
 
-    public static final Codec<SporeDustParticleEffect> CODEC = RecordCodecBuilder.create(
+    public static final Codec<FallingSporeDustParticleEffect> CODEC = RecordCodecBuilder.create(
             instance -> instance.group(
                             AetherSpores.CODEC.fieldOf("sporeType").forGetter(effect -> effect.sporeType),
                             Codec.FLOAT.fieldOf("scale").forGetter(AbstractDustParticleEffect::getScale))
-                    .apply(instance, SporeDustParticleEffect::new));
+                    .apply(instance, FallingSporeDustParticleEffect::new));
 
-    public static final PacketCodec<RegistryByteBuf, SporeDustParticleEffect> PACKET_CODEC = PacketCodec.tuple(
+    public static final PacketCodec<RegistryByteBuf, FallingSporeDustParticleEffect> PACKET_CODEC = PacketCodec.tuple(
             AetherSpores.PACKET_CODEC, effect -> effect.sporeType, PacketCodecs.FLOAT,
-            effect -> effect.scale, SporeDustParticleEffect::new);
+            effect -> effect.scale, FallingSporeDustParticleEffect::new);
 
-    public static final ParticleEffect.Factory<SporeDustParticleEffect> PARAMETERS_FACTORY = (particleType, stringReader, wrapperLookup) -> {
+    public static final ParticleEffect.Factory<FallingSporeDustParticleEffect> PARAMETERS_FACTORY = (particleType, stringReader, wrapperLookup) -> {
         stringReader.expect(' ');
         String sporeName = stringReader.readString();
         AetherSpores sporeType = AetherSpores.getAetherSporeTypeFromString(sporeName)
@@ -55,15 +55,15 @@ public class SporeDustParticleEffect extends AbstractSporeDustParticleEffect {
                                 .createWithContext(stringReader));
         stringReader.expect(' ');
         float scale = stringReader.readFloat();
-        return new SporeDustParticleEffect(sporeType, scale);
+        return new FallingSporeDustParticleEffect(sporeType, scale);
     };
 
-    public SporeDustParticleEffect(AetherSpores sporeType, float scale) {
+    public FallingSporeDustParticleEffect(AetherSpores sporeType, float scale) {
         super(sporeType, scale);
     }
 
     @Override
     public ParticleType<?> getType() {
-        return ModParticleTypes.SPORE_DUST;
+        return ModParticleTypes.FALLING_SPORE_DUST;
     }
 }
