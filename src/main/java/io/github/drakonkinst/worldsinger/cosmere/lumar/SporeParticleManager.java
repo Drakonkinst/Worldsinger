@@ -27,6 +27,7 @@ import io.github.drakonkinst.worldsinger.Worldsinger;
 import io.github.drakonkinst.worldsinger.entity.ModEntityTypeTags;
 import io.github.drakonkinst.worldsinger.particle.AbstractSporeDustParticleEffect;
 import io.github.drakonkinst.worldsinger.particle.FallingSporeDustParticleEffect;
+import io.github.drakonkinst.worldsinger.particle.SporeDustParticleEffect;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import java.util.List;
@@ -49,6 +50,7 @@ public final class SporeParticleManager {
 
     public static final int SPORE_EFFECT_DURATION_TICKS_DEFAULT = 40;
 
+    private static final int FLOATING_ID_OFFSET = 100;
     private static final float CACHED_SIZE_PRECISION = 20.0f;
     private static final Int2ObjectMap<AbstractSporeDustParticleEffect> cachedDustParticleEffects = new Int2ObjectOpenHashMap<>();
     private static final int SPORE_EFFECT_DURATION_TICKS_MIN = 20;
@@ -58,9 +60,10 @@ public final class SporeParticleManager {
     private static final double MAX_RADIUS = 5.0;
     private static final double MIN_HEIGHT = 0.1;
     private static final double MAX_HEIGHT = 5.0;
-    private static final double PARTICLE_VISUAL_HEIGHT_PENALTY = 0.25;
+    private static final double PARTICLE_VISUAL_HEIGHT_PENALTY = 0.0;
     private static final double PARTICLE_VISUAL_RADIUS_PENALTY = 0.5;
     private static final double DISTANCE_MULTIPLIER = 0.5;
+    private static final double PARTICLE_SPEED = 0.75;
     private static final Random random = Random.create();
 
     // Creates a configurable spore particle cloud based on entity size (using width as the metric)
@@ -151,7 +154,7 @@ public final class SporeParticleManager {
         double deltaY;
         double y;
 
-        // Visual height should be reduced compared to the logical hitbox so it seems less of a fluke
+        // Visual height should be reduced compared to the logical hitbox, so it seems less of a fluke
         // when you are caught by one.
         // Adjust both the center and delta as necessary.
         if (height > PARTICLE_VISUAL_HEIGHT_PENALTY) {
@@ -167,8 +170,9 @@ public final class SporeParticleManager {
 
         // Spawn particle
         ParticleEffect particleEffect = SporeParticleManager.getCachedSporeParticleEffect(sporeType,
-                particleSize);
-        world.spawnParticles(particleEffect, x, y, z, count, radius, deltaY, radius, 0.0);
+                particleSize, false);
+        world.spawnParticles(particleEffect, x, y, z, count, radius, deltaY, radius,
+                SporeParticleManager.PARTICLE_SPEED);
     }
 
     // Apply spore effect to entities within a zone
@@ -179,13 +183,16 @@ public final class SporeParticleManager {
     }
 
     private static AbstractSporeDustParticleEffect getCachedSporeParticleEffect(
-            AetherSpores sporeType, float size) {
+            AetherSpores sporeType, float size, boolean floating) {
         // Only cache particle effect if from the AetherSporeType enum
-        int key = SporeParticleManager.hashTwoInts(sporeType.getId(),
+        int id = sporeType.getId();
+        if (floating) {
+            id += FLOATING_ID_OFFSET;
+        }
+        int key = SporeParticleManager.hashTwoInts(id,
                 (int) Math.floor(size * CACHED_SIZE_PRECISION));
         return cachedDustParticleEffects.computeIfAbsent(key,
-                k -> SporeParticleManager.createDustParticleEffect(sporeType, size));
-
+                k -> SporeParticleManager.createDustParticleEffect(sporeType, size, floating));
     }
 
     // Apply spore effect to entities within a given box
@@ -232,7 +239,7 @@ public final class SporeParticleManager {
 
     // Generate particle effect with given color and size
     private static AbstractSporeDustParticleEffect createDustParticleEffect(AetherSpores sporeType,
-            float size) {
+            float size, boolean floating) {
         // Only cache particle effect if from the AetherSporeType enum
         // Lock size to nearest cached size precision to prevent unintentional imprecision
         size = ((int) (size * CACHED_SIZE_PRECISION)) / CACHED_SIZE_PRECISION;
@@ -241,6 +248,9 @@ public final class SporeParticleManager {
                         cachedDustParticleEffects.size() + 1) + " particles cached");
 
         // Create particle effect
+        if (floating) {
+            return new SporeDustParticleEffect(sporeType, size);
+        }
         return new FallingSporeDustParticleEffect(sporeType, size);
     }
 
@@ -260,7 +270,7 @@ public final class SporeParticleManager {
         }
 
         ParticleEffect particleEffect = SporeParticleManager.getCachedSporeParticleEffect(sporeType,
-                particleSize);
+                particleSize, true);
         world.addParticle(particleEffect, x, y, z, 0.0, 0.0, 0.0);
     }
 

@@ -36,8 +36,8 @@ public class FallingSporeDustParticle extends AbstractSporeDustParticle {
             double velocityX, double velocityY, double velocityZ,
             FallingSporeDustParticleEffect parameters, SpriteProvider spriteProvider) {
         super(clientWorld, x, y, z, velocityX, velocityY, velocityZ, parameters, spriteProvider);
-        this.gravityStrength = 0.45f;
-        this.velocityMultiplier = 0.9f;
+        this.gravityStrength = 0.3f;
+        this.velocityMultiplier = 0.85f;
         this.ascending = false;
         // Remove randomization in velocity
         this.setVelocity(velocityX, velocityY, velocityZ);
