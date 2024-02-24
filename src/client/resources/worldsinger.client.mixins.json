@@ -26,6 +26,7 @@
     "world.BackgroundRendererMixin",
     "world.CameraFluidSubmersionMixin",
     "world.CameraPossessionMixin",
+    "world.ClientWorldMixin",
     "world.GameRendererMixin",
     "world.WorldRendererPossessionMixin",
     "world.WorldRendererSkyMixin"

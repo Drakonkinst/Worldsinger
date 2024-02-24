@@ -25,10 +25,10 @@
 
 package io.github.drakonkinst.worldsinger.mixin.world;
 
+import io.github.drakonkinst.worldsinger.cosmere.CosmereWorldUtil;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.SeetheManagerAccess;
 import io.github.drakonkinst.worldsinger.event.PlayerSyncCallback;
 import io.github.drakonkinst.worldsinger.network.packet.SeetheUpdatePayload;
-import io.github.drakonkinst.worldsinger.worldgen.dimension.ModDimensions;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.server.PlayerManager;
@@ -47,7 +47,7 @@ public abstract class PlayerManagerMixin {
     @Inject(method = "sendWorldInfo", at = @At("RETURN"))
     private void syncAdditionalWorldData(ServerPlayerEntity player, ServerWorld world,
             CallbackInfo ci) {
-        if (world.getRegistryKey().equals(ModDimensions.WORLD_LUMAR)) {
+        if (CosmereWorldUtil.isLumar(world)) {
             if (((SeetheManagerAccess) world).worldsinger$getSeetheManager().isSeething()) {
                 ServerPlayNetworking.send(player, SeetheUpdatePayload.SEETHE_START);
             } else {

@@ -53,6 +53,7 @@
     "entity.ItemEntityCustomFluidMovementMixin",
     "entity.LivingEntityCustomFluidMovementMixin",
     "entity.LivingEntityDeathParticlesMixin",
+    "entity.LivingEntityLunagreeMixin",
     "entity.LivingEntityMidnightOverlayAccessMixin",
     "entity.MobEntityMixin",
     "entity.PersistentProjectileEntityMixin",

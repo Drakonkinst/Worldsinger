@@ -32,10 +32,10 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.datafixers.util.Pair;
 import io.github.drakonkinst.worldsinger.Worldsinger;
+import io.github.drakonkinst.worldsinger.cosmere.CosmereWorldUtil;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.AetherSpores;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.DeadSpores;
 import io.github.drakonkinst.worldsinger.util.BlockPosUtil;
-import io.github.drakonkinst.worldsinger.worldgen.dimension.ModDimensions;
 import io.github.drakonkinst.worldsinger.worldgen.lumar.LumarChunkGenerator;
 import io.github.drakonkinst.worldsinger.worldgen.lumar.LumarChunkGenerator.SporeSeaEntry;
 import it.unimi.dsi.fastutil.ints.IntSet;
@@ -132,7 +132,7 @@ public class LocateSporeSeaCommand {
     public static Pair<BlockPos, SporeSeaEntry> locateSporeSea(ServerWorld world, int originX,
             int originZ, int radius, int horizontalBlockCheckInterval, boolean mustBeAboveSeaLevel,
             IntSet filterSporeIds, @Nullable Predicate<RegistryEntry<Biome>> biomePredicate) {
-        if (!world.getRegistryKey().equals(ModDimensions.WORLD_LUMAR)) {
+        if (!CosmereWorldUtil.isLumar(world)) {
             return null;
         }
         MultiNoiseSampler noiseSampler = world.getChunkManager()

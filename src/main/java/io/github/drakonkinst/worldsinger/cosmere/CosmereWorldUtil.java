@@ -22,11 +22,16 @@
  * SOFTWARE.
  */
 
-package io.github.drakonkinst.worldsinger.entity;
+package io.github.drakonkinst.worldsinger.cosmere;
 
-import io.github.drakonkinst.worldsinger.cosmere.LunagreeData;
+import io.github.drakonkinst.worldsinger.worldgen.dimension.ModDimensions;
+import net.minecraft.world.World;
 
-public interface LunagreeDataAccess {
+public final class CosmereWorldUtil {
 
-    LunagreeData worldsinger$getLunagreeData();
+    public static boolean isLumar(World world) {
+        return world.getRegistryKey().equals(ModDimensions.WORLD_LUMAR);
+    }
+
+    private CosmereWorldUtil() {}
 }

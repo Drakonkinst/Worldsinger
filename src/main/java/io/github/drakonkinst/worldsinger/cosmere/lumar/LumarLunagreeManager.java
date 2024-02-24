@@ -58,6 +58,7 @@ public class LumarLunagreeManager extends LunagreeManager {
     public static final float TRAVEL_DISTANCE = 2000.0f;
     public static final float CELL_SIZE = 1800.0f; // Should always be less than TRAVEL_DISTANCE
     public static final int SEARCH_RADIUS = 1000;  // Should always be less than CELL_SIZE
+    public static final int SPORE_FALL_RADIUS = 200;
     private static final int CENTER_X = 0;
     private static final int CENTER_Z = 0;
 
@@ -155,12 +156,12 @@ public class LumarLunagreeManager extends LunagreeManager {
         }
     }
 
-    private Optional<LunagreeLocation> getOrCreateLunagreeFor(int q, int r) {
+    private Optional<LunagreeLocation> getLunagreeFor(int q, int r, boolean shouldCreate) {
         long key = LumarLunagreeManager.toKey(q, r);
-        Optional<LunagreeLocation> entry;
+        Optional<LunagreeLocation> entry = Optional.empty();
         if (lunagreeMap.containsKey(key)) {
             entry = Optional.of(lunagreeMap.get(key));
-        } else {
+        } else if (shouldCreate) {
             entry = generateLunagreeFor(q, r);
         }
         return entry;
@@ -219,22 +220,41 @@ public class LumarLunagreeManager extends LunagreeManager {
     // Triggered when the player loads new chunks. This can also generate new lunagrees.
     @Override
     public void updateLunagreeDataForPlayer(ServerPlayerEntity player) {
-        long key = getKeyForPos(player.getBlockX(), player.getBlockZ());
+        List<LunagreeLocation> locations = getLunagreesNear(player.getBlockX(), player.getBlockZ(),
+                true);
+        ServerPlayNetworking.send(player, new LunagreeSyncPayload(locations));
+    }
+
+    @Override
+    public Optional<LunagreeLocation> getNearestLunagree(int blockX, int blockZ, int maxDistance) {
+        List<LunagreeLocation> candidates = getLunagreesNear(blockX, blockZ, false);
+        LunagreeLocation nearestLocation = null;
+        int minDistSq = Integer.MAX_VALUE;
+        for (LunagreeLocation location : candidates) {
+            int deltaX = blockX - location.blockX();
+            int deltaZ = blockZ - location.blockZ();
+            int distSq = deltaX * deltaX + deltaZ * deltaZ;
+            if (distSq < minDistSq && distSq < maxDistance * maxDistance) {
+                nearestLocation = location;
+                minDistSq = distSq;
+            }
+        }
+        return Optional.ofNullable(nearestLocation);
+    }
+
+    private List<LunagreeLocation> getLunagreesNear(int blockX, int blockZ, boolean shouldCreate) {
+        long key = getKeyForPos(blockX, blockZ);
         int q = LumarLunagreeManager.getQ(key);
         int r = LumarLunagreeManager.getR(key);
 
         List<LunagreeLocation> locations = new ArrayList<>(DIRECTION_Q.length + 1);
-        getOrCreateLunagreeFor(q, r).ifPresent(locations::add);
+        getLunagreeFor(q, r, shouldCreate).ifPresent(locations::add);
         for (int i = 0; i < DIRECTION_Q.length; ++i) {
             int neighborQ = q + DIRECTION_Q[i];
             int neighborR = r + DIRECTION_R[i];
-            getOrCreateLunagreeFor(neighborQ, neighborR).ifPresent(locations::add);
+            getLunagreeFor(neighborQ, neighborR, shouldCreate).ifPresent(locations::add);
         }
-
-        // Send packet
-        ServerPlayNetworking.send(player, new LunagreeSyncPayload(locations));
-        Worldsinger.LOGGER.info(
-                "Sending lunagree data in cell (" + q + ", " + r + "): " + locations);
+        return locations;
     }
 
     // Convert hex cell to the center block pos

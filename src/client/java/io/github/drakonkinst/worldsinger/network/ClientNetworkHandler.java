@@ -26,12 +26,13 @@ package io.github.drakonkinst.worldsinger.network;
 import io.github.drakonkinst.worldsinger.Worldsinger;
 import io.github.drakonkinst.worldsinger.api.ModAttachmentTypes;
 import io.github.drakonkinst.worldsinger.api.sync.SyncableAttachment;
-import io.github.drakonkinst.worldsinger.cosmere.LunagreeData;
+import io.github.drakonkinst.worldsinger.cosmere.ClientLunagreeData;
+import io.github.drakonkinst.worldsinger.cosmere.CosmereWorldUtil;
 import io.github.drakonkinst.worldsinger.cosmere.PossessionManager;
 import io.github.drakonkinst.worldsinger.cosmere.ShapeshiftingManager;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.SeetheManagerAccess;
 import io.github.drakonkinst.worldsinger.entity.CameraPossessable;
-import io.github.drakonkinst.worldsinger.entity.LunagreeDataAccess;
+import io.github.drakonkinst.worldsinger.entity.ClientLunagreeDataAccess;
 import io.github.drakonkinst.worldsinger.entity.Shapeshifter;
 import io.github.drakonkinst.worldsinger.entity.data.PlayerPossessionManager;
 import io.github.drakonkinst.worldsinger.network.packet.AttachmentEntitySyncPayload;
@@ -41,7 +42,6 @@ import io.github.drakonkinst.worldsinger.network.packet.SeetheUpdatePayload;
 import io.github.drakonkinst.worldsinger.network.packet.ShapeshiftAttackPayload;
 import io.github.drakonkinst.worldsinger.network.packet.ShapeshiftSyncPayload;
 import io.github.drakonkinst.worldsinger.util.PossessionClientUtil;
-import io.github.drakonkinst.worldsinger.worldgen.dimension.ModDimensions;
 import net.fabricmc.fabric.api.attachment.v1.AttachmentType;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.impl.attachment.AttachmentRegistryImpl;
@@ -95,7 +95,7 @@ public final class ClientNetworkHandler {
             if (world == null) {
                 return;
             }
-            if (world.getRegistryKey().equals(ModDimensions.WORLD_LUMAR)) {
+            if (CosmereWorldUtil.isLumar(world)) {
                 if (payload.isSeething()) {
                     ((SeetheManagerAccess) world).worldsinger$getSeetheManager().startSeethe(0);
                 } else {
@@ -111,7 +111,7 @@ public final class ClientNetworkHandler {
                         "Could not process lunagree sync packet because player is null");
                 return;
             }
-            LunagreeData data = ((LunagreeDataAccess) player).worldsinger$getLunagreeData();
+            ClientLunagreeData data = ((ClientLunagreeDataAccess) player).worldsinger$getLunagreeData();
             data.setKnownLunagreeLocations(payload.locations());
         });
     }

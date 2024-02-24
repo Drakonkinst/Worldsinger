@@ -25,6 +25,7 @@
 package io.github.drakonkinst.worldsinger.cosmere.lumar;
 
 import io.github.drakonkinst.worldsinger.world.PersistentByteData;
+import java.util.Optional;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
 
@@ -55,6 +56,9 @@ public abstract class LunagreeManager extends PersistentByteData {
     }
 
     public abstract void updateLunagreeDataForPlayer(ServerPlayerEntity player);
+
+    public abstract Optional<LunagreeLocation> getNearestLunagree(int blockX, int blockZ,
+            int maxDistance);
 
     public abstract long getKeyForPos(int blockX, int blockZ);
 

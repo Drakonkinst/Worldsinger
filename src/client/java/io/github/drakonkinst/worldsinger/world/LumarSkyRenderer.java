@@ -27,10 +27,10 @@ package io.github.drakonkinst.worldsinger.world;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.drakonkinst.worldsinger.Worldsinger;
-import io.github.drakonkinst.worldsinger.cosmere.LunagreeData;
+import io.github.drakonkinst.worldsinger.cosmere.ClientLunagreeData;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarLunagreeManager;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LunagreeManager.LunagreeLocation;
-import io.github.drakonkinst.worldsinger.entity.LunagreeDataAccess;
+import io.github.drakonkinst.worldsinger.entity.ClientLunagreeDataAccess;
 import io.github.drakonkinst.worldsinger.mixin.client.accessor.WorldRendererAccessor;
 import net.fabricmc.fabric.api.client.rendering.v1.DimensionRenderingRegistry.SkyRenderer;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext;
@@ -184,7 +184,7 @@ public class LumarSkyRenderer implements SkyRenderer {
     private void drawMoons(BufferBuilder bufferBuilder, MatrixStack matrices,
             @NotNull ClientPlayerEntity player, float tickDelta) {
         RenderSystem.setShaderTexture(0, LUMAR_MOON);
-        final LunagreeData lunagreeData = ((LunagreeDataAccess) player).worldsinger$getLunagreeData();
+        final ClientLunagreeData lunagreeData = ((ClientLunagreeDataAccess) player).worldsinger$getLunagreeData();
         final Vec3d playerPos = player.getCameraPosVec(tickDelta);
         for (LunagreeLocation location : lunagreeData.getKnownLunagreeLocations()) {
             final double distSq = location.distSqTo(playerPos.getX(), playerPos.getZ());

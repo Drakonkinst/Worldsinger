@@ -25,23 +25,18 @@
 
 ## Attributions
 
-Best effort has been made to properly attribute software from external sources. Please raise an
-issue if you feel something is not credited properly. See `vendor/ThirdPartyNotices.txt` for
+Best effort has been made to properly attribute software from external sources. In addition,
+credit is given to some referenced mods even if not strictly required by their license.
+
+Please raise an issue if you feel something is not credited properly.
+See `vendor/ThirdPartyNotices.txt` for
 additional credits, including licenses and legal notices.
-
-### Comparison to Other Mods
-
-> This mod is not intended to steal the work of others, nor replace them as simple copycats or
-> version ports. **Significant transformative changes** are made to the referenced mods, often
-> sacrificing features as well as configurability. Additional features are implemented to tailor
-> them to our mod's vision. In these ways, we view our mod as sufficiently transformative and more
-> than a simple "copycat" of other mods. Out of good faith, the mod authors are also credited below,
-> no matter how little their mod was referenced.
 
 ### Referenced Mods
 
-Below is a comprehensive list of all referenced mods. A description of how the reference was used
-and significant changes in our mod are included.
+Below is a comprehensive list of all mods used as a reference, no matter how small, during
+development.
+A description of how the reference was used and significant changes in our mod are included.
 
 * **Fluidlogged 1.2.1** by **Leximon**
   ([GitHub](https://github.com/Leximon/Fluidlogged/tree/v1-1.20), [Modrinth](https://modrinth.com/mod/fluidlogged))

@@ -24,29 +24,29 @@
 
 package io.github.drakonkinst.worldsinger.mixin.world;
 
+import io.github.drakonkinst.worldsinger.cosmere.lumar.AetherSpores;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarLunagreeManager;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LunagreeManager;
+import io.github.drakonkinst.worldsinger.cosmere.lumar.LunagreeManager.LunagreeLocation;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LunagreeManagerAccess;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.NullLunagreeManager;
 import io.github.drakonkinst.worldsinger.world.PersistentByteDataManagerAccess;
-import io.github.drakonkinst.worldsinger.worldgen.dimension.ModDimensions;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.Executor;
-import java.util.function.Supplier;
-import net.minecraft.registry.DynamicRegistryManager;
+import net.minecraft.block.BlockState;
 import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.WorldGenerationProgressListener;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.RandomSequencesState;
-import net.minecraft.util.profiler.Profiler;
-import net.minecraft.world.MutableWorldProperties;
+import net.minecraft.world.Heightmap.Type;
 import net.minecraft.world.PersistentStateManager;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionOptions;
-import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.level.ServerWorldProperties;
 import net.minecraft.world.level.storage.LevelStorage.Session;
 import net.minecraft.world.spawner.SpecialSpawner;
@@ -58,23 +58,14 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ServerWorld.class)
-public abstract class ServerWorldLunagreeManagerMixin extends World implements StructureWorldAccess,
-        LunagreeManagerAccess {
+public abstract class ServerWorldLunagreeManagerMixin extends WorldLumarMixin implements
+        StructureWorldAccess, LunagreeManagerAccess {
 
     @Shadow
     public abstract PersistentStateManager getPersistentStateManager();
 
     @Unique
     private LunagreeManager lunagreeManager;
-
-    protected ServerWorldLunagreeManagerMixin(MutableWorldProperties properties,
-            RegistryKey<World> registryRef, DynamicRegistryManager registryManager,
-            RegistryEntry<DimensionType> dimensionEntry, Supplier<Profiler> profiler,
-            boolean isClient, boolean debugWorld, long biomeAccess, int maxChainedNeighborUpdates) {
-        super(properties, registryRef, registryManager, dimensionEntry, profiler, isClient,
-                debugWorld, biomeAccess, maxChainedNeighborUpdates);
-        throw new UnsupportedOperationException();
-    }
 
     @Inject(method = "<init>", at = @At("TAIL"))
     private void initializeLumarData(MinecraftServer server, Executor workerExecutor,
@@ -83,12 +74,43 @@ public abstract class ServerWorldLunagreeManagerMixin extends World implements S
             WorldGenerationProgressListener worldGenerationProgressListener, boolean debugWorld,
             long seed, List<SpecialSpawner> spawners, boolean shouldTickTime,
             RandomSequencesState randomSequencesState, CallbackInfo ci) {
-        if (worldKey.equals(ModDimensions.WORLD_LUMAR)) {
+        if (isLumar) {
             lunagreeManager = ((PersistentByteDataManagerAccess) this.getPersistentStateManager()).worldsinger$getOrCreateFromBytes(
                     LumarLunagreeManager.getPersistentByteDataType((ServerWorld) (Object) this),
                     LunagreeManager.NAME);
         } else {
             lunagreeManager = new NullLunagreeManager();
+        }
+    }
+
+    @Inject(method = "tickIceAndSnow", at = @At("RETURN"))
+    private void rainSporeBlocksUnderSporeFall(BlockPos pos, CallbackInfo ci) {
+        if (!isLumar) {
+            return;
+        }
+        int x = pos.getX();
+        int z = pos.getZ();
+        if (!this.isSkyVisible(pos) || this.getTopY(Type.MOTION_BLOCKING, x, z) >= pos.getY()) {
+            return;
+        }
+        Optional<LunagreeLocation> nearestLocation = lunagreeManager.getNearestLunagree(x, z,
+                LumarLunagreeManager.SPORE_FALL_RADIUS);
+        if (nearestLocation.isEmpty()) {
+            return;
+        }
+
+        AetherSpores sporeType = AetherSpores.getAetherSporeTypeById(
+                nearestLocation.get().sporeId());
+        if (sporeType == null) {
+            return;
+        }
+
+        // TODO: This never runs for some reason
+        BlockPos belowPos = pos.down();
+        BlockState currentBlockState = this.getBlockState(pos);
+        if (currentBlockState.isAir() && this.getBlockState(belowPos)
+                .isSideSolidFullSquare(this, belowPos, Direction.UP)) {
+            this.setBlockState(pos, sporeType.getSolidBlock().getDefaultState());
         }
     }
 

@@ -27,10 +27,17 @@ package io.github.drakonkinst.worldsinger.cosmere;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LunagreeManager.LunagreeLocation;
 import java.util.ArrayList;
 import java.util.List;
+import org.jetbrains.annotations.Nullable;
 
-public class LunagreeData {
+// Client-side record of the nearest lunagree locations
+public class ClientLunagreeData {
+
+    public static final double SPORE_FALL_PARTICLE_CHANCE = 0.15;
+    public static final int SPORE_FALL_RADIUS_MULTIPLIER = 4;
+    public static final float SPORE_FALL_PARTICLE_SIZE = 10.0f;
 
     private final List<LunagreeLocation> knownLunagreeLocations = new ArrayList<>();
+    private @Nullable LunagreeLocation nearestLunagreeLocation = null;
 
     public List<LunagreeLocation> getKnownLunagreeLocations() {
         return knownLunagreeLocations;
@@ -39,5 +46,37 @@ public class LunagreeData {
     public void setKnownLunagreeLocations(List<LunagreeLocation> locations) {
         knownLunagreeLocations.clear();
         knownLunagreeLocations.addAll(locations);
+    }
+
+    @Nullable
+    public LunagreeLocation getNearestLunagreeLocation(int x, int z, int maxDistance) {
+        if (nearestLunagreeLocation == null) {
+            return null;
+        }
+
+        if (maxDistance > 0) {
+            int deltaX = nearestLunagreeLocation.blockX() - x;
+            int deltaZ = nearestLunagreeLocation.blockZ() - z;
+            int distSq = deltaX * deltaX + deltaZ * deltaZ;
+            if (distSq > maxDistance * maxDistance) {
+                return null;
+            }
+        }
+
+        return nearestLunagreeLocation;
+    }
+
+    public void updateNearestLunagreeLocation(int playerX, int playerZ) {
+        nearestLunagreeLocation = null;
+        int minDistSq = Integer.MAX_VALUE;
+        for (LunagreeLocation lunagreeLocation : knownLunagreeLocations) {
+            int deltaX = lunagreeLocation.blockX() - playerX;
+            int deltaZ = lunagreeLocation.blockZ() - playerZ;
+            int distSq = deltaX * deltaX + deltaZ * deltaZ;
+            if (distSq < minDistSq) {
+                nearestLunagreeLocation = lunagreeLocation;
+                minDistSq = distSq;
+            }
+        }
     }
 }

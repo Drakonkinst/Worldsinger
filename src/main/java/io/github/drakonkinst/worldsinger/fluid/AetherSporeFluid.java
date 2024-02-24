@@ -143,8 +143,8 @@ public abstract class AetherSporeFluid extends FlowableFluid implements SporeEmi
                 double spawnX = (double) pos.getX() + random.nextDouble();
                 double spawnY = (double) pos.getY() + 1.0 + random.nextDouble();
                 double spawnZ = (double) pos.getZ() + random.nextDouble();
-                SporeParticleManager.spawnDisplayParticles(world, sporeType, spawnX, spawnY, spawnZ,
-                        1f);
+                SporeParticleManager.addClientDisplayParticle(world, sporeType, spawnX, spawnY,
+                        spawnZ, 1.0f, true, random);
             }
             if (random.nextInt(200) == 0) {
                 world.playSound(pos.getX(), pos.getY(), pos.getZ(),

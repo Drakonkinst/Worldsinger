@@ -64,6 +64,7 @@ public final class SporeParticleManager {
     private static final double PARTICLE_VISUAL_RADIUS_PENALTY = 0.5;
     private static final double DISTANCE_MULTIPLIER = 0.5;
     private static final double PARTICLE_SPEED = 0.75;
+    private static final double DISPLAY_PARTICLE_SPEED = 0.75;
     private static final Random random = Random.create();
 
     // Creates a configurable spore particle cloud based on entity size (using width as the metric)
@@ -261,8 +262,12 @@ public final class SporeParticleManager {
     }
 
     // Spawns client-side only particles in a single block that have no effect.
-    public static void spawnDisplayParticles(World world, AetherSpores sporeType, double x,
-            double y, double z, float particleSize) {
+    public static void addClientDisplayParticle(World world, AetherSpores sporeType, double x,
+            double y, double z, float particleSize, boolean floating, Random random) {
+        if (sporeType == null) {
+            return;
+        }
+
         if (!sporeType.isDead() && (
                 SporeKillingUtil.isSporeKillingBlockNearby(world, BlockPos.ofFloored(x, y, z))
                         || SporeKillingUtil.checkNearbyEntities(world, new Vec3d(x, y, z)))) {
@@ -270,8 +275,11 @@ public final class SporeParticleManager {
         }
 
         ParticleEffect particleEffect = SporeParticleManager.getCachedSporeParticleEffect(sporeType,
-                particleSize, true);
-        world.addParticle(particleEffect, x, y, z, 0.0, 0.0, 0.0);
+                particleSize, floating);
+        double velocityX = random.nextDouble() * DISPLAY_PARTICLE_SPEED;
+        double velocityY = random.nextDouble() * DISPLAY_PARTICLE_SPEED;
+        double velocityZ = random.nextDouble() * DISPLAY_PARTICLE_SPEED;
+        world.addParticle(particleEffect, x, y, z, velocityX, velocityY, velocityZ);
     }
 
     // Apply spore effect to entities within a specific block

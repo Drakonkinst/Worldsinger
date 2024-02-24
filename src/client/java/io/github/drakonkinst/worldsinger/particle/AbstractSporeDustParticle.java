@@ -42,6 +42,7 @@ public abstract class AbstractSporeDustParticle extends SpriteBillboardParticle 
             AbstractSporeDustParticleEffect parameters, SpriteProvider spriteProvider) {
         super(world, x, y, z, velocityX, velocityY, velocityZ);
         this.spriteProvider = spriteProvider;
+        this.scale *= 0.75F * parameters.getScale();
         setColor(parameters.getColor());
         setRandomAge(parameters.getScale());
         this.setSpriteForAge(spriteProvider);

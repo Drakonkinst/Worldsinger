@@ -22,42 +22,11 @@
  * SOFTWARE.
  */
 
-package io.github.drakonkinst.worldsinger.cosmere.lumar;
+package io.github.drakonkinst.worldsinger.entity;
 
-import java.io.File;
-import java.util.Optional;
-import net.minecraft.server.network.ServerPlayerEntity;
+import io.github.drakonkinst.worldsinger.cosmere.ClientLunagreeData;
 
-public class NullLunagreeManager extends LunagreeManager {
+public interface ClientLunagreeDataAccess {
 
-    @Override
-    public void loadBytesFromFile(File file) {
-        // Do nothing
-    }
-
-    @Override
-    public void saveBytesToFile(File file) {
-        // Do nothing
-    }
-
-    @Override
-    public void updateLunagreeDataForPlayer(ServerPlayerEntity player) {
-        // Do nothing
-    }
-
-    @Override
-    public Optional<LunagreeLocation> getNearestLunagree(int blockX, int blockZ, int maxDistance) {
-        return Optional.empty();
-    }
-
-    @Override
-    public long getKeyForPos(int blockX, int blockZ) {
-        // Key should never change
-        return 0;
-    }
-
-    @Override
-    public boolean isNull() {
-        return true;
-    }
+    ClientLunagreeData worldsinger$getLunagreeData();
 }
