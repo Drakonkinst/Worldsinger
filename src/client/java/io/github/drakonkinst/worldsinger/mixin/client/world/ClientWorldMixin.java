@@ -82,11 +82,18 @@ public abstract class ClientWorldMixin extends World {
             return;
         }
 
-        // We want a larger radius than the biome particles
-        setRandomLocation(pos, centerX, centerY, centerZ, radius);
+        ClientLunagreeData data = ((ClientLunagreeDataAccess) player).worldsinger$getLunagreeData();
+        // We want a larger radius than the biome particles if not under lunagree
+        // But keep particle spawn rates proportional
+        int radiusMultiplier = data.isUnderLunagree() ? ClientLunagreeData.SPORE_FALL_RADIUS_CLOSE
+                : ClientLunagreeData.SPORE_FALL_RADIUS_FAR;
+        // This divides the chance by 4, instead of 2 -- making the particles more sparse while within the lunagree
+        double spawnChanceMultiplier =
+                data.isUnderLunagree() ? (1.0 / ClientLunagreeData.SPORE_FALL_RADIUS_FAR) : 1.0;
+        setRandomLocation(pos, centerX, centerY, centerZ, radius, radiusMultiplier);
 
-        if (blockState.isFullCube(this, pos)
-                || random.nextFloat() > ClientLunagreeData.SPORE_FALL_PARTICLE_CHANCE
+        if (blockState.isFullCube(this, pos) || random.nextFloat()
+                > ClientLunagreeData.SPORE_FALL_PARTICLE_CHANCE * spawnChanceMultiplier
                 || !this.isSkyVisible(pos)) {
             return;
         }
@@ -98,7 +105,7 @@ public abstract class ClientWorldMixin extends World {
         if (y <= topY) {
             return;
         }
-        ClientLunagreeData data = ((ClientLunagreeDataAccess) player).worldsinger$getLunagreeData();
+
         LunagreeLocation location = data.getNearestLunagreeLocation(x, z,
                 LumarLunagreeManager.SPORE_FALL_RADIUS);
         if (location == null) {
@@ -115,8 +122,8 @@ public abstract class ClientWorldMixin extends World {
 
     @Unique
     private void setRandomLocation(BlockPos.Mutable pos, int centerX, int centerY, int centerZ,
-            int radius) {
-        final int extendedRadius = radius * ClientLunagreeData.SPORE_FALL_RADIUS_MULTIPLIER;
+            int radius, int radiusMultiplier) {
+        final int extendedRadius = radius * radiusMultiplier;
         pos.setX(centerX + random.nextInt(extendedRadius) - random.nextInt(extendedRadius));
         pos.setY(centerY + random.nextInt(extendedRadius) - random.nextInt(radius));
         pos.setZ(centerZ + random.nextInt(extendedRadius) - random.nextInt(extendedRadius));

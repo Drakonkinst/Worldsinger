@@ -25,7 +25,6 @@ package io.github.drakonkinst.worldsinger.mixin.client.entity;
 
 import com.mojang.authlib.GameProfile;
 import io.github.drakonkinst.worldsinger.cosmere.ClientLunagreeData;
-import io.github.drakonkinst.worldsinger.cosmere.CosmereWorldUtil;
 import io.github.drakonkinst.worldsinger.entity.ClientLunagreeDataAccess;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
@@ -34,7 +33,6 @@ import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.recipebook.ClientRecipeBook;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.stat.StatHandler;
-import net.minecraft.util.math.Vec3d;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -48,9 +46,6 @@ public abstract class ClientPlayerEntityLunagreeMixin extends AbstractClientPlay
     @Unique
     private ClientLunagreeData lunagreeData;
 
-    @Unique
-    private boolean nearestLunagreeDataNeedsUpdate;
-
     public ClientPlayerEntityLunagreeMixin(ClientWorld world, GameProfile profile) {
         super(world, profile);
         throw new UnsupportedOperationException();
@@ -60,18 +55,12 @@ public abstract class ClientPlayerEntityLunagreeMixin extends AbstractClientPlay
     private void initializeLunagreeData(MinecraftClient client, ClientWorld world,
             ClientPlayNetworkHandler networkHandler, StatHandler stats, ClientRecipeBook recipeBook,
             boolean lastSneaking, boolean lastSprinting, CallbackInfo ci) {
-        lunagreeData = new ClientLunagreeData();
-        nearestLunagreeDataNeedsUpdate = true;
+        lunagreeData = new ClientLunagreeData((ClientPlayerEntity) (Object) this);
     }
 
     @Inject(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/AbstractClientPlayerEntity;tick()V"))
     private void updateNearestLunagree(CallbackInfo ci) {
-        if (!CosmereWorldUtil.isLumar(this.getWorld()) || (this.getVelocity().equals(Vec3d.ZERO)
-                && !nearestLunagreeDataNeedsUpdate)) {
-            return;
-        }
-        lunagreeData.updateNearestLunagreeLocation(this.getBlockX(), this.getBlockZ());
-        nearestLunagreeDataNeedsUpdate = false;
+        lunagreeData.update();
     }
 
     @Override

@@ -24,6 +24,7 @@
 
 package io.github.drakonkinst.worldsinger.mixin.world;
 
+import com.llamalad7.mixinextras.sugar.Local;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.AetherSpores;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarLunagreeManager;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LunagreeManager;
@@ -34,7 +35,7 @@ import io.github.drakonkinst.worldsinger.world.PersistentByteDataManagerAccess;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.Executor;
-import net.minecraft.block.BlockState;
+import net.minecraft.block.Block;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.WorldGenerationProgressListener;
@@ -42,7 +43,6 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.RandomSequencesState;
-import net.minecraft.world.Heightmap.Type;
 import net.minecraft.world.PersistentStateManager;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.World;
@@ -84,13 +84,14 @@ public abstract class ServerWorldLunagreeManagerMixin extends WorldLumarMixin im
     }
 
     @Inject(method = "tickIceAndSnow", at = @At("RETURN"))
-    private void rainSporeBlocksUnderSporeFall(BlockPos pos, CallbackInfo ci) {
+    private void rainSporeBlocksUnderSporeFall(BlockPos xzPos, CallbackInfo ci,
+            @Local(ordinal = 1) BlockPos pos, @Local(ordinal = 2) BlockPos belowPos) {
         if (!isLumar) {
             return;
         }
         int x = pos.getX();
         int z = pos.getZ();
-        if (!this.isSkyVisible(pos) || this.getTopY(Type.MOTION_BLOCKING, x, z) >= pos.getY()) {
+        if (!canPlaceSporeBlock(pos, belowPos)) {
             return;
         }
         Optional<LunagreeLocation> nearestLocation = lunagreeManager.getNearestLunagree(x, z,
@@ -105,13 +106,14 @@ public abstract class ServerWorldLunagreeManagerMixin extends WorldLumarMixin im
             return;
         }
 
-        // TODO: This never runs for some reason
-        BlockPos belowPos = pos.down();
-        BlockState currentBlockState = this.getBlockState(pos);
-        if (currentBlockState.isAir() && this.getBlockState(belowPos)
-                .isSideSolidFullSquare(this, belowPos, Direction.UP)) {
-            this.setBlockState(pos, sporeType.getSolidBlock().getDefaultState());
-        }
+        this.setBlockState(pos, sporeType.getSolidBlock().getDefaultState());
+    }
+
+    @Unique
+    private boolean canPlaceSporeBlock(BlockPos pos, BlockPos belowPos) {
+        return pos.getY() >= this.getBottomY() && pos.getY() < this.getTopY() && this.isSkyVisible(
+                pos) && this.getBlockState(pos).isAir() && Block.isFaceFullSquare(
+                this.getBlockState(belowPos).getCollisionShape(this, belowPos), Direction.UP);
     }
 
     @Override

@@ -24,20 +24,31 @@
 
 package io.github.drakonkinst.worldsinger.cosmere;
 
+import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarLunagreeManager;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LunagreeManager.LunagreeLocation;
 import java.util.ArrayList;
 import java.util.List;
+import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.Nullable;
 
 // Client-side record of the nearest lunagree locations
 public class ClientLunagreeData {
 
-    public static final double SPORE_FALL_PARTICLE_CHANCE = 0.15;
-    public static final int SPORE_FALL_RADIUS_MULTIPLIER = 4;
+    public static final double SPORE_FALL_PARTICLE_CHANCE = 0.1125;
+    public static final int SPORE_FALL_RADIUS_FAR = 4;
+    public static final int SPORE_FALL_RADIUS_CLOSE = 2;
     public static final float SPORE_FALL_PARTICLE_SIZE = 10.0f;
 
+    private final ClientPlayerEntity player;
     private final List<LunagreeLocation> knownLunagreeLocations = new ArrayList<>();
     private @Nullable LunagreeLocation nearestLunagreeLocation = null;
+    private boolean needsUpdate = true;
+    private boolean underLunagree = false;
+
+    public ClientLunagreeData(ClientPlayerEntity player) {
+        this.player = player;
+    }
 
     public List<LunagreeLocation> getKnownLunagreeLocations() {
         return knownLunagreeLocations;
@@ -66,7 +77,21 @@ public class ClientLunagreeData {
         return nearestLunagreeLocation;
     }
 
-    public void updateNearestLunagreeLocation(int playerX, int playerZ) {
+    public void update() {
+        if (!CosmereWorldUtil.isLumar(player.getWorld())) {
+            return;
+        }
+        if (!player.getVelocity().equals(Vec3d.ZERO) || needsUpdate) {
+            updateNearestLunagreeLocation(player.getBlockX(), player.getBlockZ());
+            needsUpdate = false;
+        }
+    }
+
+    public boolean isUnderLunagree() {
+        return underLunagree;
+    }
+
+    private void updateNearestLunagreeLocation(int playerX, int playerZ) {
         nearestLunagreeLocation = null;
         int minDistSq = Integer.MAX_VALUE;
         for (LunagreeLocation lunagreeLocation : knownLunagreeLocations) {
@@ -78,5 +103,7 @@ public class ClientLunagreeData {
                 minDistSq = distSq;
             }
         }
+        underLunagree = minDistSq
+                <= LumarLunagreeManager.SPORE_FALL_RADIUS * LumarLunagreeManager.SPORE_FALL_RADIUS;
     }
 }
