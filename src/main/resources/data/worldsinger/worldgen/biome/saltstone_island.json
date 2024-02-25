@@ -61,7 +61,9 @@
       "minecraft:disk_gravel"
     ],
     [],
-    [],
+    [
+      "minecraft:spring_water"
+    ],
     [
       "minecraft:glow_lichen",
       "worldsinger:patch_dead_bush_higher",

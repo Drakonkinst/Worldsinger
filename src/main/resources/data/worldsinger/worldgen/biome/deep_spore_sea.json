@@ -56,7 +56,9 @@
       "minecraft:disk_gravel"
     ],
     [],
-    [],
+    [
+      "minecraft:spring_water"
+    ],
     [],
     []
   ],

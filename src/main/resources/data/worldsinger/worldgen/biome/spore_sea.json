@@ -27,7 +27,9 @@
       "minecraft:amethyst_geode"
     ],
     [],
-    [],
+    [
+      "minecraft:spring_water"
+    ],
     [
       "minecraft:ore_gravel",
       "worldsinger:ore_coarse_dirt",

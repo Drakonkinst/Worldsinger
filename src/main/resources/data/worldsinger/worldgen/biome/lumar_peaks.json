@@ -67,7 +67,9 @@
     ],
     [
     ],
-    [],
+    [
+      "minecraft:spring_water"
+    ],
     [
       "minecraft:glow_lichen"
     ],

@@ -70,7 +70,7 @@ public class ZephyrSpores extends AetherSpores {
 
     private static final ZephyrSpores INSTANCE = new ZephyrSpores();
     private static final int COLOR = 0x4b9bb7;
-    private static final int PARTICLE_COLOR = 0xb6d6e2;
+    private static final int PARTICLE_COLOR = 0x64bdde;
 
     private static final float SPORE_TO_POWER_MULTIPLIER = 0.15f;
     private static final float KNOCKBACK_MULTIPLIER = 2.0f;
