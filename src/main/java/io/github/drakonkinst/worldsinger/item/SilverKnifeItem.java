@@ -41,8 +41,8 @@ public class SilverKnifeItem extends KnifeItem {
 
     public static final float SILVER_BONUS_DAMAGE = 6.0f;
 
-    public SilverKnifeItem(float attackDamage, float attackSpeed, Settings settings) {
-        super(attackDamage, attackSpeed, ModToolMaterials.SILVER, settings);
+    public SilverKnifeItem(Settings settings) {
+        super(ModToolMaterials.SILVER, settings);
     }
 
     @Override

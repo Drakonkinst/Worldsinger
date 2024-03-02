@@ -25,12 +25,8 @@ package io.github.drakonkinst.worldsinger.entity.ai;
 
 import io.github.drakonkinst.worldsinger.entity.CameraPossessable;
 import net.minecraft.entity.ai.control.MoveControl;
-import net.minecraft.entity.ai.pathing.EntityNavigation;
-import net.minecraft.entity.ai.pathing.PathNodeMaker;
-import net.minecraft.entity.ai.pathing.PathNodeType;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.util.math.MathHelper;
 
 public class PossessableMoveControl<E extends MobEntity & CameraPossessable> extends MoveControl {
 
@@ -62,10 +58,9 @@ public class PossessableMoveControl<E extends MobEntity & CameraPossessable> ext
 
     private void doPossessedTick() {
         if (this.state == MoveControl.State.STRAFE) {
-            float baseMovementSpeed =
+            float speed =
                     (float) this.entity.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED)
                             * POSSESSED_MOVEMENT_MULTIPLIER;
-            float speed = baseMovementSpeed;
             if (castEntity.isSprinting()) {
                 speed *= this.speedMultiplier;
             }
@@ -85,19 +80,5 @@ public class PossessableMoveControl<E extends MobEntity & CameraPossessable> ext
         } else {
             this.entity.setForwardSpeed(0.0F);
         }
-    }
-
-    private boolean isPosWalkable(float x, float z) {
-        EntityNavigation entityNavigation = this.entity.getNavigation();
-        if (entityNavigation != null) {
-            PathNodeMaker pathNodeMaker = entityNavigation.getNodeMaker();
-            if (pathNodeMaker != null && pathNodeMaker.getDefaultNodeType(this.entity.getWorld(),
-                    MathHelper.floor(this.entity.getX() + (double) x), this.entity.getBlockY(),
-                    MathHelper.floor(this.entity.getZ() + (double) z)) != PathNodeType.WALKABLE) {
-                return false;
-            }
-        }
-
-        return true;
     }
 }

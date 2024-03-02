@@ -51,9 +51,8 @@ import org.spongepowered.asm.mixin.Mixin;
 @Mixin(AxeItem.class)
 public abstract class AxeItemMixin extends MiningToolItem {
 
-    public AxeItemMixin(float attackDamage, float attackSpeed, ToolMaterial material,
-            TagKey<Block> effectiveBlocks, Settings settings) {
-        super(attackDamage, attackSpeed, material, effectiveBlocks, settings);
+    public AxeItemMixin(ToolMaterial material, TagKey<Block> effectiveBlocks, Settings settings) {
+        super(material, effectiveBlocks, settings);
     }
 
     @Override

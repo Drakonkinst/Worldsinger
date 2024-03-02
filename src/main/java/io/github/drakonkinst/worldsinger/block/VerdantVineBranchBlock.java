@@ -171,8 +171,7 @@ public class VerdantVineBranchBlock extends ConnectingBlock implements Waterlogg
     }
 
     @Override
-    public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos,
-            NavigationType type) {
+    public boolean canPathfindThrough(BlockState state, NavigationType type) {
         return false;
     }
 

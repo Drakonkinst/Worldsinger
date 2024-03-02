@@ -40,6 +40,7 @@ import io.github.drakonkinst.worldsinger.network.ModPayloadRegistry;
 import io.github.drakonkinst.worldsinger.network.ServerNetworkHandler;
 import io.github.drakonkinst.worldsinger.particle.ModParticleTypes;
 import io.github.drakonkinst.worldsinger.recipe.ModRecipeSerializer;
+import io.github.drakonkinst.worldsinger.registry.ModDataComponentTypes;
 import io.github.drakonkinst.worldsinger.registry.ModDispenserBehaviors;
 import io.github.drakonkinst.worldsinger.registry.ModPotions;
 import io.github.drakonkinst.worldsinger.registry.ModSoundEvents;
@@ -91,6 +92,7 @@ public class Worldsinger implements ModInitializer {
         ModStructurePieceTypes.initialize();
         ModStructureTypes.initialize();
         ModEventHandlers.initialize();
+        ModDataComponentTypes.initialize();
 
         // AI
         ModMemoryModuleTypes.initialize();

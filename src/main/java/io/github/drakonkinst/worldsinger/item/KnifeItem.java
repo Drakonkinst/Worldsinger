@@ -35,9 +35,8 @@ import net.minecraft.registry.tag.BlockTags;
 // weapon enchantments.
 public class KnifeItem extends MiningToolItem {
 
-    public KnifeItem(float attackDamage, float attackSpeed, ToolMaterial material,
-            Settings settings) {
-        super(attackDamage, attackSpeed, material, BlockTags.SWORD_EFFICIENT, settings);
+    public KnifeItem(ToolMaterial material, Settings settings) {
+        super(material, BlockTags.SWORD_EFFICIENT, settings);
     }
 
     // To maintain parity with the sword, only applies a 1.5x mining multiplier instead of

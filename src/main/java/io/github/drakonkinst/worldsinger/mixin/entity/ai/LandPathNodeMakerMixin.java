@@ -23,18 +23,18 @@
  */
 package io.github.drakonkinst.worldsinger.mixin.entity.ai;
 
+import com.llamalad7.mixinextras.sugar.Local;
 import io.github.drakonkinst.worldsinger.block.ModBlockTags;
 import io.github.drakonkinst.worldsinger.block.ModBlocks;
 import io.github.drakonkinst.worldsinger.fluid.ModFluidTags;
-import io.github.drakonkinst.worldsinger.mixin.accessor.LandPathNodeMakerInvoker;
 import io.github.drakonkinst.worldsinger.util.ModEnums;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.ai.pathing.LandPathNodeMaker;
+import net.minecraft.entity.ai.pathing.PathContext;
 import net.minecraft.entity.ai.pathing.PathNodeMaker;
 import net.minecraft.entity.ai.pathing.PathNodeType;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockPos.Mutable;
 import net.minecraft.world.BlockView;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
@@ -88,23 +88,25 @@ public abstract class LandPathNodeMakerMixin extends PathNodeMaker {
     }
 
     // Specifically runs after DANGER_OTHER and DANGER_FIRE, which should take precedence
+    // TODO: Can probably do this without an @Local
     @Inject(method = "getNodeTypeFromNeighbors", at = @At(value = "FIELD", opcode = Opcodes.GETSTATIC, target = "Lnet/minecraft/entity/ai/pathing/PathNodeType;WATER:Lnet/minecraft/entity/ai/pathing/PathNodeType;"), cancellable = true)
-    private static void addSilverNodeTypes(BlockView world, Mutable pos, PathNodeType nodeType,
-            CallbackInfoReturnable<PathNodeType> cir) {
+    private static void addSilverNodeTypes(PathContext context, int x, int y, int z,
+            PathNodeType fallback, CallbackInfoReturnable<PathNodeType> cir,
+            @Local(ordinal = 1) PathNodeType nodeType) {
         if (nodeType == ModEnums.PathNodeType.DAMAGE_SILVER) {
             cir.setReturnValue(ModEnums.PathNodeType.DANGER_SILVER);
         }
     }
 
-    @Inject(method = "getLandNodeType", at = @At("HEAD"), cancellable = true)
-    private static void avoidSporeBlocks(BlockView world, BlockPos.Mutable pos,
+    @Inject(method = "getLandNodeType(Lnet/minecraft/entity/ai/pathing/PathContext;Lnet/minecraft/util/math/BlockPos$Mutable;)Lnet/minecraft/entity/ai/pathing/PathNodeType;", at = @At("HEAD"), cancellable = true)
+    private static void avoidSporeBlocks(PathContext context, BlockPos.Mutable pos,
             CallbackInfoReturnable<PathNodeType> cir) {
+        int x = pos.getX();
         int y = pos.getY();
-        PathNodeType pathNodeType = LandPathNodeMakerInvoker.worldsinger$getCommonNodeType(world,
-                pos);
-        if (pathNodeType == PathNodeType.OPEN && y >= world.getBottomY() + 1) {
-            PathNodeType pathNodeTypeBelow = LandPathNodeMakerInvoker.worldsinger$getCommonNodeType(
-                    world, pos.down());
+        int z = pos.getZ();
+        PathNodeType pathNodeType = context.getNodeType(x, y, z);
+        if (pathNodeType == PathNodeType.OPEN && y >= context.getWorld().getBottomY() + 1) {
+            PathNodeType pathNodeTypeBelow = context.getNodeType(x, y - 1, z);
             if (pathNodeTypeBelow == ModEnums.PathNodeType.AETHER_SPORE_SEA) {
                 cir.setReturnValue(ModEnums.PathNodeType.AETHER_SPORE_SEA);
             }

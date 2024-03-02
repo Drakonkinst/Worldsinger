@@ -198,6 +198,7 @@ public class LumarLunagreeManager extends LunagreeManager {
                 possibleSporeIds,
                 biome -> ModBiomes.DEEP_SPORE_SEA.equals(biome.getKey().orElse(null)));
         if (result == null) {
+            // TODO: This will keep failing every time this chunk is loaded. Is there a better way to signify, at least for runtime, that no lunagree can exist here?
             Worldsinger.LOGGER.info("Failed to generate lunagree for (" + q + ", " + r + ")");
             return Optional.empty();
         }

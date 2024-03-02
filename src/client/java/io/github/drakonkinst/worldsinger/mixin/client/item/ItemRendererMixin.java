@@ -25,7 +25,6 @@
 package io.github.drakonkinst.worldsinger.mixin.client.item;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
-import io.github.drakonkinst.worldsinger.Worldsinger;
 import io.github.drakonkinst.worldsinger.cosmere.SilverLinedUtil;
 import io.github.drakonkinst.worldsinger.registry.ModItemRendering;
 import io.github.drakonkinst.worldsinger.util.LayeredBakedModel;
@@ -64,7 +63,8 @@ public abstract class ItemRendererMixin {
                         getSilverLinedOverlayForItem(stack));
                 if (silverLinedOverlayModel == null || silverLinedOverlayModel.equals(
                         manager.getMissingModel())) {
-                    Worldsinger.LOGGER.warn("Could not locate silver-lined overlay texture");
+                    // TODO: Model doesn't actually exist yet, but thanks for trying
+                    // Worldsinger.LOGGER.warn("Could not locate silver-lined overlay texture");
                     return original;
                 }
                 LayeredBakedModel layeredModel = new LayeredBakedModel(
@@ -82,6 +82,7 @@ public abstract class ItemRendererMixin {
         if (stack.isIn(ItemTags.AXES)) {
             return ModItemRendering.SILVER_LINED_AXE_OVERLAY;
         }
+        // TODO: Add boats
         return null;
     }
 }

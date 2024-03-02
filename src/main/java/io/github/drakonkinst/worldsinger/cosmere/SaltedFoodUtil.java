@@ -26,25 +26,23 @@
 package io.github.drakonkinst.worldsinger.cosmere;
 
 import io.github.drakonkinst.worldsinger.item.ModItemTags;
+import io.github.drakonkinst.worldsinger.registry.ModDataComponentTypes;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
 
 public final class SaltedFoodUtil {
 
-    private static final String KEY_SALTED = "Salted";
-
     public static boolean isSalted(ItemStack stack) {
-        NbtCompound nbt = stack.getNbt();
-        return nbt != null && nbt.getBoolean(KEY_SALTED);
+        return stack.contains(ModDataComponentTypes.SALTED) && Boolean.TRUE.equals(
+                stack.get(ModDataComponentTypes.SALTED));
     }
 
+    // Returns if the base item can be salted, not if the stack itself can
     public static boolean canBeSalted(ItemStack stack) {
         return stack.isIn(ModItemTags.CAN_BE_SALTED);
     }
 
     public static ItemStack makeSalted(ItemStack stack) {
-        NbtCompound nbt = stack.getOrCreateNbt();
-        nbt.putBoolean(KEY_SALTED, true);
+        stack.set(ModDataComponentTypes.SALTED, true);
         return stack;
     }
 

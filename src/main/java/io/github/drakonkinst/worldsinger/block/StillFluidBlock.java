@@ -103,8 +103,7 @@ public class StillFluidBlock extends Block implements FluidDrainable {
     }
 
     @Override
-    public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos,
-            NavigationType type) {
+    public boolean canPathfindThrough(BlockState state, NavigationType type) {
         return true;
     }
 

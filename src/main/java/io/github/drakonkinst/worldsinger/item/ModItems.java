@@ -160,15 +160,20 @@ public final class ModItems {
                     new Item.Settings().maxDamageIfAbsent(
                             ArmorItem.Type.BOOTS.getMaxDamage(STEEL_DURABILITY_MULTIPLIER))));
     public static final Item STEEL_SWORD = register("steel_sword",
-            new SwordItem(ModToolMaterials.STEEL, 3, -2.4f, new Item.Settings()));
+            new SwordItem(ModToolMaterials.STEEL, new Item.Settings().attributeModifiers(
+                    SwordItem.createAttributeModifiers(ModToolMaterials.STEEL, 3, -2.4f))));
     public static final Item STEEL_PICKAXE = register("steel_pickaxe",
-            new PickaxeItem(ModToolMaterials.STEEL, 1, -2.8f, new Item.Settings()));
-    public static final Item STEEL_AXE = register("steel_axe",
-            new AxeItem(ModToolMaterials.STEEL, 6.0f, -3.1f, new Item.Settings()));
+            new PickaxeItem(ModToolMaterials.STEEL, new Item.Settings().attributeModifiers(
+                    PickaxeItem.createAttributeModifiers(ModToolMaterials.STEEL, 1.0f, -2.8f))));
+    public static final Item STEEL_AXE = register("steel_axe", new AxeItem(ModToolMaterials.STEEL,
+            new Item.Settings().attributeModifiers(
+                    AxeItem.createAttributeModifiers(ModToolMaterials.STEEL, 6.0f, -3.1f))));
     public static final Item STEEL_SHOVEL = register("steel_shovel",
-            new ShovelItem(ModToolMaterials.STEEL, 1.5f, -3.0f, new Item.Settings()));
-    public static final Item STEEL_HOE = register("steel_hoe",
-            new HoeItem(ModToolMaterials.STEEL, -2, -1.0f, new Item.Settings()));
+            new ShovelItem(ModToolMaterials.STEEL, new Item.Settings().attributeModifiers(
+                    ShovelItem.createAttributeModifiers(ModToolMaterials.STEEL, 1.5f, -3.0f))));
+    public static final Item STEEL_HOE = register("steel_hoe", new HoeItem(ModToolMaterials.STEEL,
+            new Item.Settings().attributeModifiers(
+                    HoeItem.createAttributeModifiers(ModToolMaterials.STEEL, -2.0f, -1.0f))));
 
     // Aluminum
     public static final Item ALUMINUM_INGOT = register("aluminum_ingot",
@@ -183,8 +188,9 @@ public final class ModItems {
             new FaultyFirestarterItem(0.33f, new Item.Settings().maxDamage(64)));
     public static final Item QUARTZ_AND_IRON = register("quartz_and_iron",
             new FaultyFirestarterItem(0.33f, new Item.Settings().maxDamage(88)));
-    public static final Item SILVER_KNIFE = register("silver_knife",
-            new SilverKnifeItem(1.0f, -2.0f, new Item.Settings()));
+    public static final Item SILVER_KNIFE = register("silver_knife", new SilverKnifeItem(
+            new Item.Settings().attributeModifiers(
+                    KnifeItem.createAttributeModifiers(ModToolMaterials.SILVER, 1.0f, -2.0f))));
 
     // Admin
     public static final Item MIDNIGHT_CREATURE_SPAWN_EGG = register("midnight_creature_spawn_egg",
