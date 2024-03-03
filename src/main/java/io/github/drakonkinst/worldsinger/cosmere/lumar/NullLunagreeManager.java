@@ -24,21 +24,12 @@
 
 package io.github.drakonkinst.worldsinger.cosmere.lumar;
 
-import java.io.File;
 import java.util.Optional;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.server.network.ServerPlayerEntity;
 
 public class NullLunagreeManager extends LunagreeManager {
-
-    @Override
-    public void loadBytesFromFile(File file) {
-        // Do nothing
-    }
-
-    @Override
-    public void saveBytesToFile(File file) {
-        // Do nothing
-    }
 
     @Override
     public void updateLunagreeDataForPlayer(ServerPlayerEntity player) {
@@ -59,5 +50,10 @@ public class NullLunagreeManager extends LunagreeManager {
     @Override
     public boolean isNull() {
         return true;
+    }
+
+    @Override
+    public NbtCompound writeNbt(NbtCompound nbt, WrapperLookup registryLookup) {
+        return null;
     }
 }

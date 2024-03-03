@@ -24,14 +24,19 @@
 
 package io.github.drakonkinst.worldsinger.cosmere.lumar;
 
-import io.github.drakonkinst.worldsinger.world.PersistentByteData;
 import java.util.Optional;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.world.PersistentState;
 
-public abstract class LunagreeManager extends PersistentByteData {
+public abstract class LunagreeManager extends PersistentState {
 
     public static final String NAME = "lunagrees";
+
+    private static final String KEY_X = "x";
+    private static final String KEY_Z = "z";
+    private static final String KEY_ID = "id";
 
     public record LunagreeLocation(int blockX, int blockZ, int sporeId) {
 
@@ -46,6 +51,19 @@ public abstract class LunagreeManager extends PersistentByteData {
             buf.writeVarInt(location.blockX);
             buf.writeVarInt(location.blockZ);
             buf.writeByte(location.sporeId);
+        }
+
+        public static LunagreeLocation fromNbt(NbtCompound nbt) {
+            int sporeId = nbt.getInt(KEY_ID);
+            int x = nbt.getInt(KEY_X);
+            int z = nbt.getInt(KEY_Z);
+            return new LunagreeLocation(x, z, sporeId);
+        }
+
+        public void writeNbt(NbtCompound nbt) {
+            nbt.putInt(KEY_ID, sporeId);
+            nbt.putInt(KEY_X, blockX);
+            nbt.putInt(KEY_Z, blockZ);
         }
 
         public double distSqTo(double x, double z) {

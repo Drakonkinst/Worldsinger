@@ -36,22 +36,20 @@ import it.unimi.dsi.fastutil.ints.IntIntPair;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.minecraft.datafixer.DataFixTypes;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtList;
+import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import org.apache.commons.io.FileUtils;
+import net.minecraft.world.PersistentState;
 
 public class LumarLunagreeManager extends LunagreeManager {
 
@@ -61,6 +59,9 @@ public class LumarLunagreeManager extends LunagreeManager {
     public static final int SPORE_FALL_RADIUS = 200;
     private static final int CENTER_X = 0;
     private static final int CENTER_Z = 0;
+    private static final String KEY_LUNAGREES = "lunagrees";
+    private static final String KEY_CELL = "cell";
+    private static final String KEY_DATA = "data";
 
     public static final int SEARCH_CHECK_INTERVAL = 64;
 
@@ -73,8 +74,11 @@ public class LumarLunagreeManager extends LunagreeManager {
     private static final float RAD_3 = MathHelper.sqrt(3);
     private static final float RAD_3_OVER_3 = RAD_3 / 3.0f;
 
-    public static ByteDataType<LumarLunagreeManager> getPersistentByteDataType(ServerWorld world) {
-        return new ByteDataType<>(() -> new LumarLunagreeManager(world));
+    public static PersistentState.Type<LumarLunagreeManager> getPersistentStateType(
+            ServerWorld world) {
+        return new PersistentState.Type<>(() -> new LumarLunagreeManager(world),
+                (nbt, registryLookup) -> LumarLunagreeManager.fromNbt(world, nbt),
+                DataFixTypes.LEVEL);
     }
 
     // https://stackoverflow.com/questions/12772939/java-storing-two-ints-in-a-long
@@ -115,45 +119,31 @@ public class LumarLunagreeManager extends LunagreeManager {
     }
 
     @Override
-    public void saveBytesToFile(File file) {
-        try {
-            ByteArrayOutputStream bos = new ByteArrayOutputStream();
-            DataOutputStream out = new DataOutputStream(bos);
-            for (Long2ObjectMap.Entry<LunagreeLocation> entry : lunagreeMap.long2ObjectEntrySet()) {
-                LunagreeLocation value = entry.getValue();
-                out.writeLong(entry.getLongKey());
-                out.writeInt(value.blockX());
-                out.writeInt(value.blockZ());
-                out.write(value.sporeId());
-            }
-            out.close();
-            FileOutputStream fileOutputStream = new FileOutputStream(file);
-            bos.writeTo(fileOutputStream);
-            bos.close();
-            fileOutputStream.close();
-        } catch (IOException e) {
-            Worldsinger.LOGGER.error("Could not save data {}", this, e);
+    public NbtCompound writeNbt(NbtCompound nbt, WrapperLookup registryLookup) {
+        NbtList lunagreeDataList = new NbtList();
+        for (Long2ObjectMap.Entry<LunagreeLocation> entry : lunagreeMap.long2ObjectEntrySet()) {
+            NbtCompound valueData = new NbtCompound();
+            LunagreeLocation value = entry.getValue();
+            value.writeNbt(valueData);
+            NbtCompound entryData = new NbtCompound();
+            entryData.putLong(KEY_CELL, entry.getLongKey());
+            entryData.put(KEY_DATA, valueData);
+            lunagreeDataList.add(entryData);
         }
+        nbt.put(KEY_LUNAGREES, lunagreeDataList);
+        return nbt;
     }
 
-    @Override
-    public void loadBytesFromFile(File file) {
-        try {
-            ByteArrayInputStream byteStream = new ByteArrayInputStream(
-                    FileUtils.readFileToByteArray(file));
-            DataInputStream in = new DataInputStream(byteStream);
-            while (in.available() > 0) {
-                long key = in.readLong();
-                int blockX = in.readInt();
-                int blockZ = in.readInt();
-                int sporeId = in.read();
-                lunagreeMap.put(key, new LunagreeLocation(blockX, blockZ, sporeId));
-            }
-            in.close();
-            byteStream.close();
-        } catch (IOException e) {
-            Worldsinger.LOGGER.error("Error loading saved data: {}", this, e);
+    public static LumarLunagreeManager fromNbt(ServerWorld world, NbtCompound nbt) {
+        LumarLunagreeManager lunagreeManager = new LumarLunagreeManager(world);
+        NbtList lunagreeDataList = nbt.getList(KEY_LUNAGREES, NbtElement.COMPOUND_TYPE);
+        for (NbtElement entryData : lunagreeDataList) {
+            NbtCompound entryCompound = (NbtCompound) entryData;
+            long key = entryCompound.getLong(KEY_CELL);
+            NbtCompound valueData = entryCompound.getCompound(KEY_DATA);
+            lunagreeManager.lunagreeMap.put(key, LunagreeLocation.fromNbt(valueData));
         }
+        return lunagreeManager;
     }
 
     private Optional<LunagreeLocation> getLunagreeFor(int q, int r, boolean shouldCreate) {

@@ -31,7 +31,6 @@ import io.github.drakonkinst.worldsinger.cosmere.lumar.LunagreeManager;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LunagreeManager.LunagreeLocation;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LunagreeManagerAccess;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.NullLunagreeManager;
-import io.github.drakonkinst.worldsinger.world.PersistentByteDataManagerAccess;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.Executor;
@@ -75,9 +74,9 @@ public abstract class ServerWorldLunagreeManagerMixin extends WorldLumarMixin im
             long seed, List<SpecialSpawner> spawners, boolean shouldTickTime,
             RandomSequencesState randomSequencesState, CallbackInfo ci) {
         if (isLumar) {
-            lunagreeManager = ((PersistentByteDataManagerAccess) this.getPersistentStateManager()).worldsinger$getOrCreateFromBytes(
-                    LumarLunagreeManager.getPersistentByteDataType((ServerWorld) (Object) this),
-                    LunagreeManager.NAME);
+            lunagreeManager = this.getPersistentStateManager()
+                    .getOrCreate(LumarLunagreeManager.getPersistentStateType(
+                            (ServerWorld) (Object) (this)), LunagreeManager.NAME);
         } else {
             lunagreeManager = new NullLunagreeManager();
         }
