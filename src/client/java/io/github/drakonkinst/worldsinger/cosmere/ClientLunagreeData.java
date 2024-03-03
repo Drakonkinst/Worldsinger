@@ -25,8 +25,8 @@
 package io.github.drakonkinst.worldsinger.cosmere;
 
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarLunagreeManager;
-import io.github.drakonkinst.worldsinger.cosmere.lumar.LunagreeManager.LunagreeLocation;
-import java.util.ArrayList;
+import io.github.drakonkinst.worldsinger.cosmere.lumar.LunagreeLocation;
+import io.github.drakonkinst.worldsinger.cosmere.lumar.RainlinePath;
 import java.util.List;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.util.math.Vec3d;
@@ -39,9 +39,14 @@ public class ClientLunagreeData {
     public static final int SPORE_FALL_RADIUS_FAR = 4;
     public static final int SPORE_FALL_RADIUS_CLOSE = 2;
     public static final float SPORE_FALL_PARTICLE_SIZE = 10.0f;
+    public static final int MAX_KNOWN_LUNAGREE_LOCATIONS = 9;
 
     private final ClientPlayerEntity player;
-    private final List<LunagreeLocation> knownLunagreeLocations = new ArrayList<>();
+    // Associative arrays that have up to MAX_KNOWN_LUNAGREE_LOCATIONS values
+    // The first null value marks the end of the list, if not full
+    private final LunagreeLocation[] lunagreeLocations = new LunagreeLocation[MAX_KNOWN_LUNAGREE_LOCATIONS];
+    private final RainlinePath[] rainlinePaths = new RainlinePath[MAX_KNOWN_LUNAGREE_LOCATIONS];
+
     private @Nullable LunagreeLocation nearestLunagreeLocation = null;
     private boolean needsUpdate = true;
     private boolean underLunagree = false;
@@ -50,13 +55,21 @@ public class ClientLunagreeData {
         this.player = player;
     }
 
-    public List<LunagreeLocation> getKnownLunagreeLocations() {
-        return knownLunagreeLocations;
+    public LunagreeLocation[] getLunagreeLocations() {
+        return lunagreeLocations;
     }
 
-    public void setKnownLunagreeLocations(List<LunagreeLocation> locations) {
-        knownLunagreeLocations.clear();
-        knownLunagreeLocations.addAll(locations);
+    public void setLunagreeLocations(List<LunagreeLocation> locations) {
+        // TODO: Thinking about caching rainline values
+        for (int i = 0; i < MAX_KNOWN_LUNAGREE_LOCATIONS; ++i) {
+            if (i >= locations.size()) {
+                lunagreeLocations[i] = null;
+                rainlinePaths[i] = null;
+            } else {
+                lunagreeLocations[i] = locations.get(i);
+                rainlinePaths[i] = new RainlinePath(lunagreeLocations[i].rainlineNodes());
+            }
+        }
     }
 
     @Nullable
@@ -94,7 +107,10 @@ public class ClientLunagreeData {
     private void updateNearestLunagreeLocation(int playerX, int playerZ) {
         nearestLunagreeLocation = null;
         int minDistSq = Integer.MAX_VALUE;
-        for (LunagreeLocation lunagreeLocation : knownLunagreeLocations) {
+        for (LunagreeLocation lunagreeLocation : lunagreeLocations) {
+            if (lunagreeLocation == null) {
+                return;
+            }
             int deltaX = lunagreeLocation.blockX() - playerX;
             int deltaZ = lunagreeLocation.blockZ() - playerZ;
             int distSq = deltaX * deltaX + deltaZ * deltaZ;

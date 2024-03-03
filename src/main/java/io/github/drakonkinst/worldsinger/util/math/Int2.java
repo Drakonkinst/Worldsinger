@@ -22,22 +22,19 @@
  * SOFTWARE.
  */
 
-package io.github.drakonkinst.worldsinger.cosmere.lumar;
+package io.github.drakonkinst.worldsinger.util.math;
 
-import java.util.Optional;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.world.PersistentState;
+import net.minecraft.util.math.MathHelper;
 
-public abstract class LunagreeManager extends PersistentState {
+public record Int2(int x, int y) {
 
-    public abstract void updateLunagreeDataForPlayer(ServerPlayerEntity player);
+    public static float distance(Int2 p0, Int2 p1) {
+        return MathHelper.sqrt(Int2.distanceSquared(p0, p1));
+    }
 
-    public abstract Optional<LunagreeLocation> getNearestLunagree(int blockX, int blockZ,
-            int maxDistance);
-
-    public abstract long getKeyForPos(int blockX, int blockZ);
-
-    public boolean isNull() {
-        return false;
+    public static float distanceSquared(Int2 p0, Int2 p1) {
+        float deltaX = p0.x() - p1.x();
+        float deltaY = p0.y() - p1.y();
+        return deltaX * deltaX + deltaY * deltaY;
     }
 }

@@ -25,7 +25,7 @@
 package io.github.drakonkinst.worldsinger.network.packet;
 
 import io.github.drakonkinst.worldsinger.Worldsinger;
-import io.github.drakonkinst.worldsinger.cosmere.lumar.LunagreeManager.LunagreeLocation;
+import io.github.drakonkinst.worldsinger.cosmere.lumar.LunagreeLocation;
 import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.network.PacketByteBuf;

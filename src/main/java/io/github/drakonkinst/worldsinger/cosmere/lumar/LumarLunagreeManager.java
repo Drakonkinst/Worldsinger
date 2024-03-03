@@ -28,6 +28,7 @@ import com.mojang.datafixers.util.Pair;
 import io.github.drakonkinst.worldsinger.Worldsinger;
 import io.github.drakonkinst.worldsinger.command.LocateSporeSeaCommand;
 import io.github.drakonkinst.worldsinger.network.packet.LunagreeSyncPayload;
+import io.github.drakonkinst.worldsinger.util.math.Int2;
 import io.github.drakonkinst.worldsinger.worldgen.ModBiomes;
 import io.github.drakonkinst.worldsinger.worldgen.lumar.LumarChunkGenerator.SporeSeaEntry;
 import it.unimi.dsi.fastutil.ints.IntArraySet;
@@ -37,6 +38,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
@@ -50,6 +52,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.PersistentState;
+import org.jetbrains.annotations.NotNull;
 
 public class LumarLunagreeManager extends LunagreeManager {
 
@@ -57,6 +60,9 @@ public class LumarLunagreeManager extends LunagreeManager {
     public static final float CELL_SIZE = 1800.0f; // Should always be less than TRAVEL_DISTANCE
     public static final int SEARCH_RADIUS = 1000;  // Should always be less than CELL_SIZE
     public static final int SPORE_FALL_RADIUS = 200;
+    public static final int NULL_LUNAGREE_SPORE_ID = 0;
+    public static final String NAME = "lunagrees";
+
     private static final int CENTER_X = 0;
     private static final int CENTER_Z = 0;
     private static final String KEY_LUNAGREES = "lunagrees";
@@ -113,6 +119,7 @@ public class LumarLunagreeManager extends LunagreeManager {
 
     private final ServerWorld world;
     private final Long2ObjectMap<LunagreeLocation> lunagreeMap = new Long2ObjectOpenHashMap<>();
+    private final Long2ObjectMap<RainlinePath> rainlinePaths = new Long2ObjectOpenHashMap<>();
 
     public LumarLunagreeManager(ServerWorld world) {
         this.world = world;
@@ -146,20 +153,26 @@ public class LumarLunagreeManager extends LunagreeManager {
         return lunagreeManager;
     }
 
-    private Optional<LunagreeLocation> getLunagreeFor(int q, int r, boolean shouldCreate) {
+    private LunagreeLocation getLunagreeFor(int q, int r, boolean shouldCreate) {
         long key = LumarLunagreeManager.toKey(q, r);
-        Optional<LunagreeLocation> entry = Optional.empty();
-        if (lunagreeMap.containsKey(key)) {
-            entry = Optional.of(lunagreeMap.get(key));
-        } else if (shouldCreate) {
+        LunagreeLocation entry = lunagreeMap.get(key);
+        if (entry == null && shouldCreate) {
             entry = generateLunagreeFor(q, r);
+            lunagreeMap.put(key, entry);
+            this.markDirty();
         }
         return entry;
     }
 
-    private boolean hasEntryFor(int q, int r) {
+    public RainlinePath getOrCreateRainlineData(int q, int r) {
         long key = LumarLunagreeManager.toKey(q, r);
-        return lunagreeMap.containsKey(key);
+        RainlinePath entry = rainlinePaths.get(key);
+        LunagreeLocation lunagreeLocation = getLunagreeFor(q, r, true);
+        if (entry == null) {
+            entry = new RainlinePath(lunagreeLocation.rainlineNodes());
+            rainlinePaths.put(key, entry);
+        }
+        return entry;
     }
 
     private IntSet generatePossibleSporeIds(int q, int r) {
@@ -179,7 +192,8 @@ public class LumarLunagreeManager extends LunagreeManager {
         return possibleSporeIds;
     }
 
-    private Optional<LunagreeLocation> generateLunagreeFor(int q, int r) {
+    @NotNull
+    private LunagreeLocation generateLunagreeFor(int q, int r) {
         // Find a good position
         IntSet possibleSporeIds = generatePossibleSporeIds(q, r);
         IntIntPair center = this.getCenterBlockPosForHexCell(q, r);
@@ -187,25 +201,31 @@ public class LumarLunagreeManager extends LunagreeManager {
                 center.firstInt(), center.secondInt(), SEARCH_RADIUS, SEARCH_CHECK_INTERVAL, false,
                 possibleSporeIds,
                 biome -> ModBiomes.DEEP_SPORE_SEA.equals(biome.getKey().orElse(null)));
+
+        int lunagreeX;
+        int lunagreeZ;
+        int sporeId;
         if (result == null) {
-            // TODO: This will keep failing every time this chunk is loaded. Is there a better way to signify, at least for runtime, that no lunagree can exist here?
             Worldsinger.LOGGER.info("Failed to generate lunagree for (" + q + ", " + r + ")");
-            return Optional.empty();
+            lunagreeX = center.firstInt();
+            lunagreeZ = center.secondInt();
+            sporeId = NULL_LUNAGREE_SPORE_ID;
+        } else {
+            BlockPos lunagreePos = result.getFirst();
+            lunagreeX = lunagreePos.getX();
+            lunagreeZ = lunagreePos.getZ();
+            sporeId = result.getSecond().id();
         }
 
         // Generate the result
-        BlockPos lunagreePos = result.getFirst();
-        int sporeId = result.getSecond().id();
-        LunagreeLocation entry = new LunagreeLocation(lunagreePos.getX(), lunagreePos.getZ(),
-                sporeId);
+        // TODO: Is it possible to make rainlines generate the same way every time the world is generated?
+        Int2[] rainlineNodes = RainlinePath.generateRainlineNodes(lunagreeX, lunagreeZ,
+                world.getRandom());
+        LunagreeLocation entry = new LunagreeLocation(lunagreeX, lunagreeZ, sporeId, rainlineNodes);
         Worldsinger.LOGGER.info(
-                "Generated lunagree of spore ID " + sporeId + " for (" + q + ", " + r + ")");
-
-        // Store it in the map
-        long key = LumarLunagreeManager.toKey(q, r);
-        lunagreeMap.put(key, entry);
-        this.markDirty();
-        return Optional.of(entry);
+                "Generated lunagree of spore ID " + sporeId + " for (" + q + ", " + r
+                        + ") with rainline nodes: " + Arrays.toString(entry.rainlineNodes()));
+        return entry;
     }
 
     // Triggered when the player loads new chunks. This can also generate new lunagrees.
@@ -239,11 +259,17 @@ public class LumarLunagreeManager extends LunagreeManager {
         int r = LumarLunagreeManager.getR(key);
 
         List<LunagreeLocation> locations = new ArrayList<>(DIRECTION_Q.length + 1);
-        getLunagreeFor(q, r, shouldCreate).ifPresent(locations::add);
+        LunagreeLocation currentLocation = getLunagreeFor(q, r, shouldCreate);
+        if (currentLocation != null) {
+            locations.add(getLunagreeFor(q, r, shouldCreate));
+        }
         for (int i = 0; i < DIRECTION_Q.length; ++i) {
             int neighborQ = q + DIRECTION_Q[i];
             int neighborR = r + DIRECTION_R[i];
-            getLunagreeFor(neighborQ, neighborR, shouldCreate).ifPresent(locations::add);
+            LunagreeLocation neighborLocation = getLunagreeFor(neighborQ, neighborR, shouldCreate);
+            if (neighborLocation == null) {
+                locations.add(getLunagreeFor(neighborQ, neighborR, shouldCreate));
+            }
         }
         return locations;
     }

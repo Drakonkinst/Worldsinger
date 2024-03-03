@@ -27,8 +27,8 @@ package io.github.drakonkinst.worldsinger.mixin.world;
 import com.llamalad7.mixinextras.sugar.Local;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.AetherSpores;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarLunagreeManager;
+import io.github.drakonkinst.worldsinger.cosmere.lumar.LunagreeLocation;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LunagreeManager;
-import io.github.drakonkinst.worldsinger.cosmere.lumar.LunagreeManager.LunagreeLocation;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LunagreeManagerAccess;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.NullLunagreeManager;
 import java.util.List;
@@ -76,7 +76,7 @@ public abstract class ServerWorldLunagreeManagerMixin extends WorldLumarMixin im
         if (isLumar) {
             lunagreeManager = this.getPersistentStateManager()
                     .getOrCreate(LumarLunagreeManager.getPersistentStateType(
-                            (ServerWorld) (Object) (this)), LunagreeManager.NAME);
+                            (ServerWorld) (Object) (this)), LumarLunagreeManager.NAME);
         } else {
             lunagreeManager = new NullLunagreeManager();
         }

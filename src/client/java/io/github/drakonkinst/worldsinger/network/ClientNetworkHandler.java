@@ -112,7 +112,7 @@ public final class ClientNetworkHandler {
                 return;
             }
             ClientLunagreeData data = ((ClientLunagreeDataAccess) player).worldsinger$getLunagreeData();
-            data.setKnownLunagreeLocations(payload.locations());
+            data.setLunagreeLocations(payload.locations());
         });
     }
 

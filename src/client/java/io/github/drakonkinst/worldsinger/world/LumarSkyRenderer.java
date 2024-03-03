@@ -29,7 +29,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.drakonkinst.worldsinger.Worldsinger;
 import io.github.drakonkinst.worldsinger.cosmere.ClientLunagreeData;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarLunagreeManager;
-import io.github.drakonkinst.worldsinger.cosmere.lumar.LunagreeManager.LunagreeLocation;
+import io.github.drakonkinst.worldsinger.cosmere.lumar.LunagreeLocation;
 import io.github.drakonkinst.worldsinger.entity.ClientLunagreeDataAccess;
 import io.github.drakonkinst.worldsinger.mixin.client.accessor.WorldRendererAccessor;
 import net.fabricmc.fabric.api.client.rendering.v1.DimensionRenderingRegistry.SkyRenderer;
@@ -186,7 +186,10 @@ public class LumarSkyRenderer implements SkyRenderer {
         RenderSystem.setShaderTexture(0, LUMAR_MOON);
         final ClientLunagreeData lunagreeData = ((ClientLunagreeDataAccess) player).worldsinger$getLunagreeData();
         final Vec3d playerPos = player.getCameraPosVec(tickDelta);
-        for (LunagreeLocation location : lunagreeData.getKnownLunagreeLocations()) {
+        for (LunagreeLocation location : lunagreeData.getLunagreeLocations()) {
+            if (location == null) {
+                break;
+            }
             final double distSq = location.distSqTo(playerPos.getX(), playerPos.getZ());
             if (distSq
                     > LumarLunagreeManager.TRAVEL_DISTANCE * LumarLunagreeManager.TRAVEL_DISTANCE) {
@@ -272,10 +275,6 @@ public class LumarSkyRenderer implements SkyRenderer {
         bufferBuilder.vertex(moonPosition, -radius, height, radius).texture(x1, y2).next();
         BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
         matrices.pop();
-    }
-
-    private int getMoonTextureIndex() {
-        return 0;
     }
 
     private void drawStars(MatrixStack matrices, Matrix4f projectionMatrix, ClientWorld world,
