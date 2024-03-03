@@ -24,10 +24,10 @@
 
 package io.github.drakonkinst.worldsinger.cosmere.lumar;
 
+import io.github.drakonkinst.worldsinger.item.CustomMapDecorationsComponent;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import net.minecraft.component.type.MapDecorationsComponent.Decoration;
 import net.minecraft.item.map.MapState;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.world.PersistentState;
@@ -41,8 +41,8 @@ public abstract class LunagreeManager extends PersistentState {
 
     public abstract List<LunagreeLocation> getLunagreesNear(int blockX, int blockZ);
 
-    public abstract void applyMapDecorations(Map<String, Decoration> decorations,
-            MapState mapState);
+    public abstract void applyMapDecorations(
+            Map<String, CustomMapDecorationsComponent.Decoration> decorations, MapState mapState);
 
     public abstract long getKeyForPos(int blockX, int blockZ);
 

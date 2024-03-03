@@ -26,6 +26,7 @@ package io.github.drakonkinst.worldsinger.registry;
 
 import com.mojang.serialization.Codec;
 import io.github.drakonkinst.worldsinger.Worldsinger;
+import io.github.drakonkinst.worldsinger.item.CustomMapDecorationsComponent;
 import java.util.function.UnaryOperator;
 import net.minecraft.component.DataComponentType;
 import net.minecraft.component.DataComponentType.Builder;
@@ -41,6 +42,9 @@ public final class ModDataComponentTypes {
             builder -> builder.codec(Codec.BOOL).packetCodec(PacketCodecs.BOOL));
     public static final DataComponentType<Integer> SILVER_DURABILITY = register("silver_durability",
             builder -> builder.codec(Codecs.NONNEGATIVE_INT).packetCodec(PacketCodecs.VAR_INT));
+    public static final DataComponentType<CustomMapDecorationsComponent> CUSTOM_MAP_DECORATIONS = register(
+            "custom_map_decorations",
+            builder -> builder.codec(CustomMapDecorationsComponent.CODEC));
 
     public static void initialize() {}
 

@@ -24,10 +24,10 @@
 
 package io.github.drakonkinst.worldsinger.cosmere.lumar;
 
-import io.github.drakonkinst.worldsinger.util.ModEnums;
+import io.github.drakonkinst.worldsinger.item.CustomMapDecorationsComponent.Decoration;
+import io.github.drakonkinst.worldsinger.item.CustomMapIcon;
 import io.github.drakonkinst.worldsinger.util.math.Int2;
 import java.util.Map;
-import net.minecraft.component.type.MapDecorationsComponent.Decoration;
 import net.minecraft.item.map.MapState;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
@@ -137,7 +137,7 @@ public class RainlinePath {
             float z = spline.applyY(t);
             if (isOnMap(mapState, x, z)) {
                 decorations.put("rainline-" + (++nextIconId),
-                        new Decoration(ModEnums.MapIconType.RAINLINE, x, z, 0.0f));
+                        new Decoration(CustomMapIcon.Type.RAINLINE, x, z, 0.0f));
             }
         }
 

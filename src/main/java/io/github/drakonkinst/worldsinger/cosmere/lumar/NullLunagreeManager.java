@@ -24,11 +24,11 @@
 
 package io.github.drakonkinst.worldsinger.cosmere.lumar;
 
+import io.github.drakonkinst.worldsinger.item.CustomMapDecorationsComponent.Decoration;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import net.minecraft.component.type.MapDecorationsComponent.Decoration;
 import net.minecraft.item.map.MapState;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;

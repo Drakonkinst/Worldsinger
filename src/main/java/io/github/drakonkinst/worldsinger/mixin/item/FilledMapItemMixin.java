@@ -29,11 +29,10 @@ import com.llamalad7.mixinextras.sugar.Local;
 import io.github.drakonkinst.worldsinger.cosmere.CosmereWorldUtil;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LunagreeManager;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LunagreeManagerAccess;
+import io.github.drakonkinst.worldsinger.item.CustomMapDecorationsComponent;
+import io.github.drakonkinst.worldsinger.registry.ModDataComponentTypes;
 import java.util.HashMap;
 import java.util.Map;
-import net.minecraft.component.DataComponentTypes;
-import net.minecraft.component.type.MapDecorationsComponent;
-import net.minecraft.component.type.MapDecorationsComponent.Decoration;
 import net.minecraft.component.type.MapIdComponent;
 import net.minecraft.item.FilledMapItem;
 import net.minecraft.item.ItemStack;
@@ -57,15 +56,18 @@ public abstract class FilledMapItemMixin extends NetworkSyncedItem {
             return original;
         }
 
-        original.apply(DataComponentTypes.MAP_DECORATIONS, MapDecorationsComponent.DEFAULT,
-                decorations -> {
-                    Map<String, Decoration> updatedDecorations = new HashMap<>(
-                            decorations.decorations());
-                    LunagreeManager lunagreeManager = ((LunagreeManagerAccess) world).worldsinger$getLunagreeManager();
-                    lunagreeManager.applyMapDecorations(updatedDecorations,
-                            world.getMapState(mapIdComponent));
-                    return new MapDecorationsComponent(updatedDecorations);
-                });
+        CustomMapDecorationsComponent customMapDecorations = original.getOrDefault(
+                ModDataComponentTypes.CUSTOM_MAP_DECORATIONS,
+                CustomMapDecorationsComponent.DEFAULT);
+        Map<String, CustomMapDecorationsComponent.Decoration> updatedDecorations = new HashMap<>(
+                customMapDecorations.decorations());
+        LunagreeManager lunagreeManager = ((LunagreeManagerAccess) world).worldsinger$getLunagreeManager();
+        lunagreeManager.applyMapDecorations(updatedDecorations, world.getMapState(mapIdComponent));
+        if (updatedDecorations.size() > customMapDecorations.decorations().size()) {
+            original.set(ModDataComponentTypes.CUSTOM_MAP_DECORATIONS,
+                    new CustomMapDecorationsComponent(updatedDecorations));
+        }
+
         return original;
     }
 }

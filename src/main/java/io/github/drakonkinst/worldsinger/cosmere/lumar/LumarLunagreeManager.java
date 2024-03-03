@@ -27,6 +27,7 @@ package io.github.drakonkinst.worldsinger.cosmere.lumar;
 import com.mojang.datafixers.util.Pair;
 import io.github.drakonkinst.worldsinger.Worldsinger;
 import io.github.drakonkinst.worldsinger.command.LocateSporeSeaCommand;
+import io.github.drakonkinst.worldsinger.item.CustomMapDecorationsComponent.Decoration;
 import io.github.drakonkinst.worldsinger.network.packet.LunagreeSyncPayload;
 import io.github.drakonkinst.worldsinger.util.math.Int2;
 import io.github.drakonkinst.worldsinger.worldgen.ModBiomes;
@@ -43,7 +44,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.minecraft.component.type.MapDecorationsComponent.Decoration;
 import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.item.map.MapState;
 import net.minecraft.nbt.NbtCompound;
@@ -103,6 +103,16 @@ public class LumarLunagreeManager extends LunagreeManager {
         return (int) key;
     }
 
+    private static String keyToString(long key) {
+        int q = LumarLunagreeManager.getQ(key);
+        int r = LumarLunagreeManager.getR(key);
+        return LumarLunagreeManager.cellToString(q, r);
+    }
+
+    private static String cellToString(int q, int r) {
+        return "(" + q + ", " + r + ")";
+    }
+
     private static long roundAxial(float fracQ, float fracR) {
         float fracS = -fracQ - fracR;
         int q = Math.round(fracQ);
@@ -147,11 +157,25 @@ public class LumarLunagreeManager extends LunagreeManager {
     public static LumarLunagreeManager fromNbt(ServerWorld world, NbtCompound nbt) {
         LumarLunagreeManager lunagreeManager = new LumarLunagreeManager(world);
         NbtList lunagreeDataList = nbt.getList(KEY_LUNAGREES, NbtElement.COMPOUND_TYPE);
+        boolean anyInvalid = false;
         for (NbtElement entryData : lunagreeDataList) {
             NbtCompound entryCompound = (NbtCompound) entryData;
             long key = entryCompound.getLong(KEY_CELL);
             NbtCompound valueData = entryCompound.getCompound(KEY_DATA);
-            lunagreeManager.lunagreeMap.put(key, LunagreeLocation.fromNbt(valueData));
+            LunagreeLocation location = LunagreeLocation.fromNbt(valueData);
+            if (location.rainlineNodes()[0] == null) {
+                Worldsinger.LOGGER.warn(
+                        "Failed to parse rainline nodes for " + LumarLunagreeManager.keyToString(
+                                key) + ". Re-generating nodes");
+                Int2[] rainlineNodes = RainlinePath.generateRainlineNodes(location.blockX(),
+                        location.blockZ(), world.getRandom());
+                location.setRainlineNodes(rainlineNodes);
+                anyInvalid = true;
+            }
+            lunagreeManager.lunagreeMap.put(key, location);
+        }
+        if (anyInvalid) {
+            lunagreeManager.markDirty();
         }
         return lunagreeManager;
     }
@@ -198,7 +222,8 @@ public class LumarLunagreeManager extends LunagreeManager {
         int lunagreeZ;
         int sporeId;
         if (result == null) {
-            Worldsinger.LOGGER.info("Failed to generate lunagree for (" + q + ", " + r + ")");
+            Worldsinger.LOGGER.info(
+                    "Failed to generate lunagree for " + LumarLunagreeManager.cellToString(q, r));
             lunagreeX = center.firstInt();
             lunagreeZ = center.secondInt();
             sporeId = NULL_LUNAGREE_SPORE_ID;
@@ -214,9 +239,9 @@ public class LumarLunagreeManager extends LunagreeManager {
         Int2[] rainlineNodes = RainlinePath.generateRainlineNodes(lunagreeX, lunagreeZ,
                 world.getRandom());
         LunagreeLocation entry = new LunagreeLocation(lunagreeX, lunagreeZ, sporeId, rainlineNodes);
-        Worldsinger.LOGGER.info(
-                "Generated lunagree of spore ID " + sporeId + " for (" + q + ", " + r
-                        + ") with rainline nodes: " + Arrays.toString(entry.rainlineNodes()));
+        Worldsinger.LOGGER.info("Generated lunagree of spore ID " + sporeId + " for "
+                + LumarLunagreeManager.cellToString(q, r) + " with rainline nodes: "
+                + Arrays.toString(entry.rainlineNodes()));
         return entry;
     }
 
@@ -252,6 +277,7 @@ public class LumarLunagreeManager extends LunagreeManager {
 
     @Override
     public void applyMapDecorations(Map<String, Decoration> decorations, MapState mapState) {
+        Worldsinger.LOGGER.info("Apply map decorations called");
         long key = getKeyForPos(mapState.centerX, mapState.centerZ);
         int q = LumarLunagreeManager.getQ(key);
         int r = LumarLunagreeManager.getR(key);
@@ -285,14 +311,14 @@ public class LumarLunagreeManager extends LunagreeManager {
         List<LunagreeLocation> locations = new ArrayList<>(DIRECTION_Q.length + 1);
         LunagreeLocation currentLocation = getLunagreeFor(q, r, shouldCreate);
         if (currentLocation != null) {
-            locations.add(getLunagreeFor(q, r, shouldCreate));
+            locations.add(currentLocation);
         }
         for (int i = 0; i < DIRECTION_Q.length; ++i) {
             int neighborQ = q + DIRECTION_Q[i];
             int neighborR = r + DIRECTION_R[i];
             LunagreeLocation neighborLocation = getLunagreeFor(neighborQ, neighborR, shouldCreate);
-            if (neighborLocation == null) {
-                locations.add(getLunagreeFor(neighborQ, neighborR, shouldCreate));
+            if (neighborLocation != null) {
+                locations.add(neighborLocation);
             }
         }
         return locations;

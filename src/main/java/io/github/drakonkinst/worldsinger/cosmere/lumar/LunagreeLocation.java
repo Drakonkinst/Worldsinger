@@ -56,7 +56,7 @@ public record LunagreeLocation(int blockX, int blockZ, int sporeId, Int2[] rainl
         buf.writeVarInt(location.blockZ);
         buf.writeByte(location.sporeId);
         for (int i = 0; i < RainlinePath.RAINLINE_NODE_COUNT; ++i) {
-            Int2 rainlineNode = location.rainlineNodes()[i];
+            Int2 rainlineNode = location.rainlineNodes[i];
             buf.writeVarInt(rainlineNode.x());
             buf.writeVarInt(rainlineNode.y());
         }
@@ -66,14 +66,13 @@ public record LunagreeLocation(int blockX, int blockZ, int sporeId, Int2[] rainl
         int sporeId = nbt.getInt(KEY_ID);
         int x = nbt.getInt(KEY_X);
         int z = nbt.getInt(KEY_Z);
-        NbtList rainlineNodeData = nbt.getList(KEY_RAINLINE, NbtElement.LIST_TYPE);
+        NbtList rainlineNodeData = nbt.getList(KEY_RAINLINE, NbtElement.INT_ARRAY_TYPE);
         Int2[] rainlineNodes = new Int2[RainlinePath.RAINLINE_NODE_COUNT];
-        for (int i = 0; i < RainlinePath.RAINLINE_NODE_COUNT; ++i) {
-            if (i >= rainlineNodeData.size()) {
-                break;
+        if (rainlineNodeData.size() == RainlinePath.RAINLINE_NODE_COUNT) {
+            for (int i = 0; i < RainlinePath.RAINLINE_NODE_COUNT; ++i) {
+                int[] coords = rainlineNodeData.getIntArray(i);
+                rainlineNodes[i] = new Int2(coords[0], coords[1]);
             }
-            int[] coords = rainlineNodeData.getIntArray(i);
-            rainlineNodes[i] = new Int2(coords[0], coords[1]);
         }
         return new LunagreeLocation(x, z, sporeId, rainlineNodes);
     }
@@ -88,6 +87,12 @@ public record LunagreeLocation(int blockX, int blockZ, int sporeId, Int2[] rainl
                     new NbtIntArray(new int[] { rainlineNodes[i].x(), rainlineNodes[i].y() }));
         }
         nbt.put(KEY_RAINLINE, rainlineNodeData);
+    }
+
+    public void setRainlineNodes(Int2[] rainlineNodes) {
+        for (int i = 0; i < RainlinePath.RAINLINE_NODE_COUNT; ++i) {
+            this.rainlineNodes[i] = rainlineNodes[i];
+        }
     }
 
     public double distSqTo(double x, double z) {
