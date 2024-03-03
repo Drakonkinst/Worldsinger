@@ -24,7 +24,11 @@
 
 package io.github.drakonkinst.worldsinger.cosmere.lumar;
 
+import io.github.drakonkinst.worldsinger.util.ModEnums;
 import io.github.drakonkinst.worldsinger.util.math.Int2;
+import java.util.Map;
+import net.minecraft.component.type.MapDecorationsComponent.Decoration;
+import net.minecraft.item.map.MapState;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
 
@@ -39,6 +43,9 @@ public class RainlinePath {
     // Should be tuned alongside LumarLunagreeManager values
     private static final int MIN_RADIUS = 250;
     private static final int MAX_RADIUS = 2000;
+    private static final float MAP_LIMITS = 63.0f;
+
+    private static int nextIconId = 0;
 
     public record Spline(float ax, float ay, float bx, float by, float cx, float cy, float dx,
                          float dy) {
@@ -89,11 +96,59 @@ public class RainlinePath {
         return rainlineNodes;
     }
 
+    private final Int2[] nodes;
     private final Spline[] splines;
 
     public RainlinePath(Int2[] rainlineNodes) {
+        this.nodes = rainlineNodes;
         this.splines = new Spline[RAINLINE_NODE_COUNT];
         this.generateAllSplines(rainlineNodes);
+    }
+
+    public void applyMapDecorations(Map<String, Decoration> decorations, MapState mapState) {
+        final int RAINLINE_DISTANCE = 1000;
+
+        boolean[] splinesChecked = new boolean[RainlinePath.RAINLINE_NODE_COUNT];
+        for (int i = 0; i < nodes.length; ++i) {
+            Int2 node = nodes[i];
+            int deltaX = mapState.centerX - node.x();
+            int deltaZ = mapState.centerZ - node.y();
+            int distSq = deltaX * deltaX + deltaZ * deltaZ;
+            if (distSq <= RAINLINE_DISTANCE * RAINLINE_DISTANCE) {
+                if (!splinesChecked[i]) {
+                    applyMapDecorationsForSpline(decorations, mapState, splines[i]);
+                    splinesChecked[i] = true;
+                }
+                int nextIndex = (i + 1) % RainlinePath.RAINLINE_NODE_COUNT;
+                if (!splinesChecked[nextIndex]) {
+                    applyMapDecorationsForSpline(decorations, mapState, splines[nextIndex]);
+                    splinesChecked[nextIndex] = true;
+                }
+
+            }
+        }
+    }
+
+    public void applyMapDecorationsForSpline(Map<String, Decoration> decorations, MapState mapState,
+            Spline spline) {
+        final float INCREMENT_T = 0.01f;
+        for (float t = 0.0f; t < 1.0f; t += INCREMENT_T) {
+            float x = spline.applyX(t);
+            float z = spline.applyY(t);
+            if (isOnMap(mapState, x, z)) {
+                decorations.put("rainline-" + (++nextIconId),
+                        new Decoration(ModEnums.MapIconType.RAINLINE, x, z, 0.0f));
+            }
+        }
+
+    }
+
+    private boolean isOnMap(MapState mapState, float x, float z) {
+        float scaleModifier = 1 << mapState.scale;
+        float mapX = (x - mapState.centerX) / scaleModifier;
+        float mapY = (z - mapState.centerZ) / scaleModifier;
+        return mapX >= -MAP_LIMITS && mapY >= -MAP_LIMITS && mapX <= MAP_LIMITS
+                && mapY <= MAP_LIMITS;
     }
 
     // In case we want to do dynamic generation later
@@ -115,11 +170,19 @@ public class RainlinePath {
         return RainlinePath.generateSpline(p0, p1, p2, p3);
     }
 
-    public void generateAllSplines(Int2[] rainlineNodes) {
+    private void generateAllSplines(Int2[] rainlineNodes) {
         for (int i = 0; i < RAINLINE_NODE_COUNT; ++i) {
             if (splines[i] == null) {
                 splines[i] = calculateSpline(i, rainlineNodes);
             }
         }
+    }
+
+    public Int2[] getNodes() {
+        return nodes;
+    }
+
+    public Spline[] getSplines() {
+        return splines;
     }
 }

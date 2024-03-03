@@ -24,6 +24,7 @@
 package io.github.drakonkinst.worldsinger.util;
 
 import com.chocohead.mm.api.ClassTinkerers;
+import net.minecraft.item.map.MapIcon;
 
 // Used to cache extended enum values
 public final class ModEnums {
@@ -38,5 +39,11 @@ public final class ModEnums {
                 net.minecraft.entity.ai.pathing.PathNodeType.class, "DANGER_SILVER");
         public static final net.minecraft.entity.ai.pathing.PathNodeType DAMAGE_SILVER = ClassTinkerers.getEnum(
                 net.minecraft.entity.ai.pathing.PathNodeType.class, "DAMAGE_SILVER");
+    }
+
+    public static class MapIconType {
+
+        public static final MapIcon.Type RAINLINE = ClassTinkerers.getEnum(MapIcon.Type.class,
+                "RAINLINE");
     }
 }

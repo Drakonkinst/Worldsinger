@@ -22,31 +22,23 @@
  * SOFTWARE.
  */
 
-package io.github.drakonkinst.worldsinger.cosmere.lumar;
+package io.github.drakonkinst.worldsinger.mixin.item;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import net.minecraft.component.type.MapDecorationsComponent.Decoration;
-import net.minecraft.item.map.MapState;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.world.PersistentState;
+import io.github.drakonkinst.worldsinger.mixin.accessor.ValueListsInvoker;
+import java.util.function.IntFunction;
+import java.util.function.ToIntFunction;
+import net.minecraft.util.function.ValueLists.OutOfBoundsHandling;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Redirect;
 
-public abstract class LunagreeManager extends PersistentState {
+@Mixin(targets = "net.minecraft.item.map.MapIcon$Type")
+public abstract class MapIconTypeMixin {
 
-    public abstract void updateLunagreeDataForPlayer(ServerPlayerEntity player);
-
-    public abstract Optional<LunagreeLocation> getNearestLunagree(int blockX, int blockZ,
-            int maxDistance);
-
-    public abstract List<LunagreeLocation> getLunagreesNear(int blockX, int blockZ);
-
-    public abstract void applyMapDecorations(Map<String, Decoration> decorations,
-            MapState mapState);
-
-    public abstract long getKeyForPos(int blockX, int blockZ);
-
-    public boolean isNull() {
-        return false;
+    // Remove validation checks for consecutive values, allowing custom values to be added without hassle
+    @Redirect(method = "<clinit>", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/function/ValueLists;createIdToValueFunction(Ljava/util/function/ToIntFunction;[Ljava/lang/Object;Lnet/minecraft/util/function/ValueLists$OutOfBoundsHandling;)Ljava/util/function/IntFunction;"))
+    private static <T> IntFunction<T> cc(ToIntFunction<T> valueToIdFunction, T[] values,
+            OutOfBoundsHandling outOfBoundsHandling) {
+        return ValueListsInvoker.createIdToValueFunction(valueToIdFunction, values);
     }
 }

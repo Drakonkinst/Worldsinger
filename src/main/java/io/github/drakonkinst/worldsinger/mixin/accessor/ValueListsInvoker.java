@@ -22,31 +22,20 @@
  * SOFTWARE.
  */
 
-package io.github.drakonkinst.worldsinger.cosmere.lumar;
+package io.github.drakonkinst.worldsinger.mixin.accessor;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import net.minecraft.component.type.MapDecorationsComponent.Decoration;
-import net.minecraft.item.map.MapState;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.world.PersistentState;
+import java.util.function.IntFunction;
+import java.util.function.ToIntFunction;
+import net.minecraft.util.function.ValueLists;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.gen.Invoker;
 
-public abstract class LunagreeManager extends PersistentState {
+@Mixin(ValueLists.class)
+public interface ValueListsInvoker {
 
-    public abstract void updateLunagreeDataForPlayer(ServerPlayerEntity player);
-
-    public abstract Optional<LunagreeLocation> getNearestLunagree(int blockX, int blockZ,
-            int maxDistance);
-
-    public abstract List<LunagreeLocation> getLunagreesNear(int blockX, int blockZ);
-
-    public abstract void applyMapDecorations(Map<String, Decoration> decorations,
-            MapState mapState);
-
-    public abstract long getKeyForPos(int blockX, int blockZ);
-
-    public boolean isNull() {
-        return false;
+    @Invoker("createIdToValueFunction")
+    static <T> IntFunction<T> createIdToValueFunction(ToIntFunction<T> valueToIdFunction,
+            T[] values) {
+        throw new AssertionError();
     }
 }

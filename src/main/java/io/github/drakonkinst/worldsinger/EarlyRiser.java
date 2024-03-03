@@ -57,6 +57,11 @@ public class EarlyRiser implements Runnable {
                 .addEnum("DAMAGE_SILVER", 0.0f) // Should be -1.0f for mobs scared of silver
                 .build();
 
+        String mapIconTypeEnum = remapper.mapClassName(INTERMEDIARY,
+                "net.minecraft.class_20$class_21");
+        ClassTinkerers.enumBuilder(mapIconTypeEnum, int.class, String.class, boolean.class,
+                boolean.class).addEnum("RAINLINE", 631, "rainline", true, false).build();
+
         switch (FabricLoader.getInstance().getEnvironmentType()) {
             case CLIENT -> EarlyRiser.loadClient(remapper);
             case SERVER -> EarlyRiser.loadServer(remapper);

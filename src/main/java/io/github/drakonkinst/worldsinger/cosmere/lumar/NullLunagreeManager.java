@@ -24,7 +24,12 @@
 
 package io.github.drakonkinst.worldsinger.cosmere.lumar;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import net.minecraft.component.type.MapDecorationsComponent.Decoration;
+import net.minecraft.item.map.MapState;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -39,6 +44,16 @@ public class NullLunagreeManager extends LunagreeManager {
     @Override
     public Optional<LunagreeLocation> getNearestLunagree(int blockX, int blockZ, int maxDistance) {
         return Optional.empty();
+    }
+
+    @Override
+    public List<LunagreeLocation> getLunagreesNear(int blockX, int blockZ) {
+        return Collections.emptyList();
+    }
+
+    @Override
+    public void applyMapDecorations(Map<String, Decoration> decorations, MapState mapState) {
+        // Do nothing
     }
 
     @Override

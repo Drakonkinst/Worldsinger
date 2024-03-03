@@ -69,6 +69,9 @@ public record LunagreeLocation(int blockX, int blockZ, int sporeId, Int2[] rainl
         NbtList rainlineNodeData = nbt.getList(KEY_RAINLINE, NbtElement.LIST_TYPE);
         Int2[] rainlineNodes = new Int2[RainlinePath.RAINLINE_NODE_COUNT];
         for (int i = 0; i < RainlinePath.RAINLINE_NODE_COUNT; ++i) {
+            if (i >= rainlineNodeData.size()) {
+                break;
+            }
             int[] coords = rainlineNodeData.getIntArray(i);
             rainlineNodes[i] = new Int2(coords[0], coords[1]);
         }

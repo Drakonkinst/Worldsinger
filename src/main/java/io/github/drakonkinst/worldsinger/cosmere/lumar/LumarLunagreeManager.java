@@ -40,9 +40,12 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.minecraft.component.type.MapDecorationsComponent.Decoration;
 import net.minecraft.datafixer.DataFixTypes;
+import net.minecraft.item.map.MapState;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
@@ -164,17 +167,6 @@ public class LumarLunagreeManager extends LunagreeManager {
         return entry;
     }
 
-    public RainlinePath getOrCreateRainlineData(int q, int r) {
-        long key = LumarLunagreeManager.toKey(q, r);
-        RainlinePath entry = rainlinePaths.get(key);
-        LunagreeLocation lunagreeLocation = getLunagreeFor(q, r, true);
-        if (entry == null) {
-            entry = new RainlinePath(lunagreeLocation.rainlineNodes());
-            rainlinePaths.put(key, entry);
-        }
-        return entry;
-    }
-
     private IntSet generatePossibleSporeIds(int q, int r) {
         IntSet possibleSporeIds = new IntArraySet(VALID_SPORE_IDS);
         for (int i = 0; i < DIRECTION_Q.length; ++i) {
@@ -238,7 +230,7 @@ public class LumarLunagreeManager extends LunagreeManager {
 
     @Override
     public Optional<LunagreeLocation> getNearestLunagree(int blockX, int blockZ, int maxDistance) {
-        List<LunagreeLocation> candidates = getLunagreesNear(blockX, blockZ, false);
+        List<LunagreeLocation> candidates = getLunagreesNear(blockX, blockZ);
         LunagreeLocation nearestLocation = null;
         int minDistSq = Integer.MAX_VALUE;
         for (LunagreeLocation location : candidates) {
@@ -251,6 +243,38 @@ public class LumarLunagreeManager extends LunagreeManager {
             }
         }
         return Optional.ofNullable(nearestLocation);
+    }
+
+    @Override
+    public List<LunagreeLocation> getLunagreesNear(int blockX, int blockZ) {
+        return getLunagreesNear(blockX, blockZ, false);
+    }
+
+    @Override
+    public void applyMapDecorations(Map<String, Decoration> decorations, MapState mapState) {
+        long key = getKeyForPos(mapState.centerX, mapState.centerZ);
+        int q = LumarLunagreeManager.getQ(key);
+        int r = LumarLunagreeManager.getR(key);
+
+        RainlinePath centerPath = getOrCreateRainlineData(q, r);
+        centerPath.applyMapDecorations(decorations, mapState);
+        for (int i = 0; i < DIRECTION_Q.length; ++i) {
+            int neighborQ = q + DIRECTION_Q[i];
+            int neighborR = r + DIRECTION_R[i];
+            RainlinePath neighborPath = getOrCreateRainlineData(neighborQ, neighborR);
+            neighborPath.applyMapDecorations(decorations, mapState);
+        }
+    }
+
+    private RainlinePath getOrCreateRainlineData(int q, int r) {
+        long key = LumarLunagreeManager.toKey(q, r);
+        RainlinePath entry = rainlinePaths.get(key);
+        LunagreeLocation lunagreeLocation = getLunagreeFor(q, r, true);
+        if (entry == null) {
+            entry = new RainlinePath(lunagreeLocation.rainlineNodes());
+            rainlinePaths.put(key, entry);
+        }
+        return entry;
     }
 
     private List<LunagreeLocation> getLunagreesNear(int blockX, int blockZ, boolean shouldCreate) {
