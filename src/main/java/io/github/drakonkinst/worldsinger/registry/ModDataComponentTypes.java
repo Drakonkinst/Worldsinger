@@ -26,7 +26,7 @@ package io.github.drakonkinst.worldsinger.registry;
 
 import com.mojang.serialization.Codec;
 import io.github.drakonkinst.worldsinger.Worldsinger;
-import io.github.drakonkinst.worldsinger.item.CustomMapDecorationsComponent;
+import io.github.drakonkinst.worldsinger.item.map.CustomMapDecorationsComponent;
 import java.util.function.UnaryOperator;
 import net.minecraft.component.DataComponentType;
 import net.minecraft.component.DataComponentType.Builder;

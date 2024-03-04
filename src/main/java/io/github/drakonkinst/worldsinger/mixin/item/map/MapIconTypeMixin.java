@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package io.github.drakonkinst.worldsinger.mixin.item;
+package io.github.drakonkinst.worldsinger.mixin.item.map;
 
 import io.github.drakonkinst.worldsinger.mixin.accessor.ValueListsInvoker;
 import java.util.function.IntFunction;
@@ -37,8 +37,8 @@ public abstract class MapIconTypeMixin {
 
     // Remove validation checks for consecutive values, allowing custom values to be added without hassle
     @Redirect(method = "<clinit>", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/function/ValueLists;createIdToValueFunction(Ljava/util/function/ToIntFunction;[Ljava/lang/Object;Lnet/minecraft/util/function/ValueLists$OutOfBoundsHandling;)Ljava/util/function/IntFunction;"))
-    private static <T> IntFunction<T> cc(ToIntFunction<T> valueToIdFunction, T[] values,
-            OutOfBoundsHandling outOfBoundsHandling) {
+    private static <T> IntFunction<T> removeValidation(ToIntFunction<T> valueToIdFunction,
+            T[] values, OutOfBoundsHandling outOfBoundsHandling) {
         return ValueListsInvoker.createIdToValueFunction(valueToIdFunction, values);
     }
 }

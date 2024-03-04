@@ -24,7 +24,7 @@
 
 package io.github.drakonkinst.worldsinger.cosmere.lumar;
 
-import io.github.drakonkinst.worldsinger.item.CustomMapDecorationsComponent.Decoration;
+import io.github.drakonkinst.worldsinger.item.map.CustomMapDecorationsComponent.Decoration;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -52,8 +52,8 @@ public class NullLunagreeManager extends LunagreeManager {
     }
 
     @Override
-    public void applyMapDecorations(Map<String, Decoration> decorations, MapState mapState) {
-        // Do nothing
+    public int applyMapDecorations(Map<String, Decoration> decorations, MapState mapState) {
+        return 0;
     }
 
     @Override

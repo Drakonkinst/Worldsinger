@@ -22,31 +22,9 @@
  * SOFTWARE.
  */
 
-package io.github.drakonkinst.worldsinger.cosmere.lumar;
+package io.github.drakonkinst.worldsinger.item.map;
 
-import io.github.drakonkinst.worldsinger.item.map.CustomMapDecorationsComponent;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import net.minecraft.item.map.MapState;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.world.PersistentState;
+public interface CustomPlayerUpdateTrackerAccess {
 
-public abstract class LunagreeManager extends PersistentState {
-
-    public abstract void updateLunagreeDataForPlayer(ServerPlayerEntity player);
-
-    public abstract Optional<LunagreeLocation> getNearestLunagree(int blockX, int blockZ,
-            int maxDistance);
-
-    public abstract List<LunagreeLocation> getLunagreesNear(int blockX, int blockZ);
-
-    public abstract int applyMapDecorations(
-            Map<String, CustomMapDecorationsComponent.Decoration> decorations, MapState mapState);
-
-    public abstract long getKeyForPos(int blockX, int blockZ);
-
-    public boolean isNull() {
-        return false;
-    }
+    void worldsinger$markDirty();
 }

@@ -27,7 +27,7 @@ package io.github.drakonkinst.worldsinger.cosmere.lumar;
 import com.mojang.datafixers.util.Pair;
 import io.github.drakonkinst.worldsinger.Worldsinger;
 import io.github.drakonkinst.worldsinger.command.LocateSporeSeaCommand;
-import io.github.drakonkinst.worldsinger.item.CustomMapDecorationsComponent.Decoration;
+import io.github.drakonkinst.worldsinger.item.map.CustomMapDecorationsComponent.Decoration;
 import io.github.drakonkinst.worldsinger.network.packet.LunagreeSyncPayload;
 import io.github.drakonkinst.worldsinger.util.math.Int2;
 import io.github.drakonkinst.worldsinger.worldgen.ModBiomes;
@@ -276,20 +276,22 @@ public class LumarLunagreeManager extends LunagreeManager {
     }
 
     @Override
-    public void applyMapDecorations(Map<String, Decoration> decorations, MapState mapState) {
-        Worldsinger.LOGGER.info("Apply map decorations called");
+    public int applyMapDecorations(Map<String, Decoration> decorations, MapState mapState) {
         long key = getKeyForPos(mapState.centerX, mapState.centerZ);
         int q = LumarLunagreeManager.getQ(key);
         int r = LumarLunagreeManager.getR(key);
 
+        int numAdded = 0;
         RainlinePath centerPath = getOrCreateRainlineData(q, r);
-        centerPath.applyMapDecorations(decorations, mapState);
+        numAdded += centerPath.applyMapDecorations(decorations, mapState);
         for (int i = 0; i < DIRECTION_Q.length; ++i) {
             int neighborQ = q + DIRECTION_Q[i];
             int neighborR = r + DIRECTION_R[i];
             RainlinePath neighborPath = getOrCreateRainlineData(neighborQ, neighborR);
-            neighborPath.applyMapDecorations(decorations, mapState);
+            numAdded += neighborPath.applyMapDecorations(decorations, mapState);
         }
+        Worldsinger.LOGGER.info("Applying " + numAdded + " rainline icons to map");
+        return numAdded;
     }
 
     private RainlinePath getOrCreateRainlineData(int q, int r) {

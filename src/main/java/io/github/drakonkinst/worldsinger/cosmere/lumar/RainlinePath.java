@@ -24,8 +24,9 @@
 
 package io.github.drakonkinst.worldsinger.cosmere.lumar;
 
-import io.github.drakonkinst.worldsinger.item.CustomMapDecorationsComponent.Decoration;
-import io.github.drakonkinst.worldsinger.item.CustomMapIcon;
+import io.github.drakonkinst.worldsinger.Worldsinger;
+import io.github.drakonkinst.worldsinger.item.map.CustomMapDecorationsComponent.Decoration;
+import io.github.drakonkinst.worldsinger.item.map.CustomMapIcon;
 import io.github.drakonkinst.worldsinger.util.math.Int2;
 import java.util.Map;
 import net.minecraft.item.map.MapState;
@@ -43,12 +44,12 @@ public class RainlinePath {
     // Should be tuned alongside LumarLunagreeManager values
     private static final int MIN_RADIUS = 250;
     private static final int MAX_RADIUS = 2000;
-    private static final float MAP_LIMITS = 63.0f;
+    private static final int SPLINE_STEPS = 100;
 
     private static int nextIconId = 0;
 
-    public record Spline(float ax, float ay, float bx, float by, float cx, float cy, float dx,
-                         float dy) {
+    private record Spline(float ax, float ay, float bx, float by, float cx, float cy, float dx,
+                          float dy) {
 
         public float applyX(float t) {
             final float t2 = t * t;
@@ -64,17 +65,18 @@ public class RainlinePath {
     // Based on Catmull-Rom Spline implementation in C++:
     // https://qroph.github.io/2018/07/30/smooth-paths-using-catmull-rom-splines.html
     private static Spline generateSpline(Int2 p0, Int2 p1, Int2 p2, Int2 p3) {
+        Worldsinger.LOGGER.info("Generating spline for " + p1 + ", " + p2);
         final float t01 = (float) Math.pow(Int2.distance(p0, p1), ALPHA);
         final float t12 = (float) Math.pow(Int2.distance(p1, p2), ALPHA);
         final float t23 = (float) Math.pow(Int2.distance(p2, p3), ALPHA);
-        float m1x = INV_TENSION * (p2.x() - p1.x() + t12 * ((p1.x() - p0.x() / t01
-                - (p2.x() - p0.x()) / (t01 + t12))));
-        float m1y = INV_TENSION * (p2.y() - p1.y() + t12 * ((p1.y() - p0.y() / t01
-                - (p2.y() - p0.y()) / (t01 + t12))));
-        float m2x = INV_TENSION * (p2.x() - p1.x() + t12 * ((p3.x() - p2.x() / t23
-                - (p3.x() - p1.x()) / (t12 + t23))));
-        float m2y = INV_TENSION * (p2.y() - p1.y() + t12 * ((p3.y() - p2.y() / t23
-                - (p3.y() - p1.y()) / (t12 + t23))));
+        float m1x = INV_TENSION * (p2.x() - p1.x() + t12 * ((p1.x() - p0.x()) / t01
+                - (p2.x() - p0.x()) / (t01 + t12)));
+        float m1y = INV_TENSION * (p2.y() - p1.y() + t12 * ((p1.y() - p0.y()) / t01
+                - (p2.y() - p0.y()) / (t01 + t12)));
+        float m2x = INV_TENSION * (p2.x() - p1.x() + t12 * ((p3.x() - p2.x()) / t23
+                - (p3.x() - p1.x()) / (t12 + t23)));
+        float m2y = INV_TENSION * (p2.y() - p1.y() + t12 * ((p3.y() - p2.y()) / t23
+                - (p3.y() - p1.y()) / (t12 + t23)));
         float ax = 2.0f * (p1.x() - p2.x()) + m1x + m2x;
         float ay = 2.0f * (p1.y() - p2.y()) + m1y + m2y;
         float bx = -3.0f * (p1.x() - p2.x()) - m1x - m1x - m2x;
@@ -96,70 +98,43 @@ public class RainlinePath {
         return rainlineNodes;
     }
 
-    private final Int2[] nodes;
     private final Spline[] splines;
 
     public RainlinePath(Int2[] rainlineNodes) {
-        this.nodes = rainlineNodes;
         this.splines = new Spline[RAINLINE_NODE_COUNT];
         this.generateAllSplines(rainlineNodes);
     }
 
-    public void applyMapDecorations(Map<String, Decoration> decorations, MapState mapState) {
-        final int RAINLINE_DISTANCE = 1000;
-
-        boolean[] splinesChecked = new boolean[RainlinePath.RAINLINE_NODE_COUNT];
-        for (int i = 0; i < nodes.length; ++i) {
-            Int2 node = nodes[i];
-            int deltaX = mapState.centerX - node.x();
-            int deltaZ = mapState.centerZ - node.y();
-            int distSq = deltaX * deltaX + deltaZ * deltaZ;
-            if (distSq <= RAINLINE_DISTANCE * RAINLINE_DISTANCE) {
-                if (!splinesChecked[i]) {
-                    applyMapDecorationsForSpline(decorations, mapState, splines[i]);
-                    splinesChecked[i] = true;
-                }
-                int nextIndex = (i + 1) % RainlinePath.RAINLINE_NODE_COUNT;
-                if (!splinesChecked[nextIndex]) {
-                    applyMapDecorationsForSpline(decorations, mapState, splines[nextIndex]);
-                    splinesChecked[nextIndex] = true;
-                }
-
-            }
+    public int applyMapDecorations(Map<String, Decoration> decorations, MapState mapState) {
+        int numAdded = 0;
+        for (int i = 0; i < RainlinePath.RAINLINE_NODE_COUNT; ++i) {
+            numAdded += applyMapDecorationsForSpline(decorations, mapState, splines[i]);
         }
+        return numAdded;
     }
 
-    public void applyMapDecorationsForSpline(Map<String, Decoration> decorations, MapState mapState,
+    private int applyMapDecorationsForSpline(Map<String, Decoration> decorations, MapState mapState,
             Spline spline) {
-        final float INCREMENT_T = 0.01f;
-        for (float t = 0.0f; t < 1.0f; t += INCREMENT_T) {
+        int numAdded = 0;
+        for (int i = 0; i < SPLINE_STEPS; ++i) {
+            float t = (float) i / SPLINE_STEPS;
             float x = spline.applyX(t);
             float z = spline.applyY(t);
             if (isOnMap(mapState, x, z)) {
+                ++numAdded;
                 decorations.put("rainline-" + (++nextIconId),
                         new Decoration(CustomMapIcon.Type.RAINLINE, x, z, 0.0f));
             }
         }
-
+        return numAdded;
     }
 
     private boolean isOnMap(MapState mapState, float x, float z) {
         float scaleModifier = 1 << mapState.scale;
         float mapX = (x - mapState.centerX) / scaleModifier;
         float mapY = (z - mapState.centerZ) / scaleModifier;
-        return mapX >= -MAP_LIMITS && mapY >= -MAP_LIMITS && mapX <= MAP_LIMITS
-                && mapY <= MAP_LIMITS;
-    }
-
-    // In case we want to do dynamic generation later
-    private Spline getOrCalculateSpline(int i, Int2[] rainlineNodes) {
-        Spline spline = splines[i];
-        if (spline != null) {
-            return spline;
-        }
-        spline = calculateSpline(i, rainlineNodes);
-        splines[i] = spline;
-        return spline;
+        return mapX >= -CustomMapIcon.MAP_LIMITS && mapY >= -CustomMapIcon.MAP_LIMITS
+                && mapX <= CustomMapIcon.MAP_LIMITS && mapY <= CustomMapIcon.MAP_LIMITS;
     }
 
     private Spline calculateSpline(int i, Int2[] rainlineNodes) {
@@ -176,13 +151,5 @@ public class RainlinePath {
                 splines[i] = calculateSpline(i, rainlineNodes);
             }
         }
-    }
-
-    public Int2[] getNodes() {
-        return nodes;
-    }
-
-    public Spline[] getSplines() {
-        return splines;
     }
 }

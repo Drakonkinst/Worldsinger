@@ -22,20 +22,29 @@
  * SOFTWARE.
  */
 
-package io.github.drakonkinst.worldsinger.item;
+package io.github.drakonkinst.worldsinger.item.map;
 
 import com.mojang.serialization.Codec;
 import io.github.drakonkinst.worldsinger.mixin.accessor.ValueListsInvoker;
 import io.netty.buffer.ByteBuf;
 import java.util.Optional;
 import java.util.function.IntFunction;
+import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.text.Text;
+import net.minecraft.text.TextCodecs;
 import net.minecraft.util.StringIdentifiable;
 
 public record CustomMapIcon(CustomMapIcon.Type type, byte x, byte z, byte rotation,
                             Optional<Text> name) {
+
+    public static final float MAP_LIMITS = 63.0f;
+    public static final PacketCodec<RegistryByteBuf, CustomMapIcon> CODEC = PacketCodec.tuple(
+            CustomMapIcon.Type.PACKET_CODEC, CustomMapIcon::type, PacketCodecs.BYTE,
+            CustomMapIcon::x, PacketCodecs.BYTE, CustomMapIcon::z, PacketCodecs.BYTE,
+            CustomMapIcon::rotation, TextCodecs.OPTIONAL_PACKET_CODEC, CustomMapIcon::name,
+            CustomMapIcon::new);
 
     public enum Type implements StringIdentifiable {
         RAINLINE(631, "rainline");

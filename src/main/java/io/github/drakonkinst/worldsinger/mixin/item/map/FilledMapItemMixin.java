@@ -22,14 +22,14 @@
  * SOFTWARE.
  */
 
-package io.github.drakonkinst.worldsinger.mixin.item;
+package io.github.drakonkinst.worldsinger.mixin.item.map;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.llamalad7.mixinextras.sugar.Local;
 import io.github.drakonkinst.worldsinger.cosmere.CosmereWorldUtil;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LunagreeManager;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LunagreeManagerAccess;
-import io.github.drakonkinst.worldsinger.item.CustomMapDecorationsComponent;
+import io.github.drakonkinst.worldsinger.item.map.CustomMapDecorationsComponent;
 import io.github.drakonkinst.worldsinger.registry.ModDataComponentTypes;
 import java.util.HashMap;
 import java.util.Map;
@@ -63,6 +63,7 @@ public abstract class FilledMapItemMixin extends NetworkSyncedItem {
                 customMapDecorations.decorations());
         LunagreeManager lunagreeManager = ((LunagreeManagerAccess) world).worldsinger$getLunagreeManager();
         lunagreeManager.applyMapDecorations(updatedDecorations, world.getMapState(mapIdComponent));
+
         if (updatedDecorations.size() > customMapDecorations.decorations().size()) {
             original.set(ModDataComponentTypes.CUSTOM_MAP_DECORATIONS,
                     new CustomMapDecorationsComponent(updatedDecorations));

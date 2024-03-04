@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package io.github.drakonkinst.worldsinger.item;
+package io.github.drakonkinst.worldsinger.item.map;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;

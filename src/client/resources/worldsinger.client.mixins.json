@@ -19,6 +19,7 @@
     "gui.InGameOverlayRendererPossessionMixin",
     "item.ItemModelsMixin",
     "item.ItemRendererMixin",
+    "item.MapRendererMapTextureMixin",
     "network.ClientPlayerInteractionManagerPossessionMixin",
     "network.GameOptionsMixin",
     "network.MinecraftClientPossessionMixin",

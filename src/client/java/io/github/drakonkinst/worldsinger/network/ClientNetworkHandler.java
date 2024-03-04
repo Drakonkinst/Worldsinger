@@ -35,7 +35,9 @@ import io.github.drakonkinst.worldsinger.entity.CameraPossessable;
 import io.github.drakonkinst.worldsinger.entity.ClientLunagreeDataAccess;
 import io.github.drakonkinst.worldsinger.entity.Shapeshifter;
 import io.github.drakonkinst.worldsinger.entity.data.PlayerPossessionManager;
+import io.github.drakonkinst.worldsinger.item.map.CustomMapStateAccess;
 import io.github.drakonkinst.worldsinger.network.packet.AttachmentEntitySyncPayload;
+import io.github.drakonkinst.worldsinger.network.packet.CustomMapUpdatePayload;
 import io.github.drakonkinst.worldsinger.network.packet.LunagreeSyncPayload;
 import io.github.drakonkinst.worldsinger.network.packet.PossessSetPayload;
 import io.github.drakonkinst.worldsinger.network.packet.SeetheUpdatePayload;
@@ -46,12 +48,15 @@ import net.fabricmc.fabric.api.attachment.v1.AttachmentType;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.impl.attachment.AttachmentRegistryImpl;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.Entity;
+import net.minecraft.item.map.MapState;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.network.packet.s2c.play.MapUpdateS2CPacket;
 import net.minecraft.world.World;
 
-@SuppressWarnings({ "UnqualifiedStaticUsage", "UnstableApiUsage" })
+@SuppressWarnings({ "UnqualifiedStaticUsage", "UnstableApiUsage", "resource" })
 public final class ClientNetworkHandler {
 
     public static void registerPacketHandlers() {
@@ -114,6 +119,32 @@ public final class ClientNetworkHandler {
             ClientLunagreeData data = ((ClientLunagreeDataAccess) player).worldsinger$getLunagreeData();
             data.setLunagreeLocations(payload.locations());
         });
+
+        ClientPlayNetworking.registerGlobalReceiver(CustomMapUpdatePayload.ID,
+                ((payload, context) -> {
+                    MinecraftClient client = context.client();
+                    ClientPlayNetworkHandler networkHandler = client.getNetworkHandler();
+                    if (networkHandler == null || client.world == null) {
+                        return;
+                    }
+                    // First, process the normal map update if needed
+                    if (payload.icons().isPresent() || payload.updateData().isPresent()) {
+                        MapUpdateS2CPacket simulatedMapUpdatePacket = new MapUpdateS2CPacket(
+                                payload.mapId(), payload.scale(), payload.locked(), payload.icons(),
+                                payload.updateData());
+                        networkHandler.onMapUpdate(simulatedMapUpdatePacket);
+                    }
+
+                    // Then the custom stuff
+                    payload.customIcons().ifPresent(customMapIcons -> {
+                        MapState mapState = client.world.getMapState(payload.mapId());
+                        if (mapState == null) {
+                            return;
+                        }
+                        CustomMapStateAccess customMapState = (CustomMapStateAccess) mapState;
+                        customMapState.worldsinger$replaceCustomMapIcons(customMapIcons);
+                    });
+                }));
     }
 
     private static void registerShapeshiftingPacketHandlers() {
