@@ -24,14 +24,16 @@
 
 package io.github.drakonkinst.worldsinger.cosmere.lumar;
 
-import io.github.drakonkinst.worldsinger.Worldsinger;
 import io.github.drakonkinst.worldsinger.item.map.CustomMapDecorationsComponent.Decoration;
 import io.github.drakonkinst.worldsinger.item.map.CustomMapIcon;
 import io.github.drakonkinst.worldsinger.util.math.Int2;
+import io.github.drakonkinst.worldsinger.worldgen.lumar.LumarChunkGenerator;
 import java.util.Map;
 import net.minecraft.item.map.MapState;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
+import net.minecraft.world.gen.noise.NoiseConfig;
 
 public class RainlinePath {
 
@@ -65,7 +67,6 @@ public class RainlinePath {
     // Based on Catmull-Rom Spline implementation in C++:
     // https://qroph.github.io/2018/07/30/smooth-paths-using-catmull-rom-splines.html
     private static Spline generateSpline(Int2 p0, Int2 p1, Int2 p2, Int2 p3) {
-        Worldsinger.LOGGER.info("Generating spline for " + p1 + ", " + p2);
         final float t01 = (float) Math.pow(Int2.distance(p0, p1), ALPHA);
         final float t12 = (float) Math.pow(Int2.distance(p1, p2), ALPHA);
         final float t23 = (float) Math.pow(Int2.distance(p2, p3), ALPHA);
@@ -105,22 +106,28 @@ public class RainlinePath {
         this.generateAllSplines(rainlineNodes);
     }
 
-    public int applyMapDecorations(Map<String, Decoration> decorations, MapState mapState) {
+    public int applyMapDecorations(ServerWorld serverWorld, Map<String, Decoration> decorations,
+            MapState mapState) {
         int numAdded = 0;
+        NoiseConfig noiseConfig = serverWorld.getChunkManager().getNoiseConfig();
         for (int i = 0; i < RainlinePath.RAINLINE_NODE_COUNT; ++i) {
-            numAdded += applyMapDecorationsForSpline(decorations, mapState, splines[i]);
+            numAdded += applyMapDecorationsForSpline(noiseConfig, decorations, mapState,
+                    splines[i]);
         }
         return numAdded;
     }
 
-    private int applyMapDecorationsForSpline(Map<String, Decoration> decorations, MapState mapState,
-            Spline spline) {
+    private int applyMapDecorationsForSpline(NoiseConfig noiseConfig,
+            Map<String, Decoration> decorations, MapState mapState, Spline spline) {
         int numAdded = 0;
         for (int i = 0; i < SPLINE_STEPS; ++i) {
             float t = (float) i / SPLINE_STEPS;
             float x = spline.applyX(t);
             float z = spline.applyY(t);
-            if (isOnMap(mapState, x, z)) {
+            // Only add if it is on the map AND it is not in the Crimson Sea
+            if (isOnMap(mapState, x, z)
+                    && LumarChunkGenerator.getSporeSeaEntryAtPos(noiseConfig, (int) x, (int) z).id()
+                    != CrimsonSpores.ID) {
                 ++numAdded;
                 decorations.put("rainline-" + (++nextIconId),
                         new Decoration(CustomMapIcon.Type.RAINLINE, x, z, 0.0f));

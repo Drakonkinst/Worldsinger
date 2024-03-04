@@ -283,14 +283,14 @@ public class LumarLunagreeManager extends LunagreeManager {
 
         int numAdded = 0;
         RainlinePath centerPath = getOrCreateRainlineData(q, r);
-        numAdded += centerPath.applyMapDecorations(decorations, mapState);
+        numAdded += centerPath.applyMapDecorations(world, decorations, mapState);
         for (int i = 0; i < DIRECTION_Q.length; ++i) {
             int neighborQ = q + DIRECTION_Q[i];
             int neighborR = r + DIRECTION_R[i];
             RainlinePath neighborPath = getOrCreateRainlineData(neighborQ, neighborR);
-            numAdded += neighborPath.applyMapDecorations(decorations, mapState);
+            numAdded += neighborPath.applyMapDecorations(world, decorations, mapState);
         }
-        Worldsinger.LOGGER.info("Applying " + numAdded + " rainline icons to map");
+        // Worldsinger.LOGGER.info("Applying " + numAdded + " rainline icons to map");
         return numAdded;
     }
 
