@@ -26,6 +26,7 @@ package io.github.drakonkinst.worldsinger.registry;
 import io.github.drakonkinst.worldsinger.entity.ModEntityTypes;
 import io.github.drakonkinst.worldsinger.entity.render.MidnightCreatureEntityRenderer;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
+import net.minecraft.client.render.entity.EmptyEntityRenderer;
 import net.minecraft.client.render.entity.FlyingItemEntityRenderer;
 
 public final class ModEntityRendering {
@@ -35,6 +36,8 @@ public final class ModEntityRendering {
                 FlyingItemEntityRenderer::new);
         EntityRendererRegistry.register(ModEntityTypes.MIDNIGHT_CREATURE,
                 MidnightCreatureEntityRenderer::new);
+        // TODO: Can render as a dark cloud later
+        EntityRendererRegistry.register(ModEntityTypes.RAINLINE, EmptyEntityRenderer::new);
     }
 
     private ModEntityRendering() {}

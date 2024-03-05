@@ -84,6 +84,11 @@ public final class ModEntityTypes {
                             MidnightCreatureEntity::new)
                     .dimensions(EntityDimensions.changing(0.98f, 0.98f))
                     .build());
+    public static final EntityType<RainlineEntity> RAINLINE = register("rainline",
+            FabricEntityTypeBuilder.create(SpawnGroup.MISC, RainlineEntity::new)
+                    .dimensions(EntityDimensions.fixed(0.0f, 0.0f))
+                    .trackRangeChunks(10)
+                    .build());
 
     public static void initialize() {
         // Register attributes

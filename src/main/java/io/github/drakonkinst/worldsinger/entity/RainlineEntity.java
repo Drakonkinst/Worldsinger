@@ -22,25 +22,44 @@
  * SOFTWARE.
  */
 
-package io.github.drakonkinst.worldsinger.mixin.client.accessor;
+package io.github.drakonkinst.worldsinger.entity;
 
-import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.WorldRenderer;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.gen.Accessor;
-import org.spongepowered.asm.mixin.gen.Invoker;
+import io.github.drakonkinst.worldsinger.Worldsinger;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.data.DataTracker.Builder;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.World;
 
-@Mixin(WorldRenderer.class)
-public interface WorldRendererAccessor {
+public class RainlineEntity extends Entity {
 
-    @Invoker("renderSky")
-    static BufferBuilder.BuiltBuffer worldsinger$renderSky(BufferBuilder builder, float f) {
-        throw new UnsupportedOperationException();
+    public RainlineEntity(EntityType<? extends RainlineEntity> type, World world) {
+        super(type, world);
     }
 
-    @Invoker("renderStars")
-    BufferBuilder.BuiltBuffer worldsinger$renderStars(BufferBuilder builder);
+    @Override
+    public void tick() {
+        int worldHeight = this.getWorld().getTopY() - 1;
+        if (this.getBlockY() != worldHeight) {
+            Worldsinger.LOGGER.info("Correcting entity height");
+            Vec3d pos = this.getPos();
+            this.setPosition(pos.getX(), worldHeight, pos.getZ());
+        }
+    }
 
-    @Accessor("ticks")
-    int worldsinger$getTicks();
+    @Override
+    protected void initDataTracker(Builder builder) {
+        // Do nothing
+    }
+
+    @Override
+    protected void readCustomDataFromNbt(NbtCompound nbt) {
+        // Do nothing
+    }
+
+    @Override
+    protected void writeCustomDataToNbt(NbtCompound nbt) {
+        // Do nothing
+    }
 }
