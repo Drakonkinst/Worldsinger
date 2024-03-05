@@ -38,11 +38,9 @@ import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.WorldRenderer;
-import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockPos.Mutable;
-import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
@@ -54,16 +52,9 @@ public class LumarWeatherRenderer implements WeatherRenderer {
 
     private static final Identifier RAIN = new Identifier("textures/environment/rain.png");
 
-    private static final int SEARCH_RADIUS = 64;
-    private static final int RAINLINE_RADIUS = 8;
+    private static final int SEARCH_BONUS_RADIUS = 24;
     private static final float SCROLL_WIDTH = 32.0f;
     private static final int NORMAL_DIM = 16;
-
-    private static Box createSearchBox(double cameraX, double topY, double cameraZ) {
-        // This box can technically be shorter, but giving it a bit of leeway
-        return new Box(cameraX - SEARCH_RADIUS, topY - 8, cameraZ - SEARCH_RADIUS,
-                cameraX + SEARCH_RADIUS, topY + 8, cameraZ + SEARCH_RADIUS);
-    }
 
     private final float[] NORMAL_LINE_DX = new float[1024];
     private final float[] NORMAL_LINE_DZ = new float[1024];
@@ -83,21 +74,16 @@ public class LumarWeatherRenderer implements WeatherRenderer {
     @Override
     public void render(WorldRenderContext context) {
         Vec3d cameraPos = context.camera().getPos();
-        double cameraX = cameraPos.getX();
-        double cameraY = cameraPos.getY();
-        double cameraZ = cameraPos.getZ();
-        int topY = context.world().getTopY();
-        Box searchBox = LumarWeatherRenderer.createSearchBox(cameraX, topY, cameraZ);
         // TODO: If we want to optimize, this can potentially be called every tick rather than every frame
-        List<RainlineEntity> nearbyRainlines = context.world()
-                .getEntitiesByClass(RainlineEntity.class, searchBox, EntityPredicates.VALID_ENTITY);
+        List<RainlineEntity> nearbyRainlines = RainlineEntity.getNearbyRainlineEntities(
+                context.world(), cameraPos, SEARCH_BONUS_RADIUS);
 
         LightmapTextureManager manager = context.lightmapTextureManager();
         manager.enable();
         World world = context.world();
-        int cameraBlockX = MathHelper.floor(cameraX);
-        int cameraBlockY = MathHelper.floor(cameraY);
-        int cameraBlockZ = MathHelper.floor(cameraZ);
+        int cameraX = MathHelper.floor(cameraPos.getX());
+        int cameraY = MathHelper.floor(cameraPos.getY());
+        int cameraZ = MathHelper.floor(cameraPos.getZ());
         int ticks = ((WorldRendererAccessor) context.worldRenderer()).worldsinger$getTicks();
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferBuilder = tessellator.getBuffer();
@@ -115,18 +101,17 @@ public class LumarWeatherRenderer implements WeatherRenderer {
 
         BlockPos.Mutable mutable = new Mutable();
 
-        for (int z = cameraBlockZ - renderDistance; z <= cameraBlockZ + renderDistance; ++z) {
-            for (int x = cameraBlockX - renderDistance; x <= cameraBlockX + renderDistance; ++x) {
+        for (int z = cameraZ - renderDistance; z <= cameraZ + renderDistance; ++z) {
+            for (int x = cameraX - renderDistance; x <= cameraX + renderDistance; ++x) {
                 int normalLineIndex =
-                        (z - cameraBlockZ + NORMAL_DIM) * NORMAL_DIM * 2 + x - cameraBlockX
-                                + NORMAL_DIM;
+                        (z - cameraZ + NORMAL_DIM) * NORMAL_DIM * 2 + x - cameraX + NORMAL_DIM;
                 double normalDx = (double) this.NORMAL_LINE_DX[normalLineIndex] * 0.5;
                 double normalDz = (double) this.NORMAL_LINE_DZ[normalLineIndex] * 0.5;
                 mutable.set(x, cameraY, z);
                 if (isWithinAnyRainline(nearbyRainlines, mutable)) {
                     int surfaceHeight = world.getTopY(Type.MOTION_BLOCKING, x, z);
-                    int minFrustumHeight = cameraBlockY - renderDistance;
-                    int maxFrustumHeight = cameraBlockY + renderDistance;
+                    int minFrustumHeight = cameraY - renderDistance;
+                    int maxFrustumHeight = cameraY + renderDistance;
                     if (minFrustumHeight < surfaceHeight) {
                         minFrustumHeight = surfaceHeight;
                     }
@@ -135,9 +120,9 @@ public class LumarWeatherRenderer implements WeatherRenderer {
                         maxFrustumHeight = surfaceHeight;
                     }
 
-                    int t = Math.max(surfaceHeight, cameraBlockY);
+                    int t = Math.max(surfaceHeight, cameraY);
                     if (minFrustumHeight != maxFrustumHeight) {
-                        Random random = Random.create(
+                        Random seededRandom = Random.create(
                                 x * x * 3121L + x * 45238971L ^ z * z * 418711L + z * 13761L);
                         mutable.set(x, minFrustumHeight, z);
                         if (!drawingAnyRain) {
@@ -150,7 +135,8 @@ public class LumarWeatherRenderer implements WeatherRenderer {
                         // Variable of death
                         float scrollDistance = -(((ticks & 131071) + (
                                 x * x * 3121 + x * 45238971 + z * z * 418711 + z * 13761 & 0xFF))
-                                + context.tickDelta()) / SCROLL_WIDTH * (3.0f + random.nextFloat());
+                                + context.tickDelta()) / SCROLL_WIDTH * (3.0f
+                                + seededRandom.nextFloat());
                         float scrollOffset = scrollDistance % SCROLL_WIDTH;
                         double deltaX = x - cameraX + 0.5;
                         double deltaZ = z - cameraZ + 0.5;
@@ -206,7 +192,7 @@ public class LumarWeatherRenderer implements WeatherRenderer {
             double deltaX = rainlinePos.getX() - posX;
             double deltaZ = rainlinePos.getZ() - posZ;
             double distSq = deltaX * deltaX + deltaZ * deltaZ;
-            if (distSq < RAINLINE_RADIUS * RAINLINE_RADIUS) {
+            if (distSq < RainlineEntity.RAINLINE_RADIUS * RainlineEntity.RAINLINE_RADIUS) {
                 return true;
             }
         }

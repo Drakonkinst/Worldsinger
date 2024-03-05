@@ -25,14 +25,32 @@
 package io.github.drakonkinst.worldsinger.entity;
 
 import io.github.drakonkinst.worldsinger.Worldsinger;
+import java.util.List;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.data.DataTracker.Builder;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.predicate.entity.EntityPredicates;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public class RainlineEntity extends Entity {
+
+    public static final int RAINLINE_RADIUS = 8;
+    private static final int HEIGHT_OFFSET = -1;
+
+    public static List<RainlineEntity> getNearbyRainlineEntities(World world, Vec3d pos,
+            int bonusRadius) {
+        final double x = pos.getX();
+        final double z = pos.getZ();
+        final double y = world.getTopY() + HEIGHT_OFFSET;
+        final int searchRadius = RAINLINE_RADIUS + bonusRadius;
+        final Box box = new Box(x - searchRadius, y - 1, z - searchRadius, x + searchRadius, y + 1,
+                z + searchRadius);
+        return world.getEntitiesByClass(RainlineEntity.class, box, EntityPredicates.VALID_ENTITY);
+
+    }
 
     public RainlineEntity(EntityType<? extends RainlineEntity> type, World world) {
         super(type, world);
@@ -40,11 +58,11 @@ public class RainlineEntity extends Entity {
 
     @Override
     public void tick() {
-        int worldHeight = this.getWorld().getTopY() - 1;
-        if (this.getBlockY() != worldHeight) {
+        int targetHeight = this.getWorld().getTopY() + HEIGHT_OFFSET;
+        if (this.getBlockY() != targetHeight) {
             Worldsinger.LOGGER.info("Correcting entity height");
             Vec3d pos = this.getPos();
-            this.setPosition(pos.getX(), worldHeight, pos.getZ());
+            this.setPosition(pos.getX(), targetHeight, pos.getZ());
         }
     }
 
