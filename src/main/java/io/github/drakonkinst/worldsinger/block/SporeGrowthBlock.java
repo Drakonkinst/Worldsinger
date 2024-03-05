@@ -36,8 +36,9 @@ public interface SporeGrowthBlock {
     // Spore growth blocks decay if not persistent, is not raining, and seethe is on.
     // They decay faster if open to sky or above a fluid.
     static boolean canDecay(ServerWorld world, BlockPos pos, BlockState state, Random random) {
+        BlockPos abovePos = pos.add(0, 1, 0);
         return SeetheManager.areSporesFluidized(world) && !state.get(Properties.PERSISTENT)
-                && !world.isRaining() && (world.isSkyVisible(pos.up()) || !world.getFluidState(
-                pos.down()).isOf(Fluids.EMPTY) || random.nextInt(5) == 0);
+                && !world.hasRain(abovePos) && (world.isSkyVisible(abovePos)
+                || !world.getFluidState(pos.down()).isOf(Fluids.EMPTY) || random.nextInt(5) == 0);
     }
 }

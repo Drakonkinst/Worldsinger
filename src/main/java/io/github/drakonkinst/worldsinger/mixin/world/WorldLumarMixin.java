@@ -1,10 +1,12 @@
 package io.github.drakonkinst.worldsinger.mixin.world;
 
+import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import io.github.drakonkinst.worldsinger.cosmere.CosmereWorldUtil;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.ClientLumarSeetheManager;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.SeetheManager;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.SeetheManagerAccess;
+import io.github.drakonkinst.worldsinger.entity.RainlineEntity;
 import java.util.function.Supplier;
 import net.minecraft.block.BlockState;
 import net.minecraft.registry.DynamicRegistryManager;
@@ -15,6 +17,7 @@ import net.minecraft.util.profiler.Profiler;
 import net.minecraft.world.MutableWorldProperties;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
+import net.minecraft.world.biome.Biome.Precipitation;
 import net.minecraft.world.dimension.DimensionType;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -52,6 +55,24 @@ public abstract class WorldLumarMixin implements WorldAccess, AutoCloseable, See
         } else {
             seetheManager = SeetheManager.NULL;
         }
+    }
+
+    @ModifyExpressionValue(method = "hasRain", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/World;isRaining()Z"))
+    private boolean considerRainlinesAsRaining(boolean original, BlockPos pos) {
+        return original || RainlineEntity.isRainlineOver((World) (Object) this, pos.toCenterPos());
+    }
+
+    // This approach isn't perfect, but is minimally invasive
+    // Rainlines won't work in biomes without precipitation outside Lumar
+    // Another approach would be to inject at HEAD, but this would require re-doing checks
+    // and be less compatible
+    // Another approach would be some kind of captured local, but trying to avoid this
+    @ModifyExpressionValue(method = "hasRain", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/biome/Biome;getPrecipitation(Lnet/minecraft/util/math/BlockPos;)Lnet/minecraft/world/biome/Biome$Precipitation;"))
+    private Precipitation makeLumarAlwaysRaining(Precipitation original) {
+        if (isLumar) {
+            return Precipitation.RAIN;
+        }
+        return original;
     }
 
     @ModifyReturnValue(method = "getRainGradient", at = @At("RETURN"))
