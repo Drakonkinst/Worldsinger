@@ -68,6 +68,8 @@ public final class ModBlockTags {
     // Needed for non-full blocks similar to Tinted Glass to block light.
     public static final TagKey<Block> OPAQUE_FOR_LIGHTING = ModBlockTags.ofCommon(
             "opaque_for_lighting");
+    // Blocks that randomly tick in rain, which should also be affected by rainlines
+    public static final TagKey<Block> AFFECTED_BY_RAIN = ModBlockTags.ofCommon("affected_by_rain");
 
     private static TagKey<Block> of(String id) {
         return TagKey.of(RegistryKeys.BLOCK, Worldsinger.id(id));
