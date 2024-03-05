@@ -52,7 +52,7 @@ public class LumarWeatherRenderer implements WeatherRenderer {
 
     private static final Identifier RAIN = new Identifier("textures/environment/rain.png");
 
-    private static final int SEARCH_BONUS_RADIUS = 24;
+    private static final int SEARCH_BONUS_RADIUS = 64;
     private static final float SCROLL_WIDTH = 32.0f;
     private static final int NORMAL_DIM = 16;
 

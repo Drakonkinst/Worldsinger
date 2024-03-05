@@ -49,7 +49,7 @@ import net.minecraft.world.biome.Biome.Precipitation;
 
 public class RainlineEntity extends Entity {
 
-    public static final int RAINLINE_RADIUS = 8;
+    public static final int RAINLINE_RADIUS = 6;
     private static final int HEIGHT_OFFSET = -1;
     private static final int RANDOM_TICK_INTERVAL = 10;
 
