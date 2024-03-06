@@ -1,0 +1,196 @@
+---
+cosmere.worldsinger:
+  spore_sea:
+    verdant: Emerald Sea
+    crimson: Crimson Sea
+    zephyr: Sapphire Sea
+    sunlight: Sunlight Sea
+    roseite: Rose Sea
+    midnight: Midnight Sea
+death.attack:
+  verdant_spore: "%s grew vines out of their eyes"
+  verdant_spore.player: "%s grew vines out of their eyes while trying to
+  escape %s"
+  crimson_spore: "%s turned into a pincushion"
+  crimson_spore.player: "%s turned into a pincushion while trying to escape
+  %s"
+  sunlight_spore: "%s was incinerated"
+  sunlight_spore.player: "%s was incinerated while trying to escape %s"
+  zephyr_spore: "%s collapsed from the inside"
+  zephyr_spore.player: "%s imploded while trying to escape %s"
+  roseite_spore: "%s turned into crystals"
+  roseite_spore.player: "%s turned into crystals while trying to escape
+  %s"
+  midnight_essence: "%s was suffocated by Midnight Essence"
+  midnight_essence.player: "%s was suffocated by Midnight Essence while
+  trying to escape %s"
+  spike: "%s was impaled on a spike"
+  spike.player: "%s walked into a spike while trying to escape %s"
+  spike_fall: "%s fell onto a spike"
+  spike_fall.player: "%s fell onto a spike while trying to escape %s"
+  drown_spore: "%s drowned in spores"
+  thirst: "%s died of thirst"
+  thirst.player: "%s died of thirst while trying to escape %s"
+entity.worldsinger:
+  verdant_spore_growth: Verdant Spore Growth
+  crimson_spore_growth: Crimson Spore Growth
+  roseite_spore_growth: Roseite Spore Growth
+  midnight_spore_growth: Midnight Spore Growth
+  midnight_creature: Midnight Creature
+  midnight_creature.morphed: Midnight %s
+  rainline: Rainline
+effect.worldsinger:
+  verdant_spores: Verdant Spores
+  crimson_spores: Crimson Spores
+  zephyr_spores: Zephyr Spores
+  sunlight_spores: Sunlight Spores
+  roseite_spores: Roseite Spores
+  midnight_spores: Midnight Spores
+  thirst: Thirst
+itemGroup.worldsinger.worldsinger: Worldsinger
+item:
+  salted_food: Salted %s
+  silver_lined: Silver-Lined
+  silver_durability: 'Silver Durability: %s / %s'
+  worldsinger:
+    verdant_vine: Verdant Vine
+    crimson_spine: Crimson Spine
+    roseite_crystal: Roseite Crystal
+    roseite_bead: Roseite Bead
+    dead_spores_bucket: Bucket of Dead Spores
+    verdant_spores_bucket: Bucket of Verdant Spores
+    crimson_spores_bucket: Bucket of Crimson Spores
+    zephyr_spores_bucket: Bucket of Zephyr Spores
+    sunlight_spores_bucket: Bucket of Sunlight Spores
+    roseite_spores_bucket: Bucket of Roseite Spores
+    midnight_spores_bucket: Bucket of Midnight Spores
+    dead_spores_bottle: Bottle of Dead Spores
+    verdant_spores_bottle: Bottle of Verdant Spores
+    crimson_spores_bottle: Bottle of Crimson Spores
+    zephyr_spores_bottle: Bottle of Zephyr Spores
+    sunlight_spores_bottle: Bottle of Sunlight Spores
+    roseite_spores_bottle: Bottle of Roseite Spores
+    midnight_spores_bottle: Bottle of Midnight Spores
+    dead_spores_splash_bottle: Splash Bottle of Dead Spores
+    verdant_spores_splash_bottle: Splash Bottle of Verdant Spores
+    crimson_spores_splash_bottle: Splash Bottle of Crimson Spores
+    zephyr_spores_splash_bottle: Splash Bottle of Zephyr Spores
+    sunlight_spores_splash_bottle: Splash Bottle of Sunlight Spores
+    roseite_spores_splash_bottle: Splash Bottle of Roseite Spores
+    midnight_spores_splash_bottle: Splash Bottle of Midnight Spores
+    salt: Salt
+    raw_silver: Raw Silver
+    silver_ingot: Silver Ingot
+    silver_nugget: Silver Nugget
+    silver_knife: Silver Knife
+    crude_iron: Crude Iron
+    steel_ingot: Steel Ingot
+    steel_nugget: Steel Nugget
+    aluminum_ingot: Aluminum Ingot
+    aluminum_nugget: Aluminum Nugget
+    steel_sword: Steel Sword
+    steel_pickaxe: Steel Pickaxe
+    steel_axe: Steel Axe
+    steel_shovel: Steel Shovel
+    steel_hoe: Steel Hoe
+    steel_helmet: Steel Helmet
+    steel_chestplate: Steel Chestplate
+    steel_leggings: Steel Leggings
+    steel_boots: Steel Boots
+    quartz_and_steel: Quartz and Steel
+    quartz_and_iron: Quartz and Iron
+    flint_and_iron: Flint and Iron
+    midnight_creature_spawn_egg: Midnight Creature Spawn Egg
+block.worldsinger:
+  dead_spore_block: Dead Spore Sea
+  verdant_spore_block: Verdant Spore Block
+  crimson_spore_block: Crimson Spore Block
+  zephyr_spore_block: Zephyr Spore Block
+  sunlight_spore_block: Sunlight Spore Block
+  roseite_spore_block: Roseite Spore Block
+  midnight_spore_block: Midnight Spore Block
+  dead_spore_sea: Dead Spore Sea
+  verdant_spore_sea: Verdant Spore Sea
+  crimson_spore_sea: Crimson Spore Sea
+  zephyr_spore_sea: Zephyr Spore Sea
+  sunlight_spore_sea: Sunlight Spore Sea
+  roseite_spore_sea: Roseite Spore Sea
+  midnight_spore_sea: Midnight Spore Sea
+  verdant_vine_block: Verdant Vine Block
+  verdant_vine_branch: Verdant Vine Branch
+  verdant_vine_snare: Verdant Vine Snare
+  twisting_verdant_vines: Twisting Verdant Vines
+  twisting_verdant_vines_plant: Twisting Verdant Vines Plant
+  crimson_growth: Crimson Growth
+  crimson_spike: Crimson Spike
+  crimson_snare: Crimson Snare
+  crimson_spines: Crimson Spines
+  tall_crimson_spines: Tall Crimson Spines
+  dead_verdant_vine_block: Dead Verdant Vine Block
+  dead_verdant_vine_branch: Dead Verdant Vine Branch
+  dead_verdant_vine_snare: Dead Verdant Vine Snare
+  dead_twisting_verdant_vines: Dead Twisting Verdant Vines
+  dead_twisting_verdant_vines_plant: Dead Twisting Verdant Vines Plant
+  dead_crimson_growth: Dead Crimson Growth
+  dead_crimson_spike: Dead Crimson Spike
+  dead_crimson_snare: Dead Crimson Snare
+  dead_crimson_spines: Dead Crimson Spines
+  dead_tall_crimson_spines: Dead Tall Crimson Spines
+  sunlight: Block of Sunlight
+  roseite_block: Block of Roseite
+  roseite_stairs: Roseite Stairs
+  roseite_slab: Roseite Slab
+  roseite_cluster: Roseite Cluster
+  large_roseite_bud: Large Roseite Bud
+  medium_roseite_bud: Medium Roseite Bud
+  small_roseite_bud: Small Roseite Bud
+  saltstone: Saltstone
+  saltstone_salt_ore: Saltstone Salt Ore
+  silver_ore: Silver Ore
+  deepslate_silver_ore: Deepslate Silver Ore
+  salt_block: Block of Salt
+  silver_block: Block of Silver
+  raw_silver_block: Raw Silver Block
+  steel_block: Block of Steel
+  aluminum_block: Block of Aluminum
+  aluminum_sheet: Aluminum Sheet
+  steel_anvil: Steel Anvil
+  chipped_steel_anvil: Chipped Steel Anvil
+  damaged_steel_anvil: Damaged Steel Anvil
+  magma_vent: Magma Vent
+  midnight_essence: Midnight Essence
+  aluminum_cauldron: Aluminum-Lined Cauldron
+  aluminum_water_cauldron: Aluminum-Lined Water Cauldron
+  aluminum_lava_cauldron: Aluminum-Lined Lava Cauldron
+  aluminum_powder_snow_cauldron: Aluminum-Lined Powder Snow Cauldron
+  aluminum_dead_spore_cauldron: Aluminum-Lined Dead Spore Cauldron
+  aluminum_verdant_spore_cauldron: Aluminum-Lined Verdant Spore Cauldron
+  aluminum_crimson_spore_cauldron: Aluminum-Lined Crimson Spore Cauldron
+  aluminum_zephyr_spore_cauldron: Aluminum-Lined Zephyr Spore Cauldron
+  aluminum_sunlight_spore_cauldron: Aluminum-Lined Sunlight Spore
+    Cauldron
+  aluminum_roseite_spore_cauldron: Aluminum-Lined Roseite Spore Cauldron
+  aluminum_midnight_spore_cauldron: Aluminum-Lined Midnight Spore
+    Cauldron
+  dead_spore_cauldron: Dead Spore Cauldron
+  verdant_spore_cauldron: Verdant Spore Cauldron
+  crimson_spore_cauldron: Crimson Spore Cauldron
+  zephyr_spore_cauldron: Zephyr Spore Cauldron
+  sunlight_spore_cauldron: Sunlight Spore Cauldron
+  roseite_spore_cauldron: Roseite Spore Cauldron
+  midnight_spore_cauldron: Midnight Spore Cauldron
+action.worldsinger.possess.on_start: Press %1$s to Exit
+commands:
+  locate.spore_sea.not_found: Could not find %s within reasonable distance
+  locate.spore_sea.invalid: There are no spore seas of type "%s"
+  locate.spore_sea.success: The nearest %s is at %s (%s blocks away)
+  spore.success: Spawned aether spore particle of type %s
+config.worldsinger:
+  yacl:
+    missing: Yet Another Config Lib is not installed
+    missing.message: YACL 3 is required to edit the config in
+      game, would you like to install YACL 3?
+    outdated: Yet Another Config Lib is outdated
+    outdated.message: The latest version of YACL 3 is required
+      to edit the config in game, would you like to update YACL 3?
+...

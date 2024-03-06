@@ -39,7 +39,7 @@ public class RainlinePath {
 
     public static final int RAINLINE_NODE_COUNT = 8;
 
-    private static final double ALPHA = 0.5;    // Centripetal
+    private static final double ALPHA = 0.5;    // Centripetal Catmull-Rom Spline
     private static final float INV_TENSION = 1.0f;
     private static final float ANGLE_INCREMENT = MathHelper.TAU / 8;
     private static final float ANGLE_OFFSET = ANGLE_INCREMENT / 8;
