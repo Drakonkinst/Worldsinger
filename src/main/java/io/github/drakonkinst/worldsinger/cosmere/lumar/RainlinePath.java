@@ -53,6 +53,11 @@ public class RainlinePath {
     private record Spline(float ax, float ay, float bx, float by, float cx, float cy, float dx,
                           float dy) {
 
+        public static Spline of(float ax, float ay, float bx, float by, float cx, float cy,
+                float dx, float dy) {
+            return new Spline(ax, ay, bx, by, cx, cy, dx, dy);
+        }
+
         public float applyX(float t) {
             final float t2 = t * t;
             return ax * t2 * t + bx * t2 + cx * t + dx;
@@ -82,7 +87,7 @@ public class RainlinePath {
         float ay = 2.0f * (p1.y() - p2.y()) + m1y + m2y;
         float bx = -3.0f * (p1.x() - p2.x()) - m1x - m1x - m2x;
         float by = -3.0f * (p1.y() - p2.y()) - m1y - m1y - m2y;
-        return new Spline(ax, ay, bx, by, m1x, m1y, p1.x(), p1.y());
+        return Spline.of(ax, ay, bx, by, m1x, m1y, p1.x(), p1.y());
     }
 
     // https://stackoverflow.com/a/22157217
