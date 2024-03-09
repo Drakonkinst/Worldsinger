@@ -26,11 +26,12 @@ package io.github.drakonkinst.worldsinger.cosmere;
 
 import io.github.drakonkinst.worldsinger.worldgen.dimension.ModDimensions;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 
 public final class CosmereWorldUtil {
 
-    public static boolean isLumar(World world) {
-        return world.getRegistryKey().equals(ModDimensions.WORLD_LUMAR);
+    public static boolean isLumar(@Nullable World world) {
+        return world != null && world.getRegistryKey().equals(ModDimensions.WORLD_LUMAR);
     }
 
     private CosmereWorldUtil() {}

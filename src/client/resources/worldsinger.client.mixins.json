@@ -29,8 +29,8 @@
     "world.CameraPossessionMixin",
     "world.ClientWorldMixin",
     "world.GameRendererMixin",
-    "world.WorldRendererPossessionMixin",
-    "world.WorldRendererSkyMixin"
+    "world.WorldRendererLumarMixin",
+    "world.WorldRendererPossessionMixin"
   ],
   "injectors": {
     "defaultRequire": 1

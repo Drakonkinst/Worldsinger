@@ -70,6 +70,7 @@ public final class ModBlockTags {
             "opaque_for_lighting");
     // Blocks that randomly tick in rain, which should also be affected by rainlines
     public static final TagKey<Block> AFFECTED_BY_RAIN = ModBlockTags.ofCommon("affected_by_rain");
+    public static final TagKey<Block> SMOKES_IN_RAIN = ModBlockTags.ofCommon("smokes_in_rain");
 
     private static TagKey<Block> of(String id) {
         return TagKey.of(RegistryKeys.BLOCK, Worldsinger.id(id));
