@@ -27,12 +27,13 @@ package io.github.drakonkinst.worldsinger.mixin.item.map;
 import io.github.drakonkinst.worldsinger.mixin.accessor.ValueListsInvoker;
 import java.util.function.IntFunction;
 import java.util.function.ToIntFunction;
+import net.minecraft.item.map.MapIcon;
 import net.minecraft.util.function.ValueLists.OutOfBoundsHandling;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
-@Mixin(targets = "net.minecraft.item.map.MapIcon$Type")
+@Mixin(MapIcon.Type.class)
 public abstract class MapIconTypeMixin {
 
     // Remove validation checks for consecutive values, allowing custom values to be added without hassle

@@ -1,9 +1,0 @@
-{
-  "type": "minecraft:blasting",
-  "ingredient": {
-    "item": "worldsinger:crude_iron"
-  },
-  "result": "worldsinger:steel_ingot",
-  "experience": 0.7,
-  "cookingtime": 600
-}

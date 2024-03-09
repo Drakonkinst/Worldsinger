@@ -74,6 +74,8 @@ public class ModRecipeGenerator extends FabricRecipeProvider {
                 List.of(ModBlocks.SALTSTONE_SALT_ORE), 0.7f, DEFAULT_SMELTING_TIME_SECONDS);
         offerBlastingCompatibleRecipe(exporter, ModItems.ALUMINUM_NUGGET,
                 List.of(ModBlocks.ALUMINUM_SHEET), 0.1f, DEFAULT_SMELTING_TIME_SECONDS);
+        offerBlastingOnlyRecipe(exporter, ModItems.STEEL_INGOT, List.of(ModItems.CRUDE_IRON), 0.7f,
+                DEFAULT_SMELTING_TIME_SECONDS * 3);
         offerMeltingDownRecipe(exporter, ModItems.STEEL_NUGGET, new Item[] {
                 ModItems.STEEL_PICKAXE,
                 ModItems.STEEL_AXE,
@@ -94,6 +96,13 @@ public class ModRecipeGenerator extends FabricRecipeProvider {
                 cookingTimeInSeconds * ModConstants.SECONDS_TO_TICKS, outputId);
         RecipeProvider.offerBlasting(exporter, input, RecipeCategory.MISC, output, experience,
                 cookingTimeInSeconds * ModConstants.SECONDS_TO_TICKS / 2, outputId);
+    }
+
+    private void offerBlastingOnlyRecipe(RecipeExporter exporter, Item output,
+            List<ItemConvertible> input, float experience, int cookingTimeInSeconds) {
+        String outputId = Registries.ITEM.getId(output).getPath();
+        RecipeProvider.offerBlasting(exporter, input, RecipeCategory.MISC, output, experience,
+                cookingTimeInSeconds * ModConstants.SECONDS_TO_TICKS, outputId);
     }
 
     private void offerMeltingDownRecipe(RecipeExporter exporter, Item output, Item[] input,

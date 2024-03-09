@@ -40,7 +40,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldEvents;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -112,9 +111,6 @@ public abstract class BrewingStandBlockEntityMixin extends LockableContainerBloc
             BlockState blockState) {
         super(blockEntityType, blockPos, blockState);
     }
-
-    @Shadow
-    public abstract ItemStack getStack(int slot);
 
     @Inject(method = "isValid", at = @At("RETURN"), cancellable = true)
     private void allowCustomPotionsAndFuels(int slot, ItemStack stack,
