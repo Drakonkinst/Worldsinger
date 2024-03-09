@@ -14,6 +14,7 @@
     "entity.EyesFeatureRendererMixin",
     "entity.LivingEntityRendererMixin",
     "entity.OverlayTextureMixin",
+    "gui.DebugHudMixin",
     "gui.DrawContextMixin",
     "gui.InGameHudMixin",
     "gui.InGameOverlayRendererPossessionMixin",

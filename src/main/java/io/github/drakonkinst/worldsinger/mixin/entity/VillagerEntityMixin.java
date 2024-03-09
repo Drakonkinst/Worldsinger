@@ -22,33 +22,30 @@
  * SOFTWARE.
  */
 
-package io.github.drakonkinst.worldsinger.mixin.world;
+package io.github.drakonkinst.worldsinger.mixin.entity;
 
 import io.github.drakonkinst.worldsinger.cosmere.CosmerePlanet;
-import io.github.drakonkinst.worldsinger.network.packet.CosmereTimeUpdatePayload;
-import net.minecraft.network.packet.s2c.common.CustomPayloadS2CPacket;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.PlayerManager;
-import net.minecraft.server.world.ServerWorld;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.InteractionObserver;
+import net.minecraft.entity.passive.MerchantEntity;
+import net.minecraft.entity.passive.VillagerEntity;
+import net.minecraft.village.VillagerDataContainer;
+import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.Constant;
+import org.spongepowered.asm.mixin.injection.ModifyConstant;
 
-@Mixin(MinecraftServer.class)
-public abstract class MinecraftServerMixin {
+@Mixin(VillagerEntity.class)
+public abstract class VillagerEntityMixin extends MerchantEntity implements InteractionObserver,
+        VillagerDataContainer {
 
-    @Shadow
-    private PlayerManager playerManager;
+    public VillagerEntityMixin(EntityType<? extends MerchantEntity> entityType, World world) {
+        super(entityType, world);
+        throw new UnsupportedOperationException();
+    }
 
-    @Inject(method = "sendTimeUpdatePackets(Lnet/minecraft/server/world/ServerWorld;)V", at = @At("RETURN"))
-    private void sendCosmereTimeUpdatePackets(ServerWorld world, CallbackInfo ci) {
-        CosmerePlanet planet = CosmerePlanet.getPlanet(world);
-        if (planet != CosmerePlanet.NONE) {
-            this.playerManager.sendToDimension(new CustomPayloadS2CPacket(
-                            new CosmereTimeUpdatePayload(planet, world.getTimeOfDay())),
-                    world.getRegistryKey());
-        }
+    @ModifyConstant(method = "hasRecentlySlept", constant = @Constant(longValue = 24000L))
+    private long adjustSleepCycleForPlanet(long constant) {
+        return CosmerePlanet.getDayLengthOrDefault(this.getWorld(), constant);
     }
 }

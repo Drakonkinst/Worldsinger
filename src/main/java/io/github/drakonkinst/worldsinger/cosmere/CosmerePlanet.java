@@ -76,4 +76,21 @@ public enum CosmerePlanet {
     public static boolean isLumar(@Nullable World world) {
         return CosmerePlanet.isPlanet(world, CosmerePlanet.LUMAR);
     }
+
+    // Only overrides default if it's actually a cosmere planet
+    public static long getDayLengthOrDefault(@Nullable World world, long defaultValue) {
+        CosmerePlanet planet = CosmerePlanet.getPlanet(world);
+        if (planet == CosmerePlanet.NONE) {
+            return defaultValue;
+        }
+        return planet.getDayLength();
+    }
+
+    public static float getDayLengthMultiplier(@Nullable World world) {
+        CosmerePlanet planet = CosmerePlanet.getPlanet(world);
+        if (planet == CosmerePlanet.NONE) {
+            return 1.0f;
+        }
+        return (float) planet.getDayLength() / ModConstants.VANILLA_DAY_LENGTH;
+    }
 }

@@ -7,6 +7,7 @@ import java.util.function.Supplier;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.world.MutableWorldProperties;
 import net.minecraft.world.World;
@@ -27,6 +28,10 @@ public abstract class WorldCosmereMixin implements WorldAccess, AutoCloseable, C
     @Shadow
     @Final
     protected MutableWorldProperties properties;
+
+    @Shadow
+    public abstract DimensionType getDimension();
+
     @Unique
     protected CosmerePlanet planet;
 
@@ -65,5 +70,17 @@ public abstract class WorldCosmereMixin implements WorldAccess, AutoCloseable, C
             return cosmereWorldData.getTimeOfDay();
         }
         return WorldAccess.super.getLunarTime();
+    }
+
+    @Override
+    public float getSkyAngle(float deltaTime) {
+        CosmerePlanet planet = CosmerePlanet.getPlanet((World) (Object) this);
+        if (this.getDimension().hasFixedTime() || planet == CosmerePlanet.NONE) {
+            return WorldAccess.super.getSkyAngle(deltaTime);
+        }
+        float fractionalPart = MathHelper.fractionalPart(
+                cosmereWorldData.getTimeOfDay() * 1.0f / planet.getDayLength() - 0.25f);
+        float offset = 0.5f - MathHelper.cos(fractionalPart * MathHelper.PI) * 0.5f;
+        return (fractionalPart * 2.0f + offset) / 3.0f;
     }
 }

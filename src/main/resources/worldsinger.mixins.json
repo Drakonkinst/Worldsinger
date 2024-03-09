@@ -69,6 +69,7 @@
     "entity.ServerPlayerEntityThirstMixin",
     "entity.SpawnRestrictionSeagullPatch",
     "entity.VehicleEntityMixin",
+    "entity.VillagerEntityMixin",
     "entity.ai.BirdPathNodeMakerMixin",
     "entity.ai.LandPathNodeMakerMixin",
     "entity.ai.MeleeAttackGoalFixMixin",
