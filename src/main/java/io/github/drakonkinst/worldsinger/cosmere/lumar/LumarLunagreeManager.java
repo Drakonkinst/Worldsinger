@@ -193,14 +193,16 @@ public class LumarLunagreeManager extends LunagreeManager {
 
     private IntSet generatePossibleSporeIds(int q, int r) {
         IntSet possibleSporeIds = new IntArraySet(VALID_SPORE_IDS);
-        for (int i = 0; i < DIRECTION_Q.length; ++i) {
-            int neighborQ = q + DIRECTION_Q[i];
-            int neighborR = r + DIRECTION_R[i];
-            long neighborKey = LumarLunagreeManager.toKey(neighborQ, neighborR);
-            if (lunagreeMap.containsKey(neighborKey)) {
-                possibleSporeIds.remove(lunagreeMap.get(neighborKey).sporeId());
-            }
-        }
+        // Remove spore IDs that are already nearby. Removing this in order to make generation
+        // more deterministic
+        // for (int i = 0; i < DIRECTION_Q.length; ++i) {
+        //     int neighborQ = q + DIRECTION_Q[i];
+        //     int neighborR = r + DIRECTION_R[i];
+        //     long neighborKey = LumarLunagreeManager.toKey(neighborQ, neighborR);
+        //     if (lunagreeMap.containsKey(neighborKey)) {
+        //         possibleSporeIds.remove(lunagreeMap.get(neighborKey).sporeId());
+        //     }
+        // }
         // No valid options, so allow repeats
         if (possibleSporeIds.isEmpty()) {
             possibleSporeIds.addAll(VALID_SPORE_IDS);
