@@ -31,6 +31,10 @@ import net.minecraft.world.PersistentState;
 
 public class CosmereWorldData extends PersistentState {
 
+    private static final String KEY_TIME = "time";
+
+    public static final String NAME = "cosmere";
+
     public static PersistentState.Type<CosmereWorldData> getPersistentStateType() {
         return new PersistentState.Type<>(CosmereWorldData::new,
                 (nbt, registryLookup) -> CosmereWorldData.fromNbt(nbt), DataFixTypes.LEVEL);
@@ -38,7 +42,7 @@ public class CosmereWorldData extends PersistentState {
 
     private static CosmereWorldData fromNbt(NbtCompound nbt) {
         CosmereWorldData cosmereWorldData = new CosmereWorldData();
-        // TODO: Load data
+        cosmereWorldData.setTimeOfDay(nbt.getLong(KEY_TIME));
         return cosmereWorldData;
     }
 
@@ -51,14 +55,14 @@ public class CosmereWorldData extends PersistentState {
     public void setTimeOfDay(long timeOfDay) {
         this.timeOfDay = timeOfDay;
     }
-    
+
     public long getTimeOfDay() {
         return timeOfDay;
     }
 
     @Override
     public NbtCompound writeNbt(NbtCompound nbt, WrapperLookup registryLookup) {
-        // TODO: Save data
+        nbt.putLong(KEY_TIME, timeOfDay);
         return nbt;
     }
 }

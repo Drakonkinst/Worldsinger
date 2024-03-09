@@ -24,8 +24,10 @@
 
 package io.github.drakonkinst.worldsinger.cosmere.lumar;
 
+import io.github.drakonkinst.worldsinger.Worldsinger;
 import io.github.drakonkinst.worldsinger.item.map.CustomMapDecorationsComponent.Decoration;
 import io.github.drakonkinst.worldsinger.item.map.CustomMapIcon;
+import io.github.drakonkinst.worldsinger.util.ModConstants;
 import io.github.drakonkinst.worldsinger.util.math.Int2;
 import io.github.drakonkinst.worldsinger.worldgen.lumar.LumarChunkGenerator;
 import java.util.Map;
@@ -35,7 +37,6 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.gen.noise.NoiseConfig;
-import org.apache.commons.lang3.NotImplementedException;
 
 public class RainlinePath {
 
@@ -84,6 +85,12 @@ public class RainlinePath {
                 float dx, float dy) {
             float length = Spline.calculateApproxLength(ax, ay, bx, by, cx, cy, dx, dy);
             return new Spline(ax, ay, bx, by, cx, cy, dx, dy, length);
+        }
+
+        public Vec2f apply(float t) {
+            float x = applyX(t);
+            float y = applyY(t);
+            return new Vec2f(x, y);
         }
 
         public float applyX(float t) {
@@ -198,7 +205,28 @@ public class RainlinePath {
         return totalLength;
     }
 
-    public Vec2f getCurrentPosition(float gameTime, float blocksPerSecond) {
-        throw new NotImplementedException();
+    // Get position of the rainline following this rainline path depending on the game time
+    public Vec2f getCurrentPosition(long gameTime, float blocksPerSecond) {
+        float secondsPerCycle = totalLength / blocksPerSecond;
+        float cycleOffset = gameTime * ModConstants.TICKS_TO_SECONDS / secondsPerCycle;
+        float distanceAlongCycle = cycleOffset * totalLength;
+
+        Worldsinger.LOGGER.info("Cycle offset: " + cycleOffset);
+        float current = 0.0f;
+        float next;
+        for (int i = 0; i < RAINLINE_NODE_COUNT; ++i) {
+            Spline spline = splines[i];
+            next = current + spline.length();
+            if (next >= distanceAlongCycle) {
+                float distanceAlongSpline = distanceAlongCycle - current;
+                Worldsinger.LOGGER.info(
+                        "Found i = " + i + ", t = " + (distanceAlongSpline / spline.length()));
+                float t = MathHelper.clamp(distanceAlongSpline / spline.length(), 0.0f, 1.0f);
+                return spline.apply(t);
+            }
+            current = next;
+        }
+        Worldsinger.LOGGER.warn("Did not find valid spline");
+        return splines[0].apply(0.0f);
     }
 }

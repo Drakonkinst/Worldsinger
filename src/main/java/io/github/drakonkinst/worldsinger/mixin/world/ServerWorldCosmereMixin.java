@@ -25,10 +25,23 @@
 package io.github.drakonkinst.worldsinger.mixin.world;
 
 import io.github.drakonkinst.worldsinger.cosmere.CosmerePlanet;
+import io.github.drakonkinst.worldsinger.cosmere.CosmereWorldData;
+import java.util.List;
+import java.util.concurrent.Executor;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.WorldGenerationProgressListener;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.math.random.RandomSequencesState;
 import net.minecraft.world.GameRules;
+import net.minecraft.world.PersistentStateManager;
 import net.minecraft.world.World;
+import net.minecraft.world.dimension.DimensionOptions;
+import net.minecraft.world.level.ServerWorldProperties;
+import net.minecraft.world.level.storage.LevelStorage.Session;
+import net.minecraft.world.spawner.SpecialSpawner;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -36,10 +49,27 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(ServerWorld.class)
 public abstract class ServerWorldCosmereMixin extends WorldCosmereMixin {
 
+    @Shadow
+    public abstract PersistentStateManager getPersistentStateManager();
+
+    @Inject(method = "<init>", at = @At("TAIL"))
+    private void initializeCosmereData(MinecraftServer server, Executor workerExecutor,
+            Session session, ServerWorldProperties properties, RegistryKey<World> worldKey,
+            DimensionOptions dimensionOptions,
+            WorldGenerationProgressListener worldGenerationProgressListener, boolean debugWorld,
+            long seed, List<SpecialSpawner> spawners, boolean shouldTickTime,
+            RandomSequencesState randomSequencesState, CallbackInfo ci) {
+        if (CosmerePlanet.getPlanetFromKey(worldKey) != CosmerePlanet.NONE) {
+            cosmereWorldData = this.getPersistentStateManager()
+                    .getOrCreate(CosmereWorldData.getPersistentStateType(), CosmereWorldData.NAME);
+        }
+    }
+
     @Inject(method = "setTimeOfDay", at = @At("HEAD"), cancellable = true)
     private void setCosmereTimeOfDay(long timeOfDay, CallbackInfo ci) {
         if (CosmerePlanet.isCosmerePlanet((World) (Object) this)) {
             cosmereWorldData.setTimeOfDay(timeOfDay);
+            cosmereWorldData.markDirty();
             ci.cancel();
         }
     }
@@ -50,6 +80,7 @@ public abstract class ServerWorldCosmereMixin extends WorldCosmereMixin {
         if (this.properties.getGameRules().getBoolean(GameRules.DO_DAYLIGHT_CYCLE)
                 && CosmerePlanet.isCosmerePlanet((World) (Object) this)) {
             cosmereWorldData.setTimeOfDay(cosmereWorldData.getTimeOfDay() + 1L);
+            cosmereWorldData.markDirty();
         }
     }
 }
