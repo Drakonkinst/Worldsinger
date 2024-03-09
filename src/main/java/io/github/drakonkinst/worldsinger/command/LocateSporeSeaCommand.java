@@ -32,7 +32,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.datafixers.util.Pair;
 import io.github.drakonkinst.worldsinger.Worldsinger;
-import io.github.drakonkinst.worldsinger.cosmere.CosmereWorldUtil;
+import io.github.drakonkinst.worldsinger.cosmere.CosmerePlanet;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.AetherSpores;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.DeadSpores;
 import io.github.drakonkinst.worldsinger.util.BlockPosUtil;
@@ -132,7 +132,7 @@ public class LocateSporeSeaCommand {
     public static Pair<BlockPos, SporeSeaEntry> locateSporeSea(ServerWorld world, int originX,
             int originZ, int radius, int horizontalBlockCheckInterval, boolean mustBeAboveSeaLevel,
             IntSet filterSporeIds, @Nullable Predicate<RegistryEntry<Biome>> biomePredicate) {
-        if (!CosmereWorldUtil.isLumar(world)) {
+        if (!CosmerePlanet.isLumar(world)) {
             return null;
         }
         MultiNoiseSampler noiseSampler = world.getChunkManager()

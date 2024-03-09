@@ -22,11 +22,13 @@
  * SOFTWARE.
  */
 
-package io.github.drakonkinst.worldsinger.entity;
+package io.github.drakonkinst.worldsinger.mixin.client.world;
 
-import io.github.drakonkinst.worldsinger.cosmere.lumar.ClientLunagreeData;
+import io.github.drakonkinst.worldsinger.mixin.world.WorldCosmereMixin;
+import net.minecraft.client.world.ClientWorld;
+import org.spongepowered.asm.mixin.Mixin;
 
-public interface ClientLunagreeDataAccess {
+@Mixin(ClientWorld.class)
+public abstract class ClientWorldCosmereMixin extends WorldCosmereMixin {
 
-    ClientLunagreeData worldsinger$getLunagreeData();
 }

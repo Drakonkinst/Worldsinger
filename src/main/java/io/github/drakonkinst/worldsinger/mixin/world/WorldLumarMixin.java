@@ -2,8 +2,7 @@ package io.github.drakonkinst.worldsinger.mixin.world;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
-import io.github.drakonkinst.worldsinger.cosmere.CosmereWorldUtil;
-import io.github.drakonkinst.worldsinger.cosmere.lumar.ClientLumarSeetheManager;
+import io.github.drakonkinst.worldsinger.cosmere.CosmerePlanet;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.SeetheManager;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.SeetheManagerAccess;
 import io.github.drakonkinst.worldsinger.entity.RainlineEntity;
@@ -13,12 +12,14 @@ import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.world.MutableWorldProperties;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.biome.Biome.Precipitation;
 import net.minecraft.world.dimension.DimensionType;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -38,8 +39,9 @@ public abstract class WorldLumarMixin implements WorldAccess, AutoCloseable, See
     @Shadow
     public abstract BlockState getBlockState(BlockPos pos);
 
-    @Unique
-    protected boolean isLumar = false;
+    @Shadow
+    @Final
+    public Random random;
     @Unique
     protected SeetheManager seetheManager;
 
@@ -48,13 +50,7 @@ public abstract class WorldLumarMixin implements WorldAccess, AutoCloseable, See
             DynamicRegistryManager registryManager, RegistryEntry<DimensionType> dimensionEntry,
             Supplier<Profiler> profiler, boolean isClient, boolean debugWorld, long biomeAccess,
             int maxChainedNeighborUpdates, CallbackInfo ci) {
-        isLumar = CosmereWorldUtil.isLumar((World) (Object) this);
-        // Set the default seethe manager, which does not do anything
-        if (isLumar) {
-            seetheManager = new ClientLumarSeetheManager();
-        } else {
-            seetheManager = SeetheManager.NULL;
-        }
+        seetheManager = SeetheManager.NULL;
     }
 
     @ModifyExpressionValue(method = "hasRain", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/World;isRaining()Z"))
@@ -69,7 +65,7 @@ public abstract class WorldLumarMixin implements WorldAccess, AutoCloseable, See
     // Another approach would be some kind of captured local, but trying to avoid this
     @ModifyExpressionValue(method = "hasRain", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/biome/Biome;getPrecipitation(Lnet/minecraft/util/math/BlockPos;)Lnet/minecraft/world/biome/Biome$Precipitation;"))
     private Precipitation makeLumarAlwaysRaining(Precipitation original) {
-        if (isLumar) {
+        if (CosmerePlanet.isLumar((World) (Object) this)) {
             return Precipitation.RAIN;
         }
         return original;
@@ -77,7 +73,7 @@ public abstract class WorldLumarMixin implements WorldAccess, AutoCloseable, See
 
     @ModifyReturnValue(method = "getRainGradient", at = @At("RETURN"))
     private float removeCustomDimensionRainGradient(float originalValue) {
-        if (isLumar) {
+        if (CosmerePlanet.isLumar((World) (Object) this)) {
             return 0.0f;
         }
         return originalValue;
@@ -85,7 +81,7 @@ public abstract class WorldLumarMixin implements WorldAccess, AutoCloseable, See
 
     @ModifyReturnValue(method = "getThunderGradient", at = @At("RETURN"))
     private float removeCustomDimensionThunderGradient(float originalValue) {
-        if (isLumar) {
+        if (CosmerePlanet.isLumar((World) (Object) this)) {
             return 0.0f;
         }
         return originalValue;

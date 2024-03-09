@@ -24,7 +24,7 @@
 package io.github.drakonkinst.worldsinger.mixin.entity;
 
 import com.mojang.authlib.GameProfile;
-import io.github.drakonkinst.worldsinger.cosmere.CosmereWorldUtil;
+import io.github.drakonkinst.worldsinger.cosmere.CosmerePlanet;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LunagreeManager;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LunagreeManagerAccess;
 import io.github.drakonkinst.worldsinger.world.LunagreeDataReceiver;
@@ -63,7 +63,7 @@ public abstract class ServerPlayerEntityLunagreeDataMixin extends PlayerEntity i
     @Inject(method = "playerTick", at = @At(value = "FIELD", opcode = Opcodes.GETFIELD, target = "Lnet/minecraft/server/network/ServerPlayerEntity;age:I"))
     private void checkUpdateLunagreeData(CallbackInfo ci) {
         ServerWorld world = this.getServerWorld();
-        if (!CosmereWorldUtil.isLumar(world)) {
+        if (!CosmerePlanet.isLumar(world)) {
             return;
         }
         if (shouldCheckPosition && world.getTime() > nextUpdateTick) {

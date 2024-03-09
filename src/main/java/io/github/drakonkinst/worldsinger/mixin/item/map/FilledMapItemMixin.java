@@ -26,7 +26,7 @@ package io.github.drakonkinst.worldsinger.mixin.item.map;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.llamalad7.mixinextras.sugar.Local;
-import io.github.drakonkinst.worldsinger.cosmere.CosmereWorldUtil;
+import io.github.drakonkinst.worldsinger.cosmere.CosmerePlanet;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LunagreeManager;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LunagreeManagerAccess;
 import io.github.drakonkinst.worldsinger.item.map.CustomMapDecorationsComponent;
@@ -52,7 +52,7 @@ public abstract class FilledMapItemMixin extends NetworkSyncedItem {
     private static ItemStack addRainlineIcons(ItemStack original, World world, int x, int z,
             byte scale, boolean showIcons, boolean unlimitedTracking,
             @Local MapIdComponent mapIdComponent) {
-        if (!CosmereWorldUtil.isLumar(world)) {
+        if (!CosmerePlanet.isLumar(world)) {
             return original;
         }
 

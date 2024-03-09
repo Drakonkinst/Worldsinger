@@ -27,7 +27,7 @@ import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import io.github.drakonkinst.worldsinger.block.ModBlockTags;
-import io.github.drakonkinst.worldsinger.cosmere.CosmereWorldUtil;
+import io.github.drakonkinst.worldsinger.cosmere.CosmerePlanet;
 import io.github.drakonkinst.worldsinger.entity.RainlineEntity;
 import io.github.drakonkinst.worldsinger.registry.ModClientEnums;
 import net.minecraft.block.Block;
@@ -61,7 +61,7 @@ public abstract class WorldRendererLumarMixin {
 
     @ModifyExpressionValue(method = "tickRainSplashing", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/world/ClientWorld;getRainGradient(F)F"))
     private float addRainlineEffects1(float original) {
-        if (CosmereWorldUtil.isLumar(this.world)) {
+        if (CosmerePlanet.isLumar(this.world)) {
             return 1.0f;
         }
         return original;
@@ -70,7 +70,7 @@ public abstract class WorldRendererLumarMixin {
     @WrapOperation(method = "tickRainSplashing", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/biome/Biome;getPrecipitation(Lnet/minecraft/util/math/BlockPos;)Lnet/minecraft/world/biome/Biome$Precipitation;"))
     private Precipitation addRainlineEffects2(Biome instance, BlockPos pos,
             Operation<Precipitation> original) {
-        if (CosmereWorldUtil.isLumar(this.world) && RainlineEntity.isRainlineOver(world,
+        if (CosmerePlanet.isLumar(this.world) && RainlineEntity.isRainlineOver(world,
                 pos.toCenterPos())) {
             return Precipitation.RAIN;
         }

@@ -27,7 +27,8 @@
     "world.BackgroundRendererMixin",
     "world.CameraFluidSubmersionMixin",
     "world.CameraPossessionMixin",
-    "world.ClientWorldMixin",
+    "world.ClientWorldCosmereMixin",
+    "world.ClientWorldLumarMixin",
     "world.GameRendererMixin",
     "world.WorldRendererLumarMixin",
     "world.WorldRendererPossessionMixin"

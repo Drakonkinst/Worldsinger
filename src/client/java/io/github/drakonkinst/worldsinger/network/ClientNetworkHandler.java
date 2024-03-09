@@ -26,10 +26,10 @@ package io.github.drakonkinst.worldsinger.network;
 import io.github.drakonkinst.worldsinger.Worldsinger;
 import io.github.drakonkinst.worldsinger.api.ModAttachmentTypes;
 import io.github.drakonkinst.worldsinger.api.sync.SyncableAttachment;
-import io.github.drakonkinst.worldsinger.cosmere.ClientLunagreeData;
-import io.github.drakonkinst.worldsinger.cosmere.CosmereWorldUtil;
+import io.github.drakonkinst.worldsinger.cosmere.CosmerePlanet;
 import io.github.drakonkinst.worldsinger.cosmere.PossessionManager;
 import io.github.drakonkinst.worldsinger.cosmere.ShapeshiftingManager;
+import io.github.drakonkinst.worldsinger.cosmere.lumar.ClientLunagreeData;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.SeetheManagerAccess;
 import io.github.drakonkinst.worldsinger.entity.CameraPossessable;
 import io.github.drakonkinst.worldsinger.entity.ClientLunagreeDataAccess;
@@ -100,7 +100,7 @@ public final class ClientNetworkHandler {
             if (world == null) {
                 return;
             }
-            if (CosmereWorldUtil.isLumar(world)) {
+            if (CosmerePlanet.isLumar(world)) {
                 if (payload.isSeething()) {
                     ((SeetheManagerAccess) world).worldsinger$getSeetheManager().startSeethe(0);
                 } else {

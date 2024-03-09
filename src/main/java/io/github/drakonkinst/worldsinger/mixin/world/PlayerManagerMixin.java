@@ -25,7 +25,7 @@
 
 package io.github.drakonkinst.worldsinger.mixin.world;
 
-import io.github.drakonkinst.worldsinger.cosmere.CosmereWorldUtil;
+import io.github.drakonkinst.worldsinger.cosmere.CosmerePlanet;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.SeetheManagerAccess;
 import io.github.drakonkinst.worldsinger.event.PlayerSyncCallback;
 import io.github.drakonkinst.worldsinger.network.packet.SeetheUpdatePayload;
@@ -47,7 +47,7 @@ public abstract class PlayerManagerMixin {
     @Inject(method = "sendWorldInfo", at = @At("RETURN"))
     private void syncAdditionalWorldData(ServerPlayerEntity player, ServerWorld world,
             CallbackInfo ci) {
-        if (CosmereWorldUtil.isLumar(world)) {
+        if (CosmerePlanet.isLumar(world)) {
             if (((SeetheManagerAccess) world).worldsinger$getSeetheManager().isSeething()) {
                 ServerPlayNetworking.send(player, SeetheUpdatePayload.SEETHE_START);
             } else {

@@ -24,17 +24,23 @@
 
 package io.github.drakonkinst.worldsinger.mixin.world;
 
+import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.sugar.Local;
+import io.github.drakonkinst.worldsinger.cosmere.CosmerePlanet;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.AetherSpores;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarLunagreeManager;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LunagreeLocation;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LunagreeManager;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LunagreeManagerAccess;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.NullLunagreeManager;
+import io.github.drakonkinst.worldsinger.cosmere.lumar.ServerLumarSeetheManager;
+import io.github.drakonkinst.worldsinger.network.packet.SeetheUpdatePayload;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.Executor;
 import net.minecraft.block.Block;
+import net.minecraft.network.packet.CustomPayload;
+import net.minecraft.network.packet.s2c.common.CustomPayloadS2CPacket;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.WorldGenerationProgressListener;
@@ -57,14 +63,16 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ServerWorld.class)
-public abstract class ServerWorldLunagreeManagerMixin extends WorldLumarMixin implements
-        StructureWorldAccess, LunagreeManagerAccess {
+public abstract class ServerWorldLumarMixin extends WorldLumarMixin implements StructureWorldAccess,
+        LunagreeManagerAccess {
 
     @Shadow
     public abstract PersistentStateManager getPersistentStateManager();
 
     @Unique
     private LunagreeManager lunagreeManager;
+    @Unique
+    private boolean syncedSeething;
 
     @Inject(method = "<init>", at = @At("TAIL"))
     private void initializeLumarData(MinecraftServer server, Executor workerExecutor,
@@ -73,10 +81,13 @@ public abstract class ServerWorldLunagreeManagerMixin extends WorldLumarMixin im
             WorldGenerationProgressListener worldGenerationProgressListener, boolean debugWorld,
             long seed, List<SpecialSpawner> spawners, boolean shouldTickTime,
             RandomSequencesState randomSequencesState, CallbackInfo ci) {
-        if (isLumar) {
+        if (CosmerePlanet.getPlanetFromKey(worldKey).equals(CosmerePlanet.LUMAR)) {
             lunagreeManager = this.getPersistentStateManager()
                     .getOrCreate(LumarLunagreeManager.getPersistentStateType(
                             (ServerWorld) (Object) (this)), LumarLunagreeManager.NAME);
+            seetheManager = this.getPersistentStateManager()
+                    .getOrCreate(ServerLumarSeetheManager.getPersistentStateType(),
+                            ServerLumarSeetheManager.NAME);
         } else {
             lunagreeManager = new NullLunagreeManager();
         }
@@ -85,7 +96,7 @@ public abstract class ServerWorldLunagreeManagerMixin extends WorldLumarMixin im
     @Inject(method = "tickIceAndSnow", at = @At("RETURN"))
     private void rainSporeBlocksUnderSporeFall(BlockPos xzPos, CallbackInfo ci,
             @Local(ordinal = 1) BlockPos pos, @Local(ordinal = 2) BlockPos belowPos) {
-        if (!isLumar) {
+        if (!CosmerePlanet.isLumar((ServerWorld) (Object) this)) {
             return;
         }
         int x = pos.getX();
@@ -106,6 +117,31 @@ public abstract class ServerWorldLunagreeManagerMixin extends WorldLumarMixin im
         }
 
         this.setBlockState(pos, sporeType.getSolidBlock().getDefaultState());
+    }
+
+    @Inject(method = "tickWeather", at = @At("TAIL"))
+    private void tickSeethe(CallbackInfo ci) {
+        if (CosmerePlanet.isLumar((ServerWorld) (Object) this)) {
+            seetheManager.serverTick();
+
+            // Sync seething
+            // For now, we only care about whether the seethe state is changed
+            boolean isSeething = seetheManager.isSeething();
+            if (isSeething != syncedSeething) {
+                syncedSeething = isSeething;
+                CustomPayload payload = isSeething ? SeetheUpdatePayload.SEETHE_START
+                        : SeetheUpdatePayload.SEETHE_STOP;
+                this.getServer()
+                        .getPlayerManager()
+                        .sendToDimension(new CustomPayloadS2CPacket(payload),
+                                this.getRegistryKey());
+            }
+        }
+    }
+
+    @ModifyExpressionValue(method = "tickWeather", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/GameRules;getBoolean(Lnet/minecraft/world/GameRules$Key;)Z"))
+    private boolean disableRainTickOnLumar(boolean original) {
+        return original && !CosmerePlanet.isLumar((ServerWorld) (Object) this);
     }
 
     @Unique

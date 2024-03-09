@@ -22,11 +22,9 @@
  * SOFTWARE.
  */
 
-package io.github.drakonkinst.worldsinger.cosmere;
+package io.github.drakonkinst.worldsinger.cosmere.lumar;
 
-import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarLunagreeManager;
-import io.github.drakonkinst.worldsinger.cosmere.lumar.LunagreeLocation;
-import io.github.drakonkinst.worldsinger.cosmere.lumar.RainlinePath;
+import io.github.drakonkinst.worldsinger.cosmere.CosmerePlanet;
 import java.util.List;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.util.math.Vec3d;
@@ -91,7 +89,7 @@ public class ClientLunagreeData {
     }
 
     public void update() {
-        if (!CosmereWorldUtil.isLumar(player.getWorld())) {
+        if (!CosmerePlanet.isLumar(player.getWorld())) {
             return;
         }
         if (!player.getVelocity().equals(Vec3d.ZERO) || needsUpdate) {

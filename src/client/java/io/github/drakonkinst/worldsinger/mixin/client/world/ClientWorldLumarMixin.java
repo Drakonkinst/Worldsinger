@@ -25,21 +25,25 @@
 package io.github.drakonkinst.worldsinger.mixin.client.world;
 
 import com.llamalad7.mixinextras.sugar.Local;
-import io.github.drakonkinst.worldsinger.cosmere.ClientLunagreeData;
-import io.github.drakonkinst.worldsinger.cosmere.CosmereWorldUtil;
+import io.github.drakonkinst.worldsinger.cosmere.CosmerePlanet;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.AetherSpores;
+import io.github.drakonkinst.worldsinger.cosmere.lumar.ClientLumarSeetheManager;
+import io.github.drakonkinst.worldsinger.cosmere.lumar.ClientLunagreeData;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarLunagreeManager;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LunagreeLocation;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.SporeParticleManager;
 import io.github.drakonkinst.worldsinger.entity.ClientLunagreeDataAccess;
+import io.github.drakonkinst.worldsinger.mixin.world.WorldLumarMixin;
 import java.util.function.Supplier;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.world.ClientWorld;
+import net.minecraft.client.world.ClientWorld.Properties;
 import net.minecraft.particle.ParticleEffect;
-import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.math.BlockPos;
@@ -47,7 +51,6 @@ import net.minecraft.util.math.BlockPos.Mutable;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.world.Heightmap.Type;
-import net.minecraft.world.MutableWorldProperties;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
 import org.spongepowered.asm.mixin.Mixin;
@@ -58,18 +61,20 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ClientWorld.class)
-public abstract class ClientWorldMixin extends World {
+public abstract class ClientWorldLumarMixin extends WorldLumarMixin {
 
     @Shadow
     public abstract void addParticle(ParticleEffect parameters, double x, double y, double z,
             double velocityX, double velocityY, double velocityZ);
 
-    protected ClientWorldMixin(MutableWorldProperties properties, RegistryKey<World> registryRef,
-            DynamicRegistryManager registryManager, RegistryEntry<DimensionType> dimensionEntry,
-            Supplier<Profiler> profiler, boolean isClient, boolean debugWorld, long biomeAccess,
-            int maxChainedNeighborUpdates) {
-        super(properties, registryRef, registryManager, dimensionEntry, profiler, isClient,
-                debugWorld, biomeAccess, maxChainedNeighborUpdates);
+    @Inject(method = "<init>", at = @At("TAIL"))
+    private void initialize(ClientPlayNetworkHandler networkHandler, Properties properties,
+            RegistryKey<World> registryRef, RegistryEntry<DimensionType> dimensionTypeEntry,
+            int loadDistance, int simulationDistance, Supplier<Profiler> profiler,
+            WorldRenderer worldRenderer, boolean debugWorld, long seed, CallbackInfo ci) {
+        if (CosmerePlanet.getPlanetFromKey(registryRef).equals(CosmerePlanet.LUMAR)) {
+            seetheManager = new ClientLumarSeetheManager();
+        }
     }
 
     @Inject(method = "randomBlockDisplayTick", at = @At("TAIL"))
@@ -78,7 +83,7 @@ public abstract class ClientWorldMixin extends World {
             @Local BlockState blockState) {
         ClientPlayerEntity player = MinecraftClient.getInstance().player;
         // Only occurs on Lumar
-        if (player == null || !CosmereWorldUtil.isLumar(this)) {
+        if (player == null || !CosmerePlanet.isLumar((ClientWorld) (Object) this)) {
             return;
         }
 
@@ -115,7 +120,7 @@ public abstract class ClientWorldMixin extends World {
         double spawnX = (double) x + random.nextDouble();
         double spawnY = (double) y + 1.0 + random.nextDouble();
         double spawnZ = (double) z + random.nextDouble();
-        SporeParticleManager.addClientDisplayParticle(this,
+        SporeParticleManager.addClientDisplayParticle((ClientWorld) (Object) this,
                 AetherSpores.getAetherSporeTypeById(location.sporeId()), spawnX, spawnY, spawnZ,
                 ClientLunagreeData.SPORE_FALL_PARTICLE_SIZE, false, random);
     }

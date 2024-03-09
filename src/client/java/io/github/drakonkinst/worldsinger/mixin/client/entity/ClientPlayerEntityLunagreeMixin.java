@@ -24,7 +24,7 @@
 package io.github.drakonkinst.worldsinger.mixin.client.entity;
 
 import com.mojang.authlib.GameProfile;
-import io.github.drakonkinst.worldsinger.cosmere.ClientLunagreeData;
+import io.github.drakonkinst.worldsinger.cosmere.lumar.ClientLunagreeData;
 import io.github.drakonkinst.worldsinger.entity.ClientLunagreeDataAccess;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.AbstractClientPlayerEntity;

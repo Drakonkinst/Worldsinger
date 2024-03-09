@@ -22,11 +22,43 @@
  * SOFTWARE.
  */
 
-package io.github.drakonkinst.worldsinger.entity;
+package io.github.drakonkinst.worldsinger.cosmere;
 
-import io.github.drakonkinst.worldsinger.cosmere.lumar.ClientLunagreeData;
+import net.minecraft.datafixer.DataFixTypes;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.RegistryWrapper.WrapperLookup;
+import net.minecraft.world.PersistentState;
 
-public interface ClientLunagreeDataAccess {
+public class CosmereWorldData extends PersistentState {
 
-    ClientLunagreeData worldsinger$getLunagreeData();
+    public static PersistentState.Type<CosmereWorldData> getPersistentStateType() {
+        return new PersistentState.Type<>(CosmereWorldData::new,
+                (nbt, registryLookup) -> CosmereWorldData.fromNbt(nbt), DataFixTypes.LEVEL);
+    }
+
+    private static CosmereWorldData fromNbt(NbtCompound nbt) {
+        CosmereWorldData cosmereWorldData = new CosmereWorldData();
+        // TODO: Load data
+        return cosmereWorldData;
+    }
+
+    private long timeOfDay;
+
+    public CosmereWorldData() {
+
+    }
+
+    public void setTimeOfDay(long timeOfDay) {
+        this.timeOfDay = timeOfDay;
+    }
+    
+    public long getTimeOfDay() {
+        return timeOfDay;
+    }
+
+    @Override
+    public NbtCompound writeNbt(NbtCompound nbt, WrapperLookup registryLookup) {
+        // TODO: Save data
+        return nbt;
+    }
 }
