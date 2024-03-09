@@ -36,6 +36,7 @@ public final class ModConstants {
             Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST
     };
     public static final int ITEM_DURABILITY_METER_MAX_STEPS = 13;
+    public static final long VANILLA_DAY_LENGTH = 24000L;
 
     private ModConstants() {}
 }

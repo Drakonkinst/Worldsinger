@@ -24,13 +24,24 @@
 
 package io.github.drakonkinst.worldsinger.cosmere;
 
+import io.github.drakonkinst.worldsinger.util.ModConstants;
 import io.github.drakonkinst.worldsinger.worldgen.dimension.ModDimensions;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 public enum CosmerePlanet {
-    NONE, LUMAR;
+    NONE(ModConstants.VANILLA_DAY_LENGTH), LUMAR(ModConstants.VANILLA_DAY_LENGTH * 2);
+
+    private final long dayLength;
+
+    CosmerePlanet(long dayLength) {
+        this.dayLength = dayLength;
+    }
+
+    public long getDayLength() {
+        return dayLength;
+    }
 
     // Can switch to another system if ordinal is not enough
     public int getId() {
