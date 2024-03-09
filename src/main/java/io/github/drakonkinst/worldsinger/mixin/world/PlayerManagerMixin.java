@@ -28,6 +28,7 @@ package io.github.drakonkinst.worldsinger.mixin.world;
 import io.github.drakonkinst.worldsinger.cosmere.CosmerePlanet;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.SeetheManagerAccess;
 import io.github.drakonkinst.worldsinger.event.PlayerSyncCallback;
+import io.github.drakonkinst.worldsinger.network.packet.CosmereTimeUpdatePayload;
 import io.github.drakonkinst.worldsinger.network.packet.SeetheUpdatePayload;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.network.ClientConnection;
@@ -47,12 +48,17 @@ public abstract class PlayerManagerMixin {
     @Inject(method = "sendWorldInfo", at = @At("RETURN"))
     private void syncAdditionalWorldData(ServerPlayerEntity player, ServerWorld world,
             CallbackInfo ci) {
-        if (CosmerePlanet.isLumar(world)) {
+        CosmerePlanet planet = CosmerePlanet.getPlanet(world);
+        if (planet == CosmerePlanet.LUMAR) {
             if (((SeetheManagerAccess) world).worldsinger$getSeetheManager().isSeething()) {
                 ServerPlayNetworking.send(player, SeetheUpdatePayload.SEETHE_START);
             } else {
                 ServerPlayNetworking.send(player, SeetheUpdatePayload.SEETHE_STOP);
             }
+        }
+        if (planet != CosmerePlanet.NONE) {
+            ServerPlayNetworking.send(player,
+                    new CosmereTimeUpdatePayload(planet, world.getTimeOfDay()));
         }
     }
 

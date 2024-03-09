@@ -32,6 +32,11 @@ import org.jetbrains.annotations.Nullable;
 public enum CosmerePlanet {
     NONE, LUMAR;
 
+    // Can switch to another system if ordinal is not enough
+    public int getId() {
+        return ordinal();
+    }
+
     // Should only be used in world constructors when the planet field might not have been set yet.
     public static CosmerePlanet getPlanetFromKey(RegistryKey<World> worldKey) {
         if (worldKey.equals(ModDimensions.WORLD_LUMAR)) {

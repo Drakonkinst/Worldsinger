@@ -30,6 +30,8 @@ import io.github.drakonkinst.worldsinger.cosmere.CosmerePlanet;
 import io.github.drakonkinst.worldsinger.mixin.world.WorldCosmereMixin;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.client.world.ClientWorld.Properties;
+import net.minecraft.world.MutableWorldProperties;
+import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
@@ -44,5 +46,13 @@ public abstract class ClientWorldCosmereMixin extends WorldCosmereMixin {
         } else {
             original.call(instance, timeOfDay);
         }
+    }
+
+    @WrapOperation(method = "tickTime", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/MutableWorldProperties;getTimeOfDay()J"))
+    private long tickCosmereTime(MutableWorldProperties instance, Operation<Long> original) {
+        if (CosmerePlanet.isCosmerePlanet((World) (Object) this)) {
+            return cosmereWorldData.getTimeOfDay();
+        }
+        return original.call(instance);
     }
 }

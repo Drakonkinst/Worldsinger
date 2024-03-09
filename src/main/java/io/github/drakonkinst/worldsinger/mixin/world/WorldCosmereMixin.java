@@ -58,4 +58,12 @@ public abstract class WorldCosmereMixin implements WorldAccess, AutoCloseable, C
             cir.setReturnValue(cosmereWorldData.getTimeOfDay());
         }
     }
+
+    @Override
+    public long getLunarTime() {
+        if (CosmerePlanet.isCosmerePlanet((World) (Object) this)) {
+            return cosmereWorldData.getTimeOfDay();
+        }
+        return WorldAccess.super.getLunarTime();
+    }
 }

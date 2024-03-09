@@ -37,6 +37,7 @@ import io.github.drakonkinst.worldsinger.entity.Shapeshifter;
 import io.github.drakonkinst.worldsinger.entity.data.PlayerPossessionManager;
 import io.github.drakonkinst.worldsinger.item.map.CustomMapStateAccess;
 import io.github.drakonkinst.worldsinger.network.packet.AttachmentEntitySyncPayload;
+import io.github.drakonkinst.worldsinger.network.packet.CosmereTimeUpdatePayload;
 import io.github.drakonkinst.worldsinger.network.packet.CustomMapUpdatePayload;
 import io.github.drakonkinst.worldsinger.network.packet.LunagreeSyncPayload;
 import io.github.drakonkinst.worldsinger.network.packet.PossessSetPayload;
@@ -50,6 +51,7 @@ import net.fabricmc.fabric.impl.attachment.AttachmentRegistryImpl;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.map.MapState;
 import net.minecraft.nbt.NbtCompound;
@@ -62,6 +64,26 @@ public final class ClientNetworkHandler {
     public static void registerPacketHandlers() {
         registerShapeshiftingPacketHandlers();
         registerPossessionPacketHandlers();
+
+        ClientPlayNetworking.registerGlobalReceiver(CosmereTimeUpdatePayload.ID,
+                (payload, context) -> {
+                    ClientWorld world = context.client().world;
+                    if (world == null) {
+                        Worldsinger.LOGGER.warn(
+                                "Could not process cosmere time update because world is null");
+                        return;
+                    }
+                    if (payload.cosmereWorldId() == CosmerePlanet.NONE.getId()) {
+                        Worldsinger.LOGGER.warn(
+                                "Cosmere time updates from non-cosmere worlds are ignored");
+                        return;
+                    }
+
+                    CosmerePlanet currentPlanet = CosmerePlanet.getPlanet(world);
+                    if (currentPlanet.getId() == payload.cosmereWorldId()) {
+                        world.setTimeOfDay(payload.timeOfDay());
+                    }
+                });
 
         ClientPlayNetworking.registerGlobalReceiver(AttachmentEntitySyncPayload.ID,
                 (payload, context) -> {

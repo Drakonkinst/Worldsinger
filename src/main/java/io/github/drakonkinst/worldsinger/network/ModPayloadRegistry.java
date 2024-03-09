@@ -2,6 +2,7 @@ package io.github.drakonkinst.worldsinger.network;
 
 import io.github.drakonkinst.worldsinger.Worldsinger;
 import io.github.drakonkinst.worldsinger.network.packet.AttachmentEntitySyncPayload;
+import io.github.drakonkinst.worldsinger.network.packet.CosmereTimeUpdatePayload;
 import io.github.drakonkinst.worldsinger.network.packet.CustomMapUpdatePayload;
 import io.github.drakonkinst.worldsinger.network.packet.LunagreeSyncPayload;
 import io.github.drakonkinst.worldsinger.network.packet.PossessAttackPayload;
@@ -25,6 +26,8 @@ public final class ModPayloadRegistry {
         PayloadTypeRegistry.playC2S().register(PossessUpdatePayload.ID, PossessUpdatePayload.CODEC);
         PayloadTypeRegistry.playC2S().register(PossessAttackPayload.ID, PossessAttackPayload.CODEC);
 
+        PayloadTypeRegistry.playS2C()
+                .register(CosmereTimeUpdatePayload.ID, CosmereTimeUpdatePayload.CODEC);
         PayloadTypeRegistry.playS2C()
                 .register(ShapeshiftSyncPayload.ID, ShapeshiftSyncPayload.CODEC);
         PayloadTypeRegistry.playS2C()
