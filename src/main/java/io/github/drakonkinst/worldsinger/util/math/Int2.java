@@ -37,4 +37,9 @@ public record Int2(int x, int y) {
         float deltaY = p0.y() - p1.y();
         return deltaX * deltaX + deltaY * deltaY;
     }
+
+    @Override
+    public String toString() {
+        return "(" + x + ", " + y + ")";
+    }
 }

@@ -32,8 +32,10 @@ import java.util.Map;
 import net.minecraft.item.map.MapState;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.gen.noise.NoiseConfig;
+import org.apache.commons.lang3.NotImplementedException;
 
 public class RainlinePath {
 
@@ -46,26 +48,50 @@ public class RainlinePath {
     // Should be tuned alongside LumarLunagreeManager values
     private static final int MIN_RADIUS = 250;
     private static final int MAX_RADIUS = 2000;
-    private static final int SPLINE_STEPS = 100;
+    private static final int MAP_SPLINE_STEPS = 100;
+    private static final int LENGTH_APPROX_STEPS = 32;
 
     private static int nextIconId = 0;
 
     private record Spline(float ax, float ay, float bx, float by, float cx, float cy, float dx,
-                          float dy) {
+                          float dy, float length) {
+
+        private static float apply(float a, float b, float c, float d, float t) {
+            final float t2 = t * t;
+            return a * t2 * t + b * t2 + c * t + d;
+        }
+
+        private static float calculateApproxLength(float ax, float ay, float bx, float by, float cx,
+                float cy, float dx, float dy) {
+            Vec2f[] splinePoints = new Vec2f[LENGTH_APPROX_STEPS];
+            for (int i = 0; i < LENGTH_APPROX_STEPS; ++i) {
+                float t = (float) i / LENGTH_APPROX_STEPS;
+                float x = Spline.apply(ax, bx, cx, dx, t);
+                float y = Spline.apply(ay, by, cy, dy, t);
+                splinePoints[i] = new Vec2f(x, y);
+            }
+
+            float distance = 0.0f;
+            for (int i = 0; i < LENGTH_APPROX_STEPS; ++i) {
+                Vec2f p1 = splinePoints[i];
+                Vec2f p2 = splinePoints[(i + 1) % LENGTH_APPROX_STEPS];
+                distance += MathHelper.sqrt(p1.distanceSquared(p2));
+            }
+            return distance;
+        }
 
         public static Spline of(float ax, float ay, float bx, float by, float cx, float cy,
                 float dx, float dy) {
-            return new Spline(ax, ay, bx, by, cx, cy, dx, dy);
+            float length = Spline.calculateApproxLength(ax, ay, bx, by, cx, cy, dx, dy);
+            return new Spline(ax, ay, bx, by, cx, cy, dx, dy, length);
         }
 
         public float applyX(float t) {
-            final float t2 = t * t;
-            return ax * t2 * t + bx * t2 + cx * t + dx;
+            return Spline.apply(ax, bx, cx, dx, t);
         }
 
         public float applyY(float t) {
-            final float t2 = t * t;
-            return ay * t2 * t + by * t2 + cy * t + dy;
+            return Spline.apply(ay, by, cy, dy, t);
         }
     }
 
@@ -105,10 +131,11 @@ public class RainlinePath {
     }
 
     private final Spline[] splines;
+    private final float totalLength;
 
     public RainlinePath(Int2[] rainlineNodes) {
         this.splines = new Spline[RAINLINE_NODE_COUNT];
-        this.generateAllSplines(rainlineNodes);
+        this.totalLength = this.generateAllSplines(rainlineNodes);
     }
 
     public int applyMapDecorations(ServerWorld serverWorld, Map<String, Decoration> decorations,
@@ -125,8 +152,8 @@ public class RainlinePath {
     private int applyMapDecorationsForSpline(NoiseConfig noiseConfig,
             Map<String, Decoration> decorations, MapState mapState, Spline spline) {
         int numAdded = 0;
-        for (int i = 0; i < SPLINE_STEPS; ++i) {
-            float t = (float) i / SPLINE_STEPS;
+        for (int i = 0; i < MAP_SPLINE_STEPS; ++i) {
+            float t = (float) i / MAP_SPLINE_STEPS;
             float x = spline.applyX(t);
             float z = spline.applyY(t);
             // Only add if it is on the map AND it is not in the Crimson Sea
@@ -154,14 +181,24 @@ public class RainlinePath {
         Int2 p1 = rainlineNodes[i];
         Int2 p2 = rainlineNodes[(i + 1) % RAINLINE_NODE_COUNT];
         Int2 p3 = rainlineNodes[(i + 2) % RAINLINE_NODE_COUNT];
-        return RainlinePath.generateSpline(p0, p1, p2, p3);
+        Spline spline = RainlinePath.generateSpline(p0, p1, p2, p3);
+        // Worldsinger.LOGGER.info(
+        //         "Between " + p1 + " and " + p2 + ": linear = " + Int2.distance(p1, p2)
+        //                 + ", approximate = " + spline.length());
+        return spline;
     }
 
-    private void generateAllSplines(Int2[] rainlineNodes) {
+    private float generateAllSplines(Int2[] rainlineNodes) {
+        float totalLength = 0.0f;
         for (int i = 0; i < RAINLINE_NODE_COUNT; ++i) {
-            if (splines[i] == null) {
-                splines[i] = calculateSpline(i, rainlineNodes);
-            }
+            Spline spline = calculateSpline(i, rainlineNodes);
+            totalLength += spline.length();
+            splines[i] = spline;
         }
+        return totalLength;
+    }
+
+    public Vec2f getCurrentPosition(float gameTime, float blocksPerSecond) {
+        throw new NotImplementedException();
     }
 }
