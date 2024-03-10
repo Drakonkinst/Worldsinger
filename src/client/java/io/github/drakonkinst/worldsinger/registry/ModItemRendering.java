@@ -32,6 +32,7 @@ import io.github.drakonkinst.worldsinger.util.LayeredBakedModelCache;
 import net.fabricmc.fabric.api.client.model.loading.v1.ModelLoadingPlugin;
 import net.fabricmc.fabric.api.client.rendering.v1.ColorProviderRegistry;
 import net.minecraft.client.util.ModelIdentifier;
+import net.minecraft.util.math.ColorHelper.Argb;
 
 public final class ModItemRendering {
 
@@ -45,15 +46,15 @@ public final class ModItemRendering {
             new LayeredBakedModelCache());
 
     public static void register() {
-        ColorProviderRegistry.ITEM.register(
-                (stack, tintIndex) -> tintIndex > 0 ? -1 : AetherSpores.getBottleColor(stack),
-                ModItems.DEAD_SPORES_BOTTLE, ModItems.VERDANT_SPORES_BOTTLE,
-                ModItems.CRIMSON_SPORES_BOTTLE, ModItems.ZEPHYR_SPORES_BOTTLE,
-                ModItems.SUNLIGHT_SPORES_BOTTLE, ModItems.ROSEITE_SPORES_BOTTLE,
-                ModItems.MIDNIGHT_SPORES_BOTTLE, ModItems.DEAD_SPORES_SPLASH_BOTTLE,
-                ModItems.VERDANT_SPORES_SPLASH_BOTTLE, ModItems.CRIMSON_SPORES_SPLASH_BOTTLE,
-                ModItems.ZEPHYR_SPORES_SPLASH_BOTTLE, ModItems.SUNLIGHT_SPORES_SPLASH_BOTTLE,
-                ModItems.ROSEITE_SPORES_SPLASH_BOTTLE, ModItems.MIDNIGHT_SPORES_SPLASH_BOTTLE);
+        ColorProviderRegistry.ITEM.register((stack, tintIndex) -> tintIndex > 0 ? -1
+                        : Argb.fullAlpha(AetherSpores.getBottleColor(stack)), ModItems.DEAD_SPORES_BOTTLE,
+                ModItems.VERDANT_SPORES_BOTTLE, ModItems.CRIMSON_SPORES_BOTTLE,
+                ModItems.ZEPHYR_SPORES_BOTTLE, ModItems.SUNLIGHT_SPORES_BOTTLE,
+                ModItems.ROSEITE_SPORES_BOTTLE, ModItems.MIDNIGHT_SPORES_BOTTLE,
+                ModItems.DEAD_SPORES_SPLASH_BOTTLE, ModItems.VERDANT_SPORES_SPLASH_BOTTLE,
+                ModItems.CRIMSON_SPORES_SPLASH_BOTTLE, ModItems.ZEPHYR_SPORES_SPLASH_BOTTLE,
+                ModItems.SUNLIGHT_SPORES_SPLASH_BOTTLE, ModItems.ROSEITE_SPORES_SPLASH_BOTTLE,
+                ModItems.MIDNIGHT_SPORES_SPLASH_BOTTLE);
         ModelLoadingPlugin.register(pluginContext -> {
             pluginContext.addModels(ModItemRendering.SALT_OVERLAY,
                     ModItemRendering.SILVER_LINED_AXE_OVERLAY);
