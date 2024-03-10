@@ -35,9 +35,9 @@ import net.minecraft.world.PersistentState;
 public class ServerLumarSeetheManager extends PersistentState implements SeetheManager {
 
     public static final String NAME = "seethe";
-    private static final String NBT_TICKS_REMAINING = "ticksRemaining";
-    private static final String NBT_CYCLES_UNTIL_NEXT_LONG_STILLING = "cyclesUntilNextLongStilling";
-    private static final String NBT_IS_SEETHING = "isSeething";
+    private static final String NBT_TICKS_REMAINING = "ticks_remaining";
+    private static final String NBT_CYCLES_UNTIL_NEXT_LONG_STILLING = "cycles_until_next_long_stilling";
+    private static final String NBT_IS_SEETHING = "is_seething";
 
     public static PersistentState.Type<ServerLumarSeetheManager> getPersistentStateType() {
         return new PersistentState.Type<>(ServerLumarSeetheManager::new,
