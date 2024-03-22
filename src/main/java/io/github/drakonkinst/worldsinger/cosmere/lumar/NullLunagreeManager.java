@@ -42,6 +42,11 @@ public class NullLunagreeManager extends LunagreeManager {
     }
 
     @Override
+    public void tick() {
+        // Do nothing
+    }
+
+    @Override
     public Optional<LunagreeLocation> getNearestLunagree(int blockX, int blockZ, int maxDistance) {
         return Optional.empty();
     }
@@ -49,6 +54,11 @@ public class NullLunagreeManager extends LunagreeManager {
     @Override
     public List<LunagreeLocation> getLunagreesNear(int blockX, int blockZ) {
         return Collections.emptyList();
+    }
+
+    @Override
+    public RainlinePath getNearestRainlinePathAt(int blockX, int blockZ) {
+        return null;
     }
 
     @Override

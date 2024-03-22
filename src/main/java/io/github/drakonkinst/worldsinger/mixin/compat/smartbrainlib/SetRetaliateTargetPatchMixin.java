@@ -44,7 +44,7 @@ public abstract class SetRetaliateTargetPatchMixin<E extends LivingEntity> exten
     @Shadow
     protected LivingEntity toTarget;
 
-    @Shadow
+    @Shadow(remap = false)
     protected BiPredicate<E, LivingEntity> allyPredicate;
 
     /**

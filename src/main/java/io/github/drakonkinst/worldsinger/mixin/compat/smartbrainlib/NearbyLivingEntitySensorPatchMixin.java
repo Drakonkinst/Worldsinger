@@ -46,7 +46,7 @@ import org.spongepowered.asm.mixin.Shadow;
 public abstract class NearbyLivingEntitySensorPatchMixin<E extends LivingEntity> extends
         PredicateSensor<LivingEntity, E> {
 
-    @Shadow
+    @Shadow(remap = false)
     @Nullable
     protected SquareRadius radius;
 

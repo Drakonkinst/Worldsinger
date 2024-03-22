@@ -39,7 +39,7 @@ import org.spongepowered.asm.mixin.injection.ModifyArg;
 @Mixin(LocateCommand.class)
 public abstract class LocateCommandMixin {
 
-    @ModifyArg(method = "register", at = @At(value = "INVOKE", target = "Lcom/mojang/brigadier/CommandDispatcher;register(Lcom/mojang/brigadier/builder/LiteralArgumentBuilder;)Lcom/mojang/brigadier/tree/LiteralCommandNode;"))
+    @ModifyArg(method = "register", at = @At(value = "INVOKE", target = "Lcom/mojang/brigadier/CommandDispatcher;register(Lcom/mojang/brigadier/builder/LiteralArgumentBuilder;)Lcom/mojang/brigadier/tree/LiteralCommandNode;", remap = false))
     private static LiteralArgumentBuilder<ServerCommandSource> addNewLocateArguments(
             LiteralArgumentBuilder<ServerCommandSource> command) {
         return command.then(CommandManager.literal("spore_sea")

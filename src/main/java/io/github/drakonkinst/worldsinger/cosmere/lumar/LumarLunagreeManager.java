@@ -27,8 +27,10 @@ package io.github.drakonkinst.worldsinger.cosmere.lumar;
 import com.mojang.datafixers.util.Pair;
 import io.github.drakonkinst.worldsinger.Worldsinger;
 import io.github.drakonkinst.worldsinger.command.LocateSporeSeaCommand;
+import io.github.drakonkinst.worldsinger.entity.RainlineEntity;
 import io.github.drakonkinst.worldsinger.item.map.CustomMapDecorationsComponent.Decoration;
 import io.github.drakonkinst.worldsinger.network.packet.LunagreeSyncPayload;
+import io.github.drakonkinst.worldsinger.util.ModConstants;
 import io.github.drakonkinst.worldsinger.util.math.Int2;
 import io.github.drakonkinst.worldsinger.worldgen.ModBiomes;
 import io.github.drakonkinst.worldsinger.worldgen.lumar.LumarChunkGenerator.SporeSeaEntry;
@@ -38,6 +40,8 @@ import it.unimi.dsi.fastutil.ints.IntIntPair;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
+import it.unimi.dsi.fastutil.longs.LongSet;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -49,14 +53,17 @@ import net.minecraft.item.map.MapState;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
+import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.TypeFilter;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.PersistentState;
 import org.jetbrains.annotations.NotNull;
 
+// Manages lunagree placement and rainlines that orbit lunagrees.
 public class LumarLunagreeManager extends LunagreeManager {
 
     public static final float TRAVEL_DISTANCE = 2000.0f;
@@ -82,6 +89,7 @@ public class LumarLunagreeManager extends LunagreeManager {
     private static final int[] DIRECTION_R = { +0, -1, -1, +0, +1, +1 };
     private static final float RAD_3 = MathHelper.sqrt(3);
     private static final float RAD_3_OVER_3 = RAD_3 / 3.0f;
+    private static final int RAINLINE_UPDATE_INTERVAL = 5 * ModConstants.SECONDS_TO_TICKS;
 
     public static PersistentState.Type<LumarLunagreeManager> getPersistentStateType(
             ServerWorld world) {
@@ -136,6 +144,47 @@ public class LumarLunagreeManager extends LunagreeManager {
 
     public LumarLunagreeManager(ServerWorld world) {
         this.world = world;
+    }
+
+    @Override
+    public void tick() {
+        if (this.world.getTime() % RAINLINE_UPDATE_INTERVAL == 0) {
+            doRainlineTick();
+        }
+    }
+
+    private void doRainlineTick() {
+        List<RainlineEntity> rainlineEntities = new ArrayList<>();
+        world.collectEntitiesByType(TypeFilter.instanceOf(RainlineEntity.class),
+                EntityPredicates.VALID_ENTITY, rainlineEntities);
+        Worldsinger.LOGGER.info("Found " + rainlineEntities.size() + " active rainline entities: "
+                + rainlineEntities);
+
+        LongSet cellsWithValidRainline = new LongOpenHashSet();
+        for (RainlineEntity entity : rainlineEntities) {
+
+        }
+
+        // For each player, check the cells around them for rainlines and determine if they should spawn
+        for (ServerPlayerEntity player : world.getPlayers()) {
+            updateRainlinesAroundPlayer(player);
+        }
+    }
+
+    private void updateRainlinesAroundPlayer(ServerPlayerEntity player) {
+        List<LunagreeLocation> lunagreeLocations = getLunagreesNear(player.getBlockX(),
+                player.getBlockZ());
+        long key = getKeyForPos(player.getBlockX(), player.getBlockZ());
+        int q = LumarLunagreeManager.getQ(key);
+        int r = LumarLunagreeManager.getR(key);
+
+        List<LunagreeLocation> locations = new ArrayList<>(DIRECTION_Q.length + 1);
+        RainlinePath currentPath = getOrCreateRainlineData(q, r);
+        for (int i = 0; i < DIRECTION_Q.length; ++i) {
+            int neighborQ = q + DIRECTION_Q[i];
+            int neighborR = r + DIRECTION_R[i];
+            RainlinePath neighborPath = getOrCreateRainlineData(neighborQ, neighborR);
+        }
     }
 
     @Override
@@ -305,6 +354,14 @@ public class LumarLunagreeManager extends LunagreeManager {
             rainlinePaths.put(key, entry);
         }
         return entry;
+    }
+
+    @Override
+    public RainlinePath getNearestRainlinePathAt(int blockX, int blockZ) {
+        long key = getKeyForPos(blockX, blockZ);
+        int q = LumarLunagreeManager.getQ(key);
+        int r = LumarLunagreeManager.getR(key);
+        return getOrCreateRainlineData(q, r);
     }
 
     private List<LunagreeLocation> getLunagreesNear(int blockX, int blockZ, boolean shouldCreate) {

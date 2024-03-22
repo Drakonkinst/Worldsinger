@@ -27,7 +27,6 @@ package io.github.drakonkinst.worldsinger.cosmere.lumar;
 import io.github.drakonkinst.worldsinger.Worldsinger;
 import io.github.drakonkinst.worldsinger.item.map.CustomMapDecorationsComponent.Decoration;
 import io.github.drakonkinst.worldsinger.item.map.CustomMapIcon;
-import io.github.drakonkinst.worldsinger.util.ModConstants;
 import io.github.drakonkinst.worldsinger.util.math.Int2;
 import io.github.drakonkinst.worldsinger.worldgen.lumar.LumarChunkGenerator;
 import java.util.Map;
@@ -41,14 +40,14 @@ import net.minecraft.world.gen.noise.NoiseConfig;
 public class RainlinePath {
 
     public static final int RAINLINE_NODE_COUNT = 8;
+    public static final int MIN_RADIUS = 250;
+    public static final int MAX_RADIUS = 2000;
 
     private static final double ALPHA = 0.5;    // Centripetal Catmull-Rom Spline
     private static final float INV_TENSION = 1.0f;
     private static final float ANGLE_INCREMENT = MathHelper.TAU / 8;
     private static final float ANGLE_OFFSET = ANGLE_INCREMENT / 8;
     // Should be tuned alongside LumarLunagreeManager values
-    private static final int MIN_RADIUS = 250;
-    private static final int MAX_RADIUS = 2000;
     private static final int MAP_SPLINE_STEPS = 100;
     private static final int LENGTH_APPROX_STEPS = 32;
 
@@ -99,6 +98,13 @@ public class RainlinePath {
 
         public float applyY(float t) {
             return Spline.apply(ay, by, cy, dy, t);
+        }
+    }
+
+    private static class FollowPathTarget {
+
+        public FollowPathTarget(int q, int r) {
+
         }
     }
 
@@ -206,12 +212,17 @@ public class RainlinePath {
     }
 
     // Get position of the rainline following this rainline path depending on the game time
-    public Vec2f getCurrentPosition(long gameTime, float blocksPerSecond) {
-        float secondsPerCycle = totalLength / blocksPerSecond;
-        float cycleOffset = gameTime * ModConstants.TICKS_TO_SECONDS / secondsPerCycle;
-        float distanceAlongCycle = cycleOffset * totalLength;
+    public Vec2f getPositionAtTime(long gameTime, float blocksPerTick) {
+        float ticksPerCycle = totalLength / blocksPerTick;
+        float cycleProgress = (float) gameTime % ticksPerCycle;
+        return getPositionForDistanceAlongCycle(cycleProgress);
+    }
 
-        Worldsinger.LOGGER.info("Cycle offset: " + cycleOffset);
+    private Vec2f getPositionForDistanceAlongCycle(float distanceAlongCycle) {
+        if (distanceAlongCycle <= 0) {
+            return getStartingPoint();
+        }
+
         float current = 0.0f;
         float next;
         for (int i = 0; i < RAINLINE_NODE_COUNT; ++i) {
@@ -219,14 +230,19 @@ public class RainlinePath {
             next = current + spline.length();
             if (next >= distanceAlongCycle) {
                 float distanceAlongSpline = distanceAlongCycle - current;
-                Worldsinger.LOGGER.info(
-                        "Found i = " + i + ", t = " + (distanceAlongSpline / spline.length()));
                 float t = MathHelper.clamp(distanceAlongSpline / spline.length(), 0.0f, 1.0f);
+                Vec2f pos = spline.apply(t);
+                Worldsinger.LOGGER.info(
+                        "Found i = " + i + ", t = " + (distanceAlongSpline / spline.length())
+                                + " = " + pos);
                 return spline.apply(t);
             }
             current = next;
         }
-        Worldsinger.LOGGER.warn("Did not find valid spline");
+        return getStartingPoint();
+    }
+
+    private Vec2f getStartingPoint() {
         return splines[0].apply(0.0f);
     }
 }

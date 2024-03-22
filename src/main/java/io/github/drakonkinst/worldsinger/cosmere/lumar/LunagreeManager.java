@@ -41,10 +41,14 @@ public abstract class LunagreeManager extends PersistentState {
 
     public abstract List<LunagreeLocation> getLunagreesNear(int blockX, int blockZ);
 
+    public abstract RainlinePath getNearestRainlinePathAt(int blockX, int blockZ);
+
     public abstract int applyMapDecorations(
             Map<String, CustomMapDecorationsComponent.Decoration> decorations, MapState mapState);
 
     public abstract long getKeyForPos(int blockX, int blockZ);
+
+    public abstract void tick();
 
     public boolean isNull() {
         return false;

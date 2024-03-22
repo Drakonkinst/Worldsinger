@@ -26,10 +26,12 @@ package io.github.drakonkinst.worldsinger.event;
 import io.github.drakonkinst.worldsinger.api.ModAttachmentTypes;
 import io.github.drakonkinst.worldsinger.api.sync.AttachmentSync;
 import io.github.drakonkinst.worldsinger.block.LivingSporeGrowthBlock;
+import io.github.drakonkinst.worldsinger.cosmere.lumar.LunagreeManagerAccess;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.MidnightAetherBondManager;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.SporeKillingUtil;
 import io.github.drakonkinst.worldsinger.effect.ModStatusEffects;
 import io.github.drakonkinst.worldsinger.item.ModItemTags;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.player.AttackBlockCallback;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.minecraft.block.BlockState;
@@ -124,6 +126,10 @@ public final class ModEventHandlers {
         StartTrackingEntityCallback.EVENT.register(AttachmentSync::syncEntityAttachments);
         PlayerSyncCallback.EVENT.register(
                 (player -> AttachmentSync.syncEntityAttachments(player, player)));
+
+        ServerTickEvents.END_WORLD_TICK.register(world -> {
+            ((LunagreeManagerAccess) world).worldsinger$getLunagreeManager().tick();
+        });
     }
 
     private ModEventHandlers() {}

@@ -36,7 +36,7 @@ import org.spongepowered.asm.mixin.Shadow;
 @Mixin(ExtendedTargetingConditions.class)
 public abstract class ExtendedTargetingConditionsPatchMixin {
 
-    @Shadow
+    @Shadow(remap = false)
     public abstract ExtendedTargetingConditions withRange(Function<LivingEntity, Double> function);
 
     /**
