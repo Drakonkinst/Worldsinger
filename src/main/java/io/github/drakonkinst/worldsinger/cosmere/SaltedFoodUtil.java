@@ -27,9 +27,18 @@ package io.github.drakonkinst.worldsinger.cosmere;
 
 import io.github.drakonkinst.worldsinger.item.ModItemTags;
 import io.github.drakonkinst.worldsinger.registry.ModDataComponentTypes;
+import java.util.HashMap;
+import java.util.Map;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.FoodComponent;
 import net.minecraft.item.ItemStack;
 
 public final class SaltedFoodUtil {
+
+    public static final int HUNGER_MODIFIER = 2;
+    public static final int THIRST_MODIFIER = -2;
+    public static final float SATURATION_MODIFIER = 0.0f;
+    private static final Map<FoodComponent, FoodComponent> CACHE = new HashMap<>();
 
     public static boolean isSalted(ItemStack stack) {
         return stack.contains(ModDataComponentTypes.SALTED) && Boolean.TRUE.equals(
@@ -41,8 +50,21 @@ public final class SaltedFoodUtil {
         return stack.isIn(ModItemTags.CAN_BE_SALTED);
     }
 
+    private static FoodComponent getOrCreateSaltedVariant(FoodComponent component) {
+        return CACHE.computeIfAbsent(component,
+                foodComponent -> new FoodComponent(foodComponent.nutrition() + HUNGER_MODIFIER,
+                        foodComponent.saturationModifier() + SATURATION_MODIFIER,
+                        foodComponent.canAlwaysEat(), foodComponent.eatSeconds(),
+                        foodComponent.effects()));
+    }
+
     public static ItemStack makeSalted(ItemStack stack) {
         stack.set(ModDataComponentTypes.SALTED, true);
+        FoodComponent foodComponent = stack.get(DataComponentTypes.FOOD);
+        if (foodComponent != null) {
+            stack.set(DataComponentTypes.FOOD,
+                    SaltedFoodUtil.getOrCreateSaltedVariant(foodComponent));
+        }
         return stack;
     }
 

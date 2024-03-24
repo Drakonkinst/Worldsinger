@@ -23,7 +23,7 @@
  */
 package io.github.drakonkinst.worldsinger.registry;
 
-import net.minecraft.item.FoodComponent;
+import net.minecraft.component.type.FoodComponent;
 
 public final class ModFoodComponents {
 

@@ -36,25 +36,25 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TextCodecs;
 import net.minecraft.util.StringIdentifiable;
 
-public record CustomMapIcon(CustomMapIcon.Type type, byte x, byte z, byte rotation,
-                            Optional<Text> name) {
+public record CustomMapDecoration(CustomMapDecoration.Type type, byte x, byte z, byte rotation,
+                                  Optional<Text> name) {
 
     public static final float MAP_LIMITS = 63.0f;
-    public static final PacketCodec<RegistryByteBuf, CustomMapIcon> CODEC = PacketCodec.tuple(
-            CustomMapIcon.Type.PACKET_CODEC, CustomMapIcon::type, PacketCodecs.BYTE,
-            CustomMapIcon::x, PacketCodecs.BYTE, CustomMapIcon::z, PacketCodecs.BYTE,
-            CustomMapIcon::rotation, TextCodecs.OPTIONAL_PACKET_CODEC, CustomMapIcon::name,
-            CustomMapIcon::new);
+    public static final PacketCodec<RegistryByteBuf, CustomMapDecoration> CODEC = PacketCodec.tuple(
+            CustomMapDecoration.Type.PACKET_CODEC, CustomMapDecoration::type, PacketCodecs.BYTE,
+            CustomMapDecoration::x, PacketCodecs.BYTE, CustomMapDecoration::z, PacketCodecs.BYTE,
+            CustomMapDecoration::rotation, TextCodecs.OPTIONAL_PACKET_CODEC,
+            CustomMapDecoration::name, CustomMapDecoration::new);
 
     public enum Type implements StringIdentifiable {
         RAINLINE(631, "rainline");
 
-        public static final IntFunction<CustomMapIcon.Type> INDEX_TO_TYPE = ValueListsInvoker.createIdToValueFunction(
-                CustomMapIcon.Type::getIndex, Type.values());
-        public static final Codec<CustomMapIcon.Type> CODEC = StringIdentifiable.createCodec(
-                CustomMapIcon.Type::values);
-        public static final PacketCodec<ByteBuf, CustomMapIcon.Type> PACKET_CODEC = PacketCodecs.indexed(
-                INDEX_TO_TYPE, CustomMapIcon.Type::getIndex);
+        public static final IntFunction<CustomMapDecoration.Type> INDEX_TO_TYPE = ValueListsInvoker.createIdToValueFunction(
+                CustomMapDecoration.Type::getIndex, Type.values());
+        public static final Codec<CustomMapDecoration.Type> CODEC = StringIdentifiable.createCodec(
+                CustomMapDecoration.Type::values);
+        public static final PacketCodec<ByteBuf, CustomMapDecoration.Type> PACKET_CODEC = PacketCodecs.indexed(
+                INDEX_TO_TYPE, CustomMapDecoration.Type::getIndex);
 
         private final int index;
         private final String name;

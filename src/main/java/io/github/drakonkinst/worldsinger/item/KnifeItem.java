@@ -23,7 +23,10 @@
  */
 package io.github.drakonkinst.worldsinger.item;
 
-import net.minecraft.block.BlockState;
+import java.util.List;
+import net.minecraft.block.Blocks;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.ToolComponent;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
@@ -35,16 +38,17 @@ import net.minecraft.registry.tag.BlockTags;
 // weapon enchantments.
 public class KnifeItem extends MiningToolItem {
 
-    public KnifeItem(ToolMaterial material, Settings settings) {
-        super(material, BlockTags.SWORD_EFFICIENT, settings);
-    }
-
     // To maintain parity with the sword, only applies a 1.5x mining multiplier instead of
     // relying on its tool material
-    @Override
-    public float getMiningSpeedMultiplier(ItemStack stack, BlockState state) {
-        boolean isEfficient = super.getMiningSpeedMultiplier(stack, state) > 1.0f;
-        return isEfficient ? 1.5f : 1.0f;
+    private static ToolComponent createToolComponent() {
+        return new ToolComponent(
+                List.of(ToolComponent.Rule.ofAlwaysDropping(List.of(Blocks.COBWEB), 15.0F),
+                        ToolComponent.Rule.of(BlockTags.SWORD_EFFICIENT, 1.5F)), 1.0F, 2);
+    }
+
+    public KnifeItem(ToolMaterial material, Settings settings) {
+        super(material, BlockTags.SWORD_EFFICIENT,
+                settings.component(DataComponentTypes.TOOL, KnifeItem.createToolComponent()));
     }
 
     @Override

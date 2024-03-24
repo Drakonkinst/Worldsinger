@@ -24,18 +24,26 @@
 package io.github.drakonkinst.worldsinger.registry;
 
 import io.github.drakonkinst.worldsinger.Worldsinger;
+import net.minecraft.loot.LootTable;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.util.Identifier;
 
 public final class ModLootTables {
 
-    public static final Identifier LUMAR_SHIPWRECK_SPROUTER_CHEST = ModLootTables.of(
+    public static final RegistryKey<LootTable> LUMAR_SHIPWRECK_SPROUTER_CHEST = ModLootTables.register(
             "chests/lumar_shipwreck_sprouter");
-    public static final Identifier LUMAR_SHIPWRECK_SUPPLY_CHEST = ModLootTables.of(
+    public static final RegistryKey<LootTable> LUMAR_SHIPWRECK_SUPPLY_CHEST = ModLootTables.register(
             "chests/lumar_shipwreck_supply");
-    public static final Identifier LUMAR_SHIPWRECK_CAPTAIN_CHEST = ModLootTables.of(
+    public static final RegistryKey<LootTable> LUMAR_SHIPWRECK_CAPTAIN_CHEST = ModLootTables.register(
             "chests/lumar_shipwreck_captain");
-    public static final Identifier LUMAR_SALTSTONE_MINESHAFT_CHEST = ModLootTables.of(
+    public static final RegistryKey<LootTable> LUMAR_SALTSTONE_MINESHAFT_CHEST = ModLootTables.register(
             "chests/lumar_saltstone_mineshaft");
+
+    private static RegistryKey<LootTable> register(String id) {
+        // TODO: Loot API is disabled
+        return null;
+        // return Registries.get(RegistryKey.of(RegistryKeys.LOOT_TABLE, new Identifier(id)));
+    }
 
     private static Identifier of(String id) {
         return Worldsinger.id(id);

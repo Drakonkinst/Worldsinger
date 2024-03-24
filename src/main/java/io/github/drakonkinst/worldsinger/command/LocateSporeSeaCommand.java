@@ -42,7 +42,6 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 import java.time.Duration;
 import java.util.Optional;
 import java.util.function.Predicate;
-import net.minecraft.command.argument.RegistryEntryArgumentType;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.world.ServerWorld;
@@ -69,6 +68,8 @@ public class LocateSporeSeaCommand {
             id -> Text.stringifiedTranslatable("commands.locate.spore_sea.not_found", id));
     private static final DynamicCommandExceptionType SPORE_SEA_INVALID_EXCEPTION = new DynamicCommandExceptionType(
             id -> Text.stringifiedTranslatable("commands.locate.spore_sea.invalid", id));
+    private static final DynamicCommandExceptionType SPORE_SEA_UNKNOWN_EXCEPTION = new DynamicCommandExceptionType(
+            name -> Text.stringifiedTranslatable("commands.locate.spore_sea.unknown", name));
 
     public static int executeLocateSporeSea(CommandContext<ServerCommandSource> context)
             throws CommandSyntaxException {
@@ -77,8 +78,7 @@ public class LocateSporeSeaCommand {
         Optional<AetherSpores> aetherSporeType = AetherSpores.getAetherSporeTypeFromString(
                 aetherSporeTypeStr);
         if (aetherSporeType.isEmpty()) {
-            throw RegistryEntryArgumentType.NOT_FOUND_EXCEPTION.create(aetherSporeTypeStr,
-                    "spore_sea");
+            throw SPORE_SEA_UNKNOWN_EXCEPTION.create(aetherSporeTypeStr);
         }
 
         AetherSpores spores = aetherSporeType.get();

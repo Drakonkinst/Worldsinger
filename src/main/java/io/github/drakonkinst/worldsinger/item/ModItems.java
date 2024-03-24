@@ -45,11 +45,11 @@ import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
+import net.minecraft.component.type.FoodComponent;
 import net.minecraft.fluid.FlowableFluid;
 import net.minecraft.item.ArmorItem;
 import net.minecraft.item.AxeItem;
 import net.minecraft.item.FlintAndSteelItem;
-import net.minecraft.item.FoodComponent;
 import net.minecraft.item.HoeItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
@@ -145,19 +145,19 @@ public final class ModItems {
     public static final Item STEEL_NUGGET = register("steel_nugget", new Item(new Item.Settings()));
     public static final Item STEEL_HELMET = register("steel_helmet",
             new ArmorItem(ModArmorMaterials.STEEL, ArmorItem.Type.HELMET,
-                    new Item.Settings().maxDamageIfAbsent(
+                    new Item.Settings().maxDamage(
                             ArmorItem.Type.HELMET.getMaxDamage(STEEL_DURABILITY_MULTIPLIER))));
     public static final Item STEEL_CHESTPLATE = register("steel_chestplate",
             new ArmorItem(ModArmorMaterials.STEEL, ArmorItem.Type.CHESTPLATE,
-                    new Item.Settings().maxDamageIfAbsent(
+                    new Item.Settings().maxDamage(
                             ArmorItem.Type.CHESTPLATE.getMaxDamage(STEEL_DURABILITY_MULTIPLIER))));
     public static final Item STEEL_LEGGINGS = register("steel_leggings",
             new ArmorItem(ModArmorMaterials.STEEL, ArmorItem.Type.LEGGINGS,
-                    new Item.Settings().maxDamageIfAbsent(
+                    new Item.Settings().maxDamage(
                             ArmorItem.Type.LEGGINGS.getMaxDamage(STEEL_DURABILITY_MULTIPLIER))));
     public static final Item STEEL_BOOTS = register("steel_boots",
             new ArmorItem(ModArmorMaterials.STEEL, ArmorItem.Type.BOOTS,
-                    new Item.Settings().maxDamageIfAbsent(
+                    new Item.Settings().maxDamage(
                             ArmorItem.Type.BOOTS.getMaxDamage(STEEL_DURABILITY_MULTIPLIER))));
     public static final Item STEEL_SWORD = register("steel_sword",
             new SwordItem(ModToolMaterials.STEEL, new Item.Settings().attributeModifiers(

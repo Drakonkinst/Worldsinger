@@ -31,6 +31,7 @@ import io.github.drakonkinst.worldsinger.cosmere.lumar.AetherSpores;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.SeetheManager;
 import io.github.drakonkinst.worldsinger.fluid.AetherSporeFluid;
 import io.github.drakonkinst.worldsinger.fluid.ModFluidTags;
+import io.github.drakonkinst.worldsinger.util.EntityUtil;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
@@ -78,6 +79,11 @@ public abstract class EntityMixin {
             return original.call(instance);
         }
         return BlockRenderType.MODEL;
+    }
+
+    @ModifyReturnValue(method = "shouldSpawnSprintingParticles", at = @At("RETURN"))
+    private boolean removeSprintingParticlesInSporeSea(boolean original) {
+        return original && !EntityUtil.isTouchingSporeSea((Entity) (Object) this);
     }
 
     @ModifyReturnValue(method = "updateWaterState", at = @At("RETURN"))

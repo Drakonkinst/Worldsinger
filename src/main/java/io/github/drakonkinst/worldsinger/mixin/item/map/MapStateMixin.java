@@ -25,8 +25,8 @@
 package io.github.drakonkinst.worldsinger.mixin.item.map;
 
 import com.google.common.collect.Maps;
+import io.github.drakonkinst.worldsinger.item.map.CustomMapDecoration;
 import io.github.drakonkinst.worldsinger.item.map.CustomMapDecorationsComponent;
-import io.github.drakonkinst.worldsinger.item.map.CustomMapIcon;
 import io.github.drakonkinst.worldsinger.item.map.CustomMapStateAccess;
 import io.github.drakonkinst.worldsinger.item.map.CustomPlayerUpdateTrackerAccess;
 import io.github.drakonkinst.worldsinger.registry.ModDataComponentTypes;
@@ -65,7 +65,7 @@ public abstract class MapStateMixin extends PersistentState implements CustomMap
     @Final
     private List<PlayerUpdateTracker> updateTrackers;
     @Unique
-    private final Map<String, CustomMapIcon> customMapIcons = Maps.newLinkedHashMap();
+    private final Map<String, CustomMapDecoration> customMapIcons = Maps.newLinkedHashMap();
 
     @Inject(method = "update", at = @At("TAIL"))
     private void addCustomIcons(PlayerEntity player, ItemStack stack, CallbackInfo ci) {
@@ -83,8 +83,8 @@ public abstract class MapStateMixin extends PersistentState implements CustomMap
     }
 
     @Unique
-    private void addCustomIcon(CustomMapIcon.Type type, World world, String key, double x, double z,
-            double rotation, @Nullable Text text) {
+    private void addCustomIcon(CustomMapDecoration.Type type, World world, String key, double x,
+            double z, double rotation, @Nullable Text text) {
         int scaleModifier = 1 << this.scale;
         float mapX = (float) (x - this.centerX) / scaleModifier;
         float mapY = (float) (z - this.centerZ) / scaleModifier;
@@ -98,9 +98,9 @@ public abstract class MapStateMixin extends PersistentState implements CustomMap
         byte iconZ = (byte) ((int) ((double) (mapY * 2.0F) + 0.5));
         byte iconRotation = (byte) ((int) (rotation * 16.0 / 360.0));
 
-        CustomMapIcon mapIcon = new CustomMapIcon(type, iconX, iconZ, iconRotation,
+        CustomMapDecoration mapIcon = new CustomMapDecoration(type, iconX, iconZ, iconRotation,
                 Optional.ofNullable(text));
-        CustomMapIcon previousIcon = customMapIcons.put(key, mapIcon);
+        CustomMapDecoration previousIcon = customMapIcons.put(key, mapIcon);
         if (!mapIcon.equals(previousIcon)) {
             markCustomIconsDirty();
         }
@@ -115,21 +115,21 @@ public abstract class MapStateMixin extends PersistentState implements CustomMap
 
     @Unique
     private boolean isInMap(float mapX, float mapY) {
-        return mapX >= -CustomMapIcon.MAP_LIMITS && mapY >= -CustomMapIcon.MAP_LIMITS
-                && mapX <= CustomMapIcon.MAP_LIMITS && mapY <= CustomMapIcon.MAP_LIMITS;
+        return mapX >= -CustomMapDecoration.MAP_LIMITS && mapY >= -CustomMapDecoration.MAP_LIMITS
+                && mapX <= CustomMapDecoration.MAP_LIMITS && mapY <= CustomMapDecoration.MAP_LIMITS;
     }
 
     @Override
-    public void worldsinger$replaceCustomMapIcons(List<CustomMapIcon> customIcons) {
+    public void worldsinger$replaceCustomMapIcons(List<CustomMapDecoration> customIcons) {
         this.customMapIcons.clear();
         for (int i = 0; i < customIcons.size(); ++i) {
-            CustomMapIcon mapIcon = customIcons.get(i);
+            CustomMapDecoration mapIcon = customIcons.get(i);
             this.customMapIcons.put("icon-" + i, mapIcon);
         }
     }
 
     @Override
-    public Map<String, CustomMapIcon> worldsinger$getCustomMapIcons() {
+    public Map<String, CustomMapDecoration> worldsinger$getCustomMapIcons() {
         return customMapIcons;
     }
 }

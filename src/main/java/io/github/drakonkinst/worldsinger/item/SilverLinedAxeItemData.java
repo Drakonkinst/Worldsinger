@@ -24,6 +24,7 @@
 
 package io.github.drakonkinst.worldsinger.item;
 
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.item.ItemStack;
 
 public class SilverLinedAxeItemData extends SilverLinedItemData {
@@ -39,6 +40,6 @@ public class SilverLinedAxeItemData extends SilverLinedItemData {
 
     @Override
     public int getMaxSilverDurability() {
-        return stack.getItem().getMaxDamage();
+        return stack.getOrDefault(DataComponentTypes.MAX_DAMAGE, 1);
     }
 }

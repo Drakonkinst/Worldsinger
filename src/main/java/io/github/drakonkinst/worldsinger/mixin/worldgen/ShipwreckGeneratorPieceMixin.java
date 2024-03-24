@@ -23,13 +23,14 @@
  */
 package io.github.drakonkinst.worldsinger.mixin.worldgen;
 
-import io.github.drakonkinst.worldsinger.registry.ModLootTables;
 import io.github.drakonkinst.worldsinger.worldgen.dimension.ModDimensions;
+import java.util.Collections;
 import java.util.Map;
 import net.minecraft.inventory.LootableInventory;
+import net.minecraft.loot.LootTable;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.structure.ShipwreckGenerator;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
@@ -44,10 +45,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class ShipwreckGeneratorPieceMixin {
 
     @Unique
-    private static final Map<String, Identifier> LUMAR_LOOT_TABLES = Map.of("map_chest",
-            ModLootTables.LUMAR_SHIPWRECK_SPROUTER_CHEST, "treasure_chest",
-            ModLootTables.LUMAR_SHIPWRECK_CAPTAIN_CHEST, "supply_chest",
-            ModLootTables.LUMAR_SHIPWRECK_SUPPLY_CHEST);
+    // TODO: Loot API is disabled
+    // private static final Map<String, RegistryKey<LootTable>> LUMAR_LOOT_TABLES = Map.of("map_chest",
+    //         ModLootTables.LUMAR_SHIPWRECK_SPROUTER_CHEST, "treasure_chest",
+    //         ModLootTables.LUMAR_SHIPWRECK_CAPTAIN_CHEST, "supply_chest",
+    //         ModLootTables.LUMAR_SHIPWRECK_SUPPLY_CHEST);
+    private static final Map<String, RegistryKey<LootTable>> LUMAR_LOOT_TABLES = Collections.emptyMap();
 
     @Inject(method = "handleMetadata", at = @At("HEAD"), cancellable = true)
     private void injectLumarLootTables(String metadata, BlockPos pos, ServerWorldAccess world,
@@ -56,9 +59,9 @@ public abstract class ShipwreckGeneratorPieceMixin {
                 .equals(world.getRegistryManager()
                         .get(RegistryKeys.DIMENSION_TYPE)
                         .get(ModDimensions.DIMENSION_TYPE_LUMAR))) {
-            Identifier identifier = LUMAR_LOOT_TABLES.get(metadata);
-            if (identifier != null) {
-                LootableInventory.setLootTable(world, random, pos.down(), identifier);
+            RegistryKey<LootTable> lootTable = LUMAR_LOOT_TABLES.get(metadata);
+            if (lootTable != null) {
+                LootableInventory.setLootTable(world, random, pos.down(), lootTable);
             }
             ci.cancel();
         }

@@ -38,16 +38,19 @@ import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.AetherSpores;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.SporeParticleManager;
 import java.util.Optional;
-import net.minecraft.command.argument.RegistryEntryArgumentType;
 import net.minecraft.command.argument.Vec3ArgumentType;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.Vec3d;
 
 public class SporeCommand {
+
+    private static final DynamicCommandExceptionType SPORE_UNKNOWN_EXCEPTION = new DynamicCommandExceptionType(
+            name -> Text.stringifiedTranslatable("commands.spore.unknown", name));
 
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         dispatcher.register(literal("spore").requires(
@@ -72,8 +75,7 @@ public class SporeCommand {
         Optional<AetherSpores> aetherSporeType = AetherSpores.getAetherSporeTypeFromString(
                 aetherSporeTypeStr);
         if (aetherSporeType.isEmpty()) {
-            throw RegistryEntryArgumentType.NOT_FOUND_EXCEPTION.create(aetherSporeTypeStr,
-                    "spore_sea");
+            throw SPORE_UNKNOWN_EXCEPTION.create(aetherSporeTypeStr);
         }
         Vec3d pos = getVec3(context, "pos");
         double horizontalRadius = getDouble(context, "horizontal_radius");

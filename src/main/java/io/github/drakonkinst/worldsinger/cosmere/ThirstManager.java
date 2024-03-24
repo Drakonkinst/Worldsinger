@@ -26,7 +26,6 @@ package io.github.drakonkinst.worldsinger.cosmere;
 
 import io.github.drakonkinst.datatables.DataTableRegistry;
 import io.github.drakonkinst.worldsinger.api.sync.SyncableAttachment;
-import io.github.drakonkinst.worldsinger.item.SaltedFoodComponent;
 import io.github.drakonkinst.worldsinger.registry.ModDataTables;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.Item;
@@ -38,7 +37,7 @@ public interface ThirstManager extends SyncableAttachment {
         int water = DataTableRegistry.INSTANCE.get(ModDataTables.CONSUMABLE_HYDRATION)
                 .getIntForItem(item);
         if (SaltedFoodUtil.canBeSalted(stack) && SaltedFoodUtil.isSalted(stack)) {
-            water += SaltedFoodComponent.THIRST_MODIFIER;
+            water += SaltedFoodUtil.THIRST_MODIFIER;
         }
         return water;
     }

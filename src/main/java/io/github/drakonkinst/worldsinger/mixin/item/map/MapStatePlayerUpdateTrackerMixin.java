@@ -25,7 +25,7 @@
 package io.github.drakonkinst.worldsinger.mixin.item.map;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
-import io.github.drakonkinst.worldsinger.item.map.CustomMapIcon;
+import io.github.drakonkinst.worldsinger.item.map.CustomMapDecoration;
 import io.github.drakonkinst.worldsinger.item.map.CustomMapStateAccess;
 import io.github.drakonkinst.worldsinger.item.map.CustomPlayerUpdateTrackerAccess;
 import io.github.drakonkinst.worldsinger.network.packet.CustomMapUpdatePayload;
@@ -75,7 +75,7 @@ public abstract class MapStatePlayerUpdateTrackerMixin implements CustomPlayerUp
 
         MapState mapState = this.field_132;
         CustomMapStateAccess customMapState = (CustomMapStateAccess) mapState;
-        List<CustomMapIcon> customIcons = List.copyOf(
+        List<CustomMapDecoration> customIcons = List.copyOf(
                 customMapState.worldsinger$getCustomMapIcons().values());
         if (original == null) {
             customIconsDirty = false;

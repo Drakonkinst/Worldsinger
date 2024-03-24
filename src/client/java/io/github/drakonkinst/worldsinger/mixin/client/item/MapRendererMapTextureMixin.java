@@ -25,7 +25,7 @@
 package io.github.drakonkinst.worldsinger.mixin.client.item;
 
 import io.github.drakonkinst.worldsinger.Worldsinger;
-import io.github.drakonkinst.worldsinger.item.map.CustomMapIcon;
+import io.github.drakonkinst.worldsinger.item.map.CustomMapDecoration;
 import io.github.drakonkinst.worldsinger.item.map.CustomMapStateAccess;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
@@ -60,8 +60,9 @@ public abstract class MapRendererMapTextureMixin {
             boolean hidePlayerIcons, int light, CallbackInfo ci) {
         CustomMapStateAccess customMapState = (CustomMapStateAccess) state;
         int layer = 0;
-        for (CustomMapIcon mapIcon : customMapState.worldsinger$getCustomMapIcons().values()) {
-            if (mapIcon.type() != CustomMapIcon.Type.RAINLINE) {
+        for (CustomMapDecoration mapIcon : customMapState.worldsinger$getCustomMapIcons()
+                .values()) {
+            if (mapIcon.type() != CustomMapDecoration.Type.RAINLINE) {
                 // Idk how to do those yet
                 continue;
             }

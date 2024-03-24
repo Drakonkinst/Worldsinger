@@ -33,8 +33,9 @@ import java.util.function.ToIntFunction;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.loot.LootTable;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.structure.StructurePiecesCollector;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.function.ValueLists;
 import net.minecraft.util.math.BlockPos;
@@ -128,10 +129,11 @@ public class CustomMineshaftStructure extends Structure {
         private final boolean hasCobwebs;
         private final boolean hasSpawner;
         private final boolean hasLoot;
-        private final Identifier lootTableId;
+        private final RegistryKey<LootTable> lootTable;
 
         Type(String name, Block log, Block planks, Block fence, boolean isSurface, boolean hasRails,
-                boolean hasCobwebs, boolean hasSpawner, boolean hasLoot, Identifier lootTableId) {
+                boolean hasCobwebs, boolean hasSpawner, boolean hasLoot,
+                RegistryKey<LootTable> lootTable) {
             this.name = name;
             this.log = log.getDefaultState();
             this.planks = planks.getDefaultState();
@@ -141,7 +143,7 @@ public class CustomMineshaftStructure extends Structure {
             this.hasCobwebs = hasCobwebs;
             this.hasLoot = hasLoot;
             this.hasSpawner = hasSpawner;
-            this.lootTableId = lootTableId;
+            this.lootTable = lootTable;
         }
 
         public String getName() {
@@ -160,8 +162,8 @@ public class CustomMineshaftStructure extends Structure {
             return this.fence;
         }
 
-        public Identifier getLootTableId() {
-            return lootTableId;
+        public RegistryKey<LootTable> getLootTable() {
+            return lootTable;
         }
 
         public boolean isSurface() {

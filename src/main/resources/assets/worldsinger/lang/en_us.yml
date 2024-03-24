@@ -182,9 +182,11 @@ block.worldsinger:
 action.worldsinger.possess.on_start: Press %1$s to Exit
 commands:
   locate.spore_sea.not_found: Could not find %s within reasonable distance
+  locate.spore_sea.unknown: 'Unknown spore sea: %s'
   locate.spore_sea.invalid: There are no spore seas of type "%s"
   locate.spore_sea.success: The nearest %s is at %s (%s blocks away)
   spore.success: Spawned aether spore particle of type %s
+  spore.unknown: 'Unknown spore: %s'
 config.worldsinger:
   yacl:
     missing: Yet Another Config Lib is not installed

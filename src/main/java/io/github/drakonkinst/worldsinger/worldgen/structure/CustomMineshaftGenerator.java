@@ -39,15 +39,16 @@ import net.minecraft.block.entity.MobSpawnerBlockEntity;
 import net.minecraft.block.enums.RailShape;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.vehicle.ChestMinecartEntity;
+import net.minecraft.loot.LootTable;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.tag.BiomeTags;
 import net.minecraft.structure.StructureContext;
 import net.minecraft.structure.StructurePiece;
 import net.minecraft.structure.StructurePieceType;
 import net.minecraft.structure.StructurePiecesHolder;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
@@ -587,11 +588,11 @@ public class CustomMineshaftGenerator {
                 if (this.mineshaftType.canHaveLoot()) {
                     if (random.nextInt(100) == 0) {
                         this.addChest(world, chunkBox, random, 2, 0, z - 1,
-                                this.mineshaftType.getLootTableId());
+                                this.mineshaftType.getLootTable());
                     }
                     if (random.nextInt(100) == 0) {
                         this.addChest(world, chunkBox, random, 0, 0, z + 1,
-                                this.mineshaftType.getLootTableId());
+                                this.mineshaftType.getLootTable());
                     }
                 }
 
@@ -676,7 +677,7 @@ public class CustomMineshaftGenerator {
 
         @Override
         protected boolean addChest(StructureWorldAccess world, BlockBox boundingBox, Random random,
-                int x, int y, int z, Identifier lootTableId) {
+                int x, int y, int z, RegistryKey<LootTable> lootTable) {
             BlockPos.Mutable blockPos = this.offsetPos(x, y, z);
             if (boundingBox.contains(blockPos) && world.getBlockState(blockPos).isAir()
                     && !world.getBlockState(blockPos.down()).isAir()) {
@@ -687,7 +688,7 @@ public class CustomMineshaftGenerator {
                 ChestMinecartEntity chestMinecartEntity = new ChestMinecartEntity(
                         world.toServerWorld(), (double) blockPos.getX() + 0.5,
                         (double) blockPos.getY() + 0.5, (double) blockPos.getZ() + 0.5);
-                chestMinecartEntity.setLootTable(lootTableId, random.nextLong());
+                chestMinecartEntity.setLootTable(lootTable, random.nextLong());
                 world.spawnEntity(chestMinecartEntity);
                 return true;
             }

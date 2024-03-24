@@ -154,15 +154,15 @@ public final class ClientNetworkHandler {
                         return;
                     }
                     // First, process the normal map update if needed
-                    if (payload.icons().isPresent() || payload.updateData().isPresent()) {
+                    if (payload.decorations().isPresent() || payload.updateData().isPresent()) {
                         MapUpdateS2CPacket simulatedMapUpdatePacket = new MapUpdateS2CPacket(
-                                payload.mapId(), payload.scale(), payload.locked(), payload.icons(),
-                                payload.updateData());
+                                payload.mapId(), payload.scale(), payload.locked(),
+                                payload.decorations(), payload.updateData());
                         networkHandler.onMapUpdate(simulatedMapUpdatePacket);
                     }
 
                     // Then the custom stuff
-                    payload.customIcons().ifPresent(customMapIcons -> {
+                    payload.customDecorations().ifPresent(customMapIcons -> {
                         MapState mapState = client.world.getMapState(payload.mapId());
                         if (mapState == null) {
                             return;

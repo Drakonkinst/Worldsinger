@@ -29,7 +29,7 @@ import java.util.Map;
 
 public interface CustomMapStateAccess {
 
-    Map<String, CustomMapIcon> worldsinger$getCustomMapIcons();
+    Map<String, CustomMapDecoration> worldsinger$getCustomMapIcons();
 
-    void worldsinger$replaceCustomMapIcons(List<CustomMapIcon> customIcons);
+    void worldsinger$replaceCustomMapIcons(List<CustomMapDecoration> customIcons);
 }

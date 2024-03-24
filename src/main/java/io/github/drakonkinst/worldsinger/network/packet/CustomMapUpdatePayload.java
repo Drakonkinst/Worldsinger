@@ -25,11 +25,11 @@
 package io.github.drakonkinst.worldsinger.network.packet;
 
 import io.github.drakonkinst.worldsinger.Worldsinger;
-import io.github.drakonkinst.worldsinger.item.map.CustomMapIcon;
+import io.github.drakonkinst.worldsinger.item.map.CustomMapDecoration;
 import java.util.List;
 import java.util.Optional;
 import net.minecraft.component.type.MapIdComponent;
-import net.minecraft.item.map.MapIcon;
+import net.minecraft.item.map.MapDecoration;
 import net.minecraft.item.map.MapState;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
@@ -39,9 +39,9 @@ import net.minecraft.network.packet.s2c.play.MapUpdateS2CPacket;
 
 // Encloses a MapUpdateS2CPacket, allowing new data to be synced
 public record CustomMapUpdatePayload(MapIdComponent mapId, byte scale, boolean locked,
-                                     Optional<List<MapIcon>> icons,
+                                     Optional<List<MapDecoration>> decorations,
                                      Optional<MapState.UpdateData> updateData,
-                                     Optional<List<CustomMapIcon>> customIcons) implements
+                                     Optional<List<CustomMapDecoration>> customDecorations) implements
         CustomPayload {
 
     public static final Id<CustomMapUpdatePayload> ID = new CustomPayload.Id<>(
@@ -49,16 +49,17 @@ public record CustomMapUpdatePayload(MapIdComponent mapId, byte scale, boolean l
     public static final PacketCodec<RegistryByteBuf, CustomMapUpdatePayload> CODEC = PacketCodec.tuple(
             MapIdComponent.PACKET_CODEC, CustomMapUpdatePayload::mapId, PacketCodecs.BYTE,
             CustomMapUpdatePayload::scale, PacketCodecs.BOOL, CustomMapUpdatePayload::locked,
-            MapIcon.CODEC.collect(PacketCodecs.toList()).collect(PacketCodecs::optional),
-            CustomMapUpdatePayload::icons, MapState.UpdateData.CODEC,
+            MapDecoration.CODEC.collect(PacketCodecs.toList()).collect(PacketCodecs::optional),
+            CustomMapUpdatePayload::decorations, MapState.UpdateData.CODEC,
             CustomMapUpdatePayload::updateData,
-            CustomMapIcon.CODEC.collect(PacketCodecs.toList()).collect(PacketCodecs::optional),
-            CustomMapUpdatePayload::customIcons, CustomMapUpdatePayload::new);
+            CustomMapDecoration.CODEC.collect(PacketCodecs.toList())
+                    .collect(PacketCodecs::optional), CustomMapUpdatePayload::customDecorations,
+            CustomMapUpdatePayload::new);
 
     public CustomMapUpdatePayload(MapUpdateS2CPacket mapUpdateS2CPacket,
-            List<CustomMapIcon> customIcons) {
+            List<CustomMapDecoration> customIcons) {
         this(mapUpdateS2CPacket.mapId(), mapUpdateS2CPacket.scale(), mapUpdateS2CPacket.locked(),
-                mapUpdateS2CPacket.icons(), mapUpdateS2CPacket.updateData(),
+                mapUpdateS2CPacket.decorations(), mapUpdateS2CPacket.updateData(),
                 Optional.ofNullable(customIcons));
     }
 

@@ -42,10 +42,10 @@ public record CustomMapDecorationsComponent(Map<String, Decoration> decorations)
         return new CustomMapDecorationsComponent(Util.mapWith(this.decorations, id, decoration));
     }
 
-    public record Decoration(CustomMapIcon.Type type, double x, double z, float rotation) {
+    public record Decoration(CustomMapDecoration.Type type, double x, double z, float rotation) {
 
         public static final Codec<CustomMapDecorationsComponent.Decoration> CODEC = RecordCodecBuilder.create(
-                instance -> instance.group(CustomMapIcon.Type.CODEC.fieldOf("type")
+                instance -> instance.group(CustomMapDecoration.Type.CODEC.fieldOf("type")
                                         .forGetter(CustomMapDecorationsComponent.Decoration::type),
                                 Codec.DOUBLE.fieldOf("x")
                                         .forGetter(CustomMapDecorationsComponent.Decoration::x),

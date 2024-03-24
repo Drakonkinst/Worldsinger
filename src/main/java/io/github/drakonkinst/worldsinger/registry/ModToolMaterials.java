@@ -26,28 +26,32 @@ package io.github.drakonkinst.worldsinger.registry;
 import com.google.common.base.Suppliers;
 import io.github.drakonkinst.worldsinger.item.ModItems;
 import java.util.function.Supplier;
-import net.fabricmc.yarn.constants.MiningLevels;
+import net.minecraft.block.Block;
 import net.minecraft.item.ToolMaterial;
 import net.minecraft.recipe.Ingredient;
+import net.minecraft.registry.tag.BlockTags;
+import net.minecraft.registry.tag.TagKey;
 
 public enum ModToolMaterials implements ToolMaterial {
 
     // Steel is identical to Iron, but has more durability and slightly more enchantability
-    STEEL(MiningLevels.IRON, 484, 6.5f, 2.0f, 16, () -> Ingredient.ofItems(ModItems.STEEL_INGOT)),
+    STEEL(BlockTags.INCORRECT_FOR_IRON_TOOL, 484, 6.5f, 2.0f, 16,
+            () -> Ingredient.ofItems(ModItems.STEEL_INGOT)),
     // Silver is similar to Gold, but does not mine as fast and has more durability
     // Not planned to support a full toolset for silver
-    SILVER(MiningLevels.WOOD, 181, 6.0F, 0.0F, 22, () -> Ingredient.ofItems(ModItems.SILVER_INGOT));
+    SILVER(BlockTags.INCORRECT_FOR_WOODEN_TOOL, 181, 6.0F, 0.0F, 22,
+            () -> Ingredient.ofItems(ModItems.SILVER_INGOT));
 
-    private final int miningLevel;
+    private final TagKey<Block> inverseTag;
     private final int itemDurability;
     private final float miningSpeed;
     private final float attackDamage;
     private final int enchantability;
     private final Supplier<Ingredient> repairIngredient;
 
-    ModToolMaterials(int miningLevel, int itemDurability, float miningSpeed, float attackDamage,
-            int enchantability, Supplier<Ingredient> repairIngredient) {
-        this.miningLevel = miningLevel;
+    ModToolMaterials(TagKey<Block> inverseTag, int itemDurability, float miningSpeed,
+            float attackDamage, int enchantability, Supplier<Ingredient> repairIngredient) {
+        this.inverseTag = inverseTag;
         this.itemDurability = itemDurability;
         this.miningSpeed = miningSpeed;
         this.attackDamage = attackDamage;
@@ -71,8 +75,8 @@ public enum ModToolMaterials implements ToolMaterial {
     }
 
     @Override
-    public int getMiningLevel() {
-        return miningLevel;
+    public TagKey<Block> getInverseTag() {
+        return inverseTag;
     }
 
     @Override

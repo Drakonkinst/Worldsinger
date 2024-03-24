@@ -25,8 +25,8 @@
 package io.github.drakonkinst.worldsinger.cosmere.lumar;
 
 import io.github.drakonkinst.worldsinger.Worldsinger;
+import io.github.drakonkinst.worldsinger.item.map.CustomMapDecoration;
 import io.github.drakonkinst.worldsinger.item.map.CustomMapDecorationsComponent.Decoration;
-import io.github.drakonkinst.worldsinger.item.map.CustomMapIcon;
 import io.github.drakonkinst.worldsinger.util.math.Int2;
 import io.github.drakonkinst.worldsinger.worldgen.lumar.LumarChunkGenerator;
 import java.util.Map;
@@ -174,7 +174,7 @@ public class RainlinePath {
                     != CrimsonSpores.ID) {
                 ++numAdded;
                 decorations.put("rainline-" + (++nextIconId),
-                        new Decoration(CustomMapIcon.Type.RAINLINE, x, z, 0.0f));
+                        new Decoration(CustomMapDecoration.Type.RAINLINE, x, z, 0.0f));
             }
         }
         return numAdded;
@@ -184,8 +184,8 @@ public class RainlinePath {
         float scaleModifier = 1 << mapState.scale;
         float mapX = (x - mapState.centerX) / scaleModifier;
         float mapY = (z - mapState.centerZ) / scaleModifier;
-        return mapX >= -CustomMapIcon.MAP_LIMITS && mapY >= -CustomMapIcon.MAP_LIMITS
-                && mapX <= CustomMapIcon.MAP_LIMITS && mapY <= CustomMapIcon.MAP_LIMITS;
+        return mapX >= -CustomMapDecoration.MAP_LIMITS && mapY >= -CustomMapDecoration.MAP_LIMITS
+                && mapX <= CustomMapDecoration.MAP_LIMITS && mapY <= CustomMapDecoration.MAP_LIMITS;
     }
 
     private Spline calculateSpline(int i, Int2[] rainlineNodes) {
