@@ -28,15 +28,14 @@ import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.sugar.Local;
 import io.github.drakonkinst.worldsinger.cosmere.CosmerePlanet;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.AetherSpores;
-import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarLunagreeManager;
+import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarLunagreeGenerator;
+import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarManager;
+import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarSeetheManager;
+import io.github.drakonkinst.worldsinger.cosmere.lumar.LunagreeGenerator;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LunagreeLocation;
-import io.github.drakonkinst.worldsinger.cosmere.lumar.LunagreeManager;
-import io.github.drakonkinst.worldsinger.cosmere.lumar.LunagreeManagerAccess;
-import io.github.drakonkinst.worldsinger.cosmere.lumar.NullLunagreeManager;
-import io.github.drakonkinst.worldsinger.cosmere.lumar.ServerLumarSeetheManager;
+import io.github.drakonkinst.worldsinger.cosmere.lumar.SeetheManager;
 import io.github.drakonkinst.worldsinger.network.packet.SeetheUpdatePayload;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.Executor;
 import net.minecraft.block.Block;
 import net.minecraft.network.packet.CustomPayload;
@@ -63,14 +62,12 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ServerWorld.class)
-public abstract class ServerWorldLumarMixin extends WorldLumarMixin implements StructureWorldAccess,
-        LunagreeManagerAccess {
+public abstract class ServerWorldLumarMixin extends WorldLumarMixin implements
+        StructureWorldAccess {
 
     @Shadow
     public abstract PersistentStateManager getPersistentStateManager();
 
-    @Unique
-    private LunagreeManager lunagreeManager;
     @Unique
     private boolean syncedSeething;
 
@@ -82,14 +79,13 @@ public abstract class ServerWorldLumarMixin extends WorldLumarMixin implements S
             long seed, List<SpecialSpawner> spawners, boolean shouldTickTime,
             RandomSequencesState randomSequencesState, CallbackInfo ci) {
         if (CosmerePlanet.getPlanetFromKey(worldKey).equals(CosmerePlanet.LUMAR)) {
-            lunagreeManager = this.getPersistentStateManager()
-                    .getOrCreate(LumarLunagreeManager.getPersistentStateType(
-                            (ServerWorld) (Object) (this)), LumarLunagreeManager.NAME);
-            seetheManager = this.getPersistentStateManager()
-                    .getOrCreate(ServerLumarSeetheManager.getPersistentStateType(),
-                            ServerLumarSeetheManager.NAME);
-        } else {
-            lunagreeManager = new NullLunagreeManager();
+            SeetheManager seetheManager = this.getPersistentStateManager()
+                    .getOrCreate(LumarSeetheManager.getPersistentStateType(),
+                            LumarSeetheManager.NAME);
+            LunagreeGenerator lunagreeGenerator = this.getPersistentStateManager()
+                    .getOrCreate(LumarLunagreeGenerator.getPersistentStateType(
+                            (ServerWorld) (Object) (this)), LumarLunagreeGenerator.NAME);
+            lumarManager = new LumarManager(seetheManager, lunagreeGenerator);
         }
     }
 
@@ -104,14 +100,13 @@ public abstract class ServerWorldLumarMixin extends WorldLumarMixin implements S
         if (!canPlaceSporeBlock(pos, belowPos)) {
             return;
         }
-        Optional<LunagreeLocation> nearestLocation = lunagreeManager.getNearestLunagree(x, z,
-                LumarLunagreeManager.SPORE_FALL_RADIUS);
-        if (nearestLocation.isEmpty()) {
+        LunagreeLocation nearestLocation = lumarManager.getLunagreeGenerator()
+                .getNearestLunagree(x, z, LumarLunagreeGenerator.SPORE_FALL_RADIUS);
+        if (nearestLocation == null) {
             return;
         }
 
-        AetherSpores sporeType = AetherSpores.getAetherSporeTypeById(
-                nearestLocation.get().sporeId());
+        AetherSpores sporeType = AetherSpores.getAetherSporeTypeById(nearestLocation.sporeId());
         if (sporeType == null) {
             return;
         }
@@ -122,7 +117,8 @@ public abstract class ServerWorldLumarMixin extends WorldLumarMixin implements S
     @Inject(method = "tickWeather", at = @At("TAIL"))
     private void tickSeethe(CallbackInfo ci) {
         if (CosmerePlanet.isLumar((ServerWorld) (Object) this)) {
-            seetheManager.serverTick();
+            SeetheManager seetheManager = lumarManager.getSeetheManager();
+            seetheManager.serverTickWeather();
 
             // Sync seething
             // For now, we only care about whether the seethe state is changed
@@ -149,10 +145,5 @@ public abstract class ServerWorldLumarMixin extends WorldLumarMixin implements S
         return pos.getY() >= this.getBottomY() && pos.getY() < this.getTopY() && this.isSkyVisible(
                 pos) && this.getBlockState(pos).isAir() && Block.isFaceFullSquare(
                 this.getBlockState(belowPos).getCollisionShape(this, belowPos), Direction.UP);
-    }
-
-    @Override
-    public LunagreeManager worldsinger$getLunagreeManager() {
-        return lunagreeManager;
     }
 }

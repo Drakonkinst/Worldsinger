@@ -3,8 +3,8 @@ package io.github.drakonkinst.worldsinger.mixin.world;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import io.github.drakonkinst.worldsinger.cosmere.CosmerePlanet;
-import io.github.drakonkinst.worldsinger.cosmere.lumar.SeetheManager;
-import io.github.drakonkinst.worldsinger.cosmere.lumar.SeetheManagerAccess;
+import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarManager;
+import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarManagerAccess;
 import io.github.drakonkinst.worldsinger.entity.RainlineEntity;
 import java.util.function.Supplier;
 import net.minecraft.block.BlockState;
@@ -28,7 +28,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(World.class)
-public abstract class WorldLumarMixin implements WorldAccess, AutoCloseable, SeetheManagerAccess {
+public abstract class WorldLumarMixin implements WorldAccess, AutoCloseable, LumarManagerAccess {
 
     @Shadow
     public abstract RegistryKey<World> getRegistryKey();
@@ -43,14 +43,14 @@ public abstract class WorldLumarMixin implements WorldAccess, AutoCloseable, See
     @Final
     public Random random;
     @Unique
-    protected SeetheManager seetheManager;
+    protected LumarManager lumarManager;
 
     @Inject(method = "<init>", at = @At("TAIL"))
     private void initializeLumar(MutableWorldProperties properties, RegistryKey<World> registryRef,
             DynamicRegistryManager registryManager, RegistryEntry<DimensionType> dimensionEntry,
             Supplier<Profiler> profiler, boolean isClient, boolean debugWorld, long biomeAccess,
             int maxChainedNeighborUpdates, CallbackInfo ci) {
-        seetheManager = SeetheManager.NULL;
+        lumarManager = LumarManager.NULL;
     }
 
     @ModifyExpressionValue(method = "hasRain", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/World;isRaining()Z"))
@@ -88,7 +88,7 @@ public abstract class WorldLumarMixin implements WorldAccess, AutoCloseable, See
     }
 
     @Override
-    public SeetheManager worldsinger$getSeetheManager() {
-        return seetheManager;
+    public LumarManager worldsinger$getLumarManager() {
+        return lumarManager;
     }
 }

@@ -26,7 +26,7 @@ package io.github.drakonkinst.worldsinger.event;
 import io.github.drakonkinst.worldsinger.api.ModAttachmentTypes;
 import io.github.drakonkinst.worldsinger.api.sync.AttachmentSync;
 import io.github.drakonkinst.worldsinger.block.LivingSporeGrowthBlock;
-import io.github.drakonkinst.worldsinger.cosmere.lumar.LunagreeManagerAccess;
+import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarManagerAccess;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.MidnightAetherBondManager;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.SporeKillingUtil;
 import io.github.drakonkinst.worldsinger.effect.ModStatusEffects;
@@ -128,7 +128,7 @@ public final class ModEventHandlers {
                 (player -> AttachmentSync.syncEntityAttachments(player, player)));
 
         ServerTickEvents.END_WORLD_TICK.register(world -> {
-            ((LunagreeManagerAccess) world).worldsinger$getLunagreeManager().tick();
+            ((LumarManagerAccess) world).worldsinger$getLumarManager().serverTick(world);
         });
     }
 

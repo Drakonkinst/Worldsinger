@@ -117,7 +117,7 @@ public class ClientLunagreeData {
                 minDistSq = distSq;
             }
         }
-        underLunagree = minDistSq
-                <= LumarLunagreeManager.SPORE_FALL_RADIUS * LumarLunagreeManager.SPORE_FALL_RADIUS;
+        underLunagree = minDistSq <= LumarLunagreeGenerator.SPORE_FALL_RADIUS
+                * LumarLunagreeGenerator.SPORE_FALL_RADIUS;
     }
 }

@@ -32,7 +32,17 @@ public class NullSeetheManager implements SeetheManager {
     }
 
     @Override
+    public void startSeetheForRandomDuration() {
+        // Do nothing
+    }
+
+    @Override
     public void stopSeethe(int ticks) {
+        // Do nothing
+    }
+
+    @Override
+    public void stopSeetheForRandomDuration() {
         // Do nothing
     }
 
@@ -48,7 +58,7 @@ public class NullSeetheManager implements SeetheManager {
     }
 
     @Override
-    public void serverTick() {
+    public void serverTickWeather() {
         // Do nothing
     }
 }

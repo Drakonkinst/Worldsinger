@@ -24,7 +24,21 @@
 
 package io.github.drakonkinst.worldsinger.cosmere.lumar;
 
-public interface SeetheManagerAccess {
+import io.github.drakonkinst.worldsinger.item.map.CustomMapDecorationsComponent.Decoration;
+import java.util.Map;
+import net.minecraft.item.map.MapState;
+import net.minecraft.server.world.ServerWorld;
 
-    SeetheManager worldsinger$getSeetheManager();
+public class NullRainlineManager implements RainlineManager {
+
+    @Override
+    public RainlinePath getNearestRainlinePathAt(int blockX, int blockZ) {
+        return null;
+    }
+
+    @Override
+    public int applyMapDecorations(ServerWorld world, Map<String, Decoration> decorations,
+            MapState mapState) {
+        return 0;
+    }
 }

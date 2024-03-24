@@ -28,9 +28,9 @@ import io.github.drakonkinst.worldsinger.Worldsinger;
 import io.github.drakonkinst.worldsinger.block.ModBlockTags;
 import io.github.drakonkinst.worldsinger.block.WaterReactiveBlock;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.CrimsonSpores;
+import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarManager;
+import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarManagerAccess;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LunagreeLocation;
-import io.github.drakonkinst.worldsinger.cosmere.lumar.LunagreeManager;
-import io.github.drakonkinst.worldsinger.cosmere.lumar.LunagreeManagerAccess;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.RainlinePath;
 import io.github.drakonkinst.worldsinger.fluid.WaterReactiveFluid;
 import io.github.drakonkinst.worldsinger.worldgen.lumar.LumarChunkGenerator;
@@ -276,12 +276,14 @@ public class RainlineEntity extends Entity {
         Worldsinger.LOGGER.info("Reading NBT");
         if (nbt.contains(KEY_FOLLOWING_PATH, NbtElement.BYTE_TYPE) && nbt.getBoolean(
                 KEY_FOLLOWING_PATH)) {
-            LunagreeManager lunagreeManager = ((LunagreeManagerAccess) world).worldsinger$getLunagreeManager();
-            lunagreeLocation = lunagreeManager.getNearestLunagree(this.getBlockX(),
-                    this.getBlockZ(), RainlinePath.MAX_RADIUS).orElse(null);
+            LumarManager lumarManager = ((LumarManagerAccess) world).worldsinger$getLumarManager();
+            lunagreeLocation = lumarManager.getLunagreeGenerator()
+                    .getNearestLunagree(this.getBlockX(), this.getBlockZ(),
+                            RainlinePath.MAX_RADIUS);
             if (lunagreeLocation != null) {
-                rainlinePath = lunagreeManager.getNearestRainlinePathAt(lunagreeLocation.blockX(),
-                        lunagreeLocation.blockZ());
+                rainlinePath = lumarManager.getRainlineManager()
+                        .getNearestRainlinePathAt(lunagreeLocation.blockX(),
+                                lunagreeLocation.blockZ());
                 Worldsinger.LOGGER.info("Set rainline path to " + rainlinePath);
             }
         }

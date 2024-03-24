@@ -27,9 +27,11 @@ package io.github.drakonkinst.worldsinger.mixin.client.world;
 import com.llamalad7.mixinextras.sugar.Local;
 import io.github.drakonkinst.worldsinger.cosmere.CosmerePlanet;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.AetherSpores;
-import io.github.drakonkinst.worldsinger.cosmere.lumar.ClientLumarSeetheManager;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.ClientLunagreeData;
-import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarLunagreeManager;
+import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarLunagreeGenerator;
+import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarManager;
+import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarSeetheManager;
+import io.github.drakonkinst.worldsinger.cosmere.lumar.LunagreeGenerator;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LunagreeLocation;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.SporeParticleManager;
 import io.github.drakonkinst.worldsinger.entity.ClientLunagreeDataAccess;
@@ -73,7 +75,7 @@ public abstract class ClientWorldLumarMixin extends WorldLumarMixin {
             int loadDistance, int simulationDistance, Supplier<Profiler> profiler,
             WorldRenderer worldRenderer, boolean debugWorld, long seed, CallbackInfo ci) {
         if (CosmerePlanet.getPlanetFromKey(registryRef).equals(CosmerePlanet.LUMAR)) {
-            seetheManager = new ClientLumarSeetheManager();
+            lumarManager = new LumarManager(new LumarSeetheManager(), LunagreeGenerator.NULL);
         }
     }
 
@@ -112,7 +114,7 @@ public abstract class ClientWorldLumarMixin extends WorldLumarMixin {
         }
 
         LunagreeLocation location = data.getNearestLunagreeLocation(x, z,
-                LumarLunagreeManager.SPORE_FALL_RADIUS);
+                LumarLunagreeGenerator.SPORE_FALL_RADIUS);
         if (location == null) {
             return;
         }

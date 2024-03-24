@@ -27,16 +27,27 @@ import net.minecraft.util.math.Direction;
 
 public final class ModConstants {
 
+    // Namespaces
     public static final String MOD_ID = "worldsinger";
     public static final String COMMON_ID = "c";
+
+    // Time
     public static final float TICKS_TO_SECONDS = 1.0f / 20.0f;
     public static final int SECONDS_TO_TICKS = 20;
+    public static final int MINUTES_TO_SECONDS = 60;
+    public static final int GAME_DAYS_TO_MINUTES = 20;
+    public static final long VANILLA_DAY_LENGTH = 24000L;
+    public static final int MINUTES_TO_TICKS = MINUTES_TO_SECONDS * SECONDS_TO_TICKS;
+    public static final int GAME_DAYS_TO_TICKS = GAME_DAYS_TO_MINUTES * MINUTES_TO_TICKS;
+
+    // Direction
     public static final Direction[] CARDINAL_DIRECTIONS = Direction.values();
     public static final Direction[] HORIZONTAL_DIRECTIONS = {
             Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST
     };
+
+    // Other
     public static final int ITEM_DURABILITY_METER_MAX_STEPS = 13;
-    public static final long VANILLA_DAY_LENGTH = 24000L;
 
     private ModConstants() {}
 }

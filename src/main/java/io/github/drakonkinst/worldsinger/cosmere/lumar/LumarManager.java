@@ -24,6 +24,40 @@
 
 package io.github.drakonkinst.worldsinger.cosmere.lumar;
 
+import net.minecraft.server.world.ServerWorld;
+
 public class LumarManager {
 
+    public static final LumarManager NULL = new LumarManager(SeetheManager.NULL,
+            LunagreeGenerator.NULL, new NullRainlineManager());
+
+    private final SeetheManager seetheManager;
+    private final LunagreeGenerator lunagreeGenerator;
+    private final RainlineManager rainlineManager;
+
+    public LumarManager(SeetheManager seetheManager, LunagreeGenerator lunagreeGenerator) {
+        this(seetheManager, lunagreeGenerator, new LumarRainlineManager(lunagreeGenerator));
+    }
+
+    protected LumarManager(SeetheManager seetheManager, LunagreeGenerator lunagreeGenerator,
+            RainlineManager rainlineManager) {
+        this.seetheManager = seetheManager;
+        this.lunagreeGenerator = lunagreeGenerator;
+        this.rainlineManager = rainlineManager;
+    }
+
+    public void serverTick(ServerWorld world) {
+    }
+
+    public SeetheManager getSeetheManager() {
+        return seetheManager;
+    }
+
+    public LunagreeGenerator getLunagreeGenerator() {
+        return lunagreeGenerator;
+    }
+
+    public RainlineManager getRainlineManager() {
+        return rainlineManager;
+    }
 }

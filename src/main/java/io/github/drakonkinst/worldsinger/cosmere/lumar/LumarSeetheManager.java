@@ -21,113 +21,112 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+
 package io.github.drakonkinst.worldsinger.cosmere.lumar;
 
+import io.github.drakonkinst.worldsinger.util.ModConstants;
 import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.util.math.intprovider.BiasedToBottomIntProvider;
 import net.minecraft.util.math.intprovider.IntProvider;
 import net.minecraft.util.math.intprovider.UniformIntProvider;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.PersistentState;
 
-public class ServerLumarSeetheManager extends PersistentState implements SeetheManager {
+public class LumarSeetheManager extends PersistentState implements SeetheManager {
 
     public static final String NAME = "seethe";
     private static final String NBT_TICKS_REMAINING = "ticks_remaining";
     private static final String NBT_CYCLES_UNTIL_NEXT_LONG_STILLING = "cycles_until_next_long_stilling";
     private static final String NBT_IS_SEETHING = "is_seething";
 
-    public static PersistentState.Type<ServerLumarSeetheManager> getPersistentStateType() {
-        return new PersistentState.Type<>(ServerLumarSeetheManager::new,
-                (nbt, registryLookup) -> ServerLumarSeetheManager.fromNbt(nbt), DataFixTypes.LEVEL);
+    private static final IntProvider SEETHE_DURATION_PROVIDER = UniformIntProvider.create(
+            5 * ModConstants.MINUTES_TO_TICKS, 2 * ModConstants.GAME_DAYS_TO_TICKS);
+    private static final IntProvider STILLING_NORMAL_DURATION_PROVIDER = UniformIntProvider.create(
+            2 * ModConstants.MINUTES_TO_TICKS, 5 * ModConstants.MINUTES_TO_TICKS);
+    private static final IntProvider STILLING_LONG_DURATION_PROVIDER = BiasedToBottomIntProvider.create(
+            10 * ModConstants.MINUTES_TO_TICKS, 30 * ModConstants.MINUTES_TO_TICKS);
+    private static final IntProvider STILLING_LONG_CYCLE_PROVIDER = BiasedToBottomIntProvider.create(
+            2, 5);
+
+    public static PersistentState.Type<LumarSeetheManager> getPersistentStateType() {
+        return new PersistentState.Type<>(LumarSeetheManager::new,
+                (nbt, registryLookup) -> LumarSeetheManager.fromNbt(nbt), DataFixTypes.LEVEL);
     }
 
-    private static ServerLumarSeetheManager fromNbt(NbtCompound nbt) {
-        ServerLumarSeetheManager seetheManager = new ServerLumarSeetheManager();
+    private static LumarSeetheManager fromNbt(NbtCompound nbt) {
+        LumarSeetheManager seetheManager = new LumarSeetheManager();
         seetheManager.isSeething = nbt.getBoolean(NBT_IS_SEETHING);
         seetheManager.ticksRemaining = nbt.getInt(NBT_TICKS_REMAINING);
         seetheManager.cyclesUntilLongStilling = nbt.getInt(NBT_CYCLES_UNTIL_NEXT_LONG_STILLING);
         return seetheManager;
     }
 
-    private static final int SECONDS_TO_TICKS = 20;
-    private static final int MINUTES_TO_SECONDS = 60;
-    private static final int GAME_DAYS_TO_MINUTES = 20;
-    private static final int MINUTES_TO_TICKS = MINUTES_TO_SECONDS * SECONDS_TO_TICKS;
-    private static final int GAME_DAYS_TO_TICKS = GAME_DAYS_TO_MINUTES * MINUTES_TO_TICKS;
-    private static final IntProvider SEETHE_DURATION_PROVIDER = UniformIntProvider.create(
-            5 * MINUTES_TO_TICKS, 2 * GAME_DAYS_TO_TICKS);
-    private static final IntProvider STILLING_NORMAL_DURATION_PROVIDER = UniformIntProvider.create(
-            2 * MINUTES_TO_TICKS, 5 * MINUTES_TO_TICKS);
-    private static final IntProvider STILLING_LONG_DURATION_PROVIDER = BiasedToBottomIntProvider.create(
-            10 * MINUTES_TO_TICKS, 30 * MINUTES_TO_TICKS);
-    private static final IntProvider STILLING_LONG_CYCLE_PROVIDER = BiasedToBottomIntProvider.create(
-            2, 5);
-
     private final Random random = Random.create();
     private boolean isSeething;
     private int ticksRemaining;
     private int cyclesUntilLongStilling;
 
-    public ServerLumarSeetheManager() {
-        // Default values
-        this.startSeethe(-1);
+    public LumarSeetheManager() {
+        // Default values, can be overridden by saved data
+        this.startSeetheForRandomDuration();
         this.cyclesUntilLongStilling = STILLING_LONG_CYCLE_PROVIDER.get(this.random);
     }
 
     @Override
-    public NbtCompound writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
+    public NbtCompound writeNbt(NbtCompound nbt, WrapperLookup registryLookup) {
         nbt.putBoolean(NBT_IS_SEETHING, isSeething);
         nbt.putInt(NBT_TICKS_REMAINING, ticksRemaining);
         nbt.putInt(NBT_CYCLES_UNTIL_NEXT_LONG_STILLING, cyclesUntilLongStilling);
         return nbt;
     }
 
-    // Use negative values to randomize value
     @Override
     public void startSeethe(int ticks) {
         isSeething = true;
-        if (ticks < 0) {
-            ticksRemaining = SEETHE_DURATION_PROVIDER.get(this.random);
-        } else {
-            ticksRemaining = ticks;
-        }
+        ticksRemaining = ticks;
     }
 
     @Override
-    public void serverTick() {
-        if (ticksRemaining > 0) {
-            --ticksRemaining;
-        } else {
-            if (isSeething) {
-                this.stopSeethe(-1);
-            } else {
-                this.startSeethe(-1);
-            }
-        }
-        this.markDirty();
+    public void startSeetheForRandomDuration() {
+        startSeethe(SEETHE_DURATION_PROVIDER.get(this.random));
     }
 
     @Override
     public void stopSeethe(int ticks) {
         isSeething = false;
+        ticksRemaining = ticks;
         if (cyclesUntilLongStilling <= 0) {
             cyclesUntilLongStilling = STILLING_LONG_CYCLE_PROVIDER.get(this.random);
         } else {
             --cyclesUntilLongStilling;
         }
-        // Set ticks till next cycle
-        if (ticks < 0) {
-            if (cyclesUntilLongStilling <= 0) {
-                ticksRemaining = STILLING_LONG_DURATION_PROVIDER.get(this.random);
-            } else {
-                ticksRemaining = STILLING_NORMAL_DURATION_PROVIDER.get(this.random);
-            }
+    }
+
+    @Override
+    public void stopSeetheForRandomDuration() {
+        int ticks;
+        if (cyclesUntilLongStilling <= 0) {
+            ticks = STILLING_LONG_DURATION_PROVIDER.get(this.random);
         } else {
-            ticksRemaining = ticks;
+            ticks = STILLING_NORMAL_DURATION_PROVIDER.get(this.random);
         }
+        stopSeethe(ticks);
+    }
+
+    @Override
+    public void serverTickWeather() {
+        if (ticksRemaining > 0) {
+            --ticksRemaining;
+        } else {
+            if (isSeething) {
+                this.stopSeetheForRandomDuration();
+            } else {
+                this.startSeetheForRandomDuration();
+            }
+        }
+        this.markDirty();
     }
 
     @Override
@@ -139,5 +138,4 @@ public class ServerLumarSeetheManager extends PersistentState implements SeetheM
     public int getTicksUntilNextCycle() {
         return ticksRemaining;
     }
-
 }

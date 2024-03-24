@@ -31,14 +31,20 @@ public interface SeetheManager {
     SeetheManager NULL = new NullSeetheManager();
 
     static boolean areSporesFluidized(World world) {
-        return ((SeetheManagerAccess) world).worldsinger$getSeetheManager().isSeething();
+        return ((LumarManagerAccess) world).worldsinger$getLumarManager()
+                .getSeetheManager()
+                .isSeething();
     }
 
-    void serverTick();
+    void serverTickWeather();
 
     void startSeethe(int ticks);
 
+    void startSeetheForRandomDuration();
+
     void stopSeethe(int ticks);
+
+    void stopSeetheForRandomDuration();
 
     boolean isSeething();
 

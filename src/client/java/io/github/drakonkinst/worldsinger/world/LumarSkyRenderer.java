@@ -28,7 +28,7 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.drakonkinst.worldsinger.Worldsinger;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.ClientLunagreeData;
-import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarLunagreeManager;
+import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarLunagreeGenerator;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LunagreeLocation;
 import io.github.drakonkinst.worldsinger.entity.ClientLunagreeDataAccess;
 import io.github.drakonkinst.worldsinger.mixin.client.accessor.WorldRendererAccessor;
@@ -191,8 +191,8 @@ public class LumarSkyRenderer implements SkyRenderer {
                 break;
             }
             final double distSq = location.distSqTo(playerPos.getX(), playerPos.getZ());
-            if (distSq
-                    > LumarLunagreeManager.TRAVEL_DISTANCE * LumarLunagreeManager.TRAVEL_DISTANCE) {
+            if (distSq > LumarLunagreeGenerator.TRAVEL_DISTANCE
+                    * LumarLunagreeGenerator.TRAVEL_DISTANCE) {
                 continue;
             }
             // Render moon
@@ -210,7 +210,7 @@ public class LumarSkyRenderer implements SkyRenderer {
         int moonIndex = SPORE_ID_TO_MOON_INDEX[sporeId];
 
         float distance = Math.sqrt((float) distSq);
-        float progress = distance / LumarLunagreeManager.TRAVEL_DISTANCE;
+        float progress = distance / LumarLunagreeGenerator.TRAVEL_DISTANCE;
         float multiplier = 1.0f - (float) Math.cos(progress * Math.PI * 0.5);
 
         // Calculate shrink factor

@@ -26,15 +26,14 @@ package io.github.drakonkinst.worldsinger.mixin.entity;
 
 import io.github.drakonkinst.worldsinger.cosmere.lumar.AetherSpores;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.DeadSpores;
-import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarLunagreeManager;
+import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarLunagreeGenerator;
+import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarManagerAccess;
+import io.github.drakonkinst.worldsinger.cosmere.lumar.LunagreeGenerator;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LunagreeLocation;
-import io.github.drakonkinst.worldsinger.cosmere.lumar.LunagreeManager;
-import io.github.drakonkinst.worldsinger.cosmere.lumar.LunagreeManagerAccess;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.SporeKillingUtil;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.SporeParticleManager;
 import io.github.drakonkinst.worldsinger.entity.ModEntityTypeTags;
 import io.github.drakonkinst.worldsinger.util.BlockPosUtil;
-import java.util.Optional;
 import net.minecraft.entity.Attackable;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -78,14 +77,15 @@ public abstract class LivingEntityLunagreeMixin extends Entity implements Attack
             return;
         }
 
-        LunagreeManager manager = ((LunagreeManagerAccess) world).worldsinger$getLunagreeManager();
-        Optional<LunagreeLocation> underLocation = manager.getNearestLunagree(entity.getBlockX(),
-                entity.getBlockZ(), LumarLunagreeManager.SPORE_FALL_RADIUS);
-        if (underLocation.isEmpty()) {
+        LunagreeGenerator manager = ((LumarManagerAccess) world).worldsinger$getLumarManager()
+                .getLunagreeGenerator();
+        LunagreeLocation underLocation = manager.getNearestLunagree(entity.getBlockX(),
+                entity.getBlockZ(), LumarLunagreeGenerator.SPORE_FALL_RADIUS);
+        if (underLocation == null) {
             return;
         }
 
-        AetherSpores sporeType = AetherSpores.getAetherSporeTypeById(underLocation.get().sporeId());
+        AetherSpores sporeType = AetherSpores.getAetherSporeTypeById(underLocation.sporeId());
         if (sporeType == null) {
             return;
         }

@@ -24,7 +24,32 @@
 
 package io.github.drakonkinst.worldsinger.cosmere.lumar;
 
-public interface LunagreeManagerAccess {
+import net.minecraft.server.network.ServerPlayerEntity;
 
-    LunagreeManager worldsinger$getLunagreeManager();
+public class NullLunagreeGenerator implements LunagreeGenerator {
+
+    @Override
+    public long getKeyForPos(int blockX, int blockZ) {
+        return -1;
+    }
+
+    @Override
+    public long[] getNeighborKeys(long centerKey) {
+        return new long[0];
+    }
+
+    @Override
+    public LunagreeLocation getLunagreeForKey(long key, boolean shouldCreate) {
+        return null;
+    }
+
+    @Override
+    public void updateLunagreeDataForPlayer(ServerPlayerEntity player) {
+        // Do nothing
+    }
+
+    @Override
+    public boolean isNull() {
+        return true;
+    }
 }

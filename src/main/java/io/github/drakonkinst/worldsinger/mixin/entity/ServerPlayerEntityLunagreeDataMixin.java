@@ -25,8 +25,8 @@ package io.github.drakonkinst.worldsinger.mixin.entity;
 
 import com.mojang.authlib.GameProfile;
 import io.github.drakonkinst.worldsinger.cosmere.CosmerePlanet;
-import io.github.drakonkinst.worldsinger.cosmere.lumar.LunagreeManager;
-import io.github.drakonkinst.worldsinger.cosmere.lumar.LunagreeManagerAccess;
+import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarManagerAccess;
+import io.github.drakonkinst.worldsinger.cosmere.lumar.LunagreeGenerator;
 import io.github.drakonkinst.worldsinger.world.LunagreeDataReceiver;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -67,7 +67,8 @@ public abstract class ServerPlayerEntityLunagreeDataMixin extends PlayerEntity i
             return;
         }
         if (shouldCheckPosition && world.getTime() > nextUpdateTick) {
-            LunagreeManager manager = ((LunagreeManagerAccess) world).worldsinger$getLunagreeManager();
+            LunagreeGenerator manager = ((LumarManagerAccess) world).worldsinger$getLumarManager()
+                    .getLunagreeGenerator();
             if (!manager.isNull()) {
                 long key = manager.getKeyForPos(this.getBlockX(), this.getBlockZ());
                 if (key != currentCellKey) {

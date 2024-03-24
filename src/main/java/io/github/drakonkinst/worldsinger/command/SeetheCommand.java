@@ -29,8 +29,8 @@ import static net.minecraft.server.command.CommandManager.literal;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
+import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarManagerAccess;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.SeetheManager;
-import io.github.drakonkinst.worldsinger.cosmere.lumar.SeetheManagerAccess;
 import io.github.drakonkinst.worldsinger.util.ModConstants;
 import net.minecraft.command.argument.TimeArgumentType;
 import net.minecraft.server.command.ServerCommandSource;
@@ -53,7 +53,7 @@ public class SeetheCommand {
 
     private static int activateNoArgs(CommandContext<ServerCommandSource> context) {
         SeetheManager seethe = SeetheCommand.getSeethe(context);
-        seethe.startSeethe(-1);
+        seethe.startSeetheForRandomDuration();
         // TODO: Make these translatable
         context.getSource().sendFeedback(() -> Text.literal("Set seethe to ACTIVE"), true);
         return 1;
@@ -72,7 +72,7 @@ public class SeetheCommand {
 
     private static int deactivateNoArgs(CommandContext<ServerCommandSource> context) {
         SeetheManager seethe = SeetheCommand.getSeethe(context);
-        seethe.stopSeethe(-1);
+        seethe.stopSeetheForRandomDuration();
         // TODO: Make these translatable
         context.getSource().sendFeedback(() -> Text.literal("Set seethe to INACTIVE"), true);
         return 1;
@@ -103,7 +103,7 @@ public class SeetheCommand {
     }
 
     private static SeetheManager getSeethe(CommandContext<ServerCommandSource> context) {
-        return ((SeetheManagerAccess) context.getSource()
-                .getWorld()).worldsinger$getSeetheManager();
+        return ((LumarManagerAccess) context.getSource().getWorld()).worldsinger$getLumarManager()
+                .getSeetheManager();
     }
 }

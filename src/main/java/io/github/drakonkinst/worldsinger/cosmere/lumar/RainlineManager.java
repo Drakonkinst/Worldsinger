@@ -25,60 +25,14 @@
 package io.github.drakonkinst.worldsinger.cosmere.lumar;
 
 import io.github.drakonkinst.worldsinger.item.map.CustomMapDecorationsComponent.Decoration;
-import java.util.Collections;
-import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import net.minecraft.item.map.MapState;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.registry.RegistryWrapper.WrapperLookup;
-import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 
-public class NullLunagreeManager extends LunagreeManager {
+public interface RainlineManager {
 
-    @Override
-    public void updateLunagreeDataForPlayer(ServerPlayerEntity player) {
-        // Do nothing
-    }
+    RainlinePath getNearestRainlinePathAt(int blockX, int blockZ);
 
-    @Override
-    public void tick() {
-        // Do nothing
-    }
-
-    @Override
-    public Optional<LunagreeLocation> getNearestLunagree(int blockX, int blockZ, int maxDistance) {
-        return Optional.empty();
-    }
-
-    @Override
-    public List<LunagreeLocation> getLunagreesNear(int blockX, int blockZ) {
-        return Collections.emptyList();
-    }
-
-    @Override
-    public RainlinePath getNearestRainlinePathAt(int blockX, int blockZ) {
-        return null;
-    }
-
-    @Override
-    public int applyMapDecorations(Map<String, Decoration> decorations, MapState mapState) {
-        return 0;
-    }
-
-    @Override
-    public long getKeyForPos(int blockX, int blockZ) {
-        // Key should never change
-        return 0;
-    }
-
-    @Override
-    public boolean isNull() {
-        return true;
-    }
-
-    @Override
-    public NbtCompound writeNbt(NbtCompound nbt, WrapperLookup registryLookup) {
-        return null;
-    }
+    int applyMapDecorations(ServerWorld world, Map<String, Decoration> decorations,
+            MapState mapState);
 }
