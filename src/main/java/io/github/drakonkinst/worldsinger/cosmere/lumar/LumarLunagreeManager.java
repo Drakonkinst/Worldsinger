@@ -91,6 +91,8 @@ public class LumarLunagreeManager extends LunagreeManager {
     private static final float RAD_3_OVER_3 = RAD_3 / 3.0f;
     private static final int RAINLINE_UPDATE_INTERVAL = 5 * ModConstants.SECONDS_TO_TICKS;
 
+    public record RainlinePathInfo(RainlinePath path, int nearestStep) {}
+
     public static PersistentState.Type<LumarLunagreeManager> getPersistentStateType(
             ServerWorld world) {
         return new PersistentState.Type<>(() -> new LumarLunagreeManager(world),
@@ -257,6 +259,10 @@ public class LumarLunagreeManager extends LunagreeManager {
             possibleSporeIds.addAll(VALID_SPORE_IDS);
         }
         return possibleSporeIds;
+    }
+
+    public RainlinePathInfo assignNearestRainlinePath(float x, float z) {
+        return null;
     }
 
     @NotNull

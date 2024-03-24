@@ -43,6 +43,8 @@ public class RainlinePath {
     public static final int MIN_RADIUS = 250;
     public static final int MAX_RADIUS = 2000;
 
+    private static final float STEP_BLOCK_LENGTH = 16.0f;
+
     private static final double ALPHA = 0.5;    // Centripetal Catmull-Rom Spline
     private static final float INV_TENSION = 1.0f;
     private static final float ANGLE_INCREMENT = MathHelper.TAU / 8;
@@ -101,12 +103,7 @@ public class RainlinePath {
         }
     }
 
-    private static class FollowPathTarget {
-
-        public FollowPathTarget(int q, int r) {
-
-        }
-    }
+    public record DistanceQueryResult(int nearestStep, float distanceSqFromStep) {}
 
     // Based on Catmull-Rom Spline implementation in C++:
     // https://qroph.github.io/2018/07/30/smooth-paths-using-catmull-rom-splines.html
@@ -143,10 +140,12 @@ public class RainlinePath {
         return rainlineNodes;
     }
 
+    private final Int2[] rainlineNodes;
     private final Spline[] splines;
     private final float totalLength;
 
     public RainlinePath(Int2[] rainlineNodes) {
+        this.rainlineNodes = rainlineNodes;
         this.splines = new Spline[RAINLINE_NODE_COUNT];
         this.totalLength = this.generateAllSplines(rainlineNodes);
     }
@@ -218,9 +217,70 @@ public class RainlinePath {
         return getPositionForDistanceAlongCycle(cycleProgress);
     }
 
+    public Vec2f getPositionAtStep(int step) {
+        float distanceAlongCycle = step * STEP_BLOCK_LENGTH;
+        return getPositionForDistanceAlongCycle(distanceAlongCycle);
+    }
+
+    public DistanceQueryResult getClosestStep(float x, float z) {
+        // Find the nearest spline on this path
+
+        int nearestSplineIndex = getNearestSplineIndex(x, z);
+        Spline spline = splines[nearestSplineIndex];
+
+        // Check every position on this spline
+        int numSteps = MathHelper.floor(spline.length() / STEP_BLOCK_LENGTH);
+        Worldsinger.LOGGER.info("Checking " + numSteps + " steps");
+        int nearestStep = 0;
+        float minDistSq = Float.MAX_VALUE;
+        for (int step = 0; step < numSteps; ++step) {
+            Vec2f stepPos = getPositionAtStep(step);
+            float deltaX = stepPos.x - x;
+            float deltaZ = stepPos.y - z;
+            float distSq = deltaX * deltaX + deltaZ * deltaZ;
+            if (distSq < minDistSq) {
+                nearestStep = step;
+                minDistSq = distSq;
+            }
+        }
+        return new DistanceQueryResult(nearestStep, minDistSq);
+    }
+
+    private int getNearestSplineIndex(float x, float z) {
+        // Find the index of the closest node
+        int nearestNodeIndex = 0;
+        float minDistSq = Float.MAX_VALUE;
+        float[] cachedDistances = new float[RAINLINE_NODE_COUNT];
+        for (int i = 0; i < RAINLINE_NODE_COUNT; ++i) {
+            Int2 node = rainlineNodes[i];
+            float deltaX = node.x() - x;
+            float deltaZ = node.y() - z;
+            float distSq = deltaX * deltaX + deltaZ * deltaZ;
+            if (distSq < minDistSq) {
+                nearestNodeIndex = i;
+                minDistSq = distSq;
+            }
+            cachedDistances[i] = distSq;
+        }
+
+        // Find the second-closest node and return the spline connecting those two nodes
+        // A spline's index is its first node index
+        int nextNodeIndex = (nearestNodeIndex + 1) % RAINLINE_NODE_COUNT;
+        int prevNodeIndex = (nearestNodeIndex + RAINLINE_NODE_COUNT - 1) % RAINLINE_NODE_COUNT;
+        if (cachedDistances[nextNodeIndex] < cachedDistances[prevNodeIndex]) {
+            // Next node is closer, so use this node's index as the spline
+            return nearestNodeIndex;
+        }
+        // Previous node is closer
+        return prevNodeIndex;
+    }
+
     private Vec2f getPositionForDistanceAlongCycle(float distanceAlongCycle) {
         if (distanceAlongCycle <= 0) {
             return getStartingPoint();
+        }
+        if (distanceAlongCycle > totalLength) {
+            distanceAlongCycle = distanceAlongCycle % totalLength;
         }
 
         float current = 0.0f;
@@ -244,5 +304,9 @@ public class RainlinePath {
 
     private Vec2f getStartingPoint() {
         return splines[0].apply(0.0f);
+    }
+
+    public int getMaxSteps() {
+        return MathHelper.floor(totalLength / STEP_BLOCK_LENGTH);
     }
 }

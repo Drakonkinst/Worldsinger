@@ -65,17 +65,16 @@ public class RainlineEntity extends Entity {
     private static final int HEIGHT_OFFSET = -1;
     private static final int RANDOM_TICK_INTERVAL = 10;
     private static final int UPDATE_PATH_TICK_INTERVAL = 10;
-    private static final float TOO_FAR_DISTANCE = 64.0f;
     private static final String KEY_FOLLOWING_PATH = "following_path";
-    private static final String KEY_CORRECT_PATH = "should_correct";
 
     // Steering behaviors
     private static final float SPEED_BLOCKS_PER_TICK = 0.4f;
     private static final float WANDER_CIRCLE_RADIUS = 20.0f;
     private static final float WANDER_CIRCLE_DISTANCE = 20.0f;
     private static final float WANDER_ANGLE_CHANGE = 0.1f;
-    private static final int LOOK_AHEAD_TICKS = 10;
+    private static final int LOOK_AHEAD_TICKS = 0;
     private static final float STEERING_SCALE = 0.5f;
+    private static final float CLOSE_ENOUGH_DISTANCE = 100.0f;
 
     public static List<RainlineEntity> getNearbyRainlineEntities(World world, Vec3d pos,
             int bonusRadius) {
@@ -125,13 +124,22 @@ public class RainlineEntity extends Entity {
         World world = this.getWorld();
         if (!world.isClient() && world instanceof ServerWorld serverWorld) {
             doAdditionalWaterReactiveTicks(serverWorld);
-            updatePath();
+            if (targetPathPos == null || isCloseEnoughToTarget()) {
+                updatePath();
+            }
             calculateSteeringForce();
             validatePosition(serverWorld);
         }
 
         this.setVelocity(RainlineEntity.truncate(this.getNextVelocity(), SPEED_BLOCKS_PER_TICK));
         move();
+    }
+
+    private boolean isCloseEnoughToTarget() {
+        double deltaX = targetPathPos.x - this.getX();
+        double deltaZ = targetPathPos.y - this.getZ();
+        double distSq = deltaX * deltaX + deltaZ * deltaZ;
+        return distSq < CLOSE_ENOUGH_DISTANCE * CLOSE_ENOUGH_DISTANCE;
     }
 
     private void fixHeight() {
@@ -150,25 +158,20 @@ public class RainlineEntity extends Entity {
         }
     }
 
+    private boolean shouldHaveRandomMovement(ServerWorld world) {
+        SporeSeaEntry entry = LumarChunkGenerator.getSporeSeaEntryAtPos(
+                world.getChunkManager().getNoiseConfig(), this.getBlockX(), this.getBlockZ());
+        return entry.id() == CrimsonSpores.ID;
+    }
+
     private void validatePosition(ServerWorld world) {
-        if (rainlinePath != null) {
-            Vec3d pos = this.getPos();
-            float deltaX = (float) pos.getX() - targetPathPos.x;
-            float deltaZ = (float) pos.getZ() - targetPathPos.y;
-            float distSqToTarget = deltaX * deltaX + deltaZ * deltaZ;
-            if (distSqToTarget > TOO_FAR_DISTANCE * TOO_FAR_DISTANCE) {
-                Worldsinger.LOGGER.info(
-                        "Discarded (" + targetPathPos.x + ", " + targetPathPos.y + ") vs " + pos);
-                this.discard();
-            }
-        } else {
-            // TODO While wandering randomly, avoid non-Crimson oceans
-            SporeSeaEntry entry = LumarChunkGenerator.getSporeSeaEntryAtPos(
-                    world.getChunkManager().getNoiseConfig(), this.getBlockX(), this.getBlockZ());
-            if (entry.id() != CrimsonSpores.ID) {
-                Worldsinger.LOGGER.info("Discarded since no longer in Crimson");
-                this.discard();
-            }
+        boolean followingPath = rainlinePath != null;
+        boolean shouldBeRandom = shouldHaveRandomMovement(world);
+        if (followingPath == shouldBeRandom) {
+            Worldsinger.LOGGER.info(
+                    "followingPath = " + followingPath + " and shouldBeRandom = " + shouldBeRandom
+                            + ", discarding");
+            this.discard();
         }
     }
 
@@ -208,7 +211,6 @@ public class RainlineEntity extends Entity {
                     wanderAngle -= MathHelper.TAU;
                 }
             }
-
             // TODO While wandering randomly, avoid lunagrees
         }
     }
@@ -271,22 +273,16 @@ public class RainlineEntity extends Entity {
     @Override
     protected void readCustomDataFromNbt(NbtCompound nbt) {
         World world = this.getWorld();
+        Worldsinger.LOGGER.info("Reading NBT");
         if (nbt.contains(KEY_FOLLOWING_PATH, NbtElement.BYTE_TYPE) && nbt.getBoolean(
                 KEY_FOLLOWING_PATH)) {
             LunagreeManager lunagreeManager = ((LunagreeManagerAccess) world).worldsinger$getLunagreeManager();
             lunagreeLocation = lunagreeManager.getNearestLunagree(this.getBlockX(),
-                    this.getBlockZ(), Integer.MAX_VALUE).orElse(null);
+                    this.getBlockZ(), RainlinePath.MAX_RADIUS).orElse(null);
             if (lunagreeLocation != null) {
                 rainlinePath = lunagreeManager.getNearestRainlinePathAt(lunagreeLocation.blockX(),
                         lunagreeLocation.blockZ());
-                if (nbt.contains(KEY_CORRECT_PATH, NbtElement.BYTE_TYPE) && nbt.getBoolean(
-                        KEY_CORRECT_PATH)) {
-                    Vec2f rainlinePos = rainlinePath.getPositionAtTime(world.getTimeOfDay(),
-                            SPEED_BLOCKS_PER_TICK);
-                    this.setPosition(rainlinePos.x, RainlineEntity.getTargetHeight(world),
-                            rainlinePos.y);
-                    Worldsinger.LOGGER.info("Updated position to " + this.getPos());
-                }
+                Worldsinger.LOGGER.info("Set rainline path to " + rainlinePath);
             }
         }
     }
