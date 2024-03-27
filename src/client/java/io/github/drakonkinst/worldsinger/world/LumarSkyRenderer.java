@@ -31,7 +31,9 @@ import io.github.drakonkinst.worldsinger.cosmere.lumar.ClientLunagreeData;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarLunagreeGenerator;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LunagreeLocation;
 import io.github.drakonkinst.worldsinger.entity.ClientLunagreeDataAccess;
+import io.github.drakonkinst.worldsinger.entity.RainlineEntity;
 import io.github.drakonkinst.worldsinger.mixin.client.accessor.WorldRendererAccessor;
+import java.util.List;
 import net.fabricmc.fabric.api.client.rendering.v1.DimensionRenderingRegistry.SkyRenderer;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext;
 import net.minecraft.client.MinecraftClient;
@@ -77,6 +79,8 @@ public class LumarSkyRenderer implements SkyRenderer {
     private static final float MOON_VISUAL_HEIGHT_START = 100.0f;
     private static final float MOON_VISUAL_HEIGHT_END = 300.0f;
 
+    private static final float RAINLINE_GRADIENT_DISTANCE = 128.0f;
+
     private final VertexBuffer starsBuffer;
     private final VertexBuffer lightSkyBuffer;
     private final VertexBuffer darkSkyBuffer;
@@ -116,6 +120,7 @@ public class LumarSkyRenderer implements SkyRenderer {
         final Matrix4f projectionMatrix = context.projectionMatrix();
         final float tickDelta = context.tickDelta();
         final Camera camera = context.camera();
+        final Vec3d cameraPos = camera.getPos();
         final GameRenderer gameRenderer = context.gameRenderer();
         final ClientWorld world = context.world();
         final ClientPlayerEntity player = MinecraftClient.getInstance().player;
@@ -124,10 +129,32 @@ public class LumarSkyRenderer implements SkyRenderer {
         MatrixStack matrices = new MatrixStack();
         matrices.multiplyPositionMatrix(context.positionMatrix());
 
-        Vec3d skyColor = world.getSkyColor(gameRenderer.getCamera().getPos(), tickDelta);
+        Vec3d skyColor = world.getSkyColor(cameraPos, tickDelta);
         float red = (float) skyColor.x;
         float green = (float) skyColor.y;
         float blue = (float) skyColor.z;
+
+        // TODO: Move to a cached value that updates every tick, and lerp to the desired rain gradient
+        List<RainlineEntity> nearbyRainlines = RainlineEntity.getNearbyRainlineEntities(
+                context.world(), cameraPos, RAINLINE_GRADIENT_DISTANCE);
+        float minDistSq = Float.MAX_VALUE;
+        for (RainlineEntity entity : nearbyRainlines) {
+            double deltaX = cameraPos.getX() - entity.getX();
+            double deltaZ = cameraPos.getZ() - entity.getZ();
+            double distSq = deltaX * deltaX + deltaZ * deltaZ;
+            if (distSq < minDistSq) {
+                minDistSq = (float) distSq;
+            }
+        }
+        if (minDistSq < RAINLINE_GRADIENT_DISTANCE * RAINLINE_GRADIENT_DISTANCE) {
+            float distanceMultiplier = MathHelper.sqrt(minDistSq) / RAINLINE_GRADIENT_DISTANCE;
+            float tintedColor = (red * 0.3f + green * 0.59f + blue * 0.11f) * 0.6f;
+            float originalWeight = distanceMultiplier * 0.75f;
+            float tintWeight = 1.0f - originalWeight;
+            red = red * originalWeight + tintedColor * tintWeight;
+            green = green * originalWeight + tintedColor * tintWeight;
+            blue = blue * originalWeight + tintedColor * tintWeight;
+        }
 
         BackgroundRenderer.applyFogColor();
         BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();

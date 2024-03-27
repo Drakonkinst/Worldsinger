@@ -44,6 +44,7 @@ import net.minecraft.entity.data.DataTracker.Builder;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
@@ -74,12 +75,17 @@ public class RainlineEntity extends Entity {
     private static final float CLOSE_ENOUGH_DISTANCE = 50.0f;
     private static final int STEP_INCREMENT = 5;
 
+    // Particles
+    private static final int NUM_PARTICLES_PER_TICK = 25;
+    private static final double PARTICLE_VERTICAL_DISTANCE = 4.0;
+    private static final double PARTICLE_HORIZONTAL_DISTANCE = 16.0;
+
     public static List<RainlineEntity> getNearbyRainlineEntities(World world, Vec3d pos,
-            int bonusRadius) {
+            double bonusRadius) {
         final double x = pos.getX();
         final double z = pos.getZ();
         final double y = RainlineEntity.getTargetHeight(world);
-        final int searchRadius = RAINLINE_RADIUS + bonusRadius;
+        final double searchRadius = RAINLINE_RADIUS + bonusRadius;
         final Box box = new Box(x - searchRadius, y - 1, z - searchRadius, x + searchRadius, y + 1,
                 z + searchRadius);
         return world.getEntitiesByClass(RainlineEntity.class, box, EntityPredicates.VALID_ENTITY);
@@ -139,6 +145,20 @@ public class RainlineEntity extends Entity {
     public void tick() {
         fixHeight();
         World world = this.getWorld();
+        if (world.isClient()) {
+            // TODO: Replace with an actual storm cloud at some point?
+            for (int i = 0; i < NUM_PARTICLES_PER_TICK; ++i) {
+                double x = this.getX() + random.nextDouble() * PARTICLE_HORIZONTAL_DISTANCE * 2
+                        - PARTICLE_HORIZONTAL_DISTANCE;
+                double y = RainlineEntity.getTargetHeight(this.getWorld())
+                        + random.nextDouble() * PARTICLE_VERTICAL_DISTANCE * 2
+                        - PARTICLE_VERTICAL_DISTANCE;
+                double z = this.getZ() + random.nextDouble() * PARTICLE_HORIZONTAL_DISTANCE * 2
+                        - PARTICLE_HORIZONTAL_DISTANCE;
+                world.addParticle(ParticleTypes.CAMPFIRE_COSY_SMOKE, x, y, z, 0.0f, 0.0f, 0.0f);
+            }
+        }
+
         if (!world.isClient() && world instanceof ServerWorld serverWorld) {
             doAdditionalWaterReactiveTicks(serverWorld);
             if (rainlinePath != null && (targetPathPos == null || isCloseEnoughToTarget())) {

@@ -87,7 +87,7 @@ public final class ModEntityTypes {
     public static final EntityType<RainlineEntity> RAINLINE = register("rainline",
             FabricEntityTypeBuilder.create(SpawnGroup.MISC, RainlineEntity::new)
                     .dimensions(EntityDimensions.fixed(0.0f, 0.0f))
-                    .trackRangeChunks(10)
+                    .trackRangeChunks(20)
                     .build());
 
     public static void initialize() {
