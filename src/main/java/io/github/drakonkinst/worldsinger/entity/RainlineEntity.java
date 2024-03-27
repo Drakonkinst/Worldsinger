@@ -30,8 +30,8 @@ import io.github.drakonkinst.worldsinger.block.WaterReactiveBlock;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.CrimsonSpores;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarManager;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarManagerAccess;
-import io.github.drakonkinst.worldsinger.cosmere.lumar.LunagreeLocation;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.RainlinePath;
+import io.github.drakonkinst.worldsinger.cosmere.lumar.RainlinePath.RainlinePathInfo;
 import io.github.drakonkinst.worldsinger.fluid.WaterReactiveFluid;
 import io.github.drakonkinst.worldsinger.worldgen.lumar.LumarChunkGenerator;
 import io.github.drakonkinst.worldsinger.worldgen.lumar.LumarChunkGenerator.SporeSeaEntry;
@@ -44,7 +44,6 @@ import net.minecraft.entity.data.DataTracker.Builder;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
@@ -64,7 +63,6 @@ public class RainlineEntity extends Entity {
     public static final int RAINLINE_RADIUS = 6;
     private static final int HEIGHT_OFFSET = -1;
     private static final int RANDOM_TICK_INTERVAL = 10;
-    private static final int UPDATE_PATH_TICK_INTERVAL = 10;
     private static final String KEY_FOLLOWING_PATH = "following_path";
 
     // Steering behaviors
@@ -72,9 +70,9 @@ public class RainlineEntity extends Entity {
     private static final float WANDER_CIRCLE_RADIUS = 20.0f;
     private static final float WANDER_CIRCLE_DISTANCE = 20.0f;
     private static final float WANDER_ANGLE_CHANGE = 0.1f;
-    private static final int LOOK_AHEAD_TICKS = 0;
-    private static final float STEERING_SCALE = 0.5f;
-    private static final float CLOSE_ENOUGH_DISTANCE = 100.0f;
+    private static final float STEERING_SCALE = 1.0f;
+    private static final float CLOSE_ENOUGH_DISTANCE = 50.0f;
+    private static final int STEP_INCREMENT = 5;
 
     public static List<RainlineEntity> getNearbyRainlineEntities(World world, Vec3d pos,
             int bonusRadius) {
@@ -104,7 +102,8 @@ public class RainlineEntity extends Entity {
     }
 
     private RainlinePath rainlinePath = null;
-    private LunagreeLocation lunagreeLocation = null;
+    private int currentStep = -1;
+
     private final Vector2d steeringForce = new Vector2d();
     private float wanderAngle = 0.0f;
     private Vec2f targetPathPos = null;
@@ -113,9 +112,27 @@ public class RainlineEntity extends Entity {
         super(type, world);
     }
 
-    public void setRainlinePath(LunagreeLocation lunagreeLocation, RainlinePath rainlinePath) {
-        this.lunagreeLocation = lunagreeLocation;
+    public void setRainlinePath(RainlinePath rainlinePath, int step) {
         this.rainlinePath = rainlinePath;
+        this.currentStep = step;
+        this.targetPathPos = rainlinePath.getPositionAtStep(step);
+        Worldsinger.LOGGER.info(
+                "Initializing path to step " + currentStep + " located at (" + targetPathPos.x
+                        + ", " + targetPathPos.y + ") which is " + getDistanceToTarget()
+                        + " blocks away");
+    }
+
+    private double getDistanceSqToTarget() {
+        if (targetPathPos == null) {
+            return -1.0f;
+        }
+        double deltaX = targetPathPos.x - this.getX();
+        double deltaZ = targetPathPos.y - this.getZ();
+        return deltaX * deltaX + deltaZ * deltaZ;
+    }
+
+    private double getDistanceToTarget() {
+        return Math.sqrt(getDistanceSqToTarget());
     }
 
     @Override
@@ -124,8 +141,8 @@ public class RainlineEntity extends Entity {
         World world = this.getWorld();
         if (!world.isClient() && world instanceof ServerWorld serverWorld) {
             doAdditionalWaterReactiveTicks(serverWorld);
-            if (targetPathPos == null || isCloseEnoughToTarget()) {
-                updatePath();
+            if (rainlinePath != null && (targetPathPos == null || isCloseEnoughToTarget())) {
+                incrementPathAndUpdate();
             }
             calculateSteeringForce();
             validatePosition(serverWorld);
@@ -136,10 +153,7 @@ public class RainlineEntity extends Entity {
     }
 
     private boolean isCloseEnoughToTarget() {
-        double deltaX = targetPathPos.x - this.getX();
-        double deltaZ = targetPathPos.y - this.getZ();
-        double distSq = deltaX * deltaX + deltaZ * deltaZ;
-        return distSq < CLOSE_ENOUGH_DISTANCE * CLOSE_ENOUGH_DISTANCE;
+        return getDistanceSqToTarget() < CLOSE_ENOUGH_DISTANCE * CLOSE_ENOUGH_DISTANCE;
     }
 
     private void fixHeight() {
@@ -150,12 +164,13 @@ public class RainlineEntity extends Entity {
         }
     }
 
-    private void updatePath() {
-        if (rainlinePath != null && (this.age % UPDATE_PATH_TICK_INTERVAL == 0
-                || targetPathPos == null)) {
-            targetPathPos = rainlinePath.getPositionAtTime(
-                    this.getWorld().getTimeOfDay() + LOOK_AHEAD_TICKS, SPEED_BLOCKS_PER_TICK);
-        }
+    private void incrementPathAndUpdate() {
+        currentStep = (currentStep + STEP_INCREMENT) % rainlinePath.getMaxSteps();
+        targetPathPos = rainlinePath.getPositionAtStep(currentStep);
+        Worldsinger.LOGGER.info(
+                "Updating path pos to step " + currentStep + " located at (" + targetPathPos.x
+                        + ", " + targetPathPos.y + ") which is " + getDistanceToTarget()
+                        + " blocks away");
     }
 
     private boolean shouldHaveRandomMovement(ServerWorld world) {
@@ -272,20 +287,15 @@ public class RainlineEntity extends Entity {
 
     @Override
     protected void readCustomDataFromNbt(NbtCompound nbt) {
-        World world = this.getWorld();
-        Worldsinger.LOGGER.info("Reading NBT");
-        if (nbt.contains(KEY_FOLLOWING_PATH, NbtElement.BYTE_TYPE) && nbt.getBoolean(
-                KEY_FOLLOWING_PATH)) {
-            LumarManager lumarManager = ((LumarManagerAccess) world).worldsinger$getLumarManager();
-            lunagreeLocation = lumarManager.getLunagreeGenerator()
-                    .getNearestLunagree(this.getBlockX(), this.getBlockZ(),
-                            RainlinePath.MAX_RADIUS);
-            if (lunagreeLocation != null) {
-                rainlinePath = lumarManager.getRainlineManager()
-                        .getNearestRainlinePathAt(lunagreeLocation.blockX(),
-                                lunagreeLocation.blockZ());
-                Worldsinger.LOGGER.info("Set rainline path to " + rainlinePath);
-            }
+        if (!(this.getWorld() instanceof ServerWorld world) || shouldHaveRandomMovement(world)) {
+            return;
+        }
+
+        LumarManager lumarManager = ((LumarManagerAccess) world).worldsinger$getLumarManager();
+        RainlinePathInfo pathInfo = lumarManager.getRainlineManager()
+                .getClosestRainlinePathInfo((float) this.getX(), (float) this.getZ());
+        if (pathInfo != null) {
+            setRainlinePath(pathInfo.path(), pathInfo.nearestStep());
         }
     }
 

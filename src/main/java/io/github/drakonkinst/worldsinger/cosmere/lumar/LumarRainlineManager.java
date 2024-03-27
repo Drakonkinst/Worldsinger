@@ -25,6 +25,8 @@
 package io.github.drakonkinst.worldsinger.cosmere.lumar;
 
 import io.github.drakonkinst.worldsinger.Worldsinger;
+import io.github.drakonkinst.worldsinger.cosmere.lumar.RainlinePath.ClosestStepResult;
+import io.github.drakonkinst.worldsinger.cosmere.lumar.RainlinePath.RainlinePathInfo;
 import io.github.drakonkinst.worldsinger.entity.RainlineEntity;
 import io.github.drakonkinst.worldsinger.item.map.CustomMapDecorationsComponent.Decoration;
 import io.github.drakonkinst.worldsinger.util.ModConstants;
@@ -44,6 +46,7 @@ import net.minecraft.util.TypeFilter;
 // Rainlines on Lumar are placed around lunagrees, so it is tightly coupled to lunagree generation
 public class LumarRainlineManager implements RainlineManager {
 
+    // TODO: Can increase to something like 30 later
     private static final int RAINLINE_UPDATE_INTERVAL = 5 * ModConstants.SECONDS_TO_TICKS;
 
     private final Long2ObjectMap<RainlinePath> rainlinePaths = new Long2ObjectOpenHashMap<>();
@@ -52,8 +55,6 @@ public class LumarRainlineManager implements RainlineManager {
     public LumarRainlineManager(LunagreeGenerator generator) {
         this.generator = generator;
     }
-
-    public record RainlinePathInfo(RainlinePath path, int nearestStep) {}
 
     public void serverTick(ServerWorld world) {
         if (world.getTime() % RAINLINE_UPDATE_INTERVAL == 0) {
@@ -121,13 +122,22 @@ public class LumarRainlineManager implements RainlineManager {
         return entry;
     }
 
-    public RainlinePathInfo assignNearestRainlinePath(float x, float z) {
-        return null;
-    }
-
     @Override
-    public RainlinePath getNearestRainlinePathAt(int blockX, int blockZ) {
-        long key = generator.getKeyForPos(blockX, blockZ);
-        return getOrCreateRainlineData(key);
+    public RainlinePathInfo getClosestRainlinePathInfo(float x, float z) {
+        // Get distance to every neighboring rainline
+        long key = generator.getKeyForPos((int) x, (int) z);
+        long[] neighborKeys = generator.getNeighborKeys(key);
+
+        RainlinePath nearestPath = getOrCreateRainlineData(key);
+        ClosestStepResult nearestResult = nearestPath.getClosestStep(x, z);
+        for (long neighborKey : neighborKeys) {
+            RainlinePath neighborPath = getOrCreateRainlineData(neighborKey);
+            ClosestStepResult result = neighborPath.getClosestStep(x, z);
+            if (result.distanceSqFromStep() < nearestResult.distanceSqFromStep()) {
+                nearestPath = neighborPath;
+                nearestResult = result;
+            }
+        }
+        return new RainlinePathInfo(nearestPath, nearestResult.nearestStep());
     }
 }

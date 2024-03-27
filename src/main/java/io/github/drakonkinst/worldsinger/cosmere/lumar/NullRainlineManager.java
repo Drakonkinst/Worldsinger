@@ -24,6 +24,7 @@
 
 package io.github.drakonkinst.worldsinger.cosmere.lumar;
 
+import io.github.drakonkinst.worldsinger.cosmere.lumar.RainlinePath.RainlinePathInfo;
 import io.github.drakonkinst.worldsinger.item.map.CustomMapDecorationsComponent.Decoration;
 import java.util.Map;
 import net.minecraft.item.map.MapState;
@@ -32,7 +33,12 @@ import net.minecraft.server.world.ServerWorld;
 public class NullRainlineManager implements RainlineManager {
 
     @Override
-    public RainlinePath getNearestRainlinePathAt(int blockX, int blockZ) {
+    public void serverTick(ServerWorld world) {
+        // Do nothing
+    }
+
+    @Override
+    public RainlinePathInfo getClosestRainlinePathInfo(float x, float z) {
         return null;
     }
 

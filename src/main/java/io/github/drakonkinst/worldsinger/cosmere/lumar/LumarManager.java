@@ -47,6 +47,8 @@ public class LumarManager {
     }
 
     public void serverTick(ServerWorld world) {
+        // Seethe ticks are handled by weather
+        rainlineManager.serverTick(world);
     }
 
     public SeetheManager getSeetheManager() {

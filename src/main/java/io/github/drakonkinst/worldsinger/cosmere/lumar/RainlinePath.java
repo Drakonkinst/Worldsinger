@@ -103,7 +103,9 @@ public class RainlinePath {
         }
     }
 
-    public record DistanceQueryResult(int nearestStep, float distanceSqFromStep) {}
+    public record ClosestStepResult(int nearestStep, float distanceSqFromStep) {}
+
+    public record RainlinePathInfo(RainlinePath path, int nearestStep) {}
 
     // Based on Catmull-Rom Spline implementation in C++:
     // https://qroph.github.io/2018/07/30/smooth-paths-using-catmull-rom-splines.html
@@ -222,9 +224,8 @@ public class RainlinePath {
         return getPositionForDistanceAlongCycle(distanceAlongCycle);
     }
 
-    public DistanceQueryResult getClosestStep(float x, float z) {
+    public ClosestStepResult getClosestStep(float x, float z) {
         // Find the nearest spline on this path
-
         int nearestSplineIndex = getNearestSplineIndex(x, z);
         Spline spline = splines[nearestSplineIndex];
 
@@ -243,7 +244,7 @@ public class RainlinePath {
                 minDistSq = distSq;
             }
         }
-        return new DistanceQueryResult(nearestStep, minDistSq);
+        return new ClosestStepResult(nearestStep, minDistSq);
     }
 
     private int getNearestSplineIndex(float x, float z) {
@@ -291,10 +292,6 @@ public class RainlinePath {
             if (next >= distanceAlongCycle) {
                 float distanceAlongSpline = distanceAlongCycle - current;
                 float t = MathHelper.clamp(distanceAlongSpline / spline.length(), 0.0f, 1.0f);
-                Vec2f pos = spline.apply(t);
-                Worldsinger.LOGGER.info(
-                        "Found i = " + i + ", t = " + (distanceAlongSpline / spline.length())
-                                + " = " + pos);
                 return spline.apply(t);
             }
             current = next;

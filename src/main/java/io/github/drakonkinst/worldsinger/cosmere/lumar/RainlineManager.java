@@ -24,14 +24,18 @@
 
 package io.github.drakonkinst.worldsinger.cosmere.lumar;
 
+import io.github.drakonkinst.worldsinger.cosmere.lumar.RainlinePath.RainlinePathInfo;
 import io.github.drakonkinst.worldsinger.item.map.CustomMapDecorationsComponent.Decoration;
 import java.util.Map;
 import net.minecraft.item.map.MapState;
 import net.minecraft.server.world.ServerWorld;
+import org.jetbrains.annotations.Nullable;
 
 public interface RainlineManager {
 
-    RainlinePath getNearestRainlinePathAt(int blockX, int blockZ);
+    void serverTick(ServerWorld world);
+
+    @Nullable RainlinePathInfo getClosestRainlinePathInfo(float x, float z);
 
     int applyMapDecorations(ServerWorld world, Map<String, Decoration> decorations,
             MapState mapState);
