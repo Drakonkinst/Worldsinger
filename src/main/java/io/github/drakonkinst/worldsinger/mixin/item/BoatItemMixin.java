@@ -31,7 +31,7 @@ import io.github.drakonkinst.worldsinger.item.ModItemTags;
 import io.github.drakonkinst.worldsinger.item.SilverLinedBoatItemData;
 import io.github.drakonkinst.worldsinger.util.ModConstants;
 import java.util.List;
-import net.minecraft.client.item.TooltipContext;
+import net.minecraft.client.item.TooltipType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.item.BoatItem;
@@ -39,8 +39,6 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
-import net.minecraft.world.World;
-import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
@@ -53,11 +51,11 @@ public abstract class BoatItemMixin extends Item {
     }
 
     @Override
-    public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip,
-            TooltipContext context) {
-        super.appendTooltip(stack, world, tooltip, context);
+    public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip,
+            TooltipType type) {
+        super.appendTooltip(stack, context, tooltip, type);
         if (!stack.isIn(ModItemTags.EXCLUDE_SILVER_LINED)) {
-            SilverLinedUtil.appendSilverDurabilityTooltip(stack, tooltip, context,
+            SilverLinedUtil.appendSilverDurabilityTooltip(stack, context, tooltip, type,
                     SilverLinedBoatItemData.VISUAL_SCALE_FACTOR);
         }
     }

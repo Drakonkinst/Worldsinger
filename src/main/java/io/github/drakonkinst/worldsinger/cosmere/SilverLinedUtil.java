@@ -27,8 +27,9 @@ package io.github.drakonkinst.worldsinger.cosmere;
 import io.github.drakonkinst.worldsinger.api.ModApi;
 import io.github.drakonkinst.worldsinger.item.ModItemTags;
 import java.util.List;
-import net.minecraft.client.item.TooltipContext;
+import net.minecraft.client.item.TooltipType;
 import net.minecraft.entity.Entity;
+import net.minecraft.item.Item.TooltipContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
@@ -43,8 +44,8 @@ public final class SilverLinedUtil {
     private static final Style SILVER_TEXT_STYLE = Style.EMPTY.withColor(
             TextColor.fromRgb(SILVER_TEXT_COLOR));
 
-    public static void appendSilverDurabilityTooltip(ItemStack stack, List<Text> tooltip,
-            TooltipContext context, float scaleFactor) {
+    public static void appendSilverDurabilityTooltip(ItemStack stack, TooltipContext context,
+            List<Text> tooltip, TooltipType type, float scaleFactor) {
         SilverLined silverItemData = ModApi.SILVER_LINED_ITEM.find(stack, null);
         if (silverItemData == null) {
             return;
@@ -54,7 +55,7 @@ public final class SilverLinedUtil {
             return;
         }
 
-        if (context.isAdvanced()) {
+        if (type.isAdvanced()) {
             int maxDurability = MathHelper.floor(
                     silverItemData.getMaxSilverDurability() * scaleFactor);
             int durability = MathHelper.floor(silverDurability * scaleFactor);

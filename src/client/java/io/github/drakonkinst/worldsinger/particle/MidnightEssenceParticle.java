@@ -27,7 +27,7 @@ import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleFactory;
 import net.minecraft.client.particle.SpriteProvider;
 import net.minecraft.client.world.ClientWorld;
-import net.minecraft.particle.DefaultParticleType;
+import net.minecraft.particle.SimpleParticleType;
 
 public class MidnightEssenceParticle extends MidnightParticle {
 
@@ -54,7 +54,7 @@ public class MidnightEssenceParticle extends MidnightParticle {
         }
     }
 
-    public static class Factory implements ParticleFactory<DefaultParticleType> {
+    public static class Factory implements ParticleFactory<SimpleParticleType> {
 
         private final SpriteProvider spriteProvider;
 
@@ -62,7 +62,7 @@ public class MidnightEssenceParticle extends MidnightParticle {
             this.spriteProvider = spriteProvider;
         }
 
-        public Particle createParticle(DefaultParticleType defaultParticleType,
+        public Particle createParticle(SimpleParticleType defaultParticleType,
                 ClientWorld clientWorld, double d, double e, double f, double g, double h,
                 double i) {
             return new MidnightEssenceParticle(clientWorld, d, e, f, g, h, i, this.spriteProvider);

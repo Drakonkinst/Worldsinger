@@ -25,6 +25,7 @@ package io.github.drakonkinst.worldsinger.particle;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.AetherSpores;
 import net.minecraft.network.RegistryByteBuf;
@@ -36,7 +37,7 @@ import net.minecraft.particle.ParticleType;
 
 public class SporeDustParticleEffect extends AbstractSporeDustParticleEffect {
 
-    public static final Codec<SporeDustParticleEffect> CODEC = RecordCodecBuilder.create(
+    public static final MapCodec<SporeDustParticleEffect> CODEC = RecordCodecBuilder.mapCodec(
             instance -> instance.group(
                             AetherSpores.CODEC.fieldOf("sporeType").forGetter(effect -> effect.sporeType),
                             Codec.FLOAT.fieldOf("scale").forGetter(AbstractDustParticleEffect::getScale))

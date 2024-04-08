@@ -35,7 +35,7 @@ import io.github.drakonkinst.worldsinger.util.EntityUtil;
 import java.util.List;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.client.item.TooltipContext;
+import net.minecraft.client.item.TooltipType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.AxeItem;
 import net.minecraft.item.ItemStack;
@@ -45,7 +45,6 @@ import net.minecraft.registry.tag.TagKey;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 
 @Mixin(AxeItem.class)
@@ -69,11 +68,11 @@ public abstract class AxeItemMixin extends MiningToolItem {
     }
 
     @Override
-    public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip,
-            TooltipContext context) {
-        super.appendTooltip(stack, world, tooltip, context);
+    public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip,
+            TooltipType type) {
+        super.appendTooltip(stack, context, tooltip, type);
         if (!stack.isIn(ModItemTags.EXCLUDE_SILVER_LINED)) {
-            SilverLinedUtil.appendSilverDurabilityTooltip(stack, tooltip, context, 1.0f);
+            SilverLinedUtil.appendSilverDurabilityTooltip(stack, context, tooltip, type, 1.0f);
         }
     }
 

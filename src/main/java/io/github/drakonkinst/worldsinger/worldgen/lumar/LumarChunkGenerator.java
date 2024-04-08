@@ -24,7 +24,7 @@
 package io.github.drakonkinst.worldsinger.worldgen.lumar;
 
 import com.google.common.base.Suppliers;
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.drakonkinst.worldsinger.block.ModBlocks;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.CrimsonSpores;
@@ -54,7 +54,7 @@ public class LumarChunkGenerator extends CustomNoiseChunkGenerator {
 
     public static final int SEA_LEVEL = 80;
     public static final Block PLACEHOLDER_BLOCK = ModBlocks.DEAD_SPORE_SEA;
-    public static final Codec<LumarChunkGenerator> CODEC = RecordCodecBuilder.create(
+    public static final MapCodec<LumarChunkGenerator> CODEC = RecordCodecBuilder.mapCodec(
             instance -> instance.group(BiomeSource.CODEC.fieldOf("biome_source")
                                     .forGetter(LumarChunkGenerator::getBiomeSource),
                             ChunkGeneratorSettings.REGISTRY_CODEC.fieldOf("settings")
@@ -145,7 +145,7 @@ public class LumarChunkGenerator extends CustomNoiseChunkGenerator {
     }
 
     @Override
-    protected Codec<? extends ChunkGenerator> getCodec() {
+    protected MapCodec<? extends ChunkGenerator> getCodec() {
         return CODEC;
     }
 }

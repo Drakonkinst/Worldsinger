@@ -23,14 +23,15 @@
  */
 package io.github.drakonkinst.worldsinger.particle;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import io.github.drakonkinst.worldsinger.Worldsinger;
+import java.util.function.Function;
 import net.fabricmc.fabric.api.particle.v1.FabricParticleTypes;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleType;
+import net.minecraft.particle.SimpleParticleType;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 
@@ -38,28 +39,30 @@ import net.minecraft.registry.Registry;
 public final class ModParticleTypes {
 
     public static final ParticleType<SporeDustParticleEffect> SPORE_DUST = register("spore_dust",
-            true, SporeDustParticleEffect.PARAMETERS_FACTORY, SporeDustParticleEffect.CODEC,
-            SporeDustParticleEffect.PACKET_CODEC);
+            true, SporeDustParticleEffect.PARAMETERS_FACTORY, type -> SporeDustParticleEffect.CODEC,
+            type -> SporeDustParticleEffect.PACKET_CODEC);
     public static final ParticleType<FallingSporeDustParticleEffect> FALLING_SPORE_DUST = register(
             "falling_spore_dust", true, FallingSporeDustParticleEffect.PARAMETERS_FACTORY,
-            FallingSporeDustParticleEffect.CODEC, FallingSporeDustParticleEffect.PACKET_CODEC);
+            type -> FallingSporeDustParticleEffect.CODEC,
+            type -> FallingSporeDustParticleEffect.PACKET_CODEC);
 
-    public static final DefaultParticleType MIDNIGHT_ESSENCE = register("midnight_essence", false);
-    public static final DefaultParticleType MIDNIGHT_TRAIL = register("midnight_trail", false);
+    public static final SimpleParticleType MIDNIGHT_ESSENCE = register("midnight_essence", false);
+    public static final SimpleParticleType MIDNIGHT_TRAIL = register("midnight_trail", false);
 
     public static void initialize() {}
 
-    private static DefaultParticleType register(String name, boolean alwaysShow) {
+    private static SimpleParticleType register(String name, boolean alwaysShow) {
         return Registry.register(Registries.PARTICLE_TYPE, Worldsinger.id(name),
                 FabricParticleTypes.simple(alwaysShow));
     }
 
     private static <T extends ParticleEffect> ParticleType<T> register(String name,
-            boolean alwaysShow, ParticleEffect.Factory<T> factory, final Codec<T> codec,
-            final PacketCodec<? super RegistryByteBuf, T> packetCodec) {
+            boolean alwaysShow, ParticleEffect.Factory<T> factory,
+            Function<ParticleType<T>, MapCodec<T>> codecGetter,
+            Function<ParticleType<T>, PacketCodec<? super RegistryByteBuf, T>> packetCodecGetter) {
 
         return Registry.register(Registries.PARTICLE_TYPE, Worldsinger.id(name),
-                FabricParticleTypes.complex(alwaysShow, factory, codec, packetCodec));
+                FabricParticleTypes.complex(alwaysShow, factory, codecGetter, packetCodecGetter));
     }
 
     private ModParticleTypes() {}

@@ -30,7 +30,7 @@ import io.github.drakonkinst.worldsinger.event.FinishConsumingItemCallback;
 import io.github.drakonkinst.worldsinger.registry.ModDamageTypes;
 import java.util.List;
 import net.minecraft.advancement.criterion.Criteria;
-import net.minecraft.client.item.TooltipContext;
+import net.minecraft.client.item.TooltipType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.player.PlayerEntity;
@@ -45,7 +45,6 @@ import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
-import org.jetbrains.annotations.Nullable;
 
 public class SporeBottleItem extends PotionItem implements SporeEmitting {
 
@@ -112,8 +111,8 @@ public class SporeBottleItem extends PotionItem implements SporeEmitting {
     }
 
     @Override
-    public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip,
-            TooltipContext context) {
+    public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip,
+            TooltipType type) {
         // Reset to default
     }
 

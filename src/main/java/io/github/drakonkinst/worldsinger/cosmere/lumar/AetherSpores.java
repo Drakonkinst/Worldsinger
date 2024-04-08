@@ -56,7 +56,7 @@ import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
-import net.minecraft.util.dynamic.Codecs;
+import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
@@ -65,11 +65,11 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public abstract class AetherSpores implements Comparable<AetherSpores> {
+public abstract class AetherSpores implements StringIdentifiable, Comparable<AetherSpores> {
 
     private static final Map<String, AetherSpores> AETHER_SPORE_MAP = new Object2ObjectArrayMap<>();
-    public static final Codec<AetherSpores> CODEC = Codecs.idChecked(AetherSpores::getName,
-            AETHER_SPORE_MAP::get);
+    public static final Codec<AetherSpores> CODEC = StringIdentifiable.createBasicCodec(
+            () -> AETHER_SPORE_MAP.values().toArray(new AetherSpores[0]));
     public static final PacketCodec<ByteBuf, AetherSpores> PACKET_CODEC = PacketCodecs.indexed(
             AetherSpores::getAetherSporeTypeById, AetherSpores::getId);
 
@@ -207,6 +207,11 @@ public abstract class AetherSpores implements Comparable<AetherSpores> {
     public abstract int getId();
 
     public abstract String getName();
+
+    @Override
+    public String asString() {
+        return getName();
+    }
 
     public abstract void onDeathFromStatusEffect(World world, LivingEntity entity, BlockPos pos,
             int water);

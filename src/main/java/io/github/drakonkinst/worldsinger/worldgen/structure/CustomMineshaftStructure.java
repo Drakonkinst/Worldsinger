@@ -25,6 +25,7 @@ package io.github.drakonkinst.worldsinger.worldgen.structure;
 
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.drakonkinst.worldsinger.registry.ModLootTables;
 import java.util.Optional;
@@ -49,7 +50,7 @@ import net.minecraft.world.gen.structure.StructureType;
 
 public class CustomMineshaftStructure extends Structure {
 
-    public static final Codec<CustomMineshaftStructure> CODEC = RecordCodecBuilder.create(
+    public static final MapCodec<CustomMineshaftStructure> CODEC = RecordCodecBuilder.mapCodec(
             instance -> instance.group(CustomMineshaftStructure.configCodecBuilder(instance),
                             (Type.CODEC.fieldOf("mineshaft_type")).forGetter(
                                     mineshaftStructure -> mineshaftStructure.type))

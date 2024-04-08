@@ -23,7 +23,7 @@
  */
 package io.github.drakonkinst.worldsinger.worldgen.structure;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.world.gen.structure.Structure;
@@ -36,7 +36,7 @@ public final class ModStructureTypes {
 
     public static void initialize() {}
 
-    private static <S extends Structure> StructureType<S> register(String id, Codec<S> codec) {
+    private static <S extends Structure> StructureType<S> register(String id, MapCodec<S> codec) {
         return Registry.register(Registries.STRUCTURE_TYPE, id, () -> codec);
     }
 
