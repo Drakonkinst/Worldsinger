@@ -33,7 +33,6 @@ import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricTagProvider.ItemTagProvider;
 import net.fabricmc.fabric.api.tag.convention.v2.ConventionalBlockTags;
 import net.fabricmc.fabric.api.tag.convention.v2.ConventionalItemTags;
-import net.minecraft.item.Items;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.registry.tag.ItemTags;
 import org.jetbrains.annotations.Nullable;
@@ -95,25 +94,11 @@ public class ModItemTagGenerator extends ItemTagProvider {
         copy(ConventionalBlockTags.STORAGE_BLOCKS, ConventionalItemTags.STORAGE_BLOCKS);
 
         // Add mod tags
-        getOrCreateTagBuilder(ModItemTags.ALL_COOKED_MEAT).add(Items.COOKED_BEEF)
-                .add(Items.COOKED_CHICKEN)
-                .add(Items.COOKED_MUTTON)
-                .add(Items.COOKED_RABBIT)
-                // Not in the API for some reason
-                .add(Items.COOKED_PORKCHOP)
-                .add(Items.COOKED_COD)
-                .add(Items.COOKED_SALMON)
-                .addOptionalTag(ConventionalItemTags.COOKED_MEATS_FOODS)
+        getOrCreateTagBuilder(ModItemTags.ALL_COOKED_MEAT).addOptionalTag(
+                        ConventionalItemTags.COOKED_MEATS_FOODS)
                 .addOptionalTag(ConventionalItemTags.COOKED_FISHES_FOODS);
-        getOrCreateTagBuilder(ModItemTags.ALL_RAW_MEAT).add(Items.BEEF)
-                .add(Items.CHICKEN)
-                .add(Items.MUTTON)
-                .add(Items.RABBIT)
-                // Not in the API for some reason
-                .add(Items.COOKED_PORKCHOP)
-                .add(Items.COOKED_COD)
-                .add(Items.COOKED_SALMON)
-                .addOptionalTag(ConventionalItemTags.RAW_MEATS_FOODS)
+        getOrCreateTagBuilder(ModItemTags.ALL_RAW_MEAT).addOptionalTag(
+                        ConventionalItemTags.RAW_MEATS_FOODS)
                 .addOptionalTag(ConventionalItemTags.RAW_FISHES_FOODS);
     }
 }

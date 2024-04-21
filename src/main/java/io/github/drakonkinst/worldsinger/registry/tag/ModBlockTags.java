@@ -70,6 +70,12 @@ public final class ModBlockTags {
     public static final TagKey<Block> AFFECTED_BY_RAIN = ModBlockTags.of("affected_by_rain");
     public static final TagKey<Block> SMOKES_IN_RAIN = ModBlockTags.of("smokes_in_rain");
 
+    public static final TagKey<Block> FUNGI_BLOCKS = ModBlockTags.of("fungi_blocks");
+    public static final TagKey<Block> FUNGI_PLANTS = ModBlockTags.of("fungi_plants");
+    public static final TagKey<Block> VINES = ModBlockTags.of("vines");
+    public static final TagKey<Block> ROOTS = ModBlockTags.of("roots");
+    public static final TagKey<Block> ALL_GLASS_TYPE = ModBlockTags.of("all_glass_type");
+
     private static TagKey<Block> of(String id) {
         return TagKey.of(RegistryKeys.BLOCK, Worldsinger.id(id));
     }

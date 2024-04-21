@@ -31,7 +31,32 @@ import net.minecraft.util.Identifier;
 
 public final class ModConventionalBlockTags {
 
+    // A note on singular vs plural naming conventions.
+    // "pumpkins" refers to very distinct blocks that contain pumpkins, so uses plural.
+    // "gravel" refers to variants of gravel that functionally act the same and can be used
+    // more or less interchangeably, so uses singular.
+    // "_plants" describes tags that consist of non-full-block plants
+    // "_blocks" describes tags that consist of full blocks
+    // This is a bit subjective, but I think this lines up with vanilla naming conventions.
+
+    // Groupings of vanilla blocks
     public static final TagKey<Block> AIR = ModConventionalBlockTags.of("air");
+    public static final TagKey<Block> WATER = ModConventionalBlockTags.of("water");
+    public static final TagKey<Block> BAMBOO_PLANTS = ModConventionalBlockTags.of("bamboo_plants");
+    public static final TagKey<Block> BAMBOO_MOSAIC_BLOCKS = ModConventionalBlockTags.of(
+            "bamboo_mosaic_blocks");
+    public static final TagKey<Block> CONCRETE_POWDER = ModConventionalBlockTags.of(
+            "concrete_powder");
+    public static final TagKey<Block> DRIPLEAF_PLANTS = ModConventionalBlockTags.of(
+            "dripleaf_plants");
+    public static final TagKey<Block> LANTERNS = ModConventionalBlockTags.of("lanterns");
+    public static final TagKey<Block> TORCHES = ModConventionalBlockTags.of("torches");
+    public static final TagKey<Block> NETHERRACK = ModConventionalBlockTags.of("netherrack");
+    public static final TagKey<Block> GRAVEL = ModConventionalBlockTags.of("gravel");
+    public static final TagKey<Block> PUMPKINS = ModConventionalBlockTags.of("pumpkins");
+    public static final TagKey<Block> SPONGE = ModConventionalBlockTags.of("sponge");
+
+    // New groupings for modded blocks
     public static final TagKey<Block> SILVER_ORES = ModConventionalBlockTags.of("ores/silver");
     public static final TagKey<Block> SALT_ORES = ModConventionalBlockTags.of("ores/salt");
     public static final TagKey<Block> STORAGE_BLOCKS_STEEL = ModConventionalBlockTags.of(

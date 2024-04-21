@@ -3,7 +3,7 @@
     "#c:air",
     "#c:water",
     "minecraft:lava",
-    "#c:plants",
+    "#worldsinger:plants",
     "#minecraft:corals",
     "#minecraft:wool_carpets",
     "#c:torches",

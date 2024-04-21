@@ -90,10 +90,14 @@ public class ModBlockTagGenerator extends BlockTagProvider {
                 .addOptionalTag(ModBlockTags.VERDANT_VINE_SNARE)
                 .addOptionalTag(ModBlockTags.ROSEITE_CLUSTER);
 
-        // Others
+        // New conventional tags
+        // Tags that other modders might implement without specific compatibilities for this mod.
+        // This should be generally un-opinionated.
         getOrCreateTagBuilder(ModConventionalBlockTags.AIR).add(Blocks.AIR)
                 .add(Blocks.CAVE_AIR)
                 .add(Blocks.VOID_AIR);
+        getOrCreateTagBuilder(ModConventionalBlockTags.WATER).add(Blocks.WATER)
+                .add(Blocks.BUBBLE_COLUMN);
         getOrCreateTagBuilder(ModConventionalBlockTags.SILVER_ORES).add(ModBlocks.SILVER_ORE)
                 .add(ModBlocks.DEEPSLATE_SILVER_ORE);
         getOrCreateTagBuilder(ModConventionalBlockTags.SALT_ORES).add(ModBlocks.SALTSTONE_SALT_ORE);
@@ -103,6 +107,44 @@ public class ModBlockTagGenerator extends BlockTagProvider {
                 ModBlocks.SILVER_BLOCK);
         getOrCreateTagBuilder(ModConventionalBlockTags.STORAGE_BLOCKS_ALUMINUM).add(
                 ModBlocks.ALUMINUM_BLOCK);
+        getOrCreateTagBuilder(ModConventionalBlockTags.BAMBOO_MOSAIC_BLOCKS).add(
+                        Blocks.BAMBOO_MOSAIC)
+                .add(Blocks.BAMBOO_MOSAIC_SLAB)
+                .add(Blocks.BAMBOO_MOSAIC_STAIRS);
+        getOrCreateTagBuilder(ModConventionalBlockTags.BAMBOO_PLANTS).add(Blocks.BAMBOO_SAPLING)
+                .add(Blocks.BAMBOO);
+        getOrCreateTagBuilder(ModConventionalBlockTags.CONCRETE_POWDER).add(
+                        Blocks.WHITE_CONCRETE_POWDER)
+                .add(Blocks.ORANGE_CONCRETE_POWDER)
+                .add(Blocks.MAGENTA_CONCRETE_POWDER)
+                .add(Blocks.LIGHT_BLUE_CONCRETE_POWDER)
+                .add(Blocks.YELLOW_CONCRETE_POWDER)
+                .add(Blocks.LIME_CONCRETE_POWDER)
+                .add(Blocks.PINK_CONCRETE_POWDER)
+                .add(Blocks.GRAY_CONCRETE_POWDER)
+                .add(Blocks.LIGHT_GRAY_CONCRETE_POWDER)
+                .add(Blocks.CYAN_CONCRETE_POWDER)
+                .add(Blocks.PURPLE_CONCRETE_POWDER)
+                .add(Blocks.BLUE_CONCRETE_POWDER)
+                .add(Blocks.BROWN_CONCRETE_POWDER)
+                .add(Blocks.GREEN_CONCRETE_POWDER)
+                .add(Blocks.RED_CONCRETE_POWDER)
+                .add(Blocks.BLACK_CONCRETE_POWDER);
+        getOrCreateTagBuilder(ModConventionalBlockTags.DRIPLEAF_PLANTS).add(Blocks.BIG_DRIPLEAF)
+                .add(Blocks.BIG_DRIPLEAF_STEM)
+                .add(Blocks.SMALL_DRIPLEAF);
+        getOrCreateTagBuilder(ModConventionalBlockTags.LANTERNS).add(Blocks.LANTERN)
+                .add(Blocks.SOUL_LANTERN);
+        getOrCreateTagBuilder(ModConventionalBlockTags.TORCHES).add(Blocks.TORCH)
+                .add(Blocks.SOUL_TORCH)
+                .add(Blocks.REDSTONE_TORCH);
+        getOrCreateTagBuilder(ModConventionalBlockTags.GRAVEL).add(Blocks.GRAVEL)
+                .add(Blocks.SUSPICIOUS_GRAVEL);
+        getOrCreateTagBuilder(ModConventionalBlockTags.NETHERRACK).add(Blocks.NETHERRACK)
+                .add(Blocks.WARPED_NYLIUM)
+                .add(Blocks.CRIMSON_NYLIUM);
+
+        // Merge conventional tags
         getOrCreateTagBuilder(ConventionalBlockTags.ORES).addOptionalTag(
                         ModConventionalBlockTags.SILVER_ORES)
                 .addOptionalTag(ModConventionalBlockTags.SALT_ORES);
@@ -110,6 +152,9 @@ public class ModBlockTagGenerator extends BlockTagProvider {
                         ModConventionalBlockTags.STORAGE_BLOCKS_STEEL)
                 .addOptionalTag(ModConventionalBlockTags.STORAGE_BLOCKS_SILVER)
                 .addOptionalTag(ModConventionalBlockTags.STORAGE_BLOCKS_ALUMINUM);
+
+        // Mod block tags
+        // Can be opinionated versions of vanilla tags for specific gameplay features
 
     }
 }
