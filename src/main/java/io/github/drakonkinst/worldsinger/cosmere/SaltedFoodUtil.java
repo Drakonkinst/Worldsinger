@@ -53,7 +53,7 @@ public final class SaltedFoodUtil {
     private static FoodComponent getOrCreateSaltedVariant(FoodComponent component) {
         return CACHE.computeIfAbsent(component,
                 foodComponent -> new FoodComponent(foodComponent.nutrition() + HUNGER_MODIFIER,
-                        foodComponent.saturationModifier() + SATURATION_MODIFIER,
+                        foodComponent.saturation() + SATURATION_MODIFIER,
                         foodComponent.canAlwaysEat(), foodComponent.eatSeconds(),
                         foodComponent.effects()));
     }

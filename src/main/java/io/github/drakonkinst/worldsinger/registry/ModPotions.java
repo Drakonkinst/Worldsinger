@@ -24,6 +24,7 @@
 package io.github.drakonkinst.worldsinger.registry;
 
 import io.github.drakonkinst.worldsinger.item.ModItems;
+import net.fabricmc.fabric.api.registry.FabricBrewingRecipeRegistryBuilder;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.recipe.BrewingRecipeRegistry;
@@ -31,49 +32,49 @@ import net.minecraft.recipe.BrewingRecipeRegistry;
 public final class ModPotions {
 
     public static void initialize() {
-        BrewingRecipeRegistry.registerPotionType(ModItems.DEAD_SPORES_BOTTLE);
-        BrewingRecipeRegistry.registerPotionType(ModItems.DEAD_SPORES_SPLASH_BOTTLE);
-        BrewingRecipeRegistry.registerPotionType(ModItems.VERDANT_SPORES_BOTTLE);
-        BrewingRecipeRegistry.registerPotionType(ModItems.VERDANT_SPORES_SPLASH_BOTTLE);
-        BrewingRecipeRegistry.registerPotionType(ModItems.CRIMSON_SPORES_BOTTLE);
-        BrewingRecipeRegistry.registerPotionType(ModItems.CRIMSON_SPORES_SPLASH_BOTTLE);
-        BrewingRecipeRegistry.registerPotionType(ModItems.ZEPHYR_SPORES_BOTTLE);
-        BrewingRecipeRegistry.registerPotionType(ModItems.ZEPHYR_SPORES_SPLASH_BOTTLE);
-        BrewingRecipeRegistry.registerPotionType(ModItems.SUNLIGHT_SPORES_BOTTLE);
-        BrewingRecipeRegistry.registerPotionType(ModItems.SUNLIGHT_SPORES_SPLASH_BOTTLE);
-        BrewingRecipeRegistry.registerPotionType(ModItems.ROSEITE_SPORES_BOTTLE);
-        BrewingRecipeRegistry.registerPotionType(ModItems.ROSEITE_SPORES_SPLASH_BOTTLE);
-        BrewingRecipeRegistry.registerPotionType(ModItems.MIDNIGHT_SPORES_BOTTLE);
-        BrewingRecipeRegistry.registerPotionType(ModItems.MIDNIGHT_SPORES_SPLASH_BOTTLE);
+        FabricBrewingRecipeRegistryBuilder.BUILD.register(builder -> {
+            builder.registerPotionType(ModItems.DEAD_SPORES_BOTTLE);
+            builder.registerPotionType(ModItems.DEAD_SPORES_SPLASH_BOTTLE);
+            builder.registerPotionType(ModItems.VERDANT_SPORES_BOTTLE);
+            builder.registerPotionType(ModItems.VERDANT_SPORES_SPLASH_BOTTLE);
+            builder.registerPotionType(ModItems.CRIMSON_SPORES_BOTTLE);
+            builder.registerPotionType(ModItems.CRIMSON_SPORES_SPLASH_BOTTLE);
+            builder.registerPotionType(ModItems.ZEPHYR_SPORES_BOTTLE);
+            builder.registerPotionType(ModItems.ZEPHYR_SPORES_SPLASH_BOTTLE);
+            builder.registerPotionType(ModItems.SUNLIGHT_SPORES_BOTTLE);
+            builder.registerPotionType(ModItems.SUNLIGHT_SPORES_SPLASH_BOTTLE);
+            builder.registerPotionType(ModItems.ROSEITE_SPORES_BOTTLE);
+            builder.registerPotionType(ModItems.ROSEITE_SPORES_SPLASH_BOTTLE);
+            builder.registerPotionType(ModItems.MIDNIGHT_SPORES_BOTTLE);
+            builder.registerPotionType(ModItems.MIDNIGHT_SPORES_SPLASH_BOTTLE);
 
-        BrewingRecipeRegistry.registerItemRecipe(Items.POTION, ModItems.ZEPHYR_SPORES_BOTTLE,
-                Items.SPLASH_POTION);
-        BrewingRecipeRegistry.registerItemRecipe(Items.SPLASH_POTION, ModItems.CRIMSON_SPINE,
-                Items.POTION);
+            builder.registerItemRecipe(Items.POTION, ModItems.ZEPHYR_SPORES_BOTTLE,
+                    Items.SPLASH_POTION);
+            builder.registerItemRecipe(Items.SPLASH_POTION, ModItems.CRIMSON_SPINE, Items.POTION);
 
-        ModPotions.registerCustomSplashPotion(ModItems.DEAD_SPORES_BOTTLE,
-                ModItems.DEAD_SPORES_SPLASH_BOTTLE);
-        ModPotions.registerCustomSplashPotion(ModItems.VERDANT_SPORES_BOTTLE,
-                ModItems.VERDANT_SPORES_SPLASH_BOTTLE);
-        ModPotions.registerCustomSplashPotion(ModItems.CRIMSON_SPORES_BOTTLE,
-                ModItems.CRIMSON_SPORES_SPLASH_BOTTLE);
-        ModPotions.registerCustomSplashPotion(ModItems.ZEPHYR_SPORES_BOTTLE,
-                ModItems.ZEPHYR_SPORES_SPLASH_BOTTLE);
-        ModPotions.registerCustomSplashPotion(ModItems.SUNLIGHT_SPORES_BOTTLE,
-                ModItems.SUNLIGHT_SPORES_SPLASH_BOTTLE);
-        ModPotions.registerCustomSplashPotion(ModItems.ROSEITE_SPORES_BOTTLE,
-                ModItems.ROSEITE_SPORES_SPLASH_BOTTLE);
-        ModPotions.registerCustomSplashPotion(ModItems.MIDNIGHT_SPORES_BOTTLE,
-                ModItems.MIDNIGHT_SPORES_SPLASH_BOTTLE);
+            ModPotions.registerCustomSplashPotion(builder, ModItems.DEAD_SPORES_BOTTLE,
+                    ModItems.DEAD_SPORES_SPLASH_BOTTLE);
+            ModPotions.registerCustomSplashPotion(builder, ModItems.VERDANT_SPORES_BOTTLE,
+                    ModItems.VERDANT_SPORES_SPLASH_BOTTLE);
+            ModPotions.registerCustomSplashPotion(builder, ModItems.CRIMSON_SPORES_BOTTLE,
+                    ModItems.CRIMSON_SPORES_SPLASH_BOTTLE);
+            ModPotions.registerCustomSplashPotion(builder, ModItems.ZEPHYR_SPORES_BOTTLE,
+                    ModItems.ZEPHYR_SPORES_SPLASH_BOTTLE);
+            ModPotions.registerCustomSplashPotion(builder, ModItems.SUNLIGHT_SPORES_BOTTLE,
+                    ModItems.SUNLIGHT_SPORES_SPLASH_BOTTLE);
+            ModPotions.registerCustomSplashPotion(builder, ModItems.ROSEITE_SPORES_BOTTLE,
+                    ModItems.ROSEITE_SPORES_SPLASH_BOTTLE);
+            ModPotions.registerCustomSplashPotion(builder, ModItems.MIDNIGHT_SPORES_BOTTLE,
+                    ModItems.MIDNIGHT_SPORES_SPLASH_BOTTLE);
+        });
 
     }
 
-    private static void registerCustomSplashPotion(Item regularPotion, Item splashPotion) {
-        BrewingRecipeRegistry.registerItemRecipe(regularPotion, Items.GUNPOWDER, splashPotion);
-        BrewingRecipeRegistry.registerItemRecipe(splashPotion, ModItems.CRIMSON_SPINE,
-                regularPotion);
-        BrewingRecipeRegistry.registerItemRecipe(regularPotion, ModItems.ZEPHYR_SPORES_BOTTLE,
-                splashPotion);
+    private static void registerCustomSplashPotion(BrewingRecipeRegistry.Builder builder,
+            Item regularPotion, Item splashPotion) {
+        builder.registerItemRecipe(regularPotion, Items.GUNPOWDER, splashPotion);
+        builder.registerItemRecipe(splashPotion, ModItems.CRIMSON_SPINE, regularPotion);
+        builder.registerItemRecipe(regularPotion, ModItems.ZEPHYR_SPORES_BOTTLE, splashPotion);
     }
 
     private ModPotions() {}

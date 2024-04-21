@@ -45,7 +45,6 @@ import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
-import net.minecraft.component.type.FoodComponent;
 import net.minecraft.fluid.FlowableFluid;
 import net.minecraft.item.ArmorItem;
 import net.minecraft.item.AxeItem;
@@ -122,9 +121,7 @@ public final class ModItems {
             createSporeSplashBottleItem(MidnightSpores.getInstance()));
 
     public static final Item VERDANT_VINE = register("verdant_vine",
-            new Item(new Item.Settings().food(new FoodComponent.Builder()
-                    // Same as Dried Kelp
-                    .hunger(1).saturationModifier(0.3f).snack().build())));
+            new Item(new Item.Settings().food(ModFoodComponents.VERDANT_VINE)));
     public static final Item CRIMSON_SPINE = register("crimson_spine",
             new Item(new Item.Settings()));
     public static final Item ROSEITE_CRYSTAL = register("roseite_crystal",

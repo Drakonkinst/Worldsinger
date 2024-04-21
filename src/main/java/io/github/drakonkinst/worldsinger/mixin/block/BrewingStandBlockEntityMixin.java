@@ -30,10 +30,9 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.entity.BrewingStandBlockEntity;
 import net.minecraft.block.entity.LockableContainerBlockEntity;
+import net.minecraft.inventory.SidedInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.recipe.BrewingRecipeRegistry;
-import net.minecraft.recipe.Ingredient;
 import net.minecraft.util.ItemScatterer;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
@@ -43,12 +42,12 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(BrewingStandBlockEntity.class)
-public abstract class BrewingStandBlockEntityMixin extends LockableContainerBlockEntity {
+public abstract class BrewingStandBlockEntityMixin extends LockableContainerBlockEntity implements
+        SidedInventory {
 
     @Unique
     private static final int BREWING_FUEL_AMOUNT = 20;
@@ -59,6 +58,7 @@ public abstract class BrewingStandBlockEntityMixin extends LockableContainerBloc
     @Unique
     private static final int INGREDIENT_SLOT = 3;
 
+    @SuppressWarnings({ "ReferenceToMixin", "UnresolvedMixinReference" })
     @Inject(method = "tick", at = @At("HEAD"))
     private static void consumeCustomFuels(World world, BlockPos pos, BlockState state,
             BrewingStandBlockEntity blockEntity, CallbackInfo ci) {
@@ -86,13 +86,10 @@ public abstract class BrewingStandBlockEntityMixin extends LockableContainerBloc
 
     // BrewingStandBlockEntity#craft does not properly handle items with recipe remainders
     // (specifically when there's only 1 in the stack) so fixing this
-    @Redirect(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/block/entity/BrewingStandBlockEntity;craft(Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/util/collection/DefaultedList;)V"))
-    private static void craftCorrectly(World world, BlockPos pos, DefaultedList<ItemStack> slots) {
+    @Inject(method = "craft", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;decrement(I)V"), cancellable = true)
+    private static void craftCorrectly(World world, BlockPos pos, DefaultedList<ItemStack> slots,
+            CallbackInfo ci) {
         ItemStack itemStack = slots.get(INGREDIENT_SLOT);
-        for (int i = 0; i < 3; ++i) {
-            slots.set(i, BrewingRecipeRegistry.craft(itemStack, slots.get(i)));
-        }
-
         Item remainderItem = itemStack.getItem().getRecipeRemainder();
         itemStack.decrement(1);
         if (remainderItem != null) {
@@ -105,6 +102,7 @@ public abstract class BrewingStandBlockEntityMixin extends LockableContainerBloc
         }
         slots.set(INGREDIENT_SLOT, itemStack);
         world.syncWorldEvent(WorldEvents.BREWING_STAND_BREWS, pos, 0);
+        ci.cancel();
     }
 
     protected BrewingStandBlockEntityMixin(BlockEntityType<?> blockEntityType, BlockPos blockPos,
@@ -112,6 +110,7 @@ public abstract class BrewingStandBlockEntityMixin extends LockableContainerBloc
         super(blockEntityType, blockPos, blockState);
     }
 
+    @SuppressWarnings({ "ReferenceToMixin", "UnresolvedMixinReference" })
     @Inject(method = "isValid", at = @At("RETURN"), cancellable = true)
     private void allowCustomPotionsAndFuels(int slot, ItemStack stack,
             CallbackInfoReturnable<Boolean> cir) {
@@ -122,11 +121,11 @@ public abstract class BrewingStandBlockEntityMixin extends LockableContainerBloc
         if (slot == 3 || !this.getStack(slot).isEmpty()) {
             return;
         }
-        for (Ingredient ingredient : BrewingRecipeRegistryAccessor.worldsinger$getPotionTypes()) {
-            if (ingredient.test(stack)) {
-                cir.setReturnValue(true);
-                return;
-            }
+        World world = this.getWorld();
+        if (world != null) {
+            cir.setReturnValue(
+                    ((BrewingRecipeRegistryAccessor) world.getBrewingRecipeRegistry()).worldsinger$isPotionType(
+                            stack));
         }
     }
 }

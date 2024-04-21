@@ -23,7 +23,6 @@
  */
 package io.github.drakonkinst.worldsinger.particle;
 
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -32,7 +31,6 @@ import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.particle.AbstractDustParticleEffect;
-import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleType;
 
 public class FallingSporeDustParticleEffect extends AbstractSporeDustParticleEffect {
@@ -45,19 +43,7 @@ public class FallingSporeDustParticleEffect extends AbstractSporeDustParticleEff
 
     public static final PacketCodec<RegistryByteBuf, FallingSporeDustParticleEffect> PACKET_CODEC = PacketCodec.tuple(
             AetherSpores.PACKET_CODEC, effect -> effect.sporeType, PacketCodecs.FLOAT,
-            effect -> effect.scale, FallingSporeDustParticleEffect::new);
-
-    public static final ParticleEffect.Factory<FallingSporeDustParticleEffect> PARAMETERS_FACTORY = (particleType, stringReader, wrapperLookup) -> {
-        stringReader.expect(' ');
-        String sporeName = stringReader.readString();
-        AetherSpores sporeType = AetherSpores.getAetherSporeTypeFromString(sporeName)
-                .orElseThrow(
-                        () -> CommandSyntaxException.BUILT_IN_EXCEPTIONS.dispatcherUnknownArgument()
-                                .createWithContext(stringReader));
-        stringReader.expect(' ');
-        float scale = stringReader.readFloat();
-        return new FallingSporeDustParticleEffect(sporeType, scale);
-    };
+            AbstractDustParticleEffect::getScale, FallingSporeDustParticleEffect::new);
 
     public FallingSporeDustParticleEffect(AetherSpores sporeType, float scale) {
         super(sporeType, scale);

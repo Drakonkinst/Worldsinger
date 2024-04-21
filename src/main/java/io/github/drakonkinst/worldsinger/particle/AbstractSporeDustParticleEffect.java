@@ -25,24 +25,18 @@
 package io.github.drakonkinst.worldsinger.particle;
 
 import io.github.drakonkinst.worldsinger.cosmere.lumar.AetherSpores;
-import java.util.Locale;
 import net.minecraft.particle.AbstractDustParticleEffect;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.RegistryWrapper.WrapperLookup;
-import net.minecraft.util.math.Vec3d;
 
 public abstract class AbstractSporeDustParticleEffect extends AbstractDustParticleEffect {
 
     protected final AetherSpores sporeType;
 
     public AbstractSporeDustParticleEffect(AetherSpores sporeType, float scale) {
-        super(Vec3d.unpackRgb(sporeType.getParticleColor()).toVector3f(), scale);
+        super(scale);
         this.sporeType = sporeType;
     }
 
-    @Override
-    public String asString(WrapperLookup registryLookup) {
-        return String.format(Locale.ROOT, "%s %s %.2f",
-                Registries.PARTICLE_TYPE.getId(this.getType()), sporeType.getName(), this.scale);
+    public AetherSpores getSporeType() {
+        return sporeType;
     }
 }

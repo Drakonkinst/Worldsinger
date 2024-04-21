@@ -27,10 +27,15 @@ import net.minecraft.component.type.FoodComponent;
 
 public final class ModFoodComponents {
 
-    public static final FoodComponent SALT = new FoodComponent.Builder().hunger(1)
+    public static final FoodComponent SALT = new FoodComponent.Builder().nutrition(1)
             .saturationModifier(0.1f)
             .snack()
             .alwaysEdible()
+            .build();
+    // Same as Dried Kelp
+    public static final FoodComponent VERDANT_VINE = new FoodComponent.Builder().nutrition(1)
+            .saturationModifier(0.3f)
+            .snack()
             .build();
 
     private ModFoodComponents() {}

@@ -29,6 +29,7 @@ import net.minecraft.client.particle.SpriteBillboardParticle;
 import net.minecraft.client.particle.SpriteProvider;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import org.joml.Vector3f;
 
 public abstract class AbstractSporeDustParticle extends SpriteBillboardParticle {
@@ -43,7 +44,7 @@ public abstract class AbstractSporeDustParticle extends SpriteBillboardParticle 
         super(world, x, y, z, velocityX, velocityY, velocityZ);
         this.spriteProvider = spriteProvider;
         this.scale *= 0.75F * parameters.getScale();
-        setColor(parameters.getColor());
+        setColor(Vec3d.unpackRgb(parameters.getSporeType().getParticleColor()).toVector3f());
         setRandomAge(parameters.getScale());
         this.setSpriteForAge(spriteProvider);
     }
