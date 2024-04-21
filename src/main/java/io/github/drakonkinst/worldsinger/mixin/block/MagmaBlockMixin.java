@@ -24,7 +24,7 @@
 package io.github.drakonkinst.worldsinger.mixin.block;
 
 import io.github.drakonkinst.worldsinger.block.AetherSporeFluidBlock;
-import io.github.drakonkinst.worldsinger.block.ModBlockTags;
+import io.github.drakonkinst.worldsinger.registry.tag.ModBlockTags;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.MagmaBlock;

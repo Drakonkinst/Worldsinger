@@ -24,6 +24,7 @@
 package io.github.drakonkinst.worldsinger.block;
 
 import com.mojang.serialization.MapCodec;
+import io.github.drakonkinst.worldsinger.registry.tag.ModBlockTags;
 import io.github.drakonkinst.worldsinger.util.VoxelShapeUtil;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;

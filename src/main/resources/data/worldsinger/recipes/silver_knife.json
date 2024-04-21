@@ -9,7 +9,7 @@
       "item": "minecraft:stick"
     },
     "x": {
-      "tag": "c:silver_ingots"
+      "tag": "c:ingots/silver"
     }
   },
   "result": {

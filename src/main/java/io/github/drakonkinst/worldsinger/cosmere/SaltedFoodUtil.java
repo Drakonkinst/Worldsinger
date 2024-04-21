@@ -25,8 +25,8 @@
 
 package io.github.drakonkinst.worldsinger.cosmere;
 
-import io.github.drakonkinst.worldsinger.item.ModItemTags;
 import io.github.drakonkinst.worldsinger.registry.ModDataComponentTypes;
+import io.github.drakonkinst.worldsinger.registry.tag.ModItemTags;
 import java.util.HashMap;
 import java.util.Map;
 import net.minecraft.component.DataComponentTypes;

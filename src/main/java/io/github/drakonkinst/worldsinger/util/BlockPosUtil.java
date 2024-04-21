@@ -23,7 +23,7 @@
  */
 package io.github.drakonkinst.worldsinger.util;
 
-import io.github.drakonkinst.worldsinger.block.ModBlockTags;
+import io.github.drakonkinst.worldsinger.registry.tag.ModBlockTags;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.registry.tag.TagKey;

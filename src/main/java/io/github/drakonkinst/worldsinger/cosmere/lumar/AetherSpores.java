@@ -25,7 +25,6 @@ package io.github.drakonkinst.worldsinger.cosmere.lumar;
 
 import com.google.common.collect.ImmutableMap;
 import com.mojang.serialization.Codec;
-import io.github.drakonkinst.worldsinger.block.ModBlockTags;
 import io.github.drakonkinst.worldsinger.block.SporeEmitting;
 import io.github.drakonkinst.worldsinger.cosmere.WaterReactive;
 import io.github.drakonkinst.worldsinger.effect.ModStatusEffects;
@@ -34,6 +33,7 @@ import io.github.drakonkinst.worldsinger.fluid.AetherSporeFluid;
 import io.github.drakonkinst.worldsinger.fluid.ModFluidTags;
 import io.github.drakonkinst.worldsinger.item.SporeBottleItem;
 import io.github.drakonkinst.worldsinger.registry.ModDamageTypes;
+import io.github.drakonkinst.worldsinger.registry.tag.ModBlockTags;
 import io.netty.buffer.ByteBuf;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 import java.util.Map;

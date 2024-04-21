@@ -1,6 +1,6 @@
 {
   "values": [
-    "#c:water_buckets",
+    "#c:buckets/water",
     "minecraft:potion"
   ]
 }

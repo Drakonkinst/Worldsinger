@@ -24,7 +24,7 @@
 package io.github.drakonkinst.worldsinger.cosmere;
 
 import io.github.drakonkinst.datatables.DataTable;
-import io.github.drakonkinst.worldsinger.item.ModItemTags;
+import net.fabricmc.fabric.api.tag.convention.v2.ConventionalItemTags;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -65,7 +65,7 @@ public final class MetalQueryManager {
             if (entity instanceof PlayerEntity playerEntity) {
                 ItemStack activeItem = playerEntity.getActiveItem();
                 if (!activeItem.isEmpty() && activeItem.isIn(metal.getItemTag())) {
-                    if (activeItem.isIn(ModItemTags.SHIELDS)) {
+                    if (activeItem.isIn(ConventionalItemTags.SHIELDS_TOOLS)) {
                         ironContent += USING_SHIELD_BONUS;
                     }
                 }

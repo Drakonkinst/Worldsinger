@@ -1,7 +1,7 @@
 {
   "values": [
-    "#c:cooked_meat",
-    "#c:raw_meat",
+    "#worldsinger:all_cooked_meat",
+    "#worldsinger:all_raw_meat",
     "minecraft:rotten_flesh",
     "minecraft:carrot",
     "minecraft:potato",

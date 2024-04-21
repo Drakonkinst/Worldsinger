@@ -26,7 +26,7 @@
 package io.github.drakonkinst.worldsinger.recipe;
 
 import io.github.drakonkinst.worldsinger.cosmere.SaltedFoodUtil;
-import io.github.drakonkinst.worldsinger.item.ModItemTags;
+import io.github.drakonkinst.worldsinger.registry.tag.ModConventionalItemTags;
 import net.minecraft.inventory.RecipeInputInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.RecipeSerializer;
@@ -49,7 +49,7 @@ public class SaltedFoodRecipe extends SpecialCraftingRecipe {
 
         for (int i = 0; i < inventory.size(); ++i) {
             ItemStack stack = inventory.getStack(i);
-            if (stack.isIn(ModItemTags.SALT)) {
+            if (stack.isIn(ModConventionalItemTags.SALT)) {
                 if (hasSalt) {
                     // Cannot have more than one salt slot
                     return false;
@@ -77,7 +77,7 @@ public class SaltedFoodRecipe extends SpecialCraftingRecipe {
 
         for (int i = 0; i < inventory.size(); ++i) {
             ItemStack stack = inventory.getStack(i);
-            if (stack.isIn(ModItemTags.SALT)) {
+            if (stack.isIn(ModConventionalItemTags.SALT)) {
                 if (hasSalt) {
                     // Cannot have more than one salt slot
                     return ItemStack.EMPTY;

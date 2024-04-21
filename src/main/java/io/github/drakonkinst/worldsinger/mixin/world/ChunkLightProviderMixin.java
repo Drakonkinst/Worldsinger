@@ -24,7 +24,7 @@
 package io.github.drakonkinst.worldsinger.mixin.world;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
-import io.github.drakonkinst.worldsinger.block.ModBlockTags;
+import io.github.drakonkinst.worldsinger.registry.tag.ModBlockTags;
 import net.minecraft.block.BlockState;
 import net.minecraft.world.chunk.light.ChunkLightProvider;
 import org.spongepowered.asm.mixin.Mixin;

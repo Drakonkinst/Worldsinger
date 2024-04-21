@@ -27,7 +27,7 @@ package io.github.drakonkinst.worldsinger.recipe;
 import io.github.drakonkinst.worldsinger.api.ModApi;
 import io.github.drakonkinst.worldsinger.cosmere.SilverLined;
 import io.github.drakonkinst.worldsinger.cosmere.SilverLinedUtil;
-import io.github.drakonkinst.worldsinger.item.ModItemTags;
+import io.github.drakonkinst.worldsinger.registry.tag.ModConventionalItemTags;
 import net.minecraft.inventory.RecipeInputInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.RecipeSerializer;
@@ -48,7 +48,7 @@ public class SilverLinedItemRecipe extends SpecialCraftingRecipe {
         int numSilverIngots = 0;
         for (int i = 0; i < inventory.size(); ++i) {
             ItemStack stack = inventory.getStack(i);
-            if (stack.isIn(ModItemTags.SILVER_INGOTS)) {
+            if (stack.isIn(ModConventionalItemTags.SILVER_INGOTS)) {
                 numSilverIngots += 1;
             } else if (SilverLinedUtil.canBeSilverLined(stack)) {
                 if (!silverLinedItem.isEmpty()) {
@@ -70,7 +70,7 @@ public class SilverLinedItemRecipe extends SpecialCraftingRecipe {
         int numSilverIngots = 0;
         for (int i = 0; i < inventory.size(); ++i) {
             ItemStack stack = inventory.getStack(i);
-            if (stack.isIn(ModItemTags.SILVER_INGOTS)) {
+            if (stack.isIn(ModConventionalItemTags.SILVER_INGOTS)) {
                 numSilverIngots += 1;
             } else if (SilverLinedUtil.canBeSilverLined(stack)) {
                 if (!silverLinedItem.isEmpty()) {

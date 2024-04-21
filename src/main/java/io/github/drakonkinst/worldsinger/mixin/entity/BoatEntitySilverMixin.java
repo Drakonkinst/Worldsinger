@@ -28,8 +28,8 @@ import io.github.drakonkinst.worldsinger.api.ModAttachmentTypes;
 import io.github.drakonkinst.worldsinger.api.sync.AttachmentSync;
 import io.github.drakonkinst.worldsinger.cosmere.SilverLined;
 import io.github.drakonkinst.worldsinger.entity.SilverLinedEntityData;
-import io.github.drakonkinst.worldsinger.item.ModItemTags;
 import io.github.drakonkinst.worldsinger.registry.ModSoundEvents;
+import io.github.drakonkinst.worldsinger.registry.tag.ModConventionalItemTags;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
@@ -59,7 +59,7 @@ public abstract class BoatEntitySilverMixin extends VehicleEntity {
                 ModAttachmentTypes.SILVER_LINED_BOAT);
         ItemStack itemStack = player.getStackInHand(hand);
         int silverDurability = silverData.getSilverDurability();
-        if (itemStack.isIn(ModItemTags.SILVER_INGOTS)
+        if (itemStack.isIn(ModConventionalItemTags.SILVER_INGOTS)
                 && silverDurability < silverData.getMaxSilverDurability()) {
             // Set data
             silverData.repair();

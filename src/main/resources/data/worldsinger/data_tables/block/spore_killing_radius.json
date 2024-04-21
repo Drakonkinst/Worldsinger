@@ -6,7 +6,7 @@
     "#c:salt_blocks": 4,
     "#c:raw_silver_blocks": 4,
     "#c:silver_blocks": 5,
-    "#c:silver_ores": 3,
-    "#c:salt_ores": 2
+    "#c:ores/silver": 3,
+    "#c:ores/salt": 2
   }
 }

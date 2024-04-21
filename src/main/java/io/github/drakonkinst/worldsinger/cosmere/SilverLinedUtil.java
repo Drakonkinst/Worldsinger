@@ -25,7 +25,7 @@
 package io.github.drakonkinst.worldsinger.cosmere;
 
 import io.github.drakonkinst.worldsinger.api.ModApi;
-import io.github.drakonkinst.worldsinger.item.ModItemTags;
+import io.github.drakonkinst.worldsinger.registry.tag.ModItemTags;
 import java.util.List;
 import net.minecraft.client.item.TooltipType;
 import net.minecraft.entity.Entity;

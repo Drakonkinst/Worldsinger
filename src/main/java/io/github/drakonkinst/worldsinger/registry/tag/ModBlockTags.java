@@ -21,14 +21,12 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.github.drakonkinst.worldsinger.block;
+package io.github.drakonkinst.worldsinger.registry.tag;
 
 import io.github.drakonkinst.worldsinger.Worldsinger;
-import io.github.drakonkinst.worldsinger.util.ModConstants;
 import net.minecraft.block.Block;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.tag.TagKey;
-import net.minecraft.util.Identifier;
 
 public final class ModBlockTags {
 
@@ -49,6 +47,7 @@ public final class ModBlockTags {
     public static final TagKey<Block> ALL_CRIMSON_GROWTH = ModBlockTags.of("all_crimson_growth");
     public static final TagKey<Block> ALL_ROSEITE_GROWTH = ModBlockTags.of("all_roseite_growth");
     public static final TagKey<Block> ROSEITE_GROWABLE = ModBlockTags.of("roseite_growable");
+    public static final TagKey<Block> ROSEITE_CLUSTER = ModBlockTags.of("roseite_cluster");
     public static final TagKey<Block> KILLS_SPORES = ModBlockTags.of("kills_spores");
     public static final TagKey<Block> SPORES_CAN_GROW = ModBlockTags.of("spores_can_grow");
     public static final TagKey<Block> SPORES_CAN_BREAK = ModBlockTags.of("spores_can_break");
@@ -61,23 +60,18 @@ public final class ModBlockTags {
     public static final TagKey<Block> SILVER_WALKABLE = ModBlockTags.of("silver_walkable");
     public static final TagKey<Block> SEAGULLS_SPAWNABLE_ON = ModBlockTags.of(
             "seagulls_spawnable_on");
+    public static final TagKey<Block> ALUMINUM_CAULDRONS = ModBlockTags.of("aluminum_cauldrons");
 
-    public static final TagKey<Block> FLUIDS_CANNOT_BREAK = ModBlockTags.ofCommon(
-            "fluids_cannot_break");
+    public static final TagKey<Block> FLUIDS_CANNOT_BREAK = ModBlockTags.of("fluids_cannot_break");
     // Marks blocks that are not opaque, but should be treated as opaque for lighting.
     // Needed for non-full blocks similar to Tinted Glass to block light.
-    public static final TagKey<Block> OPAQUE_FOR_LIGHTING = ModBlockTags.ofCommon(
-            "opaque_for_lighting");
+    public static final TagKey<Block> OPAQUE_FOR_LIGHTING = ModBlockTags.of("opaque_for_lighting");
     // Blocks that randomly tick in rain, which should also be affected by rainlines
-    public static final TagKey<Block> AFFECTED_BY_RAIN = ModBlockTags.ofCommon("affected_by_rain");
-    public static final TagKey<Block> SMOKES_IN_RAIN = ModBlockTags.ofCommon("smokes_in_rain");
+    public static final TagKey<Block> AFFECTED_BY_RAIN = ModBlockTags.of("affected_by_rain");
+    public static final TagKey<Block> SMOKES_IN_RAIN = ModBlockTags.of("smokes_in_rain");
 
     private static TagKey<Block> of(String id) {
         return TagKey.of(RegistryKeys.BLOCK, Worldsinger.id(id));
-    }
-
-    private static TagKey<Block> ofCommon(String id) {
-        return TagKey.of(RegistryKeys.BLOCK, new Identifier(ModConstants.COMMON_ID, id));
     }
 
     private ModBlockTags() {}

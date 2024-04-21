@@ -1,7 +1,7 @@
 {
   "values": [
     "#worldsinger:saltstone",
-    "#c:salt_ores",
+    "#c:ores/salt",
     "#c:salt_blocks"
   ]
 }

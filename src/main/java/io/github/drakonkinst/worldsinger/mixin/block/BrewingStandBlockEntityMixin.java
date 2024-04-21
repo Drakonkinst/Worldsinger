@@ -23,9 +23,9 @@
  */
 package io.github.drakonkinst.worldsinger.mixin.block;
 
-import io.github.drakonkinst.worldsinger.item.ModItemTags;
 import io.github.drakonkinst.worldsinger.mixin.accessor.BrewingRecipeRegistryAccessor;
 import io.github.drakonkinst.worldsinger.mixin.accessor.BrewingStandBlockEntityAccessor;
+import io.github.drakonkinst.worldsinger.registry.tag.ModItemTags;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.entity.BrewingStandBlockEntity;

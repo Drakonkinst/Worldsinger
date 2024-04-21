@@ -2,7 +2,7 @@
   "type": "item",
   "default": 0,
   "entries": {
-    "#c:milk_buckets": 20,
+    "#c:buckets/milk": 20,
     "minecraft:potion": 20,
     "minecraft:enchanted_golden_apple": 16,
     "minecraft:mushroom_stew": 12,

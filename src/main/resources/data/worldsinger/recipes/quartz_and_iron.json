@@ -2,7 +2,7 @@
   "type": "minecraft:crafting_shapeless",
   "ingredients": [
     {
-      "tag": "worldsinger:iron_firestarter_materials"
+      "tag": "c:ingots/iron"
     },
     {
       "item": "minecraft:quartz"

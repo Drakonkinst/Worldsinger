@@ -25,7 +25,7 @@ package io.github.drakonkinst.worldsinger.mixin.block;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import io.github.drakonkinst.worldsinger.item.ModItemTags;
+import io.github.drakonkinst.worldsinger.registry.tag.ModItemTags;
 import net.minecraft.block.CandleCakeBlock;
 import net.minecraft.block.TntBlock;
 import net.minecraft.item.Item;

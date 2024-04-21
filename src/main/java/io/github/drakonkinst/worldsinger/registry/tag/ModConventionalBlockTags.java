@@ -21,42 +21,29 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.github.drakonkinst.worldsinger.cosmere;
+package io.github.drakonkinst.worldsinger.registry.tag;
 
-import io.github.drakonkinst.worldsinger.entity.ModEntityTypeTags;
-import io.github.drakonkinst.worldsinger.registry.tag.ModBlockTags;
-import io.github.drakonkinst.worldsinger.registry.tag.ModItemTags;
+import io.github.drakonkinst.worldsinger.util.ModConstants;
 import net.minecraft.block.Block;
-import net.minecraft.entity.EntityType;
-import net.minecraft.item.Item;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.tag.TagKey;
+import net.minecraft.util.Identifier;
 
-public enum Metals implements Metal {
-    IRON(ModBlockTags.HAS_IRON, ModItemTags.HAS_IRON, ModEntityTypeTags.HAS_IRON),
-    STEEL(ModBlockTags.HAS_STEEL, ModItemTags.HAS_STEEL, ModEntityTypeTags.HAS_STEEL);
+public final class ModConventionalBlockTags {
 
-    private final TagKey<Block> blockTag;
-    private final TagKey<Item> itemTag;
-    private final TagKey<EntityType<?>> entityTypeTag;
+    public static final TagKey<Block> AIR = ModConventionalBlockTags.of("air");
+    public static final TagKey<Block> SILVER_ORES = ModConventionalBlockTags.of("ores/silver");
+    public static final TagKey<Block> SALT_ORES = ModConventionalBlockTags.of("ores/salt");
+    public static final TagKey<Block> STORAGE_BLOCKS_STEEL = ModConventionalBlockTags.of(
+            "storage_blocks/steel");
+    public static final TagKey<Block> STORAGE_BLOCKS_SILVER = ModConventionalBlockTags.of(
+            "storage_blocks/silver");
+    public static final TagKey<Block> STORAGE_BLOCKS_ALUMINUM = ModConventionalBlockTags.of(
+            "storage_blocks/aluminum");
 
-    Metals(TagKey<Block> blockTag, TagKey<Item> itemTag, TagKey<EntityType<?>> entityTypeTag) {
-        this.blockTag = blockTag;
-        this.itemTag = itemTag;
-        this.entityTypeTag = entityTypeTag;
+    private static TagKey<Block> of(String id) {
+        return TagKey.of(RegistryKeys.BLOCK, new Identifier(ModConstants.COMMON_ID, id));
     }
 
-    @Override
-    public TagKey<Block> getBlockTag() {
-        return blockTag;
-    }
-
-    @Override
-    public TagKey<Item> getItemTag() {
-        return itemTag;
-    }
-
-    @Override
-    public TagKey<EntityType<?>> getEntityTypeTag() {
-        return entityTypeTag;
-    }
+    private ModConventionalBlockTags() {}
 }

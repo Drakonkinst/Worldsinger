@@ -25,8 +25,8 @@ package io.github.drakonkinst.worldsinger.mixin.screen;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import io.github.drakonkinst.worldsinger.block.ModBlockTags;
 import io.github.drakonkinst.worldsinger.block.SteelAnvilBlock;
+import io.github.drakonkinst.worldsinger.registry.tag.ModBlockTags;
 import java.util.function.BiConsumer;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
