@@ -72,6 +72,9 @@ public class ModItemTagGenerator extends ItemTagProvider {
         getOrCreateTagBuilder(ModConventionalItemTags.SILVER_NUGGETS).add(ModItems.SILVER_NUGGET);
         getOrCreateTagBuilder(ModConventionalItemTags.ALUMINUM_NUGGETS).add(
                 ModItems.ALUMINUM_NUGGET);
+        getOrCreateTagBuilder(ModConventionalItemTags.SILVER_RAW_MATERIALS).add(
+                ModItems.RAW_SILVER);
+        getOrCreateTagBuilder(ModConventionalItemTags.SALT).add(ModItems.SALT);
         copy(ModConventionalBlockTags.SILVER_ORES, ModConventionalItemTags.SILVER_ORES);
         copy(ModConventionalBlockTags.SALT_ORES, ModConventionalItemTags.SALT_ORES);
         copy(ModConventionalBlockTags.STORAGE_BLOCKS_STEEL,
@@ -80,6 +83,10 @@ public class ModItemTagGenerator extends ItemTagProvider {
                 ModConventionalItemTags.STORAGE_BLOCKS_SILVER);
         copy(ModConventionalBlockTags.STORAGE_BLOCKS_ALUMINUM,
                 ModConventionalItemTags.STORAGE_BLOCKS_ALUMINUM);
+        copy(ModConventionalBlockTags.STORAGE_BLOCKS_SALT,
+                ModConventionalItemTags.STORAGE_BLOCKS_SALT);
+        copy(ModConventionalBlockTags.STORAGE_BLOCKS_RAW_SILVER,
+                ModConventionalItemTags.STORAGE_BLOCKS_RAW_SILVER);
 
         // Merge fabric and mod conventional tags
         getOrCreateTagBuilder(ConventionalItemTags.INGOTS).addOptionalTag(
@@ -90,8 +97,13 @@ public class ModItemTagGenerator extends ItemTagProvider {
                         ModConventionalItemTags.STEEL_NUGGETS)
                 .addOptionalTag(ModConventionalItemTags.SILVER_NUGGETS)
                 .addOptionalTag(ModConventionalItemTags.ALUMINUM_NUGGETS);
+        getOrCreateTagBuilder(ConventionalItemTags.RAW_BLOCKS).addOptionalTag(
+                ModConventionalItemTags.STORAGE_BLOCKS_RAW_SILVER).add(ModItems.CRUDE_IRON);
+        getOrCreateTagBuilder(ConventionalItemTags.RAW_MATERIALS).addOptionalTag(
+                ModConventionalItemTags.SILVER_RAW_MATERIALS);
         copy(ConventionalBlockTags.ORES, ConventionalItemTags.ORES);
         copy(ConventionalBlockTags.STORAGE_BLOCKS, ConventionalItemTags.STORAGE_BLOCKS);
+        copy(ConventionalBlockTags.STORAGE_BLOCKS_RAW_COPPER, ConventionalItemTags.STORAGE_BLOCKS);
 
         // Add mod tags
         getOrCreateTagBuilder(ModItemTags.ALL_COOKED_MEAT).addOptionalTag(

@@ -48,6 +48,12 @@ public final class ModConventionalItemTags {
             "storage_blocks/silver");
     public static final TagKey<Item> STORAGE_BLOCKS_ALUMINUM = ModConventionalItemTags.of(
             "storage_blocks/aluminum");
+    public static final TagKey<Item> STORAGE_BLOCKS_SALT = ModConventionalItemTags.of(
+            "storage_blocks/salt");
+    public static final TagKey<Item> STORAGE_BLOCKS_RAW_SILVER = ModConventionalItemTags.of(
+            "storage_blocks/raw_silver");
+    public static final TagKey<Item> SILVER_RAW_MATERIALS = ModConventionalItemTags.of(
+            "raw_materials/silver");
 
     private static TagKey<Item> of(String id) {
         return TagKey.of(RegistryKeys.ITEM, new Identifier(ModConstants.COMMON_ID, id));

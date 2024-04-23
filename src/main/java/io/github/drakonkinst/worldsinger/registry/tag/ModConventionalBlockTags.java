@@ -45,6 +45,7 @@ public final class ModConventionalBlockTags {
     public static final TagKey<Block> BAMBOO_PLANTS = ModConventionalBlockTags.of("bamboo_plants");
     public static final TagKey<Block> BAMBOO_MOSAIC_BLOCKS = ModConventionalBlockTags.of(
             "bamboo_mosaic_blocks");
+    public static final TagKey<Block> CAULDRONS = ModConventionalBlockTags.of("cauldrons");
     public static final TagKey<Block> CONCRETE_POWDER = ModConventionalBlockTags.of(
             "concrete_powder");
     public static final TagKey<Block> DRIPLEAF_PLANTS = ModConventionalBlockTags.of(
@@ -55,6 +56,11 @@ public final class ModConventionalBlockTags {
     public static final TagKey<Block> GRAVEL = ModConventionalBlockTags.of("gravel");
     public static final TagKey<Block> PUMPKINS = ModConventionalBlockTags.of("pumpkins");
     public static final TagKey<Block> SPONGE = ModConventionalBlockTags.of("sponge");
+    public static final TagKey<Block> SNOW_BLOCKS = ModConventionalBlockTags.of("snow_blocks");
+    public static final TagKey<Block> STORAGE_BLOCKS_SALT = ModConventionalBlockTags.of(
+            "storage_blocks/salt");
+    public static final TagKey<Block> STORAGE_BLOCKS_RAW_SILVER = ModConventionalBlockTags.of(
+            "storage_blocks/raw_silver");
 
     // New groupings for modded blocks
     public static final TagKey<Block> SILVER_ORES = ModConventionalBlockTags.of("ores/silver");
