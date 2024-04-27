@@ -47,6 +47,9 @@ public final class ModItemTags {
     public static final TagKey<Item> ALL_COOKED_MEAT = ModItemTags.of("all_cooked_meat");
     public static final TagKey<Item> ALL_RAW_MEAT = ModItemTags.of("all_raw_meat");
 
+    // A mirror of the block tag ALL_CAULDRONS, but only includes item forms
+    public static final TagKey<Item> ALL_CAULDRONS = ModItemTags.of("all_cauldrons");
+
     private static TagKey<Item> of(String id) {
         return TagKey.of(RegistryKeys.ITEM, Worldsinger.id(id));
     }
