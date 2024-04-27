@@ -3,9 +3,9 @@
   "default": 0,
   "entries": {
     "#worldsinger:saltstone": 2,
-    "#c:salt_blocks": 4,
-    "#c:raw_silver_blocks": 4,
-    "#c:silver_blocks": 5,
+    "#c:storage_blocks/salt": 4,
+    "#c:storage_blocks/raw_silver": 4,
+    "#c:storage_blocks/silver": 5,
     "#c:ores/silver": 3,
     "#c:ores/salt": 2
   }
