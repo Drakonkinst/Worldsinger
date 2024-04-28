@@ -24,6 +24,8 @@
 
 package io.github.drakonkinst.worldsinger.datagen.tag;
 
+import io.github.drakonkinst.worldsinger.fluid.ModFluidTags;
+import io.github.drakonkinst.worldsinger.fluid.ModFluids;
 import java.util.concurrent.CompletableFuture;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricTagProvider;
@@ -40,5 +42,36 @@ public class ModFluidTagGenerator extends FabricTagProvider<Fluid> {
 
     @Override
     protected void configure(WrapperLookup wrapperLookup) {
+        getOrCreateTagBuilder(ModFluidTags.SUNLIGHT).add(ModFluids.SUNLIGHT);
+        getOrCreateTagBuilder(ModFluidTags.DEAD_SPORES).add(ModFluids.DEAD_SPORES)
+                .add(ModFluids.FLOWING_DEAD_SPORES);
+        getOrCreateTagBuilder(ModFluidTags.VERDANT_SPORES).add(ModFluids.VERDANT_SPORES)
+                .add(ModFluids.FLOWING_VERDANT_SPORES);
+        getOrCreateTagBuilder(ModFluidTags.CRIMSON_SPORES).add(ModFluids.CRIMSON_SPORES)
+                .add(ModFluids.FLOWING_CRIMSON_SPORES);
+        getOrCreateTagBuilder(ModFluidTags.ZEPHYR_SPORES).add(ModFluids.ZEPHYR_SPORES)
+                .add(ModFluids.FLOWING_ZEPHYR_SPORES);
+        getOrCreateTagBuilder(ModFluidTags.SUNLIGHT_SPORES).add(ModFluids.SUNLIGHT_SPORES)
+                .add(ModFluids.FLOWING_SUNLIGHT_SPORES);
+        getOrCreateTagBuilder(ModFluidTags.ROSEITE_SPORES).add(ModFluids.ROSEITE_SPORES)
+                .add(ModFluids.FLOWING_ROSEITE_SPORES);
+        getOrCreateTagBuilder(ModFluidTags.MIDNIGHT_SPORES).add(ModFluids.MIDNIGHT_SPORES)
+                .add(ModFluids.FLOWING_MIDNIGHT_SPORES);
+        getOrCreateTagBuilder(ModFluidTags.STILL_AETHER_SPORES).add(ModFluids.DEAD_SPORES)
+                .add(ModFluids.VERDANT_SPORES)
+                .add(ModFluids.CRIMSON_SPORES)
+                .add(ModFluids.ZEPHYR_SPORES)
+                .add(ModFluids.SUNLIGHT_SPORES)
+                .add(ModFluids.ROSEITE_SPORES)
+                .add(ModFluids.MIDNIGHT_SPORES);
+        getOrCreateTagBuilder(ModFluidTags.AETHER_SPORES).addOptionalTag(ModFluidTags.DEAD_SPORES)
+                .addOptionalTag(ModFluidTags.VERDANT_SPORES)
+                .addOptionalTag(ModFluidTags.CRIMSON_SPORES)
+                .addOptionalTag(ModFluidTags.ZEPHYR_SPORES)
+                .addOptionalTag(ModFluidTags.SUNLIGHT_SPORES)
+                .addOptionalTag(ModFluidTags.ROSEITE_SPORES)
+                .addOptionalTag(ModFluidTags.MIDNIGHT_SPORES);
+        getOrCreateTagBuilder(ModFluidTags.AETHER_SPORES_OR_SUNLIGHT).addOptionalTag(
+                ModFluidTags.AETHER_SPORES).addOptionalTag(ModFluidTags.SUNLIGHT);
     }
 }
