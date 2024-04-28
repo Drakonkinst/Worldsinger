@@ -1,7 +1,0 @@
-{
-  "description": "Mobs that are covered in or made of water-based materials, and thus catalyze spores on contact.",
-  "values": [
-    "minecraft:snow_golem",
-    "minecraft:drowned"
-  ]
-}

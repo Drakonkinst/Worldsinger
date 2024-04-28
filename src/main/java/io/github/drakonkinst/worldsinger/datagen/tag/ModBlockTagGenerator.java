@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package io.github.drakonkinst.worldsinger.datagen;
+package io.github.drakonkinst.worldsinger.datagen.tag;
 
 import io.github.drakonkinst.worldsinger.block.ModBlocks;
 import io.github.drakonkinst.worldsinger.registry.tag.ModBlockTags;
@@ -400,9 +400,11 @@ public class ModBlockTagGenerator extends BlockTagProvider {
         getOrCreateTagBuilder(ModBlockTags.HAS_ALUMINUM).add(ModBlocks.ALUMINUM_BLOCK)
                 .add(ModBlocks.ALUMINUM_SHEET)
                 .addOptionalTag(ModBlockTags.ALUMINUM_CAULDRONS);
-        getOrCreateTagBuilder(ModBlockTags.HAS_IRON).addOptionalTag(BlockTags.ANVIL)
+        getOrCreateTagBuilder(ModBlockTags.HAS_IRON).add(Blocks.CHAIN)
                 .addOptionalTag(ConventionalBlockTags.STORAGE_BLOCKS_IRON)
                 .addOptionalTag(ConventionalBlockTags.STORAGE_BLOCKS_RAW_IRON)
+                .addOptionalTag(BlockTags.IRON_ORES)
+                .addOptionalTag(BlockTags.ANVIL)
                 .addOptionalTag(ModBlockTags.ALL_CAULDRONS)
                 .add(Blocks.HOPPER)
                 .add(Blocks.IRON_DOOR)

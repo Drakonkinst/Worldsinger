@@ -36,6 +36,7 @@ public final class ModEntityTypeTags {
             "spores_never_affect");
     public static final TagKey<EntityType<?>> SPORES_NEVER_SUFFOCATE = ModEntityTypeTags.of(
             "spores_never_suffocate");
+    public static final TagKey<EntityType<?>> SPORE_GROWTHS = ModEntityTypeTags.of("spore_growths");
     public static TagKey<EntityType<?>> HAS_STEEL = ModEntityTypeTags.of("has_steel");
     public static TagKey<EntityType<?>> HAS_IRON = ModEntityTypeTags.of("has_iron");
     public static TagKey<EntityType<?>> MIDNIGHT_CREATURES_CANNOT_IMITATE = ModEntityTypeTags.of(

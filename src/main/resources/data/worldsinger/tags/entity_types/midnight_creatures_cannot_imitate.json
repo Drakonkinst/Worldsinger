@@ -1,9 +1,0 @@
-{
-  "description": "Blacklist for what entities the Midnight Creature is allowed to imitate. Creatures that do not extend LivingEntity are automatically excluded.",
-  "values": [
-    "worldsinger:midnight_creature",
-    "minecraft:ender_dragon",
-    "minecraft:ghast",
-    "minecraft:wither"
-  ]
-}

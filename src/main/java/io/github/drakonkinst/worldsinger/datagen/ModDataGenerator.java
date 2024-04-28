@@ -23,6 +23,10 @@
  */
 package io.github.drakonkinst.worldsinger.datagen;
 
+import io.github.drakonkinst.worldsinger.datagen.tag.ModBlockTagGenerator;
+import io.github.drakonkinst.worldsinger.datagen.tag.ModEntityTagGenerator;
+import io.github.drakonkinst.worldsinger.datagen.tag.ModFluidTagGenerator;
+import io.github.drakonkinst.worldsinger.datagen.tag.ModItemTagGenerator;
 import net.fabricmc.fabric.api.datagen.v1.DataGeneratorEntrypoint;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataGenerator;
 
@@ -37,5 +41,7 @@ public class ModDataGenerator implements DataGeneratorEntrypoint {
         ModBlockTagGenerator blockTagGenerator = pack.addProvider(ModBlockTagGenerator::new);
         pack.addProvider((output, registries) -> new ModItemTagGenerator(output, registries,
                 blockTagGenerator));
+        pack.addProvider(ModFluidTagGenerator::new);
+        pack.addProvider(ModEntityTagGenerator::new);
     }
 }
