@@ -40,6 +40,29 @@ public class ModDamageTypeTagGenerator extends FabricTagProvider<DamageType> {
 
     @Override
     protected void configure(WrapperLookup wrapperLookup) {
-
+        // Currently does not work with custom solution, so keeping these manual for now
+        // getOrCreateTagBuilder(DamageTypeTags.BYPASSES_ARMOR).add(ModDamageTypes.VERDANT_SPORE)
+        //         .add(ModDamageTypes.CRIMSON_SPORE)
+        //         .add(ModDamageTypes.ZEPHYR_SPORE)
+        //         .add(ModDamageTypes.SUNLIGHT)
+        //         .add(ModDamageTypes.ROSEITE_SPORE)
+        //         .add(ModDamageTypes.MIDNIGHT_ESSENCE)
+        //         .add(ModDamageTypes.DROWN_SPORE)
+        //         .add(ModDamageTypes.SPIKE_FALL)
+        //         .add(ModDamageTypes.THIRST);
+        // getOrCreateTagBuilder(DamageTypeTags.BYPASSES_EFFECTS).add(ModDamageTypes.THIRST);
+        // getOrCreateTagBuilder(DamageTypeTags.IS_DROWNING).add(ModDamageTypes.DROWN_SPORE);
+        // getOrCreateTagBuilder(DamageTypeTags.IS_EXPLOSION).add(ModDamageTypes.ZEPHYR_SPORE);
+        // getOrCreateTagBuilder(DamageTypeTags.NO_KNOCKBACK).add(ModDamageTypes.ZEPHYR_SPORE);
+        // getOrCreateTagBuilder(DamageTypeTags.IS_FALL).add(ModDamageTypes.SPIKE_FALL);
+        // getOrCreateTagBuilder(DamageTypeTags.IS_FIRE).add(ModDamageTypes.SUNLIGHT)
+        //         .add(ModDamageTypes.SUNLIGHT_SPORE);
+        // getOrCreateTagBuilder(DamageTypeTags.NO_IMPACT).add(ModDamageTypes.VERDANT_SPORE)
+        //         .add(ModDamageTypes.CRIMSON_SPORE)
+        //         .add(ModDamageTypes.ZEPHYR_SPORE)
+        //         .add(ModDamageTypes.SUNLIGHT)
+        //         .add(ModDamageTypes.ROSEITE_SPORE)
+        //         .add(ModDamageTypes.MIDNIGHT_ESSENCE)
+        //         .add(ModDamageTypes.DROWN_SPORE);
     }
 }
