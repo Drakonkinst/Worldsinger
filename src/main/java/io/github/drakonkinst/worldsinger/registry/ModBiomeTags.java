@@ -21,26 +21,28 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.github.drakonkinst.worldsinger.worldgen;
+
+package io.github.drakonkinst.worldsinger.registry;
 
 import io.github.drakonkinst.worldsinger.Worldsinger;
-import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraft.world.biome.Biome;
 
-public final class ModBiomes {
+public final class ModBiomeTags {
 
-    public static final RegistryKey<Biome> LUMAR_FOREST = ModBiomes.of("lumar_forest");
-    public static final RegistryKey<Biome> LUMAR_GRASSLANDS = ModBiomes.of("lumar_grasslands");
-    public static final RegistryKey<Biome> LUMAR_PEAKS = ModBiomes.of("lumar_peaks");
-    public static final RegistryKey<Biome> LUMAR_ROCKS = ModBiomes.of("lumar_rocks");
-    public static final RegistryKey<Biome> SALTSTONE_ISLAND = ModBiomes.of("saltstone_island");
-    public static final RegistryKey<Biome> SPORE_SEA = ModBiomes.of("spore_sea");
-    public static final RegistryKey<Biome> DEEP_SPORE_SEA = ModBiomes.of("deep_spore_sea");
+    public static final TagKey<Biome> IS_LUMAR_BEACH = ModBiomeTags.of("is_lumar_beach");
+    public static final TagKey<Biome> IS_LUMAR_OCEAN = ModBiomeTags.of("is_lumar_ocean");
+    public static final TagKey<Biome> LUMAR_MINESHAFT_HAS_STRUCTURE = ModBiomeTags.of(
+            "has_structure/lumar_mineshaft");
+    public static final TagKey<Biome> LUMAR_SALTSTONE_WELL_HAS_STRUCTURE = ModBiomeTags.of(
+            "has_structure/lumar_saltstone_well");
+    public static final TagKey<Biome> LUMAR_SHIPWRECK_HAS_STRUCTURE = ModBiomeTags.of(
+            "has_structure/lumar_shipwreck");
 
-    private static RegistryKey<Biome> of(String id) {
-        return RegistryKey.of(RegistryKeys.BIOME, Worldsinger.id(id));
+    private static TagKey<Biome> of(String id) {
+        return TagKey.of(RegistryKeys.BIOME, Worldsinger.id(id));
     }
 
-    private ModBiomes() {}
+    private ModBiomeTags() {}
 }

@@ -21,26 +21,25 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.github.drakonkinst.worldsinger.worldgen;
 
-import io.github.drakonkinst.worldsinger.Worldsinger;
-import net.minecraft.registry.RegistryKey;
+package io.github.drakonkinst.worldsinger.datagen.tag;
+
+import java.util.concurrent.CompletableFuture;
+import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
+import net.fabricmc.fabric.api.datagen.v1.provider.FabricTagProvider;
+import net.minecraft.entity.damage.DamageType;
 import net.minecraft.registry.RegistryKeys;
-import net.minecraft.world.biome.Biome;
+import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 
-public final class ModBiomes {
+public class ModDamageTypeTagGenerator extends FabricTagProvider<DamageType> {
 
-    public static final RegistryKey<Biome> LUMAR_FOREST = ModBiomes.of("lumar_forest");
-    public static final RegistryKey<Biome> LUMAR_GRASSLANDS = ModBiomes.of("lumar_grasslands");
-    public static final RegistryKey<Biome> LUMAR_PEAKS = ModBiomes.of("lumar_peaks");
-    public static final RegistryKey<Biome> LUMAR_ROCKS = ModBiomes.of("lumar_rocks");
-    public static final RegistryKey<Biome> SALTSTONE_ISLAND = ModBiomes.of("saltstone_island");
-    public static final RegistryKey<Biome> SPORE_SEA = ModBiomes.of("spore_sea");
-    public static final RegistryKey<Biome> DEEP_SPORE_SEA = ModBiomes.of("deep_spore_sea");
-
-    private static RegistryKey<Biome> of(String id) {
-        return RegistryKey.of(RegistryKeys.BIOME, Worldsinger.id(id));
+    public ModDamageTypeTagGenerator(FabricDataOutput output,
+            CompletableFuture<WrapperLookup> registriesFuture) {
+        super(output, RegistryKeys.DAMAGE_TYPE, registriesFuture);
     }
 
-    private ModBiomes() {}
+    @Override
+    protected void configure(WrapperLookup wrapperLookup) {
+
+    }
 }

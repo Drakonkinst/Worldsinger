@@ -23,7 +23,9 @@
  */
 package io.github.drakonkinst.worldsinger.datagen;
 
+import io.github.drakonkinst.worldsinger.datagen.tag.ModBiomeTagGenerator;
 import io.github.drakonkinst.worldsinger.datagen.tag.ModBlockTagGenerator;
+import io.github.drakonkinst.worldsinger.datagen.tag.ModDamageTypeTagGenerator;
 import io.github.drakonkinst.worldsinger.datagen.tag.ModEntityTagGenerator;
 import io.github.drakonkinst.worldsinger.datagen.tag.ModFluidTagGenerator;
 import io.github.drakonkinst.worldsinger.datagen.tag.ModItemTagGenerator;
@@ -43,5 +45,7 @@ public class ModDataGenerator implements DataGeneratorEntrypoint {
                 blockTagGenerator));
         pack.addProvider(ModFluidTagGenerator::new);
         pack.addProvider(ModEntityTagGenerator::new);
+        pack.addProvider(ModDamageTypeTagGenerator::new);
+        pack.addProvider(ModBiomeTagGenerator::new);
     }
 }
