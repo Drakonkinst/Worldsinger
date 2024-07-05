@@ -24,8 +24,11 @@
 package io.github.drakonkinst.worldsinger.registry;
 
 import io.github.drakonkinst.worldsinger.Worldsinger;
+import net.minecraft.entity.damage.DamageEffects;
+import net.minecraft.entity.damage.DamageScaling;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.damage.DamageType;
+import net.minecraft.registry.Registerable;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.util.Identifier;
@@ -61,6 +64,36 @@ public final class ModDamageTypes {
     public static DamageSource createSource(World world, RegistryKey<DamageType> key) {
         return new DamageSource(
                 world.getRegistryManager().get(RegistryKeys.DAMAGE_TYPE).entryOf(key));
+    }
+
+    public static void generateTypes(Registerable<DamageType> damageTypeRegisterable) {
+        damageTypeRegisterable.register(ModDamageTypes.VERDANT_SPORE,
+                new DamageType("verdant_spore", DamageScaling.WHEN_CAUSED_BY_LIVING_NON_PLAYER,
+                        0.0f, DamageEffects.FREEZING));
+        damageTypeRegisterable.register(ModDamageTypes.CRIMSON_SPORE,
+                new DamageType("crimson_spore", DamageScaling.WHEN_CAUSED_BY_LIVING_NON_PLAYER,
+                        0.0f, DamageEffects.POKING));
+        damageTypeRegisterable.register(ModDamageTypes.ZEPHYR_SPORE,
+                new DamageType("zephyr_spore", DamageScaling.WHEN_CAUSED_BY_LIVING_NON_PLAYER,
+                        0.0f));
+        damageTypeRegisterable.register(ModDamageTypes.SUNLIGHT_SPORE,
+                new DamageType("sunlight_spore", DamageScaling.WHEN_CAUSED_BY_LIVING_NON_PLAYER,
+                        0.0f, DamageEffects.BURNING));
+        damageTypeRegisterable.register(ModDamageTypes.ROSEITE_SPORE,
+                new DamageType("roseite_spore", DamageScaling.WHEN_CAUSED_BY_LIVING_NON_PLAYER,
+                        0.0f, DamageEffects.FREEZING));
+        damageTypeRegisterable.register(ModDamageTypes.MIDNIGHT_ESSENCE,
+                new DamageType("midnight_essence", DamageScaling.WHEN_CAUSED_BY_LIVING_NON_PLAYER,
+                        0.0f));
+        damageTypeRegisterable.register(ModDamageTypes.DROWN_SPORE,
+                new DamageType("drown_spore", DamageScaling.WHEN_CAUSED_BY_LIVING_NON_PLAYER,
+                        0.0f));
+        damageTypeRegisterable.register(ModDamageTypes.SPIKE,
+                new DamageType("spike", DamageScaling.WHEN_CAUSED_BY_LIVING_NON_PLAYER, 0.1f));
+        damageTypeRegisterable.register(ModDamageTypes.SPIKE_FALL,
+                new DamageType("spike_fall", DamageScaling.WHEN_CAUSED_BY_LIVING_NON_PLAYER, 0.1f));
+        damageTypeRegisterable.register(ModDamageTypes.THIRST,
+                new DamageType("thirst", DamageScaling.WHEN_CAUSED_BY_LIVING_NON_PLAYER, 0.0f));
     }
 
     private ModDamageTypes() {}

@@ -23,14 +23,16 @@
  */
 package io.github.drakonkinst.worldsinger.datagen;
 
-import io.github.drakonkinst.worldsinger.datagen.tag.ModBiomeTagGenerator;
 import io.github.drakonkinst.worldsinger.datagen.tag.ModBlockTagGenerator;
 import io.github.drakonkinst.worldsinger.datagen.tag.ModDamageTypeTagGenerator;
 import io.github.drakonkinst.worldsinger.datagen.tag.ModEntityTagGenerator;
 import io.github.drakonkinst.worldsinger.datagen.tag.ModFluidTagGenerator;
 import io.github.drakonkinst.worldsinger.datagen.tag.ModItemTagGenerator;
+import io.github.drakonkinst.worldsinger.registry.ModDamageTypes;
 import net.fabricmc.fabric.api.datagen.v1.DataGeneratorEntrypoint;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataGenerator;
+import net.minecraft.registry.RegistryBuilder;
+import net.minecraft.registry.RegistryKeys;
 
 public class ModDataGenerator implements DataGeneratorEntrypoint {
 
@@ -45,7 +47,13 @@ public class ModDataGenerator implements DataGeneratorEntrypoint {
                 blockTagGenerator));
         pack.addProvider(ModFluidTagGenerator::new);
         pack.addProvider(ModEntityTagGenerator::new);
+        pack.addProvider(ModDamageTypeGenerator::new);
         pack.addProvider(ModDamageTypeTagGenerator::new);
-        pack.addProvider(ModBiomeTagGenerator::new);
+        // pack.addProvider(ModBiomeTagGenerator::new);
+    }
+
+    @Override
+    public void buildRegistry(RegistryBuilder registryBuilder) {
+        registryBuilder.addRegistry(RegistryKeys.DAMAGE_TYPE, ModDamageTypes::generateTypes);
     }
 }
