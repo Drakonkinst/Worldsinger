@@ -82,11 +82,6 @@ public class SporeCauldronBlock extends LeveledCauldronBlock implements SporeEmi
     }
 
     @Override
-    public ItemStack getPickStack(WorldView world, BlockPos pos, BlockState state) {
-        return Items.CAULDRON.getDefaultStack();
-    }
-
-    @Override
     public AetherSpores getSporeType() {
         return sporeType;
     }

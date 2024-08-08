@@ -222,6 +222,36 @@ public final class ModItems {
     }
 
     public static void initialize() {
+        // Add block item
+        Block[] modCauldronBlocks = {
+                ModBlocks.DEAD_SPORE_CAULDRON,
+                ModBlocks.VERDANT_SPORE_CAULDRON,
+                ModBlocks.CRIMSON_SPORE_CAULDRON,
+                ModBlocks.ZEPHYR_SPORE_CAULDRON,
+                ModBlocks.SUNLIGHT_SPORE_CAULDRON,
+                ModBlocks.ROSEITE_SPORE_CAULDRON,
+                ModBlocks.MIDNIGHT_SPORE_CAULDRON
+        };
+        for (Block block : modCauldronBlocks) {
+            Item.BLOCK_ITEMS.put(block, Blocks.CAULDRON.asItem());
+        }
+        Block[] aluminumCauldronBlocks = {
+                ModBlocks.ALUMINUM_CAULDRON,
+                ModBlocks.ALUMINUM_WATER_CAULDRON,
+                ModBlocks.ALUMINUM_LAVA_CAULDRON,
+                ModBlocks.ALUMINUM_POWDER_SNOW_CAULDRON,
+                ModBlocks.ALUMINUM_DEAD_SPORE_CAULDRON,
+                ModBlocks.ALUMINUM_VERDANT_SPORE_CAULDRON,
+                ModBlocks.ALUMINUM_CRIMSON_SPORE_CAULDRON,
+                ModBlocks.ALUMINUM_ZEPHYR_SPORE_CAULDRON,
+                ModBlocks.ALUMINUM_SUNLIGHT_SPORE_CAULDRON,
+                ModBlocks.ALUMINUM_ROSEITE_SPORE_CAULDRON,
+                ModBlocks.ALUMINUM_MIDNIGHT_SPORE_CAULDRON
+        };
+        for (Block block : aluminumCauldronBlocks) {
+            Item.BLOCK_ITEMS.put(block, ModBlocks.ALUMINUM_CAULDRON.asItem());
+        }
+
         // Custom item group
         Identifier moddedItemsIdentifier = Worldsinger.id("worldsinger");
         Registry.register(Registries.ITEM_GROUP, moddedItemsIdentifier, WORLDSINGER_ITEM_GROUP);
