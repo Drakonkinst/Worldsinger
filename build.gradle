@@ -70,10 +70,9 @@ dependencies {
     }
 
     // Mod Menu Integration (Optional)
-//    modApi("com.terraformersmc:modmenu:${project.modmenu_version}") {
-//        transitive = false
-//        exclude(group: "net.fabricmc.fabric-api")
-//    }
+    modApi("com.terraformersmc:modmenu:${project.modmenu_version}") {
+        exclude(group: "net.fabricmc.fabric-api")
+    }
 
     // YACL (Optional)
     modCompileOnly("dev.isxander:yet-another-config-lib:${project.yacl_version}-fabric") {
