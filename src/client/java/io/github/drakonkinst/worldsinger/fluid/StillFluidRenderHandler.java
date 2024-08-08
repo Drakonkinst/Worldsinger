@@ -126,9 +126,9 @@ public class StillFluidRenderHandler implements FluidRenderHandler {
         float brightnessUp = world.getBrightness(Direction.UP, shaded);
         float brightnessNorth = world.getBrightness(Direction.NORTH, shaded);
         float brightnessWest = world.getBrightness(Direction.WEST, shaded);
-        double x = pos.getX() & 0xF;
-        double y = pos.getY() & 0xF;
-        double z = pos.getZ() & 0xF;
+        float x = pos.getX() & 0xF;
+        float y = pos.getY() & 0xF;
+        float z = pos.getZ() & 0xF;
 
         if (shouldRenderUp) {
             float u1 = sprite.getMinU();
@@ -155,67 +155,69 @@ public class StillFluidRenderHandler implements FluidRenderHandler {
             v4 = MathHelper.lerp(frameDelta, v4, midV);
 
             int light = this.getLight(world, pos);
-            this.vertex(vertexConsumer, x, y + 1.0, z, brightnessUp, u1, v1, light);
-            this.vertex(vertexConsumer, x, y + 1.0, z + 1.0, brightnessUp, u2, v3, light);
-            this.vertex(vertexConsumer, x + 1.0, y + 1.0, z + 1.0, brightnessUp, u3, v4, light);
-            this.vertex(vertexConsumer, x + 1.0, y + 1.0, z, brightnessUp, u4, v2, light);
+            this.vertex(vertexConsumer, x, y + 1.0f, z, brightnessUp, u1, v1, light);
+            this.vertex(vertexConsumer, x, y + 1.0f, z + 1.0f, brightnessUp, u2, v3, light);
+            this.vertex(vertexConsumer, x + 1.0f, y + 1.0f, z + 1.0f, brightnessUp, u3, v4, light);
+            this.vertex(vertexConsumer, x + 1.0f, y + 1.0f, z, brightnessUp, u4, v2, light);
             if (fluidState.canFlowTo(world, pos.up())) {
                 // Renders the other side
-                this.vertex(vertexConsumer, x, y + 1.0, z, brightnessUp, u1, v1, light);
-                this.vertex(vertexConsumer, x + 1.0, y + 1.0, z, brightnessUp, u4, v2, light);
-                this.vertex(vertexConsumer, x + 1.0, y + 1.0, z + 1.0, brightnessUp, u3, v4, light);
-                this.vertex(vertexConsumer, x, y + 1.0, z + 1.0, brightnessUp, u2, v3, light);
+                this.vertex(vertexConsumer, x, y + 1.0f, z, brightnessUp, u1, v1, light);
+                this.vertex(vertexConsumer, x + 1.0f, y + 1.0f, z, brightnessUp, u4, v2, light);
+                this.vertex(vertexConsumer, x + 1.0f, y + 1.0f, z + 1.0f, brightnessUp, u3, v4,
+                        light);
+                this.vertex(vertexConsumer, x, y + 1.0f, z + 1.0f, brightnessUp, u2, v3, light);
             }
         }
         if (shouldRenderDown) {
             int lightDown = this.getLight(world, pos.down());
-            this.vertex(vertexConsumer, x, y, z + 1.0, brightnessDown, minU, maxV, lightDown);
+            this.vertex(vertexConsumer, x, y, z + 1.0f, brightnessDown, minU, maxV, lightDown);
             this.vertex(vertexConsumer, x, y, z, brightnessDown, minU, minV, lightDown);
-            this.vertex(vertexConsumer, x + 1.0, y, z, brightnessDown, maxU, minV, lightDown);
-            this.vertex(vertexConsumer, x + 1.0, y, z + 1.0, brightnessDown, maxU, maxV, lightDown);
+            this.vertex(vertexConsumer, x + 1.0f, y, z, brightnessDown, maxU, minV, lightDown);
+            this.vertex(vertexConsumer, x + 1.0f, y, z + 1.0f, brightnessDown, maxU, maxV,
+                    lightDown);
 
             if (fluidState.canFlowTo(world, pos.down())) {
                 // Renders the other side
-                this.vertex(vertexConsumer, x, y, z + 1.0, brightnessDown, minU, maxV, lightDown);
-                this.vertex(vertexConsumer, x + 1.0, y, z + 1.0, brightnessDown, maxU, maxV,
+                this.vertex(vertexConsumer, x, y, z + 1.0f, brightnessDown, minU, maxV, lightDown);
+                this.vertex(vertexConsumer, x + 1.0f, y, z + 1.0f, brightnessDown, maxU, maxV,
                         lightDown);
-                this.vertex(vertexConsumer, x + 1.0, y, z, brightnessDown, maxU, minV, lightDown);
+                this.vertex(vertexConsumer, x + 1.0f, y, z, brightnessDown, maxU, minV, lightDown);
                 this.vertex(vertexConsumer, x, y, z, brightnessDown, minU, minV, lightDown);
             }
         }
         int light = this.getLight(world, pos);
         for (Direction direction : Direction.Type.HORIZONTAL) {
-            double minX;
-            double maxX;
-            double minZ;
-            double maxZ;
+            float minX;
+            float maxX;
+            float minZ;
+            float maxZ;
             if (!(switch (direction) {
                 case NORTH -> {
                     minX = x;
-                    maxX = x + 1.0;
+                    maxX = x + 1.0f;
                     minZ = z + Z_FIGHTING_BUFFER;
                     maxZ = z + Z_FIGHTING_BUFFER;
                     yield shouldRenderNorth;
                 }
                 case SOUTH -> {
-                    minX = x + 1.0;
+                    minX = x + 1.0f;
                     maxX = x;
-                    minZ = z + 1.0 - Z_FIGHTING_BUFFER;
-                    maxZ = z + 1.0 - Z_FIGHTING_BUFFER;
+                    minZ = z + 1.0f - Z_FIGHTING_BUFFER;
+                    maxZ = z + 1.0f - Z_FIGHTING_BUFFER;
                     yield shouldRenderSouth;
                 }
                 case WEST -> {
                     minX = x + Z_FIGHTING_BUFFER;
                     maxX = x + Z_FIGHTING_BUFFER;
-                    minZ = z + 1.0;
+                    minZ = z + 1.0f;
                     maxZ = z;
                     yield shouldRenderWest;
                 }
                 default -> {
-                    minX = x + 1.0 - Z_FIGHTING_BUFFER;
-                    maxX = x + 1.0 - Z_FIGHTING_BUFFER;
+                    minX = x + 1.0f - Z_FIGHTING_BUFFER;
+                    maxX = x + 1.0f - Z_FIGHTING_BUFFER;
                     minZ = z;
-                    maxZ = z + 1.0;
+                    maxZ = z + 1.0f;
                     yield shouldRenderEast;
                 }
             }) || StillFluidRenderHandler.isSideCovered(world, pos, direction,
@@ -226,15 +228,15 @@ public class StillFluidRenderHandler implements FluidRenderHandler {
             float brightness =
                     brightnessUp * (direction.getAxis() == Direction.Axis.Z ? brightnessNorth
                             : brightnessWest);
-            this.vertex(vertexConsumer, minX, y + 1.0, minZ, brightness, minU, minV, light);
-            this.vertex(vertexConsumer, maxX, y + 1.0, maxZ, brightness, maxU, minV, light);
+            this.vertex(vertexConsumer, minX, y + 1.0f, minZ, brightness, minU, minV, light);
+            this.vertex(vertexConsumer, maxX, y + 1.0f, maxZ, brightness, maxU, minV, light);
             this.vertex(vertexConsumer, maxX, y, maxZ, brightness, maxU, maxV, light);
             this.vertex(vertexConsumer, minX, y, minZ, brightness, minU, maxV, light);
             // Renders the other side
             this.vertex(vertexConsumer, minX, y, minZ, brightness, minU, maxV, light);
             this.vertex(vertexConsumer, maxX, y, maxZ, brightness, maxU, maxV, light);
-            this.vertex(vertexConsumer, maxX, y + 1.0, maxZ, brightness, maxU, minV, light);
-            this.vertex(vertexConsumer, minX, y + 1.0, minZ, brightness, minU, minV, light);
+            this.vertex(vertexConsumer, maxX, y + 1.0f, maxZ, brightness, maxU, minV, light);
+            this.vertex(vertexConsumer, minX, y + 1.0f, minZ, brightness, minU, minV, light);
         }
     }
 
@@ -248,8 +250,8 @@ public class StillFluidRenderHandler implements FluidRenderHandler {
         return (Math.max(k, l)) | (Math.max(m, n)) << 16;
     }
 
-    private void vertex(VertexConsumer vertexConsumer, double x, double y, double z,
-            float brightness, float u, float v, int light) {
+    private void vertex(VertexConsumer vertexConsumer, float x, float y, float z, float brightness,
+            float u, float v, int light) {
         if (shaded) {
             brightness = 1.0f;
         }
@@ -257,7 +259,6 @@ public class StillFluidRenderHandler implements FluidRenderHandler {
                 .color(brightness, brightness, brightness, 1.0f)
                 .texture(u, v)
                 .light(light)
-                .normal(0.0f, 1.0f, 0.0f)
-                .next();
+                .normal(0.0f, 1.0f, 0.0f);
     }
 }

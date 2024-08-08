@@ -24,6 +24,7 @@
 package io.github.drakonkinst.worldsinger.mixin.item;
 
 import io.github.drakonkinst.worldsinger.event.FinishConsumingItemCallback;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.HoneyBottleItem;
 import net.minecraft.item.Item;
@@ -46,7 +47,8 @@ public abstract class DrinkableItemFinishConsumingItemMixin extends Item {
     @Inject(method = "finishUsing", at = @At("HEAD"))
     private void onFinishConsumingItem(ItemStack stack, World world, LivingEntity user,
             CallbackInfoReturnable<ItemStack> cir) {
-        FinishConsumingItemCallback.EVENT.invoker().onConsume(user, stack);
+        FinishConsumingItemCallback.EVENT.invoker()
+                .onConsume(user, stack, stack.get(DataComponentTypes.FOOD));
     }
 
 }

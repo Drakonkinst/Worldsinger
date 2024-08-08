@@ -28,8 +28,7 @@ import com.mojang.serialization.Codec;
 import io.github.drakonkinst.worldsinger.Worldsinger;
 import io.github.drakonkinst.worldsinger.item.map.CustomMapDecorationsComponent;
 import java.util.function.UnaryOperator;
-import net.minecraft.component.DataComponentType;
-import net.minecraft.component.DataComponentType.Builder;
+import net.minecraft.component.ComponentType;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
@@ -38,20 +37,20 @@ import net.minecraft.util.dynamic.Codecs;
 @SuppressWarnings("UnqualifiedStaticUsage")
 public final class ModDataComponentTypes {
 
-    public static final DataComponentType<Boolean> SALTED = register("salted",
+    public static final ComponentType<Boolean> SALTED = register("salted",
             builder -> builder.codec(Codec.BOOL).packetCodec(PacketCodecs.BOOL));
-    public static final DataComponentType<Integer> SILVER_DURABILITY = register("silver_durability",
+    public static final ComponentType<Integer> SILVER_DURABILITY = register("silver_durability",
             builder -> builder.codec(Codecs.NONNEGATIVE_INT).packetCodec(PacketCodecs.VAR_INT));
-    public static final DataComponentType<CustomMapDecorationsComponent> CUSTOM_MAP_DECORATIONS = register(
+    public static final ComponentType<CustomMapDecorationsComponent> CUSTOM_MAP_DECORATIONS = register(
             "custom_map_decorations",
             builder -> builder.codec(CustomMapDecorationsComponent.CODEC));
 
     public static void initialize() {}
 
-    private static <T> DataComponentType<T> register(String id,
-            UnaryOperator<Builder<T>> builderOperator) {
+    private static <T> ComponentType<T> register(String id,
+            UnaryOperator<ComponentType.Builder<T>> builderOperator) {
         return Registry.register(Registries.DATA_COMPONENT_TYPE, Worldsinger.id(id),
-                builderOperator.apply(DataComponentType.builder()).build());
+                builderOperator.apply(ComponentType.builder()).build());
     }
 
     private ModDataComponentTypes() {}

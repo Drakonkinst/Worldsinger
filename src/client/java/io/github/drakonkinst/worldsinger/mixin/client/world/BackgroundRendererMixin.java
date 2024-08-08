@@ -29,15 +29,15 @@ import io.github.drakonkinst.worldsinger.Worldsinger;
 import io.github.drakonkinst.worldsinger.block.ModBlocks;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.SunlightSpores;
 import io.github.drakonkinst.worldsinger.fluid.AetherSporeFluid;
-import io.github.drakonkinst.worldsinger.registry.ModClientEnums;
 import io.github.drakonkinst.worldsinger.util.ColorUtil;
+import io.github.drakonkinst.worldsinger.util.ModEnums;
 import io.github.drakonkinst.worldsinger.world.CameraPosAccess;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.enums.CameraSubmersionType;
 import net.minecraft.client.render.BackgroundRenderer;
 import net.minecraft.client.render.BackgroundRenderer.FogData;
 import net.minecraft.client.render.BackgroundRenderer.FogType;
 import net.minecraft.client.render.Camera;
-import net.minecraft.client.render.CameraSubmersionType;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.fluid.FluidState;
@@ -57,10 +57,10 @@ public abstract class BackgroundRendererMixin {
     @Shadow
     private static float blue;
 
-    @ModifyExpressionValue(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/Camera;getSubmersionType()Lnet/minecraft/client/render/CameraSubmersionType;", ordinal = 0))
+    @ModifyExpressionValue(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/Camera;getSubmersionType()Lnet/minecraft/block/enums/CameraSubmersionType;", ordinal = 0))
     private static CameraSubmersionType skipExpensiveCalculation(CameraSubmersionType original) {
         // Pretend to be lava, skipping the expensive default "else" calculation
-        if (original == ModClientEnums.CameraSubmersionType.SPORE_SEA) {
+        if (original == ModEnums.CameraSubmersionType.SPORE_SEA) {
             return CameraSubmersionType.LAVA;
         }
         return original;
@@ -71,7 +71,7 @@ public abstract class BackgroundRendererMixin {
             int viewDistance, float skyDarkness, CallbackInfo ci) {
         CameraSubmersionType cameraSubmersionType = camera.getSubmersionType();
 
-        if (cameraSubmersionType != ModClientEnums.CameraSubmersionType.SPORE_SEA) {
+        if (cameraSubmersionType != ModEnums.CameraSubmersionType.SPORE_SEA) {
             return;
         }
 
@@ -102,7 +102,7 @@ public abstract class BackgroundRendererMixin {
     @Inject(method = "applyFog", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/systems/RenderSystem;setShaderFogStart(F)V"), cancellable = true)
     private static void injectCustomFluidFogSettings(Camera camera, FogType fogType,
             float viewDistance, boolean thickFog, float tickDelta, CallbackInfo ci) {
-        if (camera.getSubmersionType() == ModClientEnums.CameraSubmersionType.SPORE_SEA) {
+        if (camera.getSubmersionType() == ModEnums.CameraSubmersionType.SPORE_SEA) {
             FogData fogData = new FogData(fogType);
             Entity entity = camera.getFocusedEntity();
             if (entity.isSpectator()) {

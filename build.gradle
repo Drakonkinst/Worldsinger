@@ -1,7 +1,7 @@
 plugins {
-    id 'fabric-loom' version '1.6-SNAPSHOT'
+    id 'fabric-loom' version '1.7-SNAPSHOT'
     id 'maven-publish'
-    id "me.fallenbreath.yamlang" version "1.3.1"
+    id "me.fallenbreath.yamlang" version "1.4.0"
 }
 
 version = project.mod_version
@@ -70,12 +70,13 @@ dependencies {
     }
 
     // Mod Menu Integration (Optional)
-    modApi("com.terraformersmc:modmenu:${project.modmenu_version}") {
-        exclude(group: "net.fabricmc.fabric-api")
-    }
+//    modApi("com.terraformersmc:modmenu:${project.modmenu_version}") {
+//        transitive = false
+//        exclude(group: "net.fabricmc.fabric-api")
+//    }
 
     // YACL (Optional)
-    modCompileOnly("dev.isxander.yacl:yet-another-config-lib-fabric:${project.yacl_version}") {
+    modCompileOnly("dev.isxander:yet-another-config-lib:${project.yacl_version}-fabric") {
         exclude(group: "net.fabricmc.fabric-api")
     }
 }

@@ -50,7 +50,7 @@ import net.minecraft.world.World;
 @SuppressWarnings("resource")
 public class LumarWeatherRenderer implements WeatherRenderer {
 
-    private static final Identifier RAIN = new Identifier("textures/environment/rain.png");
+    private static final Identifier RAIN = Identifier.of("textures/environment/rain.png");
 
     private static final int SEARCH_BONUS_RADIUS = 64;
     private static final float SCROLL_WIDTH = 32.0f;
@@ -86,7 +86,8 @@ public class LumarWeatherRenderer implements WeatherRenderer {
         int cameraZ = MathHelper.floor(cameraPos.getZ());
         int ticks = ((WorldRendererAccessor) context.worldRenderer()).worldsinger$getTicks();
         Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferBuilder = tessellator.getBuffer();
+        BufferBuilder bufferBuilder = null;
+
         RenderSystem.disableCull();
         RenderSystem.enableBlend();
         RenderSystem.enableDepthTest();
@@ -97,6 +98,8 @@ public class LumarWeatherRenderer implements WeatherRenderer {
 
         RenderSystem.depthMask(MinecraftClient.isFabulousGraphicsOrBetter());
         boolean drawingAnyRain = false;
+        int tracker = -1;
+
         RenderSystem.setShader(GameRenderer::getParticleProgram);
 
         BlockPos.Mutable mutable = new Mutable();
@@ -105,9 +108,10 @@ public class LumarWeatherRenderer implements WeatherRenderer {
             for (int x = cameraX - renderDistance; x <= cameraX + renderDistance; ++x) {
                 int normalLineIndex =
                         (z - cameraZ + NORMAL_DIM) * NORMAL_DIM * 2 + x - cameraX + NORMAL_DIM;
-                double normalDx = (double) this.NORMAL_LINE_DX[normalLineIndex] * 0.5;
-                double normalDz = (double) this.NORMAL_LINE_DZ[normalLineIndex] * 0.5;
+                float normalDx = this.NORMAL_LINE_DX[normalLineIndex] * 0.5f;
+                float normalDz = this.NORMAL_LINE_DZ[normalLineIndex] * 0.5f;
                 mutable.set(x, cameraY, z);
+                // TODO: Move this logic to a mixin below this line
                 if (isWithinAnyRainline(nearbyRainlines, mutable)) {
                     int surfaceHeight = world.getTopY(Type.MOTION_BLOCKING, x, z);
                     int minFrustumHeight = cameraY - renderDistance;
@@ -125,57 +129,50 @@ public class LumarWeatherRenderer implements WeatherRenderer {
                         Random seededRandom = Random.create(
                                 x * x * 3121L + x * 45238971L ^ z * z * 418711L + z * 13761L);
                         mutable.set(x, minFrustumHeight, z);
-                        if (!drawingAnyRain) {
+                        if (!drawingAnyRain || bufferBuilder == null) {
                             drawingAnyRain = true;
                             RenderSystem.setShaderTexture(0, RAIN);
-                            bufferBuilder.begin(VertexFormat.DrawMode.QUADS,
+                            bufferBuilder = tessellator.begin(VertexFormat.DrawMode.QUADS,
                                     VertexFormats.POSITION_TEXTURE_COLOR_LIGHT);
                         }
 
                         // Variable of death
                         float scrollDistance = -(((ticks & 131071) + (
                                 x * x * 3121 + x * 45238971 + z * z * 418711 + z * 13761 & 0xFF))
-                                + context.tickDelta()) / SCROLL_WIDTH * (3.0f
+                                + context.tickCounter().getTickDelta(false)) / SCROLL_WIDTH * (3.0f
                                 + seededRandom.nextFloat());
                         float scrollOffset = scrollDistance % SCROLL_WIDTH;
-                        double deltaX = x - cameraX + 0.5;
-                        double deltaZ = z - cameraZ + 0.5;
+                        float deltaX = x - cameraX + 0.5f;
+                        float deltaZ = z - cameraZ + 0.5f;
                         float scaledDist = (float) Math.sqrt(deltaX * deltaX + deltaZ * deltaZ)
                                 / (float) renderDistance;
                         float alpha = ((1.0F - scaledDist * scaledDist) * 0.5F + 0.5F);
                         mutable.set(x, t, z);
                         int uv = WorldRenderer.getLightmapCoordinates(world, mutable);
-                        bufferBuilder.vertex(x - cameraX + 0.5 - normalDx,
+                        bufferBuilder.vertex(x - cameraX + 0.5f - normalDx,
                                         maxFrustumHeight - cameraY, deltaZ - normalDz)
                                 .texture(0.0F, minFrustumHeight * 0.25F + scrollOffset)
                                 .color(1.0F, 1.0F, 1.0F, alpha)
-                                .light(uv)
-                                .next();
-                        bufferBuilder.vertex(x - cameraX + 0.5 + normalDx,
+                                .light(uv);
+                        bufferBuilder.vertex(x - cameraX + 0.5f + normalDx,
                                         maxFrustumHeight - cameraY, deltaZ + normalDz)
                                 .texture(1.0F, minFrustumHeight * 0.25F + scrollOffset)
                                 .color(1.0F, 1.0F, 1.0F, alpha)
-                                .light(uv)
-                                .next();
-                        bufferBuilder.vertex(x - cameraX + 0.5 + normalDx,
+                                .light(uv);
+                        bufferBuilder.vertex(x - cameraX + 0.5f + normalDx,
                                         minFrustumHeight - cameraY, deltaZ + normalDz)
                                 .texture(1.0F, maxFrustumHeight * 0.25F + scrollOffset)
                                 .color(1.0F, 1.0F, 1.0F, alpha)
-                                .light(uv)
-                                .next();
-                        bufferBuilder.vertex(x - cameraX + 0.5 - normalDx,
+                                .light(uv);
+                        bufferBuilder.vertex(x - cameraX + 0.5f - normalDx,
                                         minFrustumHeight - cameraY, deltaZ - normalDz)
                                 .texture(0.0F, maxFrustumHeight * 0.25F + scrollOffset)
                                 .color(1.0F, 1.0F, 1.0F, alpha)
-                                .light(uv)
-                                .next();
+                                .light(uv);
                     }
                 }
+                // TODO: Move this logic to a mixin above this line
             }
-        }
-
-        if (drawingAnyRain) {
-            tessellator.draw();
         }
 
         RenderSystem.enableCull();

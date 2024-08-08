@@ -28,11 +28,11 @@ import io.github.drakonkinst.worldsinger.api.ModApi;
 import io.github.drakonkinst.worldsinger.cosmere.SilverLined;
 import io.github.drakonkinst.worldsinger.cosmere.SilverLinedUtil;
 import io.github.drakonkinst.worldsinger.registry.tag.ModConventionalItemTags;
-import net.minecraft.inventory.RecipeInputInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.recipe.SpecialCraftingRecipe;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
+import net.minecraft.recipe.input.CraftingRecipeInput;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.world.World;
 
@@ -43,11 +43,11 @@ public class SilverLinedItemRecipe extends SpecialCraftingRecipe {
     }
 
     @Override
-    public boolean matches(RecipeInputInventory inventory, World world) {
+    public boolean matches(CraftingRecipeInput input, World world) {
         ItemStack silverLinedItem = ItemStack.EMPTY;
         int numSilverIngots = 0;
-        for (int i = 0; i < inventory.size(); ++i) {
-            ItemStack stack = inventory.getStack(i);
+        for (int i = 0; i < input.getSize(); ++i) {
+            ItemStack stack = input.getStackInSlot(i);
             if (stack.isIn(ModConventionalItemTags.SILVER_INGOTS)) {
                 numSilverIngots += 1;
             } else if (SilverLinedUtil.canBeSilverLined(stack)) {
@@ -65,11 +65,11 @@ public class SilverLinedItemRecipe extends SpecialCraftingRecipe {
     }
 
     @Override
-    public ItemStack craft(RecipeInputInventory inventory, RegistryWrapper.WrapperLookup lookup) {
+    public ItemStack craft(CraftingRecipeInput input, RegistryWrapper.WrapperLookup lookup) {
         ItemStack silverLinedItem = ItemStack.EMPTY;
         int numSilverIngots = 0;
-        for (int i = 0; i < inventory.size(); ++i) {
-            ItemStack stack = inventory.getStack(i);
+        for (int i = 0; i < input.getSize(); ++i) {
+            ItemStack stack = input.getStackInSlot(i);
             if (stack.isIn(ModConventionalItemTags.SILVER_INGOTS)) {
                 numSilverIngots += 1;
             } else if (SilverLinedUtil.canBeSilverLined(stack)) {

@@ -28,7 +28,6 @@ import io.github.drakonkinst.worldsinger.mixin.accessor.ChunkNoiseSamplerInvoker
 import java.util.HashSet;
 import java.util.OptionalInt;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executor;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import net.minecraft.SharedConstants;
@@ -159,8 +158,8 @@ public abstract class CustomNoiseChunkGenerator extends NoiseChunkGenerator {
     }
 
     @Override
-    public CompletableFuture<Chunk> populateBiomes(Executor executor, NoiseConfig noiseConfig,
-            Blender blender, StructureAccessor structureAccessor, Chunk chunk) {
+    public CompletableFuture<Chunk> populateBiomes(NoiseConfig noiseConfig, Blender blender,
+            StructureAccessor structureAccessor, Chunk chunk) {
         return CompletableFuture.supplyAsync(Util.debugSupplier("init_biomes", () -> {
             this.populateBiomes(blender, noiseConfig, structureAccessor, chunk);
             return chunk;
@@ -187,8 +186,8 @@ public abstract class CustomNoiseChunkGenerator extends NoiseChunkGenerator {
     }
 
     @Override
-    public CompletableFuture<Chunk> populateNoise(Executor executor, Blender blender,
-            NoiseConfig noiseConfig, StructureAccessor structureAccessor, Chunk chunk) {
+    public CompletableFuture<Chunk> populateNoise(Blender blender, NoiseConfig noiseConfig,
+            StructureAccessor structureAccessor, Chunk chunk) {
         GenerationShapeConfig generationShapeConfig = this.getSettings()
                 .value()
                 .generationShapeConfig()
@@ -215,7 +214,7 @@ public abstract class CustomNoiseChunkGenerator extends NoiseChunkGenerator {
             for (ChunkSection chunkSection : set) {
                 chunkSection.unlock();
             }
-        }, executor);
+        }, Util.getMainWorkerExecutor());
     }
 
     protected Chunk populateNoise(Blender blender, StructureAccessor structureAccessor,

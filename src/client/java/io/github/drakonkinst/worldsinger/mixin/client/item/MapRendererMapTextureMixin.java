@@ -82,23 +82,19 @@ public abstract class MapRendererMapTextureMixin {
             vertexConsumer2.vertex(matrix, -1.0F, 1.0F, layer * -0.001F)
                     .color(255, 255, 255, 255)
                     .texture(minU, minV)
-                    .light(light)
-                    .next();
+                    .light(light);
             vertexConsumer2.vertex(matrix, 1.0F, 1.0F, layer * -0.001F)
                     .color(255, 255, 255, 255)
                     .texture(maxU, minV)
-                    .light(light)
-                    .next();
+                    .light(light);
             vertexConsumer2.vertex(matrix, 1.0F, -1.0F, layer * -0.001F)
                     .color(255, 255, 255, 255)
                     .texture(maxU, maxV)
-                    .light(light)
-                    .next();
+                    .light(light);
             vertexConsumer2.vertex(matrix, -1.0F, -1.0F, layer * -0.001F)
                     .color(255, 255, 255, 255)
                     .texture(minU, maxV)
-                    .light(light)
-                    .next();
+                    .light(light);
             matrices.pop();
             ++layer;
         }

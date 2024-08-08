@@ -44,7 +44,7 @@ public abstract class GameRendererMixin {
 
     // TODO: Using one of the Super Secret Shaders for now, but should eventually make a custom one
     @Unique
-    private static final Identifier MIDNIGHT_CREATURE_OVERLAY = new Identifier(
+    private static final Identifier MIDNIGHT_CREATURE_OVERLAY = Identifier.of(
             "shaders/post/desaturate.json");
 
     @Shadow

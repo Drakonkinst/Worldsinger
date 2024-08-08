@@ -56,7 +56,7 @@ public final class ModConventionalItemTags {
             "raw_materials/silver");
 
     private static TagKey<Item> of(String id) {
-        return TagKey.of(RegistryKeys.ITEM, new Identifier(ModConstants.COMMON_ID, id));
+        return TagKey.of(RegistryKeys.ITEM, Identifier.of(ModConstants.COMMON_ID, id));
     }
 
     private ModConventionalItemTags() {}

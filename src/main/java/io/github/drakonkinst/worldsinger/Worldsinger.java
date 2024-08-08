@@ -61,7 +61,7 @@ public class Worldsinger implements ModInitializer {
     public static CommonProxy PROXY;
 
     public static Identifier id(String id) {
-        return new Identifier(ModConstants.MOD_ID, id);
+        return Identifier.of(ModConstants.MOD_ID, id);
     }
 
     public static String idStr(String id) {

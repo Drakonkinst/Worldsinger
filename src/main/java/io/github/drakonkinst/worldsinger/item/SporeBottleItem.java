@@ -30,7 +30,7 @@ import io.github.drakonkinst.worldsinger.event.FinishConsumingItemCallback;
 import io.github.drakonkinst.worldsinger.registry.ModDamageTypes;
 import java.util.List;
 import net.minecraft.advancement.criterion.Criteria;
-import net.minecraft.client.item.TooltipType;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.player.PlayerEntity;
@@ -38,6 +38,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.item.Items;
 import net.minecraft.item.PotionItem;
+import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.stat.Stats;
@@ -59,7 +60,8 @@ public class SporeBottleItem extends PotionItem implements SporeEmitting {
 
     @Override
     public ItemStack finishUsing(ItemStack stack, World world, LivingEntity user) {
-        FinishConsumingItemCallback.EVENT.invoker().onConsume(user, stack);
+        FinishConsumingItemCallback.EVENT.invoker()
+                .onConsume(user, stack, stack.get(DataComponentTypes.FOOD));
 
         PlayerEntity playerEntity = user instanceof PlayerEntity ? (PlayerEntity) user : null;
         if (playerEntity instanceof ServerPlayerEntity serverPlayerEntity) {

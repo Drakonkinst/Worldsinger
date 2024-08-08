@@ -29,6 +29,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
+import net.minecraft.server.network.EntityTrackerEntry;
 import net.minecraft.world.World;
 
 public abstract class ServerSideEntity extends Entity {
@@ -49,7 +50,8 @@ public abstract class ServerSideEntity extends Entity {
     }
 
     @Override
-    public Packet<ClientPlayPacketListener> createSpawnPacket() {
+    public Packet<ClientPlayPacketListener> createSpawnPacket(
+            EntityTrackerEntry entityTrackerEntry) {
         throw new IllegalStateException("Server-side entity should never be sent");
     }
 

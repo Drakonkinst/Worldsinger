@@ -73,7 +73,7 @@ public final class ModConventionalBlockTags {
             "storage_blocks/aluminum");
 
     private static TagKey<Block> of(String id) {
-        return TagKey.of(RegistryKeys.BLOCK, new Identifier(ModConstants.COMMON_ID, id));
+        return TagKey.of(RegistryKeys.BLOCK, Identifier.of(ModConstants.COMMON_ID, id));
     }
 
     private ModConventionalBlockTags() {}

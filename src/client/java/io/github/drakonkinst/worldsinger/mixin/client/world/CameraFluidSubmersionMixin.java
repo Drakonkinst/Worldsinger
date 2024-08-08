@@ -25,11 +25,11 @@ package io.github.drakonkinst.worldsinger.mixin.client.world;
 
 import io.github.drakonkinst.worldsinger.block.ModBlocks;
 import io.github.drakonkinst.worldsinger.fluid.ModFluidTags;
-import io.github.drakonkinst.worldsinger.registry.ModClientEnums;
+import io.github.drakonkinst.worldsinger.util.ModEnums;
 import io.github.drakonkinst.worldsinger.world.CameraPosAccess;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.enums.CameraSubmersionType;
 import net.minecraft.client.render.Camera;
-import net.minecraft.client.render.CameraSubmersionType;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.util.math.BlockPos.Mutable;
@@ -69,13 +69,13 @@ public abstract class CameraFluidSubmersionMixin implements CameraPosAccess {
 
         BlockState blockState = this.area.getBlockState(this.blockPos);
         if (blockState.isOf(ModBlocks.SUNLIGHT)) {
-            cir.setReturnValue(ModClientEnums.CameraSubmersionType.SPORE_SEA);
+            cir.setReturnValue(ModEnums.CameraSubmersionType.SPORE_SEA);
             return;
         }
 
         FluidState fluidState = this.worldsinger$getSubmersedFluidState();
         if (fluidState.isIn(ModFluidTags.AETHER_SPORES)) {
-            cir.setReturnValue(ModClientEnums.CameraSubmersionType.SPORE_SEA);
+            cir.setReturnValue(ModEnums.CameraSubmersionType.SPORE_SEA);
         }
     }
 

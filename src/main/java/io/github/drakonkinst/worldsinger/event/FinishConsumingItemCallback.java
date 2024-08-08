@@ -25,6 +25,7 @@ package io.github.drakonkinst.worldsinger.event;
 
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
+import net.minecraft.component.type.FoodComponent;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 
@@ -34,11 +35,11 @@ import net.minecraft.item.ItemStack;
 public interface FinishConsumingItemCallback {
 
     Event<FinishConsumingItemCallback> EVENT = EventFactory.createArrayBacked(
-            FinishConsumingItemCallback.class, (listeners) -> (entity, item) -> {
+            FinishConsumingItemCallback.class, (listeners) -> (entity, item, foodComponent) -> {
                 for (FinishConsumingItemCallback listener : listeners) {
-                    listener.onConsume(entity, item);
+                    listener.onConsume(entity, item, foodComponent);
                 }
             });
 
-    void onConsume(LivingEntity entity, ItemStack stack);
+    void onConsume(LivingEntity entity, ItemStack stack, FoodComponent foodComponent);
 }

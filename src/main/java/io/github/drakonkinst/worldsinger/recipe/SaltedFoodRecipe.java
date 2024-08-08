@@ -27,11 +27,11 @@ package io.github.drakonkinst.worldsinger.recipe;
 
 import io.github.drakonkinst.worldsinger.cosmere.SaltedFoodUtil;
 import io.github.drakonkinst.worldsinger.registry.tag.ModConventionalItemTags;
-import net.minecraft.inventory.RecipeInputInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.recipe.SpecialCraftingRecipe;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
+import net.minecraft.recipe.input.CraftingRecipeInput;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.world.World;
 
@@ -42,13 +42,13 @@ public class SaltedFoodRecipe extends SpecialCraftingRecipe {
     }
 
     @Override
-    public boolean matches(RecipeInputInventory inventory, World world) {
+    public boolean matches(CraftingRecipeInput input, World world) {
 
         ItemStack foodItem = ItemStack.EMPTY;
         boolean hasSalt = false;
 
-        for (int i = 0; i < inventory.size(); ++i) {
-            ItemStack stack = inventory.getStack(i);
+        for (int i = 0; i < input.getSize(); ++i) {
+            ItemStack stack = input.getStackInSlot(i);
             if (stack.isIn(ModConventionalItemTags.SALT)) {
                 if (hasSalt) {
                     // Cannot have more than one salt slot
@@ -71,12 +71,12 @@ public class SaltedFoodRecipe extends SpecialCraftingRecipe {
     }
 
     @Override
-    public ItemStack craft(RecipeInputInventory inventory, RegistryWrapper.WrapperLookup lookup) {
+    public ItemStack craft(CraftingRecipeInput input, RegistryWrapper.WrapperLookup lookup) {
         ItemStack foodItem = ItemStack.EMPTY;
         boolean hasSalt = false;
 
-        for (int i = 0; i < inventory.size(); ++i) {
-            ItemStack stack = inventory.getStack(i);
+        for (int i = 0; i < input.getSize(); ++i) {
+            ItemStack stack = input.getStackInSlot(i);
             if (stack.isIn(ModConventionalItemTags.SALT)) {
                 if (hasSalt) {
                     // Cannot have more than one salt slot

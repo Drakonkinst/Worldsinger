@@ -28,11 +28,11 @@ import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import io.github.drakonkinst.worldsinger.cosmere.CosmerePlanet;
 import io.github.drakonkinst.worldsinger.entity.RainlineEntity;
-import io.github.drakonkinst.worldsinger.registry.ModClientEnums;
 import io.github.drakonkinst.worldsinger.registry.tag.ModBlockTags;
+import io.github.drakonkinst.worldsinger.util.ModEnums;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.client.render.CameraSubmersionType;
+import net.minecraft.block.enums.CameraSubmersionType;
 import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.util.math.BlockPos;
@@ -49,6 +49,8 @@ public abstract class WorldRendererLumarMixin {
 
     @Shadow
     private @Nullable ClientWorld world;
+
+    // @WrapOperation(method = "renderWeather", at = @At(value = "INVOKE", target = "getPrecipitation"))
 
     @WrapOperation(method = "tickRainSplashing", at = @At(value = "INVOKE", target = "Lnet/minecraft/block/BlockState;isOf(Lnet/minecraft/block/Block;)Z"), slice = @Slice(from = @At(value = "INVOKE", target = "Lnet/minecraft/fluid/FluidState;getHeight(Lnet/minecraft/world/BlockView;Lnet/minecraft/util/math/BlockPos;)F"), to = @At(value = "INVOKE", target = "Lnet/minecraft/client/world/ClientWorld;addParticle(Lnet/minecraft/particle/ParticleEffect;DDDDDD)V")))
     private boolean makeLavaRainEffectsDataDriven(BlockState instance, Block block,
@@ -77,10 +79,10 @@ public abstract class WorldRendererLumarMixin {
         return original.call(instance, pos);
     }
 
-    @ModifyExpressionValue(method = "renderSky(Lorg/joml/Matrix4f;Lorg/joml/Matrix4f;FLnet/minecraft/client/render/Camera;ZLjava/lang/Runnable;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/Camera;getSubmersionType()Lnet/minecraft/client/render/CameraSubmersionType;"))
+    @ModifyExpressionValue(method = "renderSky", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/Camera;getSubmersionType()Lnet/minecraft/block/enums/CameraSubmersionType;"))
     private CameraSubmersionType skipRenderingSkyInSporeFluid(CameraSubmersionType original) {
         // Treat spore sea camera like lava, so that it skips sky rendering when submerged
-        if (original == ModClientEnums.CameraSubmersionType.SPORE_SEA) {
+        if (original == ModEnums.CameraSubmersionType.SPORE_SEA) {
             return CameraSubmersionType.LAVA;
         }
         return original;

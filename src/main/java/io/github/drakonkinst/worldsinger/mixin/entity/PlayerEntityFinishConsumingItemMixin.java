@@ -24,6 +24,7 @@
 package io.github.drakonkinst.worldsinger.mixin.entity;
 
 import io.github.drakonkinst.worldsinger.event.FinishConsumingItemCallback;
+import net.minecraft.component.type.FoodComponent;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -43,8 +44,8 @@ public abstract class PlayerEntityFinishConsumingItemMixin extends LivingEntity 
     }
 
     @Inject(method = "eatFood", at = @At("HEAD"))
-    private void onFinishConsumingItem(World world, ItemStack stack,
+    private void onFinishConsumingItem(World world, ItemStack stack, FoodComponent foodComponent,
             CallbackInfoReturnable<ItemStack> cir) {
-        FinishConsumingItemCallback.EVENT.invoker().onConsume(this, stack);
+        FinishConsumingItemCallback.EVENT.invoker().onConsume(this, stack, foodComponent);
     }
 }

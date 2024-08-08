@@ -24,7 +24,8 @@
 
 package io.github.drakonkinst.worldsinger.mixin.client.accessor;
 
-import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.render.BuiltBuffer;
+import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.WorldRenderer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
@@ -33,13 +34,13 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 @Mixin(WorldRenderer.class)
 public interface WorldRendererAccessor {
 
-    @Invoker("renderSky")
-    static BufferBuilder.BuiltBuffer worldsinger$renderSky(BufferBuilder builder, float f) {
+    @Invoker("buildSkyBuffer")
+    static BuiltBuffer worldsinger$buildSkyBuffer(Tessellator tessellator, float f) {
         throw new UnsupportedOperationException();
     }
 
-    @Invoker("renderStars")
-    BufferBuilder.BuiltBuffer worldsinger$renderStars(BufferBuilder builder);
+    @Invoker("buildStarsBuffer")
+    BuiltBuffer worldsinger$buildStarsBuffer(Tessellator tessellator);
 
     @Accessor("ticks")
     int worldsinger$getTicks();

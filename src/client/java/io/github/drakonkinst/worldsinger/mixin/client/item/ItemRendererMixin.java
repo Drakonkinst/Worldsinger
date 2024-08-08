@@ -33,7 +33,6 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.BakedModelManager;
-import net.minecraft.client.util.ModelIdentifier;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
@@ -78,7 +77,7 @@ public abstract class ItemRendererMixin {
 
     @Unique
 
-    private ModelIdentifier getSilverLinedOverlayForItem(ItemStack stack) {
+    private Identifier getSilverLinedOverlayForItem(ItemStack stack) {
         if (stack.isIn(ItemTags.AXES)) {
             return ModItemRendering.SILVER_LINED_AXE_OVERLAY;
         }

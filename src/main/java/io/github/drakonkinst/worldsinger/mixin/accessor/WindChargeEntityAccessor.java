@@ -21,18 +21,17 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.github.drakonkinst.worldsinger.registry;
 
-import com.chocohead.mm.api.ClassTinkerers;
-import net.minecraft.client.render.DimensionEffects;
+package io.github.drakonkinst.worldsinger.mixin.accessor;
 
-public final class ModClientEnums {
+import net.minecraft.entity.projectile.WindChargeEntity;
+import net.minecraft.world.explosion.ExplosionBehavior;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.gen.Accessor;
 
-    public static class SkyType {
+@Mixin(WindChargeEntity.class)
+public interface WindChargeEntityAccessor {
 
-        public static final DimensionEffects.SkyType LUMAR = ClassTinkerers.getEnum(
-                DimensionEffects.SkyType.class, "LUMAR");
-    }
-
-    private ModClientEnums() {}
+    @Accessor("EXPLOSION_BEHAVIOR")
+    static ExplosionBehavior getExplosionBehavior() {throw new UnsupportedOperationException();}
 }

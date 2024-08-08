@@ -45,9 +45,10 @@ import net.minecraft.util.math.BlockPos;
 
 public final class ModEventHandlers {
 
+    @SuppressWarnings("UnstableApiUsage")
     public static void initialize() {
         // Add Thirst-related effects when consuming an item
-        FinishConsumingItemCallback.EVENT.register((entity, stack) -> {
+        FinishConsumingItemCallback.EVENT.register((entity, stack, foodComponent) -> {
             if (entity instanceof PlayerEntity player) {
                 player.getAttachedOrCreate(ModAttachmentTypes.THIRST).drink(stack.getItem(), stack);
 
@@ -108,7 +109,7 @@ public final class ModEventHandlers {
                     // We assume that if the amount is greater than 0, and it was direct, then it was a
                     // successful (non-blocked) melee attack from the main hand
                     Entity attacker = source.getAttacker();
-                    if (!wasBlocked && damageTaken > 0.0f && !source.isIndirect()
+                    if (!wasBlocked && damageTaken > 0.0f && source.isDirect()
                             && attacker instanceof LivingEntity livingEntity) {
                         ItemStack attackingItem = livingEntity.getMainHandStack();
 

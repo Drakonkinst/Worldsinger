@@ -39,4 +39,10 @@ public final class ModEnums {
         public static final net.minecraft.entity.ai.pathing.PathNodeType DAMAGE_SILVER = ClassTinkerers.getEnum(
                 net.minecraft.entity.ai.pathing.PathNodeType.class, "DAMAGE_SILVER");
     }
+
+    public static class CameraSubmersionType {
+
+        public static final net.minecraft.block.enums.CameraSubmersionType SPORE_SEA = ClassTinkerers.getEnum(
+                net.minecraft.block.enums.CameraSubmersionType.class, "SPORE_SEA");
+    }
 }

@@ -99,8 +99,7 @@ public class BoatSilverLiningFeatureRenderer extends FeatureRenderer<BoatEntity,
             MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light) {
         VertexConsumer vertexConsumer = vertexConsumers.getBuffer(
                 RenderLayer.getEntityCutoutNoCull(texture));
-        model.render(matrices, vertexConsumer, light, OverlayTexture.DEFAULT_UV, 1.0f, 1.0f, 1.0f,
-                1.0f);
+        model.render(matrices, vertexConsumer, light, OverlayTexture.DEFAULT_UV, -1);
     }
 
     private final Map<Type, Pair<Identifier, CompositeEntityModel<BoatEntity>>> texturesToModels;

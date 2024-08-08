@@ -43,6 +43,7 @@ import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.BackgroundRenderer;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.BufferRenderer;
+import net.minecraft.client.render.BuiltBuffer;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.Tessellator;
@@ -62,7 +63,7 @@ import org.joml.Vector3d;
 
 public class LumarSkyRenderer implements SkyRenderer {
 
-    private static final Identifier SUN = new Identifier("textures/environment/sun.png");
+    private static final Identifier SUN = Identifier.of("textures/environment/sun.png");
     private static final Identifier LUMAR_MOON = Worldsinger.id(
             "textures/environment/lumar_moon.png");
     private static final int MOON_TEXTURE_SECTIONS_Y = 1;
@@ -87,29 +88,28 @@ public class LumarSkyRenderer implements SkyRenderer {
 
     public LumarSkyRenderer() {
         Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferBuilder = tessellator.getBuffer();
         RenderSystem.setShader(GameRenderer::getPositionProgram);
 
         // Stars
         this.starsBuffer = new VertexBuffer(VertexBuffer.Usage.STATIC);
-        BufferBuilder.BuiltBuffer starsBuffer = ((WorldRendererAccessor) MinecraftClient.getInstance().worldRenderer).worldsinger$renderStars(
-                bufferBuilder);
+        BuiltBuffer starsBuffer = ((WorldRendererAccessor) MinecraftClient.getInstance().worldRenderer).worldsinger$buildStarsBuffer(
+                tessellator);
         this.starsBuffer.bind();
         this.starsBuffer.upload(starsBuffer);
         VertexBuffer.unbind();
 
         // Light Sky
         this.lightSkyBuffer = new VertexBuffer(VertexBuffer.Usage.STATIC);
-        BufferBuilder.BuiltBuffer lightSkyBuffer = WorldRendererAccessor.worldsinger$renderSky(
-                bufferBuilder, 16.0F);
+        BuiltBuffer lightSkyBuffer = WorldRendererAccessor.worldsinger$buildSkyBuffer(tessellator,
+                16.0F);
         this.lightSkyBuffer.bind();
         this.lightSkyBuffer.upload(lightSkyBuffer);
         VertexBuffer.unbind();
 
         // Dark Sky
         this.darkSkyBuffer = new VertexBuffer(VertexBuffer.Usage.STATIC);
-        BufferBuilder.BuiltBuffer darkSkyBuffer = WorldRendererAccessor.worldsinger$renderSky(
-                bufferBuilder, -16.0F);
+        BuiltBuffer darkSkyBuffer = WorldRendererAccessor.worldsinger$buildSkyBuffer(tessellator,
+                -16.0F);
         this.darkSkyBuffer.bind();
         this.darkSkyBuffer.upload(darkSkyBuffer);
         VertexBuffer.unbind();
@@ -118,7 +118,7 @@ public class LumarSkyRenderer implements SkyRenderer {
     @Override
     public void render(WorldRenderContext context) {
         final Matrix4f projectionMatrix = context.projectionMatrix();
-        final float tickDelta = context.tickDelta();
+        final float tickDelta = context.tickCounter().getTickDelta(false);
         final Camera camera = context.camera();
         final Vec3d cameraPos = camera.getPos();
         final GameRenderer gameRenderer = context.gameRenderer();
@@ -156,15 +156,14 @@ public class LumarSkyRenderer implements SkyRenderer {
             blue = blue * originalWeight + tintedColor * tintWeight;
         }
 
+        Tessellator tessellator = Tessellator.getInstance();
         BackgroundRenderer.applyFogColor();
-        BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
         RenderSystem.depthMask(false);
         RenderSystem.setShaderColor(red, green, blue, 1.0f);
         ShaderProgram shaderProgram = RenderSystem.getShader();
 
         // Draw light sky
-        this.drawLightSky(bufferBuilder, matrices, projectionMatrix, shaderProgram, world,
-                tickDelta);
+        this.drawLightSky(tessellator, matrices, projectionMatrix, shaderProgram, world, tickDelta);
 
         // Draw things in the sky
         RenderSystem.blendFuncSeparate(GlStateManager.SrcFactor.SRC_ALPHA,
@@ -175,12 +174,12 @@ public class LumarSkyRenderer implements SkyRenderer {
         matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-90.0f));
         matrices.multiply(
                 RotationAxis.POSITIVE_X.rotationDegrees(world.getSkyAngle(tickDelta) * 360.0f));
-        this.drawSun(bufferBuilder, matrices);
+        this.drawSun(tessellator, matrices);
         this.drawStars(matrices, projectionMatrix, world, gameRenderer, camera, tickDelta);
         matrices.pop();
         RenderSystem.disableBlend();
         RenderSystem.defaultBlendFunc();
-        this.drawMoons(bufferBuilder, matrices, player, tickDelta);
+        this.drawMoons(tessellator, matrices, player, tickDelta);
 
         // Draw dark sky
         this.drawDarkSky(matrices, projectionMatrix, shaderProgram, world, tickDelta, player);
@@ -188,27 +187,24 @@ public class LumarSkyRenderer implements SkyRenderer {
         RenderSystem.depthMask(true);
     }
 
-    private void drawSun(BufferBuilder bufferBuilder, MatrixStack matrices) {
+    private void drawSun(Tessellator tessellator, MatrixStack matrices) {
         Matrix4f positionMatrix = matrices.peek().getPositionMatrix();
         RenderSystem.setShader(GameRenderer::getPositionTexProgram);
         RenderSystem.setShaderTexture(0, SUN);
-        bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
+        BufferBuilder bufferBuilder = tessellator.begin(VertexFormat.DrawMode.QUADS,
+                VertexFormats.POSITION_TEXTURE);
         bufferBuilder.vertex(positionMatrix, -SUN_RADIUS, SUN_HEIGHT, -SUN_RADIUS)
-                .texture(0.0f, 0.0f)
-                .next();
+                .texture(0.0f, 0.0f);
         bufferBuilder.vertex(positionMatrix, SUN_RADIUS, SUN_HEIGHT, -SUN_RADIUS)
-                .texture(1.0f, 0.0f)
-                .next();
+                .texture(1.0f, 0.0f);
         bufferBuilder.vertex(positionMatrix, SUN_RADIUS, SUN_HEIGHT, SUN_RADIUS)
-                .texture(1.0f, 1.0f)
-                .next();
+                .texture(1.0f, 1.0f);
         bufferBuilder.vertex(positionMatrix, -SUN_RADIUS, SUN_HEIGHT, SUN_RADIUS)
-                .texture(0.0f, 1.0f)
-                .next();
+                .texture(0.0f, 1.0f);
         BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
     }
 
-    private void drawMoons(BufferBuilder bufferBuilder, MatrixStack matrices,
+    private void drawMoons(Tessellator tessellator, MatrixStack matrices,
             @NotNull ClientPlayerEntity player, float tickDelta) {
         RenderSystem.setShaderTexture(0, LUMAR_MOON);
         final ClientLunagreeData lunagreeData = ((ClientLunagreeDataAccess) player).worldsinger$getLunagreeData();
@@ -223,11 +219,11 @@ public class LumarSkyRenderer implements SkyRenderer {
                 continue;
             }
             // Render moon
-            drawMoonAtLocation(bufferBuilder, matrices, location, playerPos, distSq);
+            drawMoonAtLocation(tessellator, matrices, location, playerPos, distSq);
         }
     }
 
-    private void drawMoonAtLocation(BufferBuilder bufferBuilder, MatrixStack matrices,
+    private void drawMoonAtLocation(Tessellator tessellator, MatrixStack matrices,
             LunagreeLocation lunagreeLocation, Vec3d playerPos, double distSq) {
         final int sporeId = lunagreeLocation.sporeId();
         if (sporeId < 0 || sporeId >= SPORE_ID_TO_MOON_INDEX.length) {
@@ -250,6 +246,13 @@ public class LumarSkyRenderer implements SkyRenderer {
         // Solve for moon height given xz of moon, xyz of player, and desired vertical angle
         double deltaX = lunagreeLocation.blockX() - playerPos.getX();
         double deltaZ = lunagreeLocation.blockZ() - playerPos.getZ();
+        Quaternionf rotation = LumarSkyRenderer.solveForRotation(deltaX, deltaZ, verticalAngle);
+
+        drawMoon(tessellator, matrices, moonIndex, MOON_RADIUS, moonVisualDistance, rotation);
+    }
+
+    @NotNull
+    private static Quaternionf solveForRotation(double deltaX, double deltaZ, float verticalAngle) {
         double horizontalDistance = Math.sqrt(deltaX * deltaX + deltaZ * deltaZ);
         // We don't actually need to know the height of the moon, but here it is
         // double moonY = playerPos.getY() + horizontalDistance * Math.tan(verticalAngle);
@@ -272,12 +275,10 @@ public class LumarSkyRenderer implements SkyRenderer {
         float y = (float) (rotationAxis.y * sin);
         float z = (float) (rotationAxis.z * sin);
         float w = (float) cos;
-        Quaternionf rotation = new Quaternionf(x, y, z, w);
-
-        drawMoon(bufferBuilder, matrices, moonIndex, MOON_RADIUS, moonVisualDistance, rotation);
+        return new Quaternionf(x, y, z, w);
     }
 
-    private void drawMoon(BufferBuilder bufferBuilder, MatrixStack matrices, int moonIndex,
+    private void drawMoon(Tessellator tessellator, MatrixStack matrices, int moonIndex,
             float radius, float height, Quaternionf quaternion) {
         int xIndex = moonIndex % MOON_TEXTURE_SECTIONS_X;
         int yIndex = moonIndex / MOON_TEXTURE_SECTIONS_X % MOON_TEXTURE_SECTIONS_Y;
@@ -295,11 +296,12 @@ public class LumarSkyRenderer implements SkyRenderer {
         // Change coordinates to match the sun, since it should NOT be drawn on the
         // other side of the screen.
         Matrix4f moonPosition = matrices.peek().getPositionMatrix();
-        bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
-        bufferBuilder.vertex(moonPosition, -radius, height, -radius).texture(x1, y1).next();
-        bufferBuilder.vertex(moonPosition, radius, height, -radius).texture(x2, y1).next();
-        bufferBuilder.vertex(moonPosition, radius, height, radius).texture(x2, y2).next();
-        bufferBuilder.vertex(moonPosition, -radius, height, radius).texture(x1, y2).next();
+        BufferBuilder bufferBuilder = tessellator.begin(VertexFormat.DrawMode.QUADS,
+                VertexFormats.POSITION_TEXTURE);
+        bufferBuilder.vertex(moonPosition, -radius, height, -radius).texture(x1, y1);
+        bufferBuilder.vertex(moonPosition, radius, height, -radius).texture(x2, y1);
+        bufferBuilder.vertex(moonPosition, radius, height, radius).texture(x2, y2);
+        bufferBuilder.vertex(moonPosition, -radius, height, radius).texture(x1, y2);
         BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
         matrices.pop();
     }
@@ -335,7 +337,7 @@ public class LumarSkyRenderer implements SkyRenderer {
                 useThickFog, tickDelta);
     }
 
-    private void drawLightSky(BufferBuilder bufferBuilder, MatrixStack matrices,
+    private void drawLightSky(Tessellator tessellator, MatrixStack matrices,
             Matrix4f projectionMatrix, ShaderProgram shaderProgram, ClientWorld world,
             float tickDelta) {
         this.lightSkyBuffer.bind();
@@ -354,17 +356,16 @@ public class LumarSkyRenderer implements SkyRenderer {
             matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(i));
             matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(90.0f));
             Matrix4f matrix4f = matrices.peek().getPositionMatrix();
-            bufferBuilder.begin(VertexFormat.DrawMode.TRIANGLE_FAN, VertexFormats.POSITION_COLOR);
+            BufferBuilder bufferBuilder = tessellator.begin(VertexFormat.DrawMode.TRIANGLE_FAN,
+                    VertexFormats.POSITION_COLOR);
             bufferBuilder.vertex(matrix4f, 0.0f, 100.0f, 0.0f)
-                    .color(fogRgba[0], fogRgba[1], fogRgba[2], fogRgba[3])
-                    .next();
+                    .color(fogRgba[0], fogRgba[1], fogRgba[2], fogRgba[3]);
             for (int n = 0; n <= 16; ++n) {
                 float o = (float) n * ((float) Math.PI * 2) / 16.0f;
                 float p = MathHelper.sin(o);
                 float q = MathHelper.cos(o);
                 bufferBuilder.vertex(matrix4f, p * 120.0f, q * 120.0f, -q * 40.0f * fogRgba[3])
-                        .color(fogRgba[0], fogRgba[1], fogRgba[2], 0.0f)
-                        .next();
+                        .color(fogRgba[0], fogRgba[1], fogRgba[2], 0.0f);
             }
             BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
             matrices.pop();

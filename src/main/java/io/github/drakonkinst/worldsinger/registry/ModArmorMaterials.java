@@ -65,7 +65,7 @@ public final class ModArmorMaterials {
             enumMap.put(type, defense.get(type));
         }
 
-        return Registry.registerReference(Registries.ARMOR_MATERIAL, new Identifier(id),
+        return Registry.registerReference(Registries.ARMOR_MATERIAL, Identifier.of(id),
                 new ArmorMaterial(enumMap, enchantability, equipSound, repairIngredient, layers,
                         toughness, knockbackResistance));
     }
@@ -74,7 +74,7 @@ public final class ModArmorMaterials {
             EnumMap<ArmorItem.Type, Integer> defense, int enchantability,
             RegistryEntry<SoundEvent> equipSound, float toughness, float knockbackResistance,
             Supplier<Ingredient> repairIngredient) {
-        List<Layer> list = List.of(new ArmorMaterial.Layer(new Identifier(id)));
+        List<Layer> list = List.of(new ArmorMaterial.Layer(Identifier.of(id)));
         return ModArmorMaterials.register(id, defense, enchantability, equipSound, toughness,
                 knockbackResistance, repairIngredient, list);
     }

@@ -33,6 +33,7 @@ import io.github.drakonkinst.worldsinger.util.PossessionClientUtil;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.InGameHud;
+import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Identifier;
@@ -84,8 +85,9 @@ public abstract class InGameHudMixin {
     }
 
     // Occurs after the vignette based on graphics mode
-    @Inject(method = "renderMiscOverlays", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/MinecraftClient;getLastFrameDuration()F"), cancellable = true)
-    private void renderPossessionOverlays(DrawContext context, float tickDelta, CallbackInfo ci) {
+    @Inject(method = "renderMiscOverlays", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/RenderTickCounter;getLastFrameDuration()F"), cancellable = true)
+    private void renderPossessionOverlays(DrawContext context, RenderTickCounter tickCounter,
+            CallbackInfo ci) {
         CameraPossessable possessionTarget = PossessionClientUtil.getPossessedEntity();
         if (possessionTarget == null) {
             return;

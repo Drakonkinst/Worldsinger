@@ -31,15 +31,15 @@ import io.github.drakonkinst.worldsinger.util.LayeredBakedModel;
 import io.github.drakonkinst.worldsinger.util.LayeredBakedModelCache;
 import net.fabricmc.fabric.api.client.model.loading.v1.ModelLoadingPlugin;
 import net.fabricmc.fabric.api.client.rendering.v1.ColorProviderRegistry;
-import net.minecraft.client.util.ModelIdentifier;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper.Argb;
 
 public final class ModItemRendering {
 
-    public static final ModelIdentifier SALT_OVERLAY = new ModelIdentifier(
-            Worldsinger.id("salted_overlay"), "inventory");
-    public static final ModelIdentifier SILVER_LINED_AXE_OVERLAY = new ModelIdentifier(
-            Worldsinger.id("silver_lined_axe_overlay"), "inventory");
+    public static final Identifier SALT_OVERLAY = Worldsinger.id("item/salted_overlay");
+    public static final Identifier SILVER_LINED_AXE_OVERLAY = Worldsinger.id(
+            "item/silver_lined_axe_overlay");
+
     public static final LayeredBakedModelCache SALT_OVERLAY_CACHE = LayeredBakedModel.registerCache(
             new LayeredBakedModelCache());
     public static final LayeredBakedModelCache SILVER_LINED_CACHE = LayeredBakedModel.registerCache(

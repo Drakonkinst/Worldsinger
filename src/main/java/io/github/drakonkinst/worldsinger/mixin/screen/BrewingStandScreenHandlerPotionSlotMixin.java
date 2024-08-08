@@ -26,13 +26,13 @@ package io.github.drakonkinst.worldsinger.mixin.screen;
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.PotionItem;
+import net.minecraft.screen.BrewingStandScreenHandler.PotionSlot;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
-@Mixin(targets = "net.minecraft.screen.BrewingStandScreenHandler$PotionSlot")
+@Mixin(PotionSlot.class)
 public abstract class BrewingStandScreenHandlerPotionSlotMixin {
 
-    @SuppressWarnings("UnresolvedMixinReference")
     @ModifyReturnValue(method = "matches", at = @At("RETURN"))
     private static boolean allowCustomPotions(boolean original, ItemStack stack) {
         // This should technically call BrewingRecipeRegistry#isPotionType but difficult to get a reference to that here

@@ -50,8 +50,7 @@ public final class ModDamageTypes {
     public static final RegistryKey<DamageType> THIRST = ModDamageTypes.of("thirst");
 
     // TODO: Create custom damage type
-    public static final RegistryKey<DamageType> SUNLIGHT = ModDamageTypes.of(
-            new Identifier("lava"));
+    public static final RegistryKey<DamageType> SUNLIGHT = ModDamageTypes.of(Identifier.of("lava"));
 
     private static RegistryKey<DamageType> of(String id) {
         return ModDamageTypes.of(Worldsinger.id(id));
