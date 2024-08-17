@@ -160,7 +160,7 @@ public final class WaterReactionManager {
         return WATER_AMOUNT_FLOWING;
     }
 
-    private static WaterReactive getIfWaterReactive(BlockPos pos, BlockState state) {
+    public static WaterReactive getIfWaterReactive(BlockPos pos, BlockState state) {
         if (state.getBlock() instanceof WaterReactiveBlock waterReactiveBlock
                 && waterReactiveBlock.canReactToWater(pos, state)) {
             return waterReactiveBlock;

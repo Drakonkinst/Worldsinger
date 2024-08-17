@@ -82,6 +82,7 @@
     "item.DrinkableItemFinishConsumingItemMixin",
     "item.GlassBottleItemMixin",
     "item.ItemMixin",
+    "item.PotionItemMixin",
     "item.map.FilledMapItemMixin",
     "item.map.MapStateMixin",
     "item.map.MapStatePlayerUpdateTrackerMixin",

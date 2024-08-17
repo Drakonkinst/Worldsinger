@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2023-2024 Drakonkinst
+ * Copyright (c) 2024 Drakonkinst
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -9,7 +9,6 @@
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
  *
@@ -37,7 +36,7 @@ public final class ModItemTags {
     public static final TagKey<Item> BREWING_STAND_FUELS = ModItemTags.of("brewing_stand_fuels");
     public static final TagKey<Item> KILLS_SPORE_GROWTHS = ModItemTags.of("kills_spore_growths");
     public static final TagKey<Item> TEMPTS_MIDNIGHT_CREATURES = ModItemTags.of(
-            "kills_spore_growths");
+            "tempts_midnight_creatures");
     public static final TagKey<Item> CAN_BE_SALTED = ModItemTags.of("can_be_salted");
     public static final TagKey<Item> ALWAYS_GIVE_THIRST = ModItemTags.of("always_give_thirst");
     public static final TagKey<Item> CHANCE_TO_GIVE_THIRST = ModItemTags.of(

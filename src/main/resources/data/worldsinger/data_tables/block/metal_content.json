@@ -9,7 +9,7 @@
     "#minecraft:anvil": 31,
     "minecraft:raw_iron_block": 8,
     "worldsinger:raw_silver_block": 8,
-    "minecraft:cauldron": 7,
+    "#worldsinger:all_cauldrons": 7,
     "minecraft:blast_furnace": 5,
     "minecraft:iron_trapdoor": 4,
     "worldsinger:silver_ore": 2,
