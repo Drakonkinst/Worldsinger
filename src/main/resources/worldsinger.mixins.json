@@ -39,6 +39,7 @@
     "block.SlabBlockMixin",
     "block.WaterloggableMixin",
     "command.LocateCommandMixin",
+    "command.SetWorldSpawnCommandMixin",
     "command.TimeCommandMixin",
     "compat.smartbrainlib.FloatToSurfaceOfFluidMixin",
     "effect.HungerStatusEffectThirstMixin",
