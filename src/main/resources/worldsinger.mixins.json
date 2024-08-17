@@ -64,6 +64,7 @@
     "entity.ServerPlayerEntityMidnightAetherBondMixin",
     "entity.ServerPlayerEntityPossessionMixin",
     "entity.ServerPlayerEntityThirstMixin",
+    "entity.SnowballEntityMixin",
     "entity.SpawnRestrictionSeagullPatch",
     "entity.VehicleEntityMixin",
     "entity.VillagerEntityMixin",

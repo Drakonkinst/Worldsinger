@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2023-2024 Drakonkinst
+ * Copyright (c) 2024 Drakonkinst
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -9,7 +9,6 @@
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
  *
@@ -188,6 +187,24 @@ public abstract class AetherSpores implements StringIdentifiable, Comparable<Aet
         return Optional.ofNullable(AETHER_SPORE_MAP.get(str));
     }
 
+    // Do a little hack to move spore growth position to the topmost block
+    public static Vec3d getTopmostSeaPosForEntity(World world, Entity entity,
+            TagKey<Fluid> fluidTag) {
+        BlockPos.Mutable mutable = entity.getBlockPos().mutableCopy();
+
+        while (world.getFluidState(mutable).isIn(fluidTag) && mutable.getY() < world.getTopY()) {
+            mutable.move(Direction.UP);
+        }
+
+        if (world.getBlockState(mutable).isAir()) {
+            // Found a good position, use it
+            return mutable.move(Direction.DOWN).toCenterPos();
+        } else {
+            // Use original position
+            return entity.getPos();
+        }
+    }
+
     @Nullable
     public static AetherSpores getAetherSporeTypeById(int id) {
         for (AetherSpores aetherSporeType : AETHER_SPORE_MAP.values()) {
@@ -265,23 +282,5 @@ public abstract class AetherSpores implements StringIdentifiable, Comparable<Aet
     @Override
     public int compareTo(@NotNull AetherSpores o) {
         return this.getId() - o.getId();
-    }
-
-    // Do a little hack to move spore growth position to the topmost block
-    protected Vec3d getTopmostSeaPosForEntity(World world, LivingEntity entity,
-            TagKey<Fluid> fluidTag) {
-        BlockPos.Mutable mutable = entity.getBlockPos().mutableCopy();
-
-        while (world.getFluidState(mutable).isIn(fluidTag) && mutable.getY() < world.getTopY()) {
-            mutable.move(Direction.UP);
-        }
-
-        if (world.getBlockState(mutable).isAir()) {
-            // Found a good position, use it
-            return mutable.move(Direction.DOWN).toCenterPos();
-        } else {
-            // Use original position
-            return entity.getPos();
-        }
     }
 }

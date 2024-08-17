@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2023-2024 Drakonkinst
+ * Copyright (c) 2024 Drakonkinst
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -9,7 +9,6 @@
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
  *
@@ -86,7 +85,8 @@ public class VerdantSpores extends GrowableAetherSpores<VerdantSporeGrowthEntity
             return;
         }
 
-        Vec3d startPos = this.getTopmostSeaPosForEntity(world, entity, ModFluidTags.VERDANT_SPORES);
+        Vec3d startPos = AetherSpores.getTopmostSeaPosForEntity(world, entity,
+                ModFluidTags.VERDANT_SPORES);
         this.spawnSporeGrowth(world, startPos, LivingAetherSporeBlock.CATALYZE_VALUE, water, true,
                 false, false, Int3.ZERO);
     }

@@ -15,14 +15,16 @@
                 {
                   "condition": "minecraft:match_tool",
                   "predicate": {
-                    "enchantments": [
-                      {
-                        "enchantment": "minecraft:silk_touch",
-                        "levels": {
-                          "min": 1
+                    "predicates": {
+                      "minecraft:enchantments": [
+                        {
+                          "enchantments": "minecraft:silk_touch",
+                          "levels": {
+                            "min": 1
+                          }
                         }
-                      }
-                    ]
+                      ]
+                    }
                   }
                 }
               ]
@@ -46,25 +48,25 @@
                     "max": 4
                   }
                 }
+              ],
+              "conditions": [
+                {
+                  "condition": "minecraft:entity_properties",
+                  "entity": "this",
+                  "predicate": {
+                    "type": "minecraft:player"
+                  }
+                },
+                {
+                  "condition": "minecraft:block_state_property",
+                  "block": "worldsinger:verdant_vine_block",
+                  "properties": {
+                    "catalyzed": "true"
+                  }
+                }
               ]
             }
           ]
-        }
-      ],
-      "conditions": [
-        {
-          "condition": "minecraft:entity_properties",
-          "entity": "this",
-          "predicate": {
-            "type": "minecraft:player"
-          }
-        },
-        {
-          "condition": "minecraft:block_state_property",
-          "block": "worldsinger:verdant_vine_block",
-          "properties": {
-            "catalyzed": "true"
-          }
         }
       ]
     }
