@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2023-2024 Drakonkinst
+ * Copyright (c) 2024 Drakonkinst
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -9,7 +9,6 @@
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
  *
@@ -23,6 +22,7 @@
  */
 package io.github.drakonkinst.worldsinger.datagen;
 
+import io.github.drakonkinst.worldsinger.datagen.tag.ModBiomeTagGenerator;
 import io.github.drakonkinst.worldsinger.datagen.tag.ModBlockTagGenerator;
 import io.github.drakonkinst.worldsinger.datagen.tag.ModDamageTypeTagGenerator;
 import io.github.drakonkinst.worldsinger.datagen.tag.ModEntityTagGenerator;
@@ -49,7 +49,7 @@ public class ModDataGenerator implements DataGeneratorEntrypoint {
         pack.addProvider(ModEntityTagGenerator::new);
         pack.addProvider(ModDamageTypeGenerator::new);
         pack.addProvider(ModDamageTypeTagGenerator::new);
-        // pack.addProvider(ModBiomeTagGenerator::new);
+        pack.addProvider(ModBiomeTagGenerator::new);
     }
 
     @Override
