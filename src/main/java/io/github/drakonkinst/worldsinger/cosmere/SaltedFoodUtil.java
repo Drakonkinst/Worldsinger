@@ -1,8 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2011-2017 mortuusars
- * Copyright (c) 2023-2024 Drakonkinst
+ * Copyright (c) 2024 Drakonkinst
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -10,7 +9,6 @@
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
  *
@@ -37,7 +35,7 @@ import net.minecraft.item.ItemStack;
 public final class SaltedFoodUtil {
 
     public static final int HUNGER_MODIFIER = 2;
-    public static final int THIRST_MODIFIER = -2;
+    public static final int THIRST_MODIFIER = -1;
     public static final float SATURATION_MODIFIER = 0.0f;
     private static final Map<FoodComponent, FoodComponent> CACHE = new HashMap<>();
 

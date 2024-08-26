@@ -69,9 +69,8 @@ public class LumarLunagreeGenerator extends PersistentState implements LunagreeG
 
     public static final int SEARCH_CHECK_INTERVAL = 64;
 
-    private static final IntSet VALID_SPORE_IDS = IntSet.of(DeadSpores.ID, VerdantSpores.ID,
-            CrimsonSpores.ID, ZephyrSpores.ID, SunlightSpores.ID, RoseiteSpores.ID,
-            MidnightSpores.ID);
+    private static final IntSet VALID_SPORE_IDS = IntSet.of(VerdantSpores.ID, CrimsonSpores.ID,
+            ZephyrSpores.ID, SunlightSpores.ID, RoseiteSpores.ID, MidnightSpores.ID);
     // Associative array of direction vector offsets for axial hex coordinates
     private static final int[] DIRECTION_Q = { +1, +1, +0, -1, -1, +0 };
     private static final int[] DIRECTION_R = { +0, -1, -1, +0, +1, +1 };
