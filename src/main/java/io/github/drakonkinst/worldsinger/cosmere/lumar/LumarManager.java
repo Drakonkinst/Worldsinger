@@ -32,9 +32,11 @@ import io.github.drakonkinst.worldsinger.worldgen.lumar.LumarChunkGenerator.Spor
 import it.unimi.dsi.fastutil.ints.IntSet;
 import java.time.Duration;
 import java.time.Instant;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.Heightmap;
+import net.minecraft.world.gen.feature.MiscConfiguredFeatures;
 
 public class LumarManager {
 
@@ -49,16 +51,16 @@ public class LumarManager {
                 SPAWN_SEARCH_INTERVAL, true, validSporeSeaIds, biome -> true);
     }
 
-    public static BlockPos generateOrFetchStartingPos(ServerWorld lumar) {
-        CosmereWorldData cosmereWorldData = ((CosmereWorldAccess) lumar).worldsinger$getCosmereWorldData();
+    public static BlockPos generateOrFetchStartingPos(ServerWorld world) {
+        CosmereWorldData cosmereWorldData = ((CosmereWorldAccess) world).worldsinger$getCosmereWorldData();
         if (cosmereWorldData.getSpawnPos() == null) {
             Worldsinger.LOGGER.info("Attempting to locate a safe spawn position on Lumar...");
             Instant start = Instant.now();
-            Pair<BlockPos, SporeSeaEntry> result = searchForSpawnPos(lumar,
+            Pair<BlockPos, SporeSeaEntry> result = searchForSpawnPos(world,
                     getIdealSpawnSporeSeaIds());
             if (result == null) {
                 Worldsinger.LOGGER.info("Failed to find ideal biome, searching again");
-                result = searchForSpawnPos(lumar, getAllSpawnSporeSeaIds());
+                result = searchForSpawnPos(world, getAllSpawnSporeSeaIds());
             }
             if (result == null) {
                 Worldsinger.LOGGER.warn(
@@ -67,22 +69,33 @@ public class LumarManager {
                 BlockPos pos = result.getFirst();
                 int x = pos.getX();
                 int z = pos.getZ();
-                int y = lumar.getChunkManager()
+                int y = world.getChunkManager()
                         .getChunkGenerator()
-                        .getHeight(x, z, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, lumar,
-                                lumar.getChunkManager().getNoiseConfig());
+                        .getHeight(x, z, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, world,
+                                world.getChunkManager().getNoiseConfig());
                 BlockPos newSpawnPos = new BlockPos(x, y, z);
                 cosmereWorldData.setSpawnPos(newSpawnPos);
                 cosmereWorldData.markDirty();
 
                 Worldsinger.LOGGER.info("Found a safe position at ({}, {}, {})", x, y, z);
+
+                // Bonus chest!
+                if (world.getServer().getSaveProperties().getGeneratorOptions().hasBonusChest()) {
+                    Worldsinger.LOGGER.info("Spawning bonus chest!");
+                    world.getRegistryManager()
+                            .getOptional(RegistryKeys.CONFIGURED_FEATURE)
+                            .flatMap(featureRegistry -> featureRegistry.getEntry(
+                                    MiscConfiguredFeatures.BONUS_CHEST))
+                            .ifPresent(feature -> feature.value()
+                                    .generate(world, world.getChunkManager().getChunkGenerator(),
+                                            world.random, world.getSpawnPos()));
+                }
             }
             Instant end = Instant.now();
             Duration timeElapsed = Duration.between(start, end);
-            Worldsinger.LOGGER.info("Safe spawn operation took {} milliseconds",
-                    timeElapsed.toMillis());
+            Worldsinger.LOGGER.info("Safe spawn operation took {} ms", timeElapsed.toMillis());
         }
-        return lumar.getSpawnPos();
+        return world.getSpawnPos();
     }
 
     private static IntSet getIdealSpawnSporeSeaIds() {

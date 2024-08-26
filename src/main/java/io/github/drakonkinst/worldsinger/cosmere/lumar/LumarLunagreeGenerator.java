@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2023-2024 Drakonkinst
+ * Copyright (c) 2024 Drakonkinst
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -9,7 +9,6 @@
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
  *
@@ -61,8 +60,9 @@ public class LumarLunagreeGenerator extends PersistentState implements LunagreeG
     public static final int NULL_LUNAGREE_SPORE_ID = 0;
     public static final String NAME = "lunagrees";
 
-    private static final int CENTER_X = 0;
-    private static final int CENTER_Z = 0;
+    // Offset it by a bit to increase the chance players won't spawn directly in a lunagree
+    private static final int CENTER_X = 1600;
+    private static final int CENTER_Z = 1600;
     private static final String KEY_LUNAGREES = "lunagrees";
     private static final String KEY_CELL = "cell";
     private static final String KEY_DATA = "data";
