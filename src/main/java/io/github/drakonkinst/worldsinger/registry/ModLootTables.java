@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2023-2024 Drakonkinst
+ * Copyright (c) 2024 Drakonkinst
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -9,7 +9,6 @@
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
  *
@@ -26,7 +25,7 @@ package io.github.drakonkinst.worldsinger.registry;
 import io.github.drakonkinst.worldsinger.Worldsinger;
 import net.minecraft.loot.LootTable;
 import net.minecraft.registry.RegistryKey;
-import net.minecraft.util.Identifier;
+import net.minecraft.registry.RegistryKeys;
 
 public final class ModLootTables {
 
@@ -40,13 +39,7 @@ public final class ModLootTables {
             "chests/lumar_saltstone_mineshaft");
 
     private static RegistryKey<LootTable> register(String id) {
-        // TODO: Loot API is disabled
-        return null;
-        // return Registries.get(RegistryKey.of(RegistryKeys.LOOT_TABLE, new Identifier(id)));
-    }
-
-    private static Identifier of(String id) {
-        return Worldsinger.id(id);
+        return RegistryKey.of(RegistryKeys.LOOT_TABLE, Worldsinger.id(id));
     }
 
     private ModLootTables() {}

@@ -1,4 +1,6 @@
 ---
+gamerule:
+  worldsinger_startOnLumar: "Start on Lumar, the world of Tress and the Emerald Sea"
 cosmere.worldsinger:
   spore_sea:
     verdant: Emerald Sea

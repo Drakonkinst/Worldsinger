@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2023-2024 Drakonkinst
+ * Copyright (c) 2024 Drakonkinst
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -9,7 +9,6 @@
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
  *
@@ -23,8 +22,8 @@
  */
 package io.github.drakonkinst.worldsinger.mixin.worldgen;
 
+import io.github.drakonkinst.worldsinger.registry.ModLootTables;
 import io.github.drakonkinst.worldsinger.worldgen.dimension.ModDimensions;
-import java.util.Collections;
 import java.util.Map;
 import net.minecraft.inventory.LootableInventory;
 import net.minecraft.loot.LootTable;
@@ -45,12 +44,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class ShipwreckGeneratorPieceMixin {
 
     @Unique
-    // TODO: Loot API is disabled
-    // private static final Map<String, RegistryKey<LootTable>> LUMAR_LOOT_TABLES = Map.of("map_chest",
-    //         ModLootTables.LUMAR_SHIPWRECK_SPROUTER_CHEST, "treasure_chest",
-    //         ModLootTables.LUMAR_SHIPWRECK_CAPTAIN_CHEST, "supply_chest",
-    //         ModLootTables.LUMAR_SHIPWRECK_SUPPLY_CHEST);
-    private static final Map<String, RegistryKey<LootTable>> LUMAR_LOOT_TABLES = Collections.emptyMap();
+    private static final Map<String, RegistryKey<LootTable>> LUMAR_LOOT_TABLES = Map.of("map_chest",
+            ModLootTables.LUMAR_SHIPWRECK_SPROUTER_CHEST, "treasure_chest",
+            ModLootTables.LUMAR_SHIPWRECK_CAPTAIN_CHEST, "supply_chest",
+            ModLootTables.LUMAR_SHIPWRECK_SUPPLY_CHEST);
 
     @Inject(method = "handleMetadata", at = @At("HEAD"), cancellable = true)
     private void injectLumarLootTables(String metadata, BlockPos pos, ServerWorldAccess world,

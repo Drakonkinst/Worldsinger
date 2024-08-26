@@ -30,10 +30,9 @@ import net.minecraft.world.GameRules.Category;
 
 public final class ModGameRules {
 
-    // TODO: Set to false by default after testing
     public static final GameRules.Key<GameRules.BooleanRule> START_ON_LUMAR = GameRuleRegistry.register(
             createModGameRuleName("startOnLumar"), Category.MISC,
-            GameRuleFactory.createBooleanRule(true));
+            GameRuleFactory.createBooleanRule(false));
 
     private ModGameRules() {}
 
