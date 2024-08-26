@@ -30,6 +30,7 @@ import java.util.function.Supplier;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.world.MutableWorldProperties;
@@ -85,6 +86,16 @@ public abstract class WorldCosmereMixin implements WorldAccess, AutoCloseable, C
     private void getCosmereTimeOfDay(CallbackInfoReturnable<Long> cir) {
         if (CosmerePlanet.isCosmerePlanet((World) (Object) this)) {
             cir.setReturnValue(cosmereWorldData.getTimeOfDay());
+        }
+    }
+
+    @Inject(method = "getSpawnPos", at = @At("HEAD"), cancellable = true)
+    private void getCosmereSpawnPos(CallbackInfoReturnable<BlockPos> cir) {
+        if (CosmerePlanet.isCosmerePlanet((World) (Object) this)) {
+            BlockPos spawnPos = cosmereWorldData.getSpawnPos();
+            if (spawnPos != null) {
+                cir.setReturnValue(spawnPos);
+            }
         }
     }
 

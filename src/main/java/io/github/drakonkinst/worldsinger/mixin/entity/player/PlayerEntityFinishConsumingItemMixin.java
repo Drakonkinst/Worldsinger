@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2023-2024 Drakonkinst
+ * Copyright (c) 2024 Drakonkinst
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -9,7 +9,6 @@
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
  *
@@ -21,32 +20,31 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.github.drakonkinst.worldsinger.mixin.entity;
+package io.github.drakonkinst.worldsinger.mixin.entity.player;
 
-import io.github.drakonkinst.worldsinger.api.ModAttachmentTypes;
+import io.github.drakonkinst.worldsinger.event.FinishConsumingItemCallback;
+import net.minecraft.component.type.FoodComponent;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(PlayerEntity.class)
-public abstract class PlayerEntityThirstMixin extends LivingEntity {
+public abstract class PlayerEntityFinishConsumingItemMixin extends LivingEntity {
 
-    protected PlayerEntityThirstMixin(EntityType<? extends LivingEntity> entityType, World world) {
+    protected PlayerEntityFinishConsumingItemMixin(EntityType<? extends LivingEntity> entityType,
+            World world) {
         super(entityType, world);
     }
 
-    @Inject(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/HungerManager;update(Lnet/minecraft/entity/player/PlayerEntity;)V"))
-    private void updateThirst(CallbackInfo ci) {
-        this.getAttachedOrCreate(ModAttachmentTypes.THIRST).update(this);
-    }
-
-    @Inject(method = "addExhaustion", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/HungerManager;addExhaustion(F)V"))
-    private void addThirstExhaustion(float exhaustion, CallbackInfo ci) {
-        this.getAttachedOrCreate(ModAttachmentTypes.THIRST).addDehydration(exhaustion);
+    @Inject(method = "eatFood", at = @At("HEAD"))
+    private void onFinishConsumingItem(World world, ItemStack stack, FoodComponent foodComponent,
+            CallbackInfoReturnable<ItemStack> cir) {
+        FinishConsumingItemCallback.EVENT.invoker().onConsume(this, stack, foodComponent);
     }
 }

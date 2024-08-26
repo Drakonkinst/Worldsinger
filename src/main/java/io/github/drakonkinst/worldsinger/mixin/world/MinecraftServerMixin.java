@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2023-2024 Drakonkinst
+ * Copyright (c) 2024 Drakonkinst
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -9,7 +9,6 @@
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
  *
@@ -24,12 +23,18 @@
 
 package io.github.drakonkinst.worldsinger.mixin.world;
 
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import io.github.drakonkinst.worldsinger.cosmere.CosmerePlanet;
+import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarManager;
 import io.github.drakonkinst.worldsinger.network.packet.CosmereTimeUpdatePayload;
+import io.github.drakonkinst.worldsinger.registry.ModGameRules;
+import io.github.drakonkinst.worldsinger.worldgen.dimension.ModDimensions;
 import net.minecraft.network.packet.s2c.common.CustomPayloadS2CPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.math.BlockPos;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -50,5 +55,22 @@ public abstract class MinecraftServerMixin {
                             new CosmereTimeUpdatePayload(planet, world.getTimeOfDay())),
                     world.getRegistryKey());
         }
+    }
+
+    @WrapOperation(method = "prepareStartRegion", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/MinecraftServer;getOverworld()Lnet/minecraft/server/world/ServerWorld;"))
+    private ServerWorld prepareCosmereWorld(MinecraftServer instance,
+            Operation<ServerWorld> original) {
+        if (instance.getGameRules().getBoolean(ModGameRules.START_ON_LUMAR)) {
+            return instance.getWorld(ModDimensions.WORLD_LUMAR);
+        }
+        return original.call(instance);
+    }
+
+    @WrapOperation(method = "prepareStartRegion", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/world/ServerWorld;getSpawnPos()Lnet/minecraft/util/math/BlockPos;"))
+    private BlockPos calculateLumarSpawn(ServerWorld instance, Operation<BlockPos> original) {
+        if (instance.getRegistryKey() == ModDimensions.WORLD_LUMAR) {
+            return LumarManager.generateOrFetchStartingPos(instance);
+        }
+        return original.call(instance);
     }
 }

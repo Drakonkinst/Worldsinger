@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2023-2024 Drakonkinst
+ * Copyright (c) 2024 Drakonkinst
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -9,7 +9,6 @@
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
  *
@@ -24,12 +23,76 @@
 
 package io.github.drakonkinst.worldsinger.cosmere.lumar;
 
+import com.mojang.datafixers.util.Pair;
+import io.github.drakonkinst.worldsinger.Worldsinger;
+import io.github.drakonkinst.worldsinger.command.LocateSporeSeaCommand;
+import io.github.drakonkinst.worldsinger.cosmere.CosmereWorldAccess;
+import io.github.drakonkinst.worldsinger.cosmere.CosmereWorldData;
+import io.github.drakonkinst.worldsinger.worldgen.lumar.LumarChunkGenerator.SporeSeaEntry;
+import it.unimi.dsi.fastutil.ints.IntSet;
+import java.time.Duration;
+import java.time.Instant;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.Heightmap;
 
 public class LumarManager {
 
     public static final LumarManager NULL = new LumarManager(SeetheManager.NULL,
             LunagreeGenerator.NULL, new NullRainlineManager());
+    private static final int SPAWN_SEARCH_RADIUS = 6400;
+    private static final int SPAWN_SEARCH_INTERVAL = 16;
+
+    private static Pair<BlockPos, SporeSeaEntry> searchForSpawnPos(ServerWorld lumar,
+            IntSet validSporeSeaIds) {
+        return LocateSporeSeaCommand.locateSporeSea(lumar, 0, 0, SPAWN_SEARCH_RADIUS,
+                SPAWN_SEARCH_INTERVAL, true, validSporeSeaIds, biome -> true);
+    }
+
+    public static BlockPos generateOrFetchStartingPos(ServerWorld lumar) {
+        CosmereWorldData cosmereWorldData = ((CosmereWorldAccess) lumar).worldsinger$getCosmereWorldData();
+        if (cosmereWorldData.getSpawnPos() == null) {
+            Worldsinger.LOGGER.info("Attempting to locate a safe spawn position on Lumar...");
+            Instant start = Instant.now();
+            Pair<BlockPos, SporeSeaEntry> result = searchForSpawnPos(lumar,
+                    getIdealSpawnSporeSeaIds());
+            if (result == null) {
+                Worldsinger.LOGGER.info("Failed to find ideal biome, searching again");
+                result = searchForSpawnPos(lumar, getAllSpawnSporeSeaIds());
+            }
+            if (result == null) {
+                Worldsinger.LOGGER.warn(
+                        "Failed to find a safe spawn position, enjoy eating spores");
+            } else {
+                BlockPos pos = result.getFirst();
+                int x = pos.getX();
+                int z = pos.getZ();
+                int y = lumar.getChunkManager()
+                        .getChunkGenerator()
+                        .getHeight(x, z, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, lumar,
+                                lumar.getChunkManager().getNoiseConfig());
+                BlockPos newSpawnPos = new BlockPos(x, y, z);
+                cosmereWorldData.setSpawnPos(newSpawnPos);
+                cosmereWorldData.markDirty();
+
+                Worldsinger.LOGGER.info("Found a safe position at ({}, {}, {})", x, y, z);
+            }
+            Instant end = Instant.now();
+            Duration timeElapsed = Duration.between(start, end);
+            Worldsinger.LOGGER.info("Safe spawn operation took {} milliseconds",
+                    timeElapsed.toMillis());
+        }
+        return lumar.getSpawnPos();
+    }
+
+    private static IntSet getIdealSpawnSporeSeaIds() {
+        return IntSet.of(VerdantSpores.ID, ZephyrSpores.ID, RoseiteSpores.ID);
+    }
+
+    private static IntSet getAllSpawnSporeSeaIds() {
+        return IntSet.of(VerdantSpores.ID, ZephyrSpores.ID, RoseiteSpores.ID, CrimsonSpores.ID,
+                MidnightSpores.ID, SunlightSpores.ID);
+    }
 
     private final SeetheManager seetheManager;
     private final LunagreeGenerator lunagreeGenerator;

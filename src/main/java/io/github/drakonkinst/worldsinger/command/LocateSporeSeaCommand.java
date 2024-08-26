@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2023-2024 Drakonkinst
+ * Copyright (c) 2024 Drakonkinst
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -9,7 +9,6 @@
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
  *
@@ -70,6 +69,9 @@ public class LocateSporeSeaCommand {
             id -> Text.stringifiedTranslatable("commands.locate.spore_sea.invalid", id));
     private static final DynamicCommandExceptionType SPORE_SEA_UNKNOWN_EXCEPTION = new DynamicCommandExceptionType(
             name -> Text.stringifiedTranslatable("commands.locate.spore_sea.unknown", name));
+    // private static final double ABOVE_SURFACE_CONTINENTALNESS_THRESHOLD = 0.15;
+    // private static final double ABOVE_SURFACE_DEPTH_THRESHOLD_AT_SEA_LEVEL = 0.4;
+    private static final int IDEAL_SPAWN_HEIGHT = LumarChunkGenerator.SEA_LEVEL + 3;
 
     public static int executeLocateSporeSea(CommandContext<ServerCommandSource> context)
             throws CommandSyntaxException {
@@ -88,9 +90,6 @@ public class LocateSporeSeaCommand {
 
         BlockPos originPos = BlockPos.ofFloored(source.getPosition());
         Stopwatch stopwatch = Stopwatch.createStarted(Util.TICKER);
-        // Pair<BlockPos, SporeSeaEntry> result = LocateSporeSeaCommand.locateSporeSea(
-        //         source.getWorld(), originPos, 6400, 64, false, IntSet.of(spores.getId()),
-        //         biome -> ModBiomes.DEEP_SPORE_SEA.equals(biome.getKey().orElse(null)));
         Pair<BlockPos, SporeSeaEntry> result = LocateSporeSeaCommand.locateSporeSea(
                 source.getWorld(), originPos.getX(), originPos.getZ(), 6400, 64, false,
                 IntSet.of(spores.getId()), null);
@@ -128,10 +127,36 @@ public class LocateSporeSeaCommand {
                                 Text.translatable("chat.coordinates.tooltip"))));
     }
 
+    @SuppressWarnings("deprecation")
+    private static boolean isProbablyIdealSpawnHeight(ServerWorld world, int x, int z) {
+        if (world.isPosLoaded(x, z)) {
+            // This technique only works with loaded chunks; returns the bottommost world position otherwise
+            int height = world.getTopY(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, x, z);
+            return height > IDEAL_SPAWN_HEIGHT;
+        } else {
+            // Rely on noise height
+            int height = world.getChunkManager()
+                    .getChunkGenerator()
+                    .getHeight(x, z, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, world,
+                            world.getChunkManager().getNoiseConfig());
+            return height > IDEAL_SPAWN_HEIGHT;
+
+            // If all else fails, look for a place with high depth as a guesstimate
+            // double depth = world.getChunkManager()
+            //         .getNoiseConfig()
+            //         .getMultiNoiseSampler()
+            //         .depth()
+            //         .sample(new DensityFunction.UnblendedNoisePos(x, LumarChunkGenerator.SEA_LEVEL,
+            //                 z));
+            // return depth >= ABOVE_SURFACE_DEPTH_THRESHOLD_AT_SEA_LEVEL;
+        }
+    }
+
     @Nullable
     public static Pair<BlockPos, SporeSeaEntry> locateSporeSea(ServerWorld world, int originX,
-            int originZ, int radius, int horizontalBlockCheckInterval, boolean mustBeAboveSeaLevel,
-            IntSet filterSporeIds, @Nullable Predicate<RegistryEntry<Biome>> biomePredicate) {
+            int originZ, int radius, int horizontalBlockCheckInterval,
+            boolean mustBeIdealSpawnHeight, IntSet filterSporeIds,
+            @Nullable Predicate<RegistryEntry<Biome>> biomePredicate) {
         if (!CosmerePlanet.isLumar(world)) {
             return null;
         }
@@ -146,12 +171,9 @@ public class LocateSporeSeaCommand {
             SporeSeaEntry entry = LumarChunkGenerator.getSporeSeaEntryAtPos(
                     world.getChunkManager().getNoiseConfig(), x, z);
             if (filterSporeIds.contains(entry.id())) {
-                if (mustBeAboveSeaLevel) {
-                    // TODO: Problem here is that this only works for loaded chunks. World#getTopY() returns the bottommost world position otherwise.
-                    // TODO: Perhaps look for places with high continentalness instead? Or locate a good starting biome like a saltstone island.
-                    int yPos = world.getTopY(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, x, z);
-                    if (yPos > LumarChunkGenerator.SEA_LEVEL) {
-                        return Pair.of(new BlockPos(x, yPos, z), entry);
+                if (mustBeIdealSpawnHeight) {
+                    if (isProbablyIdealSpawnHeight(world, x, z)) {
+                        return Pair.of(new BlockPos(x, 0, z), entry);
                     }
                     continue;
                 }
@@ -166,7 +188,7 @@ public class LocateSporeSeaCommand {
                         continue;
                     }
                 }
-                return Pair.of(new BlockPos(x, LumarChunkGenerator.SEA_LEVEL, z), entry);
+                return Pair.of(new BlockPos(x, 0, z), entry);
             }
         }
         return null;

@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2023-2024 Drakonkinst
+ * Copyright (c) 2024 Drakonkinst
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -9,7 +9,6 @@
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
  *
@@ -21,31 +20,31 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.github.drakonkinst.worldsinger.mixin.entity;
 
-import io.github.drakonkinst.worldsinger.event.FinishConsumingItemCallback;
-import net.minecraft.component.type.FoodComponent;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
+package io.github.drakonkinst.worldsinger.mixin.entity.player;
+
+import com.mojang.authlib.GameProfile;
+import io.github.drakonkinst.worldsinger.api.ModAttachmentTypes;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(PlayerEntity.class)
-public abstract class PlayerEntityFinishConsumingItemMixin extends LivingEntity {
+@SuppressWarnings("UnstableApiUsage")
+@Mixin(ServerPlayerEntity.class)
+public abstract class ServerPlayerEntityMidnightAetherBondMixin extends PlayerEntity {
 
-    protected PlayerEntityFinishConsumingItemMixin(EntityType<? extends LivingEntity> entityType,
-            World world) {
-        super(entityType, world);
+    public ServerPlayerEntityMidnightAetherBondMixin(World world, BlockPos pos, float yaw,
+            GameProfile gameProfile) {
+        super(world, pos, yaw, gameProfile);
     }
 
-    @Inject(method = "eatFood", at = @At("HEAD"))
-    private void onFinishConsumingItem(World world, ItemStack stack, FoodComponent foodComponent,
-            CallbackInfoReturnable<ItemStack> cir) {
-        FinishConsumingItemCallback.EVENT.invoker().onConsume(this, stack, foodComponent);
+    @Inject(method = "tick", at = @At(value = "TAIL"))
+    private void sendThirstUpdates(CallbackInfo ci) {
+        this.getAttachedOrCreate(ModAttachmentTypes.MIDNIGHT_AETHER_BOND).serverTick(this);
     }
 }
