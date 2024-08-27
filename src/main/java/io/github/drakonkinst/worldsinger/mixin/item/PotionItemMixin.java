@@ -36,6 +36,7 @@ import net.minecraft.item.ItemUsage;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.item.Items;
 import net.minecraft.item.PotionItem;
+import net.minecraft.item.ThrowablePotionItem;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.potion.Potions;
 import net.minecraft.server.world.ServerWorld;
@@ -74,7 +75,8 @@ public abstract class PotionItemMixin extends Item {
         BlockState blockState = world.getBlockState(blockPos);
         WaterReactive waterReactive = WaterReactionManager.getIfWaterReactive(blockPos, blockState);
 
-        if (playerEntity != null && context.getSide() != Direction.DOWN && waterReactive != null
+        if (playerEntity != null && !(itemStack.getItem() instanceof ThrowablePotionItem)
+                && context.getSide() != Direction.DOWN && waterReactive != null
                 && potionContentsComponent.matches(Potions.WATER)) {
             world.playSound(null, blockPos, SoundEvents.ENTITY_GENERIC_SPLASH, SoundCategory.BLOCKS,
                     1.0F, 1.0F);

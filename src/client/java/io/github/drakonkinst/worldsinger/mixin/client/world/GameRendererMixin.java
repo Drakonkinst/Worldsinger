@@ -24,6 +24,7 @@
 package io.github.drakonkinst.worldsinger.mixin.client.world;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
+import io.github.drakonkinst.worldsinger.Worldsinger;
 import io.github.drakonkinst.worldsinger.entity.MidnightCreatureEntity;
 import io.github.drakonkinst.worldsinger.util.PossessionClientUtil;
 import net.minecraft.client.gl.PostEffectProcessor;
@@ -42,13 +43,13 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(GameRenderer.class)
 public abstract class GameRendererMixin {
 
-    // TODO: Using one of the Super Secret Shaders for now, but should eventually make a custom one
     @Unique
-    private static final Identifier MIDNIGHT_CREATURE_OVERLAY = Identifier.of(
-            "shaders/post/desaturate.json");
+    private static final Identifier MIDNIGHT_CREATURE_OVERLAY = Worldsinger.id(
+            "shaders/post/midnight_creature_overlay.json");
 
     @Shadow
-    @Nullable PostEffectProcessor postProcessor;
+    @Nullable
+    PostEffectProcessor postProcessor;
 
     @Shadow
     abstract void loadPostProcessor(Identifier id);

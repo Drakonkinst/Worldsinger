@@ -87,8 +87,8 @@ public abstract class ServerWorldCosmereMixin extends WorldCosmereMixin {
 
     @Inject(method = "tickTime", at = @At("RETURN"))
     private void tickCosmereTime(CallbackInfo ci) {
-        if (this.properties.getGameRules().getBoolean(GameRules.DO_DAYLIGHT_CYCLE)
-                && CosmerePlanet.isCosmerePlanet((World) (Object) this)) {
+        if (CosmerePlanet.isCosmerePlanet((World) (Object) this) && this.properties.getGameRules()
+                .getBoolean(GameRules.DO_DAYLIGHT_CYCLE)) {
             cosmereWorldData.setTimeOfDay(cosmereWorldData.getTimeOfDay() + 1L);
             cosmereWorldData.markDirty();
         }
