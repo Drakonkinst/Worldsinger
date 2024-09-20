@@ -48,22 +48,17 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
-public class ThrownSporeBottleEntity extends ThrownItemEntity implements FlyingItemEntity {
+public class SporeBottleEntity extends ThrownItemEntity implements FlyingItemEntity {
 
     private static final int SPORE_AMOUNT = 75;
     private static final int WATER_AMOUNT_PER_LEVEL = 80;
 
-    public ThrownSporeBottleEntity(EntityType<? extends ThrownSporeBottleEntity> entityType,
-            World world) {
+    public SporeBottleEntity(EntityType<? extends SporeBottleEntity> entityType, World world) {
         super(entityType, world);
     }
 
-    public ThrownSporeBottleEntity(World world, LivingEntity owner) {
-        super(ModEntityTypes.THROWN_SPORE_BOTTLE, owner, world);
-    }
-
-    public ThrownSporeBottleEntity(World world, double x, double y, double z) {
-        super(ModEntityTypes.THROWN_SPORE_BOTTLE, x, y, z, world);
+    public SporeBottleEntity(World world, LivingEntity owner) {
+        super(ModEntityTypes.SPORE_BOTTLE, owner, world);
     }
 
     @Override

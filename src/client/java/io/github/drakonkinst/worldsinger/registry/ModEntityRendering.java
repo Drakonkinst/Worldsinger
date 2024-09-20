@@ -39,8 +39,7 @@ public final class ModEntityRendering {
             Worldsinger.id("rainline"), "main");
 
     public static void register() {
-        EntityRendererRegistry.register(ModEntityTypes.THROWN_SPORE_BOTTLE,
-                FlyingItemEntityRenderer::new);
+        EntityRendererRegistry.register(ModEntityTypes.SPORE_BOTTLE, FlyingItemEntityRenderer::new);
         EntityRendererRegistry.register(ModEntityTypes.MIDNIGHT_CREATURE,
                 MidnightCreatureEntityRenderer::new);
         // TODO: Can render as a dark cloud later

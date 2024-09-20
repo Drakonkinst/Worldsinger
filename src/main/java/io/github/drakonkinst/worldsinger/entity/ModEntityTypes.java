@@ -28,9 +28,7 @@ import io.github.drakonkinst.worldsinger.cosmere.lumar.MidnightCreatureManager;
 import io.github.drakonkinst.worldsinger.registry.tag.ModBlockTags;
 import io.github.drakonkinst.worldsinger.worldgen.dimension.ModDimensions;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
-import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.entity.SpawnReason;
@@ -49,45 +47,42 @@ public final class ModEntityTypes {
 
     public static final EntityType<VerdantSporeGrowthEntity> VERDANT_SPORE_GROWTH = register(
             "verdant_spore_growth",
-            FabricEntityTypeBuilder.create(SpawnGroup.MISC, VerdantSporeGrowthEntity::new)
-                    .dimensions(EntityDimensions.fixed(0.0f, 0.0f))
-                    .trackRangeChunks(0)
+            EntityType.Builder.create(VerdantSporeGrowthEntity::new, SpawnGroup.MISC)
+                    .dimensions(0.0f, 0.0f)
+                    .maxTrackingRange(0)
                     .build());
     public static final EntityType<CrimsonSporeGrowthEntity> CRIMSON_SPORE_GROWTH = register(
             "crimson_spore_growth",
-            FabricEntityTypeBuilder.create(SpawnGroup.MISC, CrimsonSporeGrowthEntity::new)
-                    .dimensions(EntityDimensions.fixed(0.0f, 0.0f))
-                    .trackRangeChunks(0)
+            EntityType.Builder.create(CrimsonSporeGrowthEntity::new, SpawnGroup.MISC)
+                    .dimensions(0.0f, 0.0f)
+                    .maxTrackingRange(0)
                     .build());
     public static final EntityType<RoseiteSporeGrowthEntity> ROSEITE_SPORE_GROWTH = register(
             "roseite_spore_growth",
-            FabricEntityTypeBuilder.create(SpawnGroup.MISC, RoseiteSporeGrowthEntity::new)
-                    .dimensions(EntityDimensions.fixed(0.0f, 0.0f))
-                    .trackRangeChunks(0)
+            EntityType.Builder.create(RoseiteSporeGrowthEntity::new, SpawnGroup.MISC)
+                    .dimensions(0.0f, 0.0f)
+                    .maxTrackingRange(0)
                     .build());
     public static final EntityType<MidnightSporeGrowthEntity> MIDNIGHT_SPORE_GROWTH = register(
             "midnight_spore_growth",
-            FabricEntityTypeBuilder.create(SpawnGroup.MISC, MidnightSporeGrowthEntity::new)
-                    .dimensions(EntityDimensions.fixed(0.0f, 0.0f))
-                    .trackRangeChunks(0)
+            EntityType.Builder.create(MidnightSporeGrowthEntity::new, SpawnGroup.MISC)
+                    .dimensions(0.0f, 0.0f)
+                    .maxTrackingRange(0)
                     .build());
-    public static final EntityType<ThrownSporeBottleEntity> THROWN_SPORE_BOTTLE = register(
-            "spore_bottle", FabricEntityTypeBuilder.<ThrownSporeBottleEntity>create(SpawnGroup.MISC,
-                            ThrownSporeBottleEntity::new)
-                    .dimensions(EntityDimensions.fixed(0.25f, 0.25f))
-                    .trackRangeChunks(4)
-                    .trackedUpdateRate(10)
+    public static final EntityType<SporeBottleEntity> SPORE_BOTTLE = register("spore_bottle",
+            EntityType.Builder.<SporeBottleEntity>create(SporeBottleEntity::new, SpawnGroup.MISC)
+                    .dimensions(0.25f, 0.25f)
+                    .maxTrackingRange(4)
+                    .trackingTickInterval(10)
                     .build());
     public static final EntityType<MidnightCreatureEntity> MIDNIGHT_CREATURE = register(
             "midnight_creature",
-            FabricEntityTypeBuilder.<MidnightCreatureEntity>create(SpawnGroup.CREATURE,
-                            MidnightCreatureEntity::new)
-                    .dimensions(EntityDimensions.changing(0.98f, 0.98f))
-                    .build());
+            EntityType.Builder.<MidnightCreatureEntity>create(MidnightCreatureEntity::new,
+                    SpawnGroup.CREATURE).dimensions(0.98f, 0.98f).maxTrackingRange(10).build());
     public static final EntityType<RainlineEntity> RAINLINE = register("rainline",
-            FabricEntityTypeBuilder.create(SpawnGroup.MISC, RainlineEntity::new)
-                    .dimensions(EntityDimensions.fixed(0.0f, 0.0f))
-                    .trackRangeChunks(20)
+            EntityType.Builder.create(RainlineEntity::new, SpawnGroup.MISC)
+                    .dimensions(0.0f, 0.0f)
+                    .maxTrackingRange(20)
                     .build());
 
     public static void initialize() {

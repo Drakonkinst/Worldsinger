@@ -24,7 +24,7 @@
 package io.github.drakonkinst.worldsinger.item;
 
 import io.github.drakonkinst.worldsinger.cosmere.lumar.AetherSpores;
-import io.github.drakonkinst.worldsinger.entity.ThrownSporeBottleEntity;
+import io.github.drakonkinst.worldsinger.entity.SporeBottleEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.Item;
@@ -47,7 +47,7 @@ public class SplashSporeBottleItem extends SporeBottleItem implements Projectile
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
         ItemStack itemStack = user.getStackInHand(hand);
         if (!world.isClient) {
-            ThrownSporeBottleEntity potionEntity = new ThrownSporeBottleEntity(world, user);
+            SporeBottleEntity potionEntity = new SporeBottleEntity(world, user);
             potionEntity.setItem(itemStack);
             potionEntity.setVelocity(user, user.getPitch(), user.getYaw(), -20.0F, 0.5F, 1.0F);
             world.spawnEntity(potionEntity);

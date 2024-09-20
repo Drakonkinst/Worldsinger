@@ -23,7 +23,7 @@
  */
 package io.github.drakonkinst.worldsinger.mixin.entity;
 
-import io.github.drakonkinst.worldsinger.entity.ThrownSporeBottleEntity;
+import io.github.drakonkinst.worldsinger.entity.SporeBottleEntity;
 import io.github.drakonkinst.worldsinger.util.math.ExtendedRaycastContext;
 import io.github.drakonkinst.worldsinger.util.math.ExtendedRaycastContext.ExtendedFluidHandling;
 import net.minecraft.entity.Entity;
@@ -44,7 +44,7 @@ public abstract class ProjectileUtilMixin {
     private static RaycastContext makeThrownPotionsBreakAgainstSporeSea(Vec3d start, Vec3d end,
             ShapeType shapeType, FluidHandling fluidHandling, Entity entity) {
         // Make potions break upon hitting spore sea instead of falling through
-        if (entity instanceof PotionEntity || entity instanceof ThrownSporeBottleEntity) {
+        if (entity instanceof PotionEntity || entity instanceof SporeBottleEntity) {
             return new ExtendedRaycastContext(start, end, shapeType,
                     ExtendedFluidHandling.SPORE_SEA, entity);
         }
