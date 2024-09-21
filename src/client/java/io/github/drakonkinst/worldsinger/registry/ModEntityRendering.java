@@ -40,6 +40,7 @@ public final class ModEntityRendering {
 
     public static void register() {
         EntityRendererRegistry.register(ModEntityTypes.SPORE_BOTTLE, FlyingItemEntityRenderer::new);
+        EntityRendererRegistry.register(ModEntityTypes.CANNONBALL, FlyingItemEntityRenderer::new);
         EntityRendererRegistry.register(ModEntityTypes.MIDNIGHT_CREATURE,
                 MidnightCreatureEntityRenderer::new);
         // TODO: Can render as a dark cloud later

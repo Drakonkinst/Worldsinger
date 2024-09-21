@@ -75,6 +75,12 @@ public final class ModEntityTypes {
                     .maxTrackingRange(4)
                     .trackingTickInterval(10)
                     .build());
+    public static final EntityType<CannonballEntity> CANNONBALL = register("cannonball",
+            EntityType.Builder.<CannonballEntity>create(CannonballEntity::new, SpawnGroup.MISC)
+                    .dimensions(0.25f, 0.25f)
+                    .maxTrackingRange(4)
+                    .trackingTickInterval(10)
+                    .build());
     public static final EntityType<MidnightCreatureEntity> MIDNIGHT_CREATURE = register(
             "midnight_creature",
             EntityType.Builder.<MidnightCreatureEntity>create(MidnightCreatureEntity::new,

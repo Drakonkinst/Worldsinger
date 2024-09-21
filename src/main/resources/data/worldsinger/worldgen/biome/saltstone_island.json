@@ -57,9 +57,8 @@
       "minecraft:ore_lapis",
       "minecraft:ore_lapis_buried",
       "minecraft:ore_copper",
-      "minecraft:disk_sand",
-      "minecraft:disk_clay",
-      "minecraft:disk_gravel"
+      "worldsinger:ore_sand_lumar",
+      "worldsinger:ore_clay_lumar"
     ],
     [],
     [

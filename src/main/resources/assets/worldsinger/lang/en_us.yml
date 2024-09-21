@@ -102,6 +102,7 @@ item:
     quartz_and_steel: Quartz and Steel
     quartz_and_iron: Quartz and Iron
     flint_and_iron: Flint and Iron
+    ceramic_cannonball: Ceramic Cannonball
     midnight_creature_spawn_egg: Midnight Creature Spawn Egg
 block.worldsinger:
   dead_spore_block: Dead Spore Sea
