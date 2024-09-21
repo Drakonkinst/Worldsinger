@@ -26,6 +26,7 @@ package io.github.drakonkinst.worldsinger.registry;
 
 import com.mojang.serialization.Codec;
 import io.github.drakonkinst.worldsinger.Worldsinger;
+import io.github.drakonkinst.worldsinger.item.cannonball.CannonballComponent;
 import io.github.drakonkinst.worldsinger.item.map.CustomMapDecorationsComponent;
 import java.util.function.UnaryOperator;
 import net.minecraft.component.ComponentType;
@@ -44,6 +45,10 @@ public final class ModDataComponentTypes {
     public static final ComponentType<CustomMapDecorationsComponent> CUSTOM_MAP_DECORATIONS = register(
             "custom_map_decorations",
             builder -> builder.codec(CustomMapDecorationsComponent.CODEC));
+    public static final ComponentType<CannonballComponent> CANNONBALL = register("cannonball",
+            builder -> builder.codec(CannonballComponent.CODEC)
+                    .packetCodec(CannonballComponent.PACKET_CODEC)
+                    .cache());
 
     public static void initialize() {}
 

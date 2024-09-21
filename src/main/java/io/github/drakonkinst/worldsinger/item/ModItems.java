@@ -37,7 +37,9 @@ import io.github.drakonkinst.worldsinger.cosmere.lumar.VerdantSpores;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.ZephyrSpores;
 import io.github.drakonkinst.worldsinger.entity.ModEntityTypes;
 import io.github.drakonkinst.worldsinger.fluid.ModFluids;
+import io.github.drakonkinst.worldsinger.item.cannonball.CannonballComponent;
 import io.github.drakonkinst.worldsinger.registry.ModArmorMaterials;
+import io.github.drakonkinst.worldsinger.registry.ModDataComponentTypes;
 import io.github.drakonkinst.worldsinger.registry.ModFoodComponents;
 import io.github.drakonkinst.worldsinger.registry.ModSoundEvents;
 import io.github.drakonkinst.worldsinger.registry.ModToolMaterials;
@@ -188,8 +190,9 @@ public final class ModItems {
     public static final Item SILVER_KNIFE = register("silver_knife", new SilverKnifeItem(
             new Item.Settings().attributeModifiers(
                     KnifeItem.createAttributeModifiers(ModToolMaterials.SILVER, 1.0f, -2.0f))));
-    public static final Item CERAMIC_CANNONBALL = register("ceramic_cannonball",
-            new CannonballItem(new Item.Settings().maxCount(16)));
+    public static final Item CERAMIC_CANNONBALL = register("ceramic_cannonball", new CannonballItem(
+            new Item.Settings().maxCount(16)
+                    .component(ModDataComponentTypes.CANNONBALL, CannonballComponent.DEFAULT)));
 
     // Admin
     public static final Item MIDNIGHT_CREATURE_SPAWN_EGG = register("midnight_creature_spawn_egg",
@@ -429,6 +432,8 @@ public final class ModItems {
 
             // Tools
             itemGroup.add(ModItems.SILVER_KNIFE);
+            itemGroup.add(
+                    ModItems.CERAMIC_CANNONBALL); // TODO: Should add this to normal tabs + pre-made variations
 
             // Ingredients
             itemGroup.add(ModItems.VERDANT_VINE);
