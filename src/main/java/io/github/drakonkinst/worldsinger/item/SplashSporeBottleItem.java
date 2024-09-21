@@ -25,11 +25,13 @@ package io.github.drakonkinst.worldsinger.item;
 
 import io.github.drakonkinst.worldsinger.cosmere.lumar.AetherSpores;
 import io.github.drakonkinst.worldsinger.entity.SporeBottleEntity;
+import io.github.drakonkinst.worldsinger.registry.ModSoundEvents;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ProjectileItem;
+import net.minecraft.sound.SoundCategory;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
@@ -45,6 +47,9 @@ public class SplashSporeBottleItem extends SporeBottleItem implements Projectile
 
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
+        world.playSound(null, user.getX(), user.getY(), user.getZ(),
+                ModSoundEvents.ENTITY_SPORE_POTION_THROW, SoundCategory.PLAYERS, 0.5F,
+                0.4F / (world.getRandom().nextFloat() * 0.4F + 0.8F));
         ItemStack itemStack = user.getStackInHand(hand);
         if (!world.isClient) {
             SporeBottleEntity potionEntity = new SporeBottleEntity(world, user);

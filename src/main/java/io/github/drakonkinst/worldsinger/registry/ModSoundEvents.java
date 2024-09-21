@@ -42,7 +42,6 @@ public final class ModSoundEvents {
     public static final SoundEvent BLOCK_SPORE_BLOCK_PLACE = SoundEvents.ITEM_BUCKET_EMPTY_POWDER_SNOW;
     public static final SoundEvent BLOCK_SUNLIGHT_EVAPORATE = SoundEvents.BLOCK_FIRE_EXTINGUISH;
     public static final SoundEvent BLOCK_SUNLIGHT_SPORE_BLOCK_CATALYZE = SoundEvents.ITEM_FIRECHARGE_USE;
-    public static final RegistryEntry.Reference<SoundEvent> BLOCK_ZEPHYR_SEA_CATALYZE = SoundEvents.ENTITY_GENERIC_EXPLODE;
     public static final SoundEvent ENTITY_BOAT_PADDLE_SPORE_SEA = SoundEvents.BLOCK_SAND_BREAK;
     public static final SoundEvent ENTITY_BOAT_LINE_SILVER = SoundEvents.ENTITY_IRON_GOLEM_REPAIR;
     public static final SoundEvent ENTITY_MIDNIGHT_CREATURE_AMBIENT = SoundEvents.ENTITY_BREEZE_IDLE_GROUND;
@@ -54,6 +53,8 @@ public final class ModSoundEvents {
     public static final SoundEvent ENTITY_MIDNIGHT_CREATURE_BOND_BREAK = SoundEvents.ENTITY_BREEZE_JUMP;    // Play at ~0.5 pitch
     public static final SoundEvent ENTITY_MIDNIGHT_CREATURE_POSSESS = SoundEvents.ENTITY_WITHER_SHOOT;    // Play at ~0.5 pitch
     public static final SoundEvent ENTITY_MIDNIGHT_CREATURE_STEP = SoundEvents.ENTITY_ZOMBIE_STEP;    // Play at ~0.5 pitch
+    public static final SoundEvent ENTITY_CERAMIC_CANNONBALL_THROW = SoundEvents.ENTITY_WIND_CHARGE_THROW;
+    public static final SoundEvent ENTITY_SPORE_POTION_THROW = SoundEvents.ENTITY_SPLASH_POTION_THROW;
 
     public static void initialize() {}
 
