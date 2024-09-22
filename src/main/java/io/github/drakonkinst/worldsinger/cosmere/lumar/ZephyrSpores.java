@@ -60,141 +60,17 @@ public class ZephyrSpores extends AetherSpores {
     private static final int PARTICLE_COLOR = 0x64bdde;
 
     private static final float SPORE_TO_POWER_MULTIPLIER = 0.15f;
-    private static final float KNOCKBACK_MULTIPLIER = 2.0f;
-    private static final int MAX_PLAYER_AFFECTED_DISTANCE = 64;
-    private static final int MAX_BLOCK_AFFECTED_DISTANCE = 8;
-    private static final float MAX_DAMAGE_DISTANCE = 0.5f;
-    private static final float DAMAGE_AMOUNT = 4.0f;
 
     public static ZephyrSpores getInstance() {
         return INSTANCE;
     }
 
-    // Too inefficient to use actual explosion logic since they spend a lot of time calculating blocks,
-    // so we'll need our own solution
-    // TODO: Switch to use a wind charge explosion
-    // public static void explode(World world, Vec3d centerPos, float radius,
-    //         float globalKnockbackMultiplier) {
-    //     world.emitGameEvent(null, GameEvent.EXPLODE, centerPos);
-    //     Explosion explosion = new Explosion(world, null, null, ZephyrSpores.EXPLOSION_BEHAVIOR,
-    //             centerPos.getX(), centerPos.getY(), centerPos.getZ(), radius * 0.5f, false,
-    //             Explosion.DestructionType.TRIGGER_BLOCK, ParticleTypes.GUST,
-    //             ParticleTypes.GUST_EMITTER_LARGE, ModSoundEvents.BLOCK_ZEPHYR_SEA_CATALYZE);
-    //     ZephyrSpores.collectBlocks(world, centerPos, radius, explosion);
-    //     ZephyrSpores.affectEntities(world, centerPos, radius, explosion, globalKnockbackMultiplier);
-    //     ZephyrSpores.affectBlocks(world, explosion);
-    //     ZephyrSpores.sendToPlayers(world, explosion);
-    // }
-
-    // Instead of doing a full raycast, just collect all blocks in the radius
-    // private static void collectBlocks(World world, Vec3d centerPos, float radius,
-    //         Explosion explosion) {
-    //     BlockPos centerBlockPos = BlockPosUtil.toBlockPos(centerPos);
-    //     int blockRadius = Math.min(MAX_BLOCK_AFFECTED_DISTANCE, MathHelper.floor(radius));
-    //     List<BlockPos> affectedBlocks = explosion.getAffectedBlocks();
-    //     if (blockRadius > 0) {
-    //         for (BlockPos currPos : BlockPos.iterate(centerBlockPos.getX() - blockRadius,
-    //                 centerBlockPos.getY() - blockRadius, centerBlockPos.getZ() - blockRadius,
-    //                 centerBlockPos.getX() + blockRadius, centerBlockPos.getY() + blockRadius,
-    //                 centerBlockPos.getZ() + blockRadius)) {
-    //             if (!world.getBlockState(currPos).isAir()) {
-    //                 affectedBlocks.add(new BlockPos(currPos));
-    //             }
-    //         }
-    //     }
-    // }
-
-    // private static void affectEntities(World world, Vec3d centerPos, float radius,
-    //         Explosion explosion, float globalKnockbackMultiplier) {
-    //     Box box = BoxUtil.createBoxAroundPos(centerPos, radius);
-    //     List<Entity> entities = world.getEntitiesByClass(Entity.class, box,
-    //             EntityPredicates.EXCEPT_SPECTATOR);
-    //     Map<PlayerEntity, Vec3d> affectedPlayers = explosion.getAffectedPlayers();
-    //     for (Entity entity : entities) {
-    //         if (entity.isImmuneToExplosion(null)) {
-    //             continue;
-    //         }
-    //
-    //         double sqrDistance = entity.getPos().squaredDistanceTo(centerPos);
-    //         if (sqrDistance > radius * radius) {
-    //             continue;
-    //         }
-    //
-    //         if (sqrDistance <= MAX_DAMAGE_DISTANCE * MAX_DAMAGE_DISTANCE) {
-    //             entity.damage(ModDamageTypes.createSource(world, ModDamageTypes.ZEPHYR_SPORE),
-    //                     DAMAGE_AMOUNT);
-    //         }
-    //
-    //         // Refill air
-    //         if (entity.getAir() < entity.getMaxAir()) {
-    //             entity.setAir(entity.getMaxAir());
-    //         }
-    //
-    //         double distanceMultiplier = Math.sqrt(sqrDistance) / radius;
-    //         double forceX = entity.getX() - centerPos.getX();
-    //         double forceY = entity.getY() - centerPos.getY();
-    //         double forceZ = entity.getZ() - centerPos.getZ();
-    //         double delta = Math.sqrt(forceX * forceX + forceY * forceY + forceZ * forceZ);
-    //         if (delta <= 0.0) {
-    //             continue;
-    //         }
-    //
-    //         double knockbackMultiplier =
-    //                 (1.0 - distanceMultiplier) * Explosion.getExposure(centerPos, entity)
-    //                         * globalKnockbackMultiplier;
-    //         if (entity instanceof LivingEntity livingEntity) {
-    //             knockbackMultiplier = ProtectionEnchantment.transformExplosionKnockback(
-    //                     livingEntity, knockbackMultiplier);
-    //         }
-    //
-    //         double forceMultiplier = knockbackMultiplier / delta;
-    //         forceX = forceX * forceMultiplier;
-    //         forceY = forceY * forceMultiplier;
-    //         forceZ = forceZ * forceMultiplier;
-    //         Vec3d forceVector = new Vec3d(forceX, forceY, forceZ);
-    //         entity.setVelocity(entity.getVelocity().add(forceVector));
-    //
-    //         if (entity instanceof PlayerEntity playerEntity && !playerEntity.isSpectator() && (
-    //                 !playerEntity.isCreative() || !playerEntity.getAbilities().flying)) {
-    //             affectedPlayers.put(playerEntity, forceVector);
-    //         }
-    //     }
-    // }
-    //
-    // private static void affectBlocks(World world, Explosion explosion) {
-    //     world.getProfiler().push("explosion_blocks");
-    //     for (BlockPos blockPos : explosion.getAffectedBlocks()) {
-    //         world.getBlockState(blockPos)
-    //                 .onExploded(world, blockPos, explosion, (stack, pos) -> {});
-    //     }
-    //     world.getProfiler().pop();
-    // }
-
-    // Send packet to players
-    // Required for knockback to register properly
-    // private static void sendToPlayers(World world, Explosion explosion) {
-    //     if (world.isClient() || !(world instanceof ServerWorld serverWorld)) {
-    //         return;
-    //     }
-    //     Vec3d centerPos = explosion.getPosition();
-    //     for (ServerPlayerEntity player : serverWorld.getPlayers()) {
-    //         if (player.squaredDistanceTo(centerPos)
-    //                 < MAX_PLAYER_AFFECTED_DISTANCE * MAX_PLAYER_AFFECTED_DISTANCE) {
-    //             player.networkHandler.sendPacket(
-    //                     new ExplosionS2CPacket(centerPos.getX(), centerPos.getY(), centerPos.getZ(),
-    //                             explosion.getPower(), explosion.getAffectedBlocks(),
-    //                             explosion.getAffectedPlayers().get(player),
-    //                             explosion.getDestructionType(), explosion.getParticle(),
-    //                             explosion.getEmitterParticle(), explosion.getSoundEvent()));
-    //         }
-    //     }
-    // }
-
     private ZephyrSpores() {}
 
     @Override
     public void onDeathFromStatusEffect(World world, LivingEntity entity, BlockPos pos, int water) {
-        Vec3d startPos = this.getTopmostSeaPosForEntity(world, entity, ModFluidTags.ZEPHYR_SPORES);
+        Vec3d startPos = AetherSpores.getTopmostSeaPosForEntity(world, entity,
+                ModFluidTags.ZEPHYR_SPORES);
         Vec3d adjustedStartPos = new Vec3d(startPos.getX(), Math.ceil(startPos.getY()),
                 startPos.getZ());
         this.doReaction(world, adjustedStartPos, LivingAetherSporeBlock.CATALYZE_VALUE, water,
@@ -207,8 +83,6 @@ public class ZephyrSpores extends AetherSpores {
         // Push the explosion to the top of the block, so that it is not obstructed by itself
         Vec3d centerPos = new Vec3d(pos.getX(), Math.ceil(pos.getY()), pos.getZ());
 
-        // TODO: Replace with vanilla explosion
-        // ZephyrSpores.explode(world, centerPos, power, KNOCKBACK_MULTIPLIER);
         world.createExplosion(null, null, EXPLOSION_BEHAVIOR, centerPos.getX(), centerPos.getY(),
                 centerPos.getZ(), power, false, World.ExplosionSourceType.TRIGGER,
                 ParticleTypes.GUST_EMITTER_SMALL, ParticleTypes.GUST_EMITTER_LARGE,

@@ -53,7 +53,6 @@ public record CannonballComponent(CannonballShell shell, CannonballCore core, in
     public static final int MAX_FUSE = 3;
     public static final int MAX_CONTENTS_LENGTH = 3;
 
-    // TODO
     public static final Codec<CannonballComponent> CODEC = RecordCodecBuilder.create(
             instance -> instance.group(
                             CannonballShell.CODEC.optionalFieldOf("shell", CannonballShell.CERAMIC)

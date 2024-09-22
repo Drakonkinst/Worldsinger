@@ -31,6 +31,7 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Identifier;
 
+@SuppressWarnings("UnstableApiUsage")
 public final class ThirstStatusBar {
 
     private static final int HOTBAR_HEIGHT = 39;

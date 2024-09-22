@@ -34,6 +34,7 @@ import net.minecraft.util.Identifier;
 public final class ModSoundEvents {
 
     // TODO Replace with original sound effects
+    // TODO: Or at least custom subtitles, using the same assets?
     public static final SoundEvent ITEM_BUCKET_FILL_AETHER_SPORE = SoundEvents.ITEM_BUCKET_FILL_POWDER_SNOW;
     public static final SoundEvent ITEM_BUCKET_EMPTY_AETHER_SPORE = SoundEvents.ITEM_BUCKET_EMPTY_POWDER_SNOW;
     public static final SoundEvent ITEM_BOTTLE_FILL_AETHER_SPORE = SoundEvents.ITEM_BOTTLE_FILL;
