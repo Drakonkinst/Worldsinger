@@ -54,6 +54,7 @@ public final class ModSoundEvents {
     public static final SoundEvent ENTITY_MIDNIGHT_CREATURE_POSSESS = SoundEvents.ENTITY_WITHER_SHOOT;    // Play at ~0.5 pitch
     public static final SoundEvent ENTITY_MIDNIGHT_CREATURE_STEP = SoundEvents.ENTITY_ZOMBIE_STEP;    // Play at ~0.5 pitch
     public static final SoundEvent ENTITY_CANNONBALL_THROW = SoundEvents.ENTITY_WIND_CHARGE_THROW;
+    public static final SoundEvent ENTITY_CANNONBALL_BREAK = SoundEvents.BLOCK_DECORATED_POT_SHATTER;
     public static final SoundEvent ENTITY_SPORE_POTION_THROW = SoundEvents.ENTITY_SPLASH_POTION_THROW;
 
     public static void initialize() {}

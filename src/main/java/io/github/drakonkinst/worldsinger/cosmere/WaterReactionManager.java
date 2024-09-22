@@ -52,8 +52,8 @@ import org.jetbrains.annotations.Nullable;
 
 public final class WaterReactionManager {
 
-    private static final int WATER_AMOUNT_STILL = 250;
-    private static final int WATER_AMOUNT_FLOWING = 25;
+    public static final int WATER_AMOUNT_STILL = 250;
+    public static final int WATER_AMOUNT_FLOWING = 25;
     private static final int MAX_WATER_AMOUNT = 2500;
     private static final int MAX_ITERATIONS = 129;
     private static final int MAX_DEPTH = 32;

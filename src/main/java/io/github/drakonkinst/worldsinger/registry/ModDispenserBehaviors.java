@@ -67,6 +67,7 @@ public final class ModDispenserBehaviors {
         DispenserBlock.registerProjectileBehavior(ModItems.SUNLIGHT_SPORES_SPLASH_BOTTLE);
         DispenserBlock.registerProjectileBehavior(ModItems.ROSEITE_SPORES_SPLASH_BOTTLE);
         DispenserBlock.registerProjectileBehavior(ModItems.MIDNIGHT_SPORES_SPLASH_BOTTLE);
+        DispenserBlock.registerProjectileBehavior(ModItems.CERAMIC_CANNONBALL);
     }
 
     private ModDispenserBehaviors() {}

@@ -84,6 +84,7 @@ public class SporeBottleEntity extends ThrownItemEntity implements FlyingItemEnt
             this.handleLivingSporeBehavior(world, sporeType, pos);
         }
 
+        // TODO: This should probably be client-side
         world.playSound(null, pos.getX(), pos.getY(), pos.getZ(),
                 SoundEvents.ENTITY_SPLASH_POTION_BREAK, SoundCategory.NEUTRAL, 1.0f,
                 random.nextFloat() * 0.1f + 0.9f, world.getRandom().nextLong());
