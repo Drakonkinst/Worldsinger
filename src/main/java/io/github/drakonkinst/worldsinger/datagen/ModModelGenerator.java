@@ -335,7 +335,7 @@ public class ModModelGenerator extends FabricModelProvider {
                 ModItems.QUARTZ_AND_IRON,
                 ModItems.QUARTZ_AND_STEEL,
                 ModItems.ROSEITE_CRYSTAL,
-                ModItems.ROSEITE_BEAD,
+                ModItems.ROSEITE_CORE,
                 ModItems.CERAMIC_CANNONBALL
         });
         registerHandheldItems(itemModelGenerator, new ItemConvertible[] {

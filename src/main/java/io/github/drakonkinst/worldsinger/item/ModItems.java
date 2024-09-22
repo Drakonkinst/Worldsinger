@@ -128,7 +128,7 @@ public final class ModItems {
             new Item(new Item.Settings()));
     public static final Item ROSEITE_CRYSTAL = register("roseite_crystal",
             new Item(new Item.Settings()));
-    public static final Item ROSEITE_BEAD = register("roseite_bead", new Item(new Item.Settings()));
+    public static final Item ROSEITE_CORE = register("roseite_core", new Item(new Item.Settings()));
     public static final Item SALT = register("salt",
             new SaltItem(new Item.Settings().food(ModFoodComponents.SALT)));
 
@@ -381,7 +381,7 @@ public final class ModItems {
             itemGroup.addAfter(Items.GOLD_INGOT, ModItems.SILVER_INGOT, ModItems.ALUMINUM_INGOT);
             itemGroup.addAfter(Items.SUGAR, ModItems.SALT);
             itemGroup.addBefore(Items.WHITE_DYE, ModItems.VERDANT_VINE, ModItems.CRIMSON_SPINE,
-                    ModItems.ROSEITE_CRYSTAL, ModItems.ROSEITE_BEAD);
+                    ModItems.ROSEITE_CRYSTAL, ModItems.ROSEITE_CORE);
         });
 
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.SPAWN_EGGS).register((itemGroup) -> {
@@ -443,7 +443,7 @@ public final class ModItems {
             itemGroup.add(ModItems.STEEL_INGOT);
             itemGroup.add(ModItems.ALUMINUM_INGOT);
             itemGroup.add(ModItems.ROSEITE_CRYSTAL);
-            itemGroup.add(ModItems.ROSEITE_BEAD);
+            itemGroup.add(ModItems.ROSEITE_CORE);
 
             // Spore Bottles
             itemGroup.add(ModItems.VERDANT_SPORES_BOTTLE);
