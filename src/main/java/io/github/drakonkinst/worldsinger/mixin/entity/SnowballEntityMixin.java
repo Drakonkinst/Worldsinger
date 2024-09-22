@@ -40,6 +40,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.ModifyArg;
 
 @Mixin(SnowballEntity.class)
 public abstract class SnowballEntityMixin extends ThrownItemEntity {
@@ -83,5 +85,14 @@ public abstract class SnowballEntityMixin extends ThrownItemEntity {
                 this.discard();
             }
         }
+    }
+
+    // Fixing https://bugs.mojang.com/browse/MC-121885
+    @ModifyArg(method = "onEntityHit", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;damage(Lnet/minecraft/entity/damage/DamageSource;F)Z"), index = 1)
+    private float make(float amount) {
+        if (amount == 0.0F) {
+            return Float.MIN_NORMAL;
+        }
+        return amount;
     }
 }

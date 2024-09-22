@@ -24,8 +24,10 @@
 
 package io.github.drakonkinst.worldsinger.entity;
 
+import io.github.drakonkinst.worldsinger.item.ModItems;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.FlyingItemEntity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.projectile.thrown.ThrownItemEntity;
 import net.minecraft.item.Item;
 import net.minecraft.world.World;
@@ -36,8 +38,16 @@ public class CannonballEntity extends ThrownItemEntity implements FlyingItemEnti
         super(entityType, world);
     }
 
+    public CannonballEntity(World world, LivingEntity owner) {
+        super(ModEntityTypes.CANNONBALL, owner, world);
+    }
+
+    public CannonballEntity(World world, double x, double y, double z) {
+        super(ModEntityTypes.CANNONBALL, x, y, z, world);
+    }
+
     @Override
     protected Item getDefaultItem() {
-        return null;
+        return ModItems.CERAMIC_CANNONBALL;
     }
 }

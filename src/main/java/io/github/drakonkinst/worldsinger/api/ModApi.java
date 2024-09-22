@@ -36,6 +36,7 @@ import net.minecraft.item.Items;
 
 public class ModApi {
 
+    // TODO: Should probably move this to a custom component at some point
     public static final ItemApiLookup<SilverLined, Void> SILVER_LINED_ITEM = ItemApiLookup.get(
             Worldsinger.id("silver_lined"), SilverLined.class, Void.class);
 

@@ -66,7 +66,10 @@ public class SplashSporeBottleItem extends SporeBottleItem implements Projectile
     @Override
     public ProjectileEntity createEntity(World world, Position pos, ItemStack stack,
             Direction direction) {
-        return null;
+        SporeBottleEntity sporeBottleEntity = new SporeBottleEntity(world, pos.getX(), pos.getY(),
+                pos.getZ());
+        sporeBottleEntity.setItem(stack);
+        return sporeBottleEntity;
     }
 
     @Override

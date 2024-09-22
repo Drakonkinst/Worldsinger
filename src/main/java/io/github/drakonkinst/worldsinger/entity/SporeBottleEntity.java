@@ -61,6 +61,10 @@ public class SporeBottleEntity extends ThrownItemEntity implements FlyingItemEnt
         super(ModEntityTypes.SPORE_BOTTLE, owner, world);
     }
 
+    public SporeBottleEntity(World world, double x, double y, double z) {
+        super(ModEntityTypes.SPORE_BOTTLE, x, y, z, world);
+    }
+
     @Override
     protected void onCollision(HitResult hitResult) {
         super.onCollision(hitResult);

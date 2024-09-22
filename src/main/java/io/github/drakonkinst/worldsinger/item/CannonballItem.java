@@ -24,10 +24,17 @@
 
 package io.github.drakonkinst.worldsinger.item;
 
+import io.github.drakonkinst.worldsinger.entity.CannonballEntity;
+import io.github.drakonkinst.worldsinger.registry.ModSoundEvents;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ProjectileItem;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.stat.Stats;
+import net.minecraft.util.Hand;
+import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Position;
 import net.minecraft.world.World;
@@ -39,8 +46,29 @@ public class CannonballItem extends Item implements ProjectileItem {
     }
 
     @Override
+    public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
+        ItemStack itemStack = user.getStackInHand(hand);
+        world.playSound(null, user.getX(), user.getY(), user.getZ(),
+                ModSoundEvents.ENTITY_CANNONBALL_THROW, SoundCategory.NEUTRAL, 0.5F,
+                0.4F / (world.getRandom().nextFloat() * 0.4F + 0.8F));
+        if (!world.isClient) {
+            CannonballEntity cannonballEntity = new CannonballEntity(world, user);
+            cannonballEntity.setItem(itemStack);
+            cannonballEntity.setVelocity(user, user.getPitch(), user.getYaw(), -20.0F, 0.5F, 1.0F);
+            world.spawnEntity(cannonballEntity);
+        }
+
+        user.incrementStat(Stats.USED.getOrCreateStat(this));
+        itemStack.decrementUnlessCreative(1, user);
+        return TypedActionResult.success(itemStack, world.isClient());
+    }
+
+    @Override
     public ProjectileEntity createEntity(World world, Position pos, ItemStack stack,
             Direction direction) {
-        return null;
+        CannonballEntity cannonballEntity = new CannonballEntity(world, pos.getX(), pos.getY(),
+                pos.getZ());
+        cannonballEntity.setItem(stack);
+        return cannonballEntity;
     }
 }
