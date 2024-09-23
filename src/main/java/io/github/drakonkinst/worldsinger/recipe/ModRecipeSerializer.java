@@ -38,6 +38,9 @@ public final class ModRecipeSerializer {
     public static final RecipeSerializer<WaterCannonballRecipe> WATER_CANNONBALL = RecipeSerializer.register(
             Worldsinger.idStr("water_cannonball"),
             new SpecialRecipeSerializer<>(WaterCannonballRecipe::new));
+    public static final RecipeSerializer<SporeCannonballRecipe> SPORE_CANNONBALL = RecipeSerializer.register(
+            Worldsinger.idStr("spore_cannonball"),
+            new SpecialRecipeSerializer<>(SporeCannonballRecipe::new));
 
     public static void initialize() {}
 

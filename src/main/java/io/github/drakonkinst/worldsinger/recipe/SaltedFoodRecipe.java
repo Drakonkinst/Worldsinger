@@ -49,6 +49,9 @@ public class SaltedFoodRecipe extends SpecialCraftingRecipe {
 
         for (int i = 0; i < input.getSize(); ++i) {
             ItemStack stack = input.getStackInSlot(i);
+            if (stack.isEmpty()) {
+                continue;
+            }
             if (stack.isIn(ModConventionalItemTags.SALT)) {
                 if (hasSalt) {
                     // Cannot have more than one salt slot
@@ -61,7 +64,7 @@ public class SaltedFoodRecipe extends SpecialCraftingRecipe {
                     return false;
                 }
                 foodItem = stack;
-            } else if (!stack.isEmpty()) {
+            } else {
                 // Cannot have any other items
                 return false;
             }
@@ -77,6 +80,9 @@ public class SaltedFoodRecipe extends SpecialCraftingRecipe {
 
         for (int i = 0; i < input.getSize(); ++i) {
             ItemStack stack = input.getStackInSlot(i);
+            if (stack.isEmpty()) {
+                continue;
+            }
             if (stack.isIn(ModConventionalItemTags.SALT)) {
                 if (hasSalt) {
                     // Cannot have more than one salt slot
@@ -89,7 +95,7 @@ public class SaltedFoodRecipe extends SpecialCraftingRecipe {
                     return ItemStack.EMPTY;
                 }
                 foodItem = stack;
-            } else if (!stack.isEmpty()) {
+            } else {
                 // Cannot have any other items
                 return ItemStack.EMPTY;
             }

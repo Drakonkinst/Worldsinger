@@ -48,6 +48,9 @@ public class SilverLinedItemRecipe extends SpecialCraftingRecipe {
         int numSilverIngots = 0;
         for (int i = 0; i < input.getSize(); ++i) {
             ItemStack stack = input.getStackInSlot(i);
+            if (stack.isEmpty()) {
+                continue;
+            }
             if (stack.isIn(ModConventionalItemTags.SILVER_INGOTS)) {
                 numSilverIngots += 1;
             } else if (SilverLinedUtil.canBeSilverLined(stack)) {
@@ -56,7 +59,7 @@ public class SilverLinedItemRecipe extends SpecialCraftingRecipe {
                     return false;
                 }
                 silverLinedItem = stack;
-            } else if (!stack.isEmpty()) {
+            } else {
                 // Cannot have any other items
                 return false;
             }
@@ -70,6 +73,9 @@ public class SilverLinedItemRecipe extends SpecialCraftingRecipe {
         int numSilverIngots = 0;
         for (int i = 0; i < input.getSize(); ++i) {
             ItemStack stack = input.getStackInSlot(i);
+            if (stack.isEmpty()) {
+                continue;
+            }
             if (stack.isIn(ModConventionalItemTags.SILVER_INGOTS)) {
                 numSilverIngots += 1;
             } else if (SilverLinedUtil.canBeSilverLined(stack)) {
@@ -78,7 +84,7 @@ public class SilverLinedItemRecipe extends SpecialCraftingRecipe {
                     return ItemStack.EMPTY;
                 }
                 silverLinedItem = stack;
-            } else if (!stack.isEmpty()) {
+            } else {
                 // Cannot have any other items
                 return ItemStack.EMPTY;
             }

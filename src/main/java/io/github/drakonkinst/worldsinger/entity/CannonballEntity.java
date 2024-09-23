@@ -65,7 +65,7 @@ public class CannonballEntity extends ThrownItemEntity implements FlyingItemEnti
     // TODO: Fuse data
 
     private static final float ENTITY_COLLISION_DAMAGE = 2.0f;
-    private static final float PARTICLE_SPEED = 0.5f;
+    private static final float PARTICLE_SPEED = 0.25f;
     private static final int WATER_SPLASH_RADIUS_HORIZONTAL = 4;
     private static final int WATER_SPLASH_RADIUS_VERTICAL = 2;
 

@@ -56,12 +56,14 @@ public class WaterCannonballRecipe extends SpecialCraftingRecipe {
         boolean hasWaterBucket = false;
         for (int i = 0; i < input.getSize(); ++i) {
             ItemStack stack = input.getStackInSlot(i);
+            if (stack.isEmpty()) {
+                continue;
+            }
             if (stack.isIn(ConventionalItemTags.WATER_BUCKETS)) {
-                if (!hasWaterBucket) {
-                    hasWaterBucket = true;
-                } else {
+                if (hasWaterBucket) {
                     return false;
                 }
+                hasWaterBucket = true;
             } else if (isEmptyCannonball(stack)) {
                 // Must all be same item type
                 if (cannonballStack.isEmpty()) {
@@ -84,12 +86,14 @@ public class WaterCannonballRecipe extends SpecialCraftingRecipe {
         boolean hasWaterBucket = false;
         for (int i = 0; i < input.getSize(); ++i) {
             ItemStack stack = input.getStackInSlot(i);
+            if (stack.isEmpty()) {
+                continue;
+            }
             if (stack.isIn(ConventionalItemTags.WATER_BUCKETS)) {
-                if (!hasWaterBucket) {
-                    hasWaterBucket = true;
-                } else {
+                if (hasWaterBucket) {
                     return ItemStack.EMPTY;
                 }
+                hasWaterBucket = true;
             } else if (isEmptyCannonball(stack)) {
                 if (cannonballStack.isEmpty()) {
                     cannonballStack = stack;

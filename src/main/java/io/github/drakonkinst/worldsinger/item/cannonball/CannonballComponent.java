@@ -34,6 +34,7 @@ import io.github.drakonkinst.worldsinger.cosmere.lumar.SunlightSpores;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.VerdantSpores;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.ZephyrSpores;
 import io.netty.buffer.ByteBuf;
+import it.unimi.dsi.fastutil.ints.IntObjectPair;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
@@ -122,13 +123,15 @@ public record CannonballComponent(CannonballShell shell, CannonballCore core, in
     }
 
     public enum CannonballContents implements StringIdentifiable {
-        DEAD_SPORES(DeadSpores.ID, "dead_spores"),
-        VERDANT_SPORES(VerdantSpores.ID, "verdant_spores"),
-        CRIMSON_SPORES(CrimsonSpores.ID, "crimson_spores"),
-        ZEPHYR_SPORES(ZephyrSpores.ID, "zephyr_spores"),
-        SUNLIGHT_SPORES(SunlightSpores.ID, "sunlight_spores"),
-        ROSEITE_SPORES(RoseiteSpores.ID, "roseite_spores"),
-        MIDNIGHT_SPORES(MidnightSpores.ID, "midnight_spores");
+        DEAD_SPORES(DeadSpores.ID, "dead_spores", DeadSpores.getInstance().getColor()),
+        VERDANT_SPORES(VerdantSpores.ID, "verdant_spores", VerdantSpores.getInstance().getColor()),
+        CRIMSON_SPORES(CrimsonSpores.ID, "crimson_spores", CrimsonSpores.getInstance().getColor()),
+        ZEPHYR_SPORES(ZephyrSpores.ID, "zephyr_spores", ZephyrSpores.getInstance().getColor()),
+        SUNLIGHT_SPORES(SunlightSpores.ID, "sunlight_spores",
+                SunlightSpores.getInstance().getColor()),
+        ROSEITE_SPORES(RoseiteSpores.ID, "roseite_spores", RoseiteSpores.getInstance().getColor()),
+        MIDNIGHT_SPORES(MidnightSpores.ID, "midnight_spores",
+                MidnightSpores.getInstance().getColor());
 
         private static final IntFunction<CannonballContents> BY_ID = ValueLists.createIdToValueFunction(
                 CannonballContents::getId, values(), ValueLists.OutOfBoundsHandling.ZERO);
@@ -140,7 +143,7 @@ public record CannonballComponent(CannonballShell shell, CannonballCore core, in
         private final int id;
         private final String name;
 
-        CannonballContents(final int id, final String name) {
+        CannonballContents(final int id, final String name, final int color) {
             this.id = id;
             this.name = name;
         }
@@ -187,5 +190,11 @@ public record CannonballComponent(CannonballShell shell, CannonballCore core, in
     public void appendTooltip(Item.TooltipContext context, Consumer<Text> tooltip,
             TooltipType type) {
         // TODO: Model after FireworkExplosionComponent
+    }
+
+    // Assumes contents is already sorted
+    public List<IntObjectPair<CannonballContents>> getContentsAsPairList() {
+        // TODO
+        return null;
     }
 }
