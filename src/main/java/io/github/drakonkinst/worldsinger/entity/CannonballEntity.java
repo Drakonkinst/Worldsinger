@@ -24,14 +24,24 @@
 
 package io.github.drakonkinst.worldsinger.entity;
 
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
+import io.github.drakonkinst.worldsinger.Worldsinger;
 import io.github.drakonkinst.worldsinger.entity.cannonball.CannonballBehavior;
 import io.github.drakonkinst.worldsinger.entity.cannonball.EmptyCannonballBehavior;
+import io.github.drakonkinst.worldsinger.entity.cannonball.HollowSporeCannonballBehavior;
+import io.github.drakonkinst.worldsinger.entity.cannonball.RoseiteSporeCannonballBehavior;
 import io.github.drakonkinst.worldsinger.entity.cannonball.WaterCannonballBehavior;
 import io.github.drakonkinst.worldsinger.item.ModItems;
 import io.github.drakonkinst.worldsinger.item.cannonball.CannonballComponent;
+import io.github.drakonkinst.worldsinger.item.cannonball.CannonballComponent.CannonballContents;
 import io.github.drakonkinst.worldsinger.item.cannonball.CannonballComponent.CannonballCore;
 import io.github.drakonkinst.worldsinger.registry.ModDataComponentTypes;
 import io.github.drakonkinst.worldsinger.registry.ModSoundEvents;
+import it.unimi.dsi.fastutil.objects.Object2IntArrayMap;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import java.util.concurrent.TimeUnit;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
@@ -49,6 +59,7 @@ import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.NotNull;
 
 public class CannonballEntity extends ThrownItemEntity implements FlyingItemEntity {
 
@@ -57,10 +68,45 @@ public class CannonballEntity extends ThrownItemEntity implements FlyingItemEnti
     private static final float PARTICLE_SPEED = 0.25f;
     private static final CannonballBehavior EMPTY_CANNONBALL_BEHAVIOR = new EmptyCannonballBehavior();
     private static final CannonballBehavior WATER_CANNONBALL_BEHAVIOR = new WaterCannonballBehavior();
+    private static final LoadingCache<CannonballComponent, CannonballBehavior> CACHED_CANNONBALL_BEHAVIORS = CacheBuilder.newBuilder()
+            .recordStats() // TODO: Turn off for release build
+            .maximumSize(12) // 12 Aethers :P no other reason
+            .expireAfterWrite(1, TimeUnit.MINUTES)
+            .build(new CacheLoader<>() {
+                @Override
+                public @NotNull CannonballBehavior load(@NotNull CannonballComponent component) {
+                    Object2IntMap<CannonballContents> contentMap = getContentMap(component);
+                    if (component.core() == CannonballCore.ROSEITE) {
+                        return new RoseiteSporeCannonballBehavior(contentMap);
+                    } else if (component.core() == CannonballCore.HOLLOW) {
+                        return new HollowSporeCannonballBehavior(contentMap);
+                    } else {
+                        Worldsinger.LOGGER.warn("Invalid component detected in cache {}",
+                                component);
+                        return EMPTY_CANNONBALL_BEHAVIOR;
+                    }
+                }
+            });
+
+    public static Object2IntMap<CannonballContents> getContentMap(CannonballComponent component) {
+        Object2IntMap<CannonballContents> map = new Object2IntArrayMap<>();
+        for (CannonballContents contents : component.contents()) {
+            int quantity = map.getOrDefault(contents, 0);
+            map.put(contents, quantity + 1);
+        }
+        return map;
+    }
 
     private static CannonballBehavior getCannonballBehavior(CannonballComponent component) {
-        if (component != null && component.core() == CannonballCore.WATER) {
-            return WATER_CANNONBALL_BEHAVIOR;
+        if (component != null) {
+            if (component.core() == CannonballCore.WATER) {
+                return WATER_CANNONBALL_BEHAVIOR;
+            } else if (component.core() == CannonballCore.HOLLOW
+                    || component.core() == CannonballCore.ROSEITE) {
+                // TODO: Turn off for release build
+                Worldsinger.LOGGER.info(CACHED_CANNONBALL_BEHAVIORS.stats().toString());
+                return CACHED_CANNONBALL_BEHAVIORS.getUnchecked(component);
+            }
         }
         return EMPTY_CANNONBALL_BEHAVIOR;
     }

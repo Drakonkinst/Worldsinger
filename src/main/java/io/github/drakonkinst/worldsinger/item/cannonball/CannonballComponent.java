@@ -34,7 +34,6 @@ import io.github.drakonkinst.worldsinger.cosmere.lumar.SunlightSpores;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.VerdantSpores;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.ZephyrSpores;
 import io.netty.buffer.ByteBuf;
-import it.unimi.dsi.fastutil.ints.IntObjectPair;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
@@ -190,11 +189,5 @@ public record CannonballComponent(CannonballShell shell, CannonballCore core, in
     public void appendTooltip(Item.TooltipContext context, Consumer<Text> tooltip,
             TooltipType type) {
         // TODO: Model after FireworkExplosionComponent
-    }
-
-    // Assumes contents is already sorted
-    public List<IntObjectPair<CannonballContents>> getContentsAsPairList() {
-        // TODO
-        return null;
     }
 }
