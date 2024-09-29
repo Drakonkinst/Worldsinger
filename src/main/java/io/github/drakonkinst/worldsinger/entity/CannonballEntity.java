@@ -34,9 +34,9 @@ import io.github.drakonkinst.worldsinger.entity.cannonball.HollowSporeCannonball
 import io.github.drakonkinst.worldsinger.entity.cannonball.RoseiteSporeCannonballBehavior;
 import io.github.drakonkinst.worldsinger.entity.cannonball.WaterCannonballBehavior;
 import io.github.drakonkinst.worldsinger.item.ModItems;
-import io.github.drakonkinst.worldsinger.item.cannonball.CannonballComponent;
-import io.github.drakonkinst.worldsinger.item.cannonball.CannonballComponent.CannonballContents;
-import io.github.drakonkinst.worldsinger.item.cannonball.CannonballComponent.CannonballCore;
+import io.github.drakonkinst.worldsinger.item.component.CannonballComponent;
+import io.github.drakonkinst.worldsinger.item.component.CannonballComponent.CannonballContents;
+import io.github.drakonkinst.worldsinger.item.component.CannonballComponent.CannonballCore;
 import io.github.drakonkinst.worldsinger.registry.ModDataComponentTypes;
 import io.github.drakonkinst.worldsinger.registry.ModSoundEvents;
 import it.unimi.dsi.fastutil.objects.Object2IntArrayMap;
@@ -71,7 +71,7 @@ public class CannonballEntity extends ThrownItemEntity implements FlyingItemEnti
     private static final LoadingCache<CannonballComponent, CannonballBehavior> CACHED_CANNONBALL_BEHAVIORS = CacheBuilder.newBuilder()
             .recordStats() // TODO: Turn off for release build
             .maximumSize(12) // 12 Aethers :P no other reason
-            .expireAfterWrite(1, TimeUnit.MINUTES)
+            .expireAfterWrite(10, TimeUnit.MINUTES)
             .build(new CacheLoader<>() {
                 @Override
                 public @NotNull CannonballBehavior load(@NotNull CannonballComponent component) {

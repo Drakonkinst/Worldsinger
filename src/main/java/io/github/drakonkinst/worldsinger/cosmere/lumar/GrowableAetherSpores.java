@@ -102,7 +102,7 @@ public abstract class GrowableAetherSpores<T extends SporeGrowthEntity> extends 
     }
 
     @Override
-    public void doReactionFromSplashBottle(World world, Vec3d pos, int spores, int water,
+    public void doReactionFromProjectile(World world, Vec3d pos, int spores, int water,
             Random random, boolean affectingFluidContainer) {
         if (affectingFluidContainer) {
             BlockPos posAbove = BlockPosUtil.toBlockPos(pos).up();

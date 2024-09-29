@@ -104,7 +104,7 @@ public class MidnightSpores extends GrowableAetherSpores<MidnightSporeGrowthEnti
 
     // Only spawn a single Midnight Essence from a Midnight Splash Bottle
     @Override
-    public void doReactionFromSplashBottle(World world, Vec3d pos, int spores, int water,
+    public void doReactionFromProjectile(World world, Vec3d pos, int spores, int water,
             Random random, boolean affectingFluidContainer) {
         BlockPos blockPos = BlockPosUtil.toBlockPos(pos);
         if (affectingFluidContainer) {

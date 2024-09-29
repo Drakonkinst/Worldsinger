@@ -25,7 +25,7 @@
 package io.github.drakonkinst.worldsinger.entity.cannonball;
 
 import io.github.drakonkinst.worldsinger.entity.CannonballEntity;
-import io.github.drakonkinst.worldsinger.item.cannonball.CannonballComponent.CannonballContents;
+import io.github.drakonkinst.worldsinger.item.component.CannonballComponent.CannonballContents;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import net.minecraft.util.math.Vec3d;
 

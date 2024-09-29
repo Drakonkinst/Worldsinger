@@ -100,19 +100,19 @@ public class SporeBottleEntity extends ThrownItemEntity implements FlyingItemEnt
         return DeadSpores.getInstance();
     }
 
+    // TODO: Make this a helper since it has shared logic w/cannonballs?
     private void handleLivingSporeBehavior(World world, AetherSpores sporeType, Vec3d pos) {
         BlockPos blockPos = this.getBlockPos();
         BlockState blockState = world.getBlockState(blockPos);
         if (world.getFluidState(blockPos).isIn(FluidTags.WATER)) {
             int waterAmount = WaterReactionManager.absorbWaterAndCollectReactives(world, blockPos,
                     null);
-            sporeType.doReactionFromSplashBottle(world, pos, SPORE_AMOUNT, waterAmount, random,
+            sporeType.doReactionFromProjectile(world, pos, SPORE_AMOUNT, waterAmount, random,
                     false);
         } else if (blockState.isOf(Blocks.WATER_CAULDRON)) {
             int waterAmount = WATER_AMOUNT_PER_LEVEL * blockState.get(LeveledCauldronBlock.LEVEL);
             world.setBlockState(blockPos, Blocks.CAULDRON.getStateWithProperties(blockState));
-            sporeType.doReactionFromSplashBottle(world, pos, SPORE_AMOUNT, waterAmount, random,
-                    true);
+            sporeType.doReactionFromProjectile(world, pos, SPORE_AMOUNT, waterAmount, random, true);
         }
     }
 

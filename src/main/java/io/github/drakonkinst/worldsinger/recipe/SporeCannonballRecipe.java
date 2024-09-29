@@ -25,9 +25,9 @@
 package io.github.drakonkinst.worldsinger.recipe;
 
 import io.github.drakonkinst.worldsinger.item.ModItems;
-import io.github.drakonkinst.worldsinger.item.cannonball.CannonballComponent;
-import io.github.drakonkinst.worldsinger.item.cannonball.CannonballComponent.CannonballContents;
-import io.github.drakonkinst.worldsinger.item.cannonball.CannonballComponent.CannonballCore;
+import io.github.drakonkinst.worldsinger.item.component.CannonballComponent;
+import io.github.drakonkinst.worldsinger.item.component.CannonballComponent.CannonballContents;
+import io.github.drakonkinst.worldsinger.item.component.CannonballComponent.CannonballCore;
 import io.github.drakonkinst.worldsinger.registry.ModDataComponentTypes;
 import it.unimi.dsi.fastutil.ints.IntObjectPair;
 import java.util.ArrayList;

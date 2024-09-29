@@ -270,7 +270,7 @@ public class SunlightSpores extends AetherSpores {
     }
 
     @Override
-    public void doReactionFromSplashBottle(World world, Vec3d pos, int spores, int water,
+    public void doReactionFromProjectile(World world, Vec3d pos, int spores, int water,
             Random random, boolean affectingFluidContainer) {
         this.doSunlightSporeReaction(world, BlockPosUtil.toBlockPos(pos), water, random, false, 0);
     }

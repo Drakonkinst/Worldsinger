@@ -75,6 +75,13 @@ public final class SporeParticleSpawner {
     private static final float SPLASH_POTION_PARTICLE_SIZE = 1.0f;
     private static final int SPLASH_POTION_PARTICLE_COUNT = 10;
 
+    // Radius = sqrt(strength * 9) / 2
+    private static final double CANNONBALL_STRENGTH_1_RADIUS = 1.5;
+    private static final double CANNONBALL_STRENGTH_2_RADIUS = Math.sqrt(18) * 0.5;
+    private static final double CANNONBALL_STRENGTH_3_RADIUS = Math.sqrt(27) * 0.5;
+    private static final float CANNONBALL_PARTICLE_SIZE = 1.0f;
+    private static final int CANNONBALL_PARTICLE_COUNT = 10;
+
     public static void spawnSplashParticles(ServerWorld world, AetherSpores sporeType,
             Entity entity, float fallDistance, boolean fluid) {
         double height = fallDistance * SPLASH_HEIGHT_PER_BLOCK;
@@ -133,6 +140,21 @@ public final class SporeParticleSpawner {
         SporeParticleManager.createRandomSporeParticles(world, sporeType, centerPos,
                 SPLASH_POTION_RADIUS, 0.0, SPLASH_POTION_HEIGHT, 0.0, SPLASH_POTION_PARTICLE_SIZE,
                 SPLASH_POTION_PARTICLE_COUNT, true);
+    }
+
+    public static void spawnSporeCannonballParticle(ServerWorld world, AetherSpores sporeType,
+            Vec3d pos, int strength) {
+        double radius;
+        if (strength >= 3) {
+            radius = CANNONBALL_STRENGTH_3_RADIUS;
+        } else if (strength == 2) {
+            radius = CANNONBALL_STRENGTH_2_RADIUS;
+        } else {
+            radius = CANNONBALL_STRENGTH_1_RADIUS;
+        }
+        SporeParticleManager.createRandomSporeParticles(world, sporeType, pos, radius, 0.0,
+                radius * 0.75, 0.0, CANNONBALL_PARTICLE_SIZE, CANNONBALL_PARTICLE_COUNT, true);
+
     }
 
     private SporeParticleSpawner() {}

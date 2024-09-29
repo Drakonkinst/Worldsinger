@@ -262,7 +262,7 @@ public abstract class AetherSpores implements StringIdentifiable, Comparable<Aet
     }
 
     // By default, act as normal
-    public void doReactionFromSplashBottle(World world, Vec3d pos, int spores, int water,
+    public void doReactionFromProjectile(World world, Vec3d pos, int spores, int water,
             Random random, boolean affectingFluidContainer) {
         this.doReaction(world, pos, spores, water, random);
     }

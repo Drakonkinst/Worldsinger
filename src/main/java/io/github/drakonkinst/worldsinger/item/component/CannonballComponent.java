@@ -22,10 +22,11 @@
  * SOFTWARE.
  */
 
-package io.github.drakonkinst.worldsinger.item.cannonball;
+package io.github.drakonkinst.worldsinger.item.component;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import io.github.drakonkinst.worldsinger.cosmere.lumar.AetherSpores;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.CrimsonSpores;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.DeadSpores;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.MidnightSpores;
@@ -46,6 +47,7 @@ import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.text.Text;
 import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.function.ValueLists;
+import org.jetbrains.annotations.Nullable;
 
 public record CannonballComponent(CannonballShell shell, CannonballCore core, int fuse,
                                   List<CannonballContents> contents) implements TooltipAppender {
@@ -121,6 +123,7 @@ public record CannonballComponent(CannonballShell shell, CannonballCore core, in
         }
     }
 
+    // TODO: This assumes all cannonball contents are spores, which may not be true in the future
     public enum CannonballContents implements StringIdentifiable {
         DEAD_SPORES(DeadSpores.ID, "dead_spores", DeadSpores.getInstance().getColor()),
         VERDANT_SPORES(VerdantSpores.ID, "verdant_spores", VerdantSpores.getInstance().getColor()),
@@ -141,19 +144,30 @@ public record CannonballComponent(CannonballShell shell, CannonballCore core, in
 
         private final int id;
         private final String name;
+        private final int color;
 
         CannonballContents(final int id, final String name, final int color) {
             this.id = id;
             this.name = name;
+            this.color = color;
         }
 
         public int getId() {
             return id;
         }
 
+        public int getColor() {
+            return color;
+        }
+
         @Override
         public String asString() {
             return name;
+        }
+
+        @Nullable
+        public AetherSpores getSporeType() {
+            return AetherSpores.getAetherSporeTypeById(id);
         }
     }
 
