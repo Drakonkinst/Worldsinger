@@ -124,7 +124,7 @@ public class SporeCannonballRecipe extends SpecialCraftingRecipe {
             return false;
         }
         // Invalid if nothing changed
-        if (numFuse <= 0 && numContents <= 0) {
+        if (numFuse <= 0 && numContents <= 0 && !hasRoseiteCore) {
             return false;
         }
         CannonballComponent oldComponent = cannonballStack.get(ModDataComponentTypes.CANNONBALL);
@@ -224,7 +224,7 @@ public class SporeCannonballRecipe extends SpecialCraftingRecipe {
             contents = contents.subList(0, CannonballComponent.MAX_CONTENTS_LENGTH);
         }
         contents.sort(Comparator.comparingInt(CannonballContents::getId));
-        ItemStack result = cannonballStack.copy();
+        ItemStack result = cannonballStack.copyWithCount(1);
         result.set(ModDataComponentTypes.CANNONBALL,
                 new CannonballComponent(oldComponent.shell(), newCore, numFuse, contents));
         return result;

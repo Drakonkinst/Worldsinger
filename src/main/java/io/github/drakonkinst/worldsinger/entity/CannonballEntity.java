@@ -46,10 +46,15 @@ import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.FlyingItemEntity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.data.DataTracker;
+import net.minecraft.entity.data.DataTracker.Builder;
+import net.minecraft.entity.data.TrackedData;
+import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.projectile.thrown.ThrownItemEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ItemStackParticleEffect;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
@@ -62,7 +67,11 @@ import org.jetbrains.annotations.NotNull;
 
 public class CannonballEntity extends ThrownItemEntity implements FlyingItemEntity {
 
-    // TODO: Fuse data
+    private static final TrackedData<Integer> FUSE = DataTracker.registerData(
+            CannonballEntity.class, TrackedDataHandlerRegistry.INTEGER);
+    public static final String FUSE_NBT_KEY = "fuse";
+    public static final int FUSE_DELAY = 20;
+
     private static final float ENTITY_COLLISION_DAMAGE = 2.0f;
     private static final float PARTICLE_SPEED = 0.25f;
     private static final CannonballBehavior EMPTY_CANNONBALL_BEHAVIOR = new EmptyCannonballBehavior();
@@ -115,6 +124,50 @@ public class CannonballEntity extends ThrownItemEntity implements FlyingItemEnti
     }
 
     @Override
+    protected void initDataTracker(Builder builder) {
+        super.initDataTracker(builder);
+        builder.add(FUSE, 0);
+    }
+
+    public void setFuse(int fuse) {
+        this.dataTracker.set(FUSE, fuse);
+    }
+
+    public int getFuse() {
+        return this.dataTracker.get(FUSE);
+    }
+
+    private boolean hasFuseExpired(int fuseTime) {
+        CannonballComponent cannonballComponent = this.getStack()
+                .get(ModDataComponentTypes.CANNONBALL);
+        return cannonballComponent != null && cannonballComponent.core().canHaveFuse()
+                && cannonballComponent.fuse() > 0
+                && fuseTime >= cannonballComponent.fuse() * FUSE_DELAY;
+    }
+
+    @Override
+    public void tick() {
+        super.tick();
+        int nextFuse = this.getFuse() + 1;
+        this.setFuse(nextFuse);
+        if (hasFuseExpired(nextFuse)) {
+            explode(this.getPos());
+        }
+    }
+
+    @Override
+    public void writeCustomDataToNbt(NbtCompound nbt) {
+        super.writeCustomDataToNbt(nbt);
+        nbt.putShort(FUSE_NBT_KEY, (short) this.getFuse());
+    }
+
+    @Override
+    public void readCustomDataFromNbt(NbtCompound nbt) {
+        super.readCustomDataFromNbt(nbt);
+        this.setFuse(nbt.getShort(FUSE_NBT_KEY));
+    }
+
+    @Override
     public void handleStatus(byte status) {
         if (status == EntityStatuses.PLAY_DEATH_SOUND_OR_ADD_PROJECTILE_HIT_PARTICLES) {
             // TODO: Make a custom particle effect for this?
@@ -146,11 +199,15 @@ public class CannonballEntity extends ThrownItemEntity implements FlyingItemEnti
     @Override
     protected void onCollision(HitResult hitResult) {
         super.onCollision(hitResult);
+        Vec3d hitPos = hitResult.getPos();
+        explode(hitPos);
+    }
+
+    private void explode(Vec3d hitPos) {
+        World world = this.getWorld();
         CannonballComponent cannonballComponent = this.getStack()
                 .get(ModDataComponentTypes.CANNONBALL);
         CannonballBehavior behavior = getCannonballBehavior(cannonballComponent);
-        World world = this.getWorld();
-        Vec3d hitPos = hitResult.getPos();
 
         if (world.isClient) {
             behavior.onCollisionClient(this, hitPos);
@@ -165,6 +222,7 @@ public class CannonballEntity extends ThrownItemEntity implements FlyingItemEnti
                             EntityStatuses.PLAY_DEATH_SOUND_OR_ADD_PROJECTILE_HIT_PARTICLES);
             this.discard();
         }
+
     }
 
     @Override
