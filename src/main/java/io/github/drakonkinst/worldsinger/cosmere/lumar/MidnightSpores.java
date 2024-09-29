@@ -27,6 +27,7 @@ import io.github.drakonkinst.worldsinger.block.ModBlocks;
 import io.github.drakonkinst.worldsinger.effect.ModStatusEffects;
 import io.github.drakonkinst.worldsinger.entity.MidnightSporeGrowthEntity;
 import io.github.drakonkinst.worldsinger.entity.ModEntityTypes;
+import io.github.drakonkinst.worldsinger.entity.cannonball.CannonballBehavior;
 import io.github.drakonkinst.worldsinger.fluid.ModFluids;
 import io.github.drakonkinst.worldsinger.item.ModItems;
 import io.github.drakonkinst.worldsinger.particle.ModParticleTypes;
@@ -102,16 +103,23 @@ public class MidnightSpores extends GrowableAetherSpores<MidnightSporeGrowthEnti
         return 0;
     }
 
-    // Only spawn a single Midnight Essence from a Midnight Splash Bottle
     @Override
-    public void doReactionFromProjectile(World world, Vec3d pos, int spores, int water,
-            Random random, boolean affectingFluidContainer) {
-        BlockPos blockPos = BlockPosUtil.toBlockPos(pos);
-        if (affectingFluidContainer) {
-            blockPos = blockPos.up();
-        }
-        if (world.getBlockState(blockPos).isAir()) {
-            world.setBlockState(blockPos, ModBlocks.MIDNIGHT_ESSENCE.getDefaultState());
+    public void doReactionFromParticle(World world, Vec3d pos, int spores, int water, Random random,
+            boolean affectingFluidContainer) {
+        if (spores >= CannonballBehavior.SPORE_AMOUNT) {
+            // Normal behavior
+            super.doReactionFromParticle(world, pos, spores, water, random,
+                    affectingFluidContainer);
+        } else {
+            // Only spawn a single Midnight Essence from a Midnight Splash Bottle
+            // TODO: Does this work for waterlogged blocks etc? Should we just spawn a small growth?
+            BlockPos blockPos = BlockPosUtil.toBlockPos(pos);
+            if (affectingFluidContainer) {
+                blockPos = blockPos.up();
+            }
+            if (world.getBlockState(blockPos).isAir()) {
+                world.setBlockState(blockPos, ModBlocks.MIDNIGHT_ESSENCE.getDefaultState());
+            }
         }
     }
 

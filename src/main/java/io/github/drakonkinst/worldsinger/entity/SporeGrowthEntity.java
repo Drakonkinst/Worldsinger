@@ -273,15 +273,13 @@ public abstract class SporeGrowthEntity extends ServerSideEntity {
         if (result) {
             this.shiftBlock(this.getNextDirection(false));
             placeAttempts = 0;
-        } else if (this.isGrowthBlock(world.getBlockState(pos))) {
+        } else {
             Int3 direction = this.getNextDirection(true);
             if (direction.isZero()) {
                 placeAttempts++;
             } else {
                 this.shiftBlock(direction);
             }
-        } else {
-            placeAttempts++;
         }
     }
 

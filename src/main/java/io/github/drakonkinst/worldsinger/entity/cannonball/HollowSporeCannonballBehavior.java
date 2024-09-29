@@ -34,8 +34,6 @@ import net.minecraft.util.math.Vec3d;
 
 public class HollowSporeCannonballBehavior implements CannonballBehavior {
 
-    private static final int SPORE_AMOUNT = 83;
-
     private final Object2IntMap<CannonballContents> contentMap;
 
     public HollowSporeCannonballBehavior(Object2IntMap<CannonballContents> contentMap) {

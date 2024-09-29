@@ -24,6 +24,7 @@
 package io.github.drakonkinst.worldsinger.cosmere.lumar;
 
 import io.github.drakonkinst.worldsinger.entity.SporeGrowthEntity;
+import io.github.drakonkinst.worldsinger.entity.cannonball.CannonballBehavior;
 import io.github.drakonkinst.worldsinger.registry.tag.ModBlockTags;
 import io.github.drakonkinst.worldsinger.util.BlockPosUtil;
 import io.github.drakonkinst.worldsinger.util.BoxUtil;
@@ -102,8 +103,8 @@ public abstract class GrowableAetherSpores<T extends SporeGrowthEntity> extends 
     }
 
     @Override
-    public void doReactionFromProjectile(World world, Vec3d pos, int spores, int water,
-            Random random, boolean affectingFluidContainer) {
+    public void doReactionFromParticle(World world, Vec3d pos, int spores, int water, Random random,
+            boolean affectingFluidContainer) {
         if (affectingFluidContainer) {
             BlockPos posAbove = BlockPosUtil.toBlockPos(pos).up();
             BlockState stateAbove = world.getBlockState(posAbove);
@@ -113,6 +114,7 @@ public abstract class GrowableAetherSpores<T extends SporeGrowthEntity> extends 
                         false, Int3.ZERO);
             }
         }
-        this.spawnSporeGrowth(world, pos, spores, water, true, true, false, Int3.ZERO);
+        this.spawnSporeGrowth(world, pos, spores, water, true,
+                spores < CannonballBehavior.SPORE_AMOUNT, false, Int3.ZERO);
     }
 }

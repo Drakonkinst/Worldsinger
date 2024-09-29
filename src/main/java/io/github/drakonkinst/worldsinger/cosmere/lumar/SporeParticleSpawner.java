@@ -75,10 +75,9 @@ public final class SporeParticleSpawner {
     private static final float SPLASH_POTION_PARTICLE_SIZE = 1.0f;
     private static final int SPLASH_POTION_PARTICLE_COUNT = 10;
 
-    // Radius = sqrt(strength * 9) / 2
     private static final double CANNONBALL_STRENGTH_1_RADIUS = 1.5;
-    private static final double CANNONBALL_STRENGTH_2_RADIUS = Math.sqrt(18) * 0.5;
-    private static final double CANNONBALL_STRENGTH_3_RADIUS = Math.sqrt(27) * 0.5;
+    private static final double CANNONBALL_STRENGTH_2_RADIUS = 1.75;
+    private static final double CANNONBALL_STRENGTH_3_RADIUS = 2.0;
     private static final float CANNONBALL_PARTICLE_SIZE = 1.0f;
     private static final int CANNONBALL_PARTICLE_COUNT = 10;
 

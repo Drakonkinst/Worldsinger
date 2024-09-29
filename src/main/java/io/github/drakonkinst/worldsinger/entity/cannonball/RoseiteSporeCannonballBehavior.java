@@ -24,12 +24,17 @@
 
 package io.github.drakonkinst.worldsinger.entity.cannonball;
 
+import io.github.drakonkinst.worldsinger.cosmere.lumar.AetherSpores;
 import io.github.drakonkinst.worldsinger.entity.CannonballEntity;
 import io.github.drakonkinst.worldsinger.item.component.CannonballComponent.CannonballContents;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.World;
 
 public class RoseiteSporeCannonballBehavior implements CannonballBehavior {
+
+    private static final int WATER_AMOUNT_SINGLE = 200;
+    private static final int WATER_AMOUNT_MULTIPLE = 150;
 
     private final Object2IntMap<CannonballContents> contentMap;
 
@@ -44,6 +49,20 @@ public class RoseiteSporeCannonballBehavior implements CannonballBehavior {
 
     @Override
     public void onCollisionServer(CannonballEntity entity, Vec3d hitPos) {
-
+        World world = entity.getWorld();
+        // Doesn't split water evenly, but small decrease in water for having multiple spore types to account for multiple entries
+        int waterAmountPerEntry =
+                contentMap.size() > 1 ? WATER_AMOUNT_MULTIPLE : WATER_AMOUNT_SINGLE;
+        for (Object2IntMap.Entry<CannonballContents> entry : contentMap.object2IntEntrySet()) {
+            AetherSpores sporeType = entry.getKey().getSporeType();
+            int strength = entry.getIntValue();
+            if (sporeType == null) {
+                continue;
+            }
+            if (!sporeType.isDead()) {
+                AetherSpores.doParticleReaction(world, hitPos, sporeType, SPORE_AMOUNT * strength,
+                        waterAmountPerEntry);
+            }
+        }
     }
 }

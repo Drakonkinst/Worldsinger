@@ -25,6 +25,7 @@ package io.github.drakonkinst.worldsinger.cosmere.lumar;
 
 import io.github.drakonkinst.worldsinger.block.ModBlocks;
 import io.github.drakonkinst.worldsinger.effect.ModStatusEffects;
+import io.github.drakonkinst.worldsinger.entity.cannonball.CannonballBehavior;
 import io.github.drakonkinst.worldsinger.fluid.ModFluids;
 import io.github.drakonkinst.worldsinger.item.ModItems;
 import io.github.drakonkinst.worldsinger.registry.ModSoundEvents;
@@ -270,9 +271,10 @@ public class SunlightSpores extends AetherSpores {
     }
 
     @Override
-    public void doReactionFromProjectile(World world, Vec3d pos, int spores, int water,
-            Random random, boolean affectingFluidContainer) {
-        this.doSunlightSporeReaction(world, BlockPosUtil.toBlockPos(pos), water, random, false, 0);
+    public void doReactionFromParticle(World world, Vec3d pos, int spores, int water, Random random,
+            boolean affectingFluidContainer) {
+        this.doSunlightSporeReaction(world, BlockPosUtil.toBlockPos(pos), water, random,
+                spores >= CannonballBehavior.SPORE_AMOUNT, 0);
     }
 
     @Override

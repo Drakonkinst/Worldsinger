@@ -29,6 +29,8 @@ import net.minecraft.util.math.Vec3d;
 
 public interface CannonballBehavior {
 
+    int SPORE_AMOUNT = 83;
+
     void onCollisionClient(CannonballEntity entity, Vec3d hitPos);
 
     void onCollisionServer(CannonballEntity entity, Vec3d hitPos);

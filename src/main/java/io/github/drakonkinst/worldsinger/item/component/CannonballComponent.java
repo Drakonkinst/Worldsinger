@@ -147,8 +147,7 @@ public record CannonballComponent(CannonballShell shell, CannonballCore core, in
         SUNLIGHT_SPORES(SunlightSpores.ID, "sunlight_spores",
                 SunlightSpores.getInstance().getColor()),
         ROSEITE_SPORES(RoseiteSpores.ID, "roseite_spores", RoseiteSpores.getInstance().getColor()),
-        MIDNIGHT_SPORES(MidnightSpores.ID, "midnight_spores",
-                MidnightSpores.getInstance().getColor());
+        MIDNIGHT_SPORES(MidnightSpores.ID, "midnight_spores", 0xcccccc);
 
         private static final IntFunction<CannonballContents> BY_ID = ValueLists.createIdToValueFunction(
                 CannonballContents::getId, values(), ValueLists.OutOfBoundsHandling.ZERO);
@@ -234,13 +233,12 @@ public record CannonballComponent(CannonballShell shell, CannonballCore core, in
     private void appendContentsTooltip(Consumer<Text> textConsumer) {
         Object2IntMap<CannonballContents> contentMap = getContentMap(this);
         MutableText contentText = Text.empty();
-        boolean isFirst = true;
+        int numEntries = 0;
         for (Object2IntMap.Entry<CannonballContents> entry : contentMap.object2IntEntrySet()) {
-            if (isFirst) {
-                isFirst = false;
-            } else {
+            if (numEntries > 0) {
                 contentText.append(", ").formatted(Formatting.GRAY);
             }
+            numEntries++;
             CannonballContents contents = entry.getKey();
             MutableText entryText = Text.translatable(
                     "item.worldsinger.cannonball.contents." + contents.name);
@@ -251,9 +249,10 @@ public record CannonballComponent(CannonballShell shell, CannonballCore core, in
             }
             contentText.append(entryText.setStyle(
                     Style.EMPTY.withColor(TextColor.fromRgb(contents.getColor()))));
-
         }
-        textConsumer.accept(contentText);
+        if (numEntries > 0) {
+            textConsumer.accept(contentText);
+        }
     }
 
     private void appendFuseTooltip(Consumer<Text> textConsumer) {

@@ -198,7 +198,7 @@ public abstract class AetherSpores implements StringIdentifiable, Comparable<Aet
         }
 
         if (waterAmount > 0) {
-            sporeType.doReactionFromProjectile(world, pos, sporeAmount, waterAmount,
+            sporeType.doReactionFromParticle(world, pos, sporeAmount, waterAmount,
                     world.getRandom(), affectingFluidContainer);
         }
     }
@@ -291,8 +291,8 @@ public abstract class AetherSpores implements StringIdentifiable, Comparable<Aet
     }
 
     // By default, act as normal
-    public void doReactionFromProjectile(World world, Vec3d pos, int spores, int water,
-            Random random, boolean affectingFluidContainer) {
+    public void doReactionFromParticle(World world, Vec3d pos, int spores, int water, Random random,
+            boolean affectingFluidContainer) {
         this.doReaction(world, pos, spores, water, random);
     }
 
