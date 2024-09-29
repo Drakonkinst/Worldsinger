@@ -26,6 +26,7 @@ package io.github.drakonkinst.worldsinger.cosmere.lumar;
 import com.google.common.collect.ImmutableMap;
 import com.mojang.serialization.Codec;
 import io.github.drakonkinst.worldsinger.block.SporeEmitting;
+import io.github.drakonkinst.worldsinger.cosmere.WaterReactionManager;
 import io.github.drakonkinst.worldsinger.cosmere.WaterReactive;
 import io.github.drakonkinst.worldsinger.effect.ModStatusEffects;
 import io.github.drakonkinst.worldsinger.entity.ModEntityTypeTags;
@@ -34,6 +35,7 @@ import io.github.drakonkinst.worldsinger.fluid.ModFluidTags;
 import io.github.drakonkinst.worldsinger.item.SporeBottleItem;
 import io.github.drakonkinst.worldsinger.registry.ModDamageTypes;
 import io.github.drakonkinst.worldsinger.registry.tag.ModBlockTags;
+import io.github.drakonkinst.worldsinger.util.BlockPosUtil;
 import io.netty.buffer.ByteBuf;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 import java.util.Map;
@@ -42,6 +44,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.block.LeveledCauldronBlock;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffect;
@@ -53,6 +57,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
@@ -80,6 +85,8 @@ public abstract class AetherSpores implements StringIdentifiable, Comparable<Aet
             ModFluidTags.SUNLIGHT_SPORES, ModStatusEffects.SUNLIGHT_SPORES,
             ModFluidTags.ROSEITE_SPORES, ModStatusEffects.ROSEITE_SPORES,
             ModFluidTags.MIDNIGHT_SPORES, ModStatusEffects.MIDNIGHT_SPORES);
+
+    private static final int WATER_AMOUNT_PER_LEVEL = 80;
 
     public static Map<String, AetherSpores> getAetherSporeMap() {
         return AETHER_SPORE_MAP;
@@ -171,6 +178,28 @@ public abstract class AetherSpores implements StringIdentifiable, Comparable<Aet
             entity.damage(
                     ModDamageTypes.createSource(entity.getWorld(), ModDamageTypes.DROWN_SPORE),
                     1.0f);
+        }
+    }
+
+    // Create a spore explosion as if generated from spore particles. Reacts
+    // to nearby water sources, and spore amount cannot be changed.
+    public static void doParticleReaction(World world, Vec3d pos, AetherSpores sporeType,
+            int sporeAmount, int startingWaterAmount) {
+        BlockPos blockPos = BlockPosUtil.toBlockPos(pos);
+        BlockState blockState = world.getBlockState(blockPos);
+        int waterAmount = startingWaterAmount;
+        boolean affectingFluidContainer = false;
+        if (blockState.getFluidState().isIn(FluidTags.WATER)) {
+            waterAmount += WaterReactionManager.absorbWaterAndCollectReactives(world, blockPos,
+                    null);
+        } else if (blockState.isOf(Blocks.WATER_CAULDRON)) {
+            waterAmount += WATER_AMOUNT_PER_LEVEL * blockState.get(LeveledCauldronBlock.LEVEL);
+            world.setBlockState(blockPos, Blocks.CAULDRON.getStateWithProperties(blockState));
+        }
+
+        if (waterAmount > 0) {
+            sporeType.doReactionFromProjectile(world, pos, sporeAmount, waterAmount,
+                    world.getRandom(), affectingFluidContainer);
         }
     }
 

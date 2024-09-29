@@ -24,34 +24,27 @@
 package io.github.drakonkinst.worldsinger.entity;
 
 import io.github.drakonkinst.worldsinger.Worldsinger;
-import io.github.drakonkinst.worldsinger.cosmere.WaterReactionManager;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.AetherSpores;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.DeadSpores;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.SporeParticleSpawner;
 import io.github.drakonkinst.worldsinger.item.ModItems;
 import io.github.drakonkinst.worldsinger.item.SporeBottleItem;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.LeveledCauldronBlock;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.FlyingItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.projectile.thrown.ThrownItemEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.hit.HitResult;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public class SporeBottleEntity extends ThrownItemEntity implements FlyingItemEntity {
 
     private static final int SPORE_AMOUNT = 75;
-    private static final int WATER_AMOUNT_PER_LEVEL = 80;
 
     public SporeBottleEntity(EntityType<? extends SporeBottleEntity> entityType, World world) {
         super(entityType, world);
@@ -81,7 +74,7 @@ public class SporeBottleEntity extends ThrownItemEntity implements FlyingItemEnt
 
         AetherSpores sporeType = this.getSporeType();
         if (!sporeType.isDead()) {
-            this.handleLivingSporeBehavior(world, sporeType, pos);
+            AetherSpores.doParticleReaction(world, pos, sporeType, SPORE_AMOUNT, 0);
         }
 
         // TODO: This should probably be client-side
@@ -98,22 +91,6 @@ public class SporeBottleEntity extends ThrownItemEntity implements FlyingItemEnt
         }
         Worldsinger.LOGGER.error("Unable to determine spore type for Thrown Spore Bottle Entity");
         return DeadSpores.getInstance();
-    }
-
-    // TODO: Make this a helper since it has shared logic w/cannonballs?
-    private void handleLivingSporeBehavior(World world, AetherSpores sporeType, Vec3d pos) {
-        BlockPos blockPos = this.getBlockPos();
-        BlockState blockState = world.getBlockState(blockPos);
-        if (world.getFluidState(blockPos).isIn(FluidTags.WATER)) {
-            int waterAmount = WaterReactionManager.absorbWaterAndCollectReactives(world, blockPos,
-                    null);
-            sporeType.doReactionFromProjectile(world, pos, SPORE_AMOUNT, waterAmount, random,
-                    false);
-        } else if (blockState.isOf(Blocks.WATER_CAULDRON)) {
-            int waterAmount = WATER_AMOUNT_PER_LEVEL * blockState.get(LeveledCauldronBlock.LEVEL);
-            world.setBlockState(blockPos, Blocks.CAULDRON.getStateWithProperties(blockState));
-            sporeType.doReactionFromProjectile(world, pos, SPORE_AMOUNT, waterAmount, random, true);
-        }
     }
 
     @Override
