@@ -39,7 +39,6 @@ import io.github.drakonkinst.worldsinger.item.component.CannonballComponent.Cann
 import io.github.drakonkinst.worldsinger.item.component.CannonballComponent.CannonballCore;
 import io.github.drakonkinst.worldsinger.registry.ModDataComponentTypes;
 import io.github.drakonkinst.worldsinger.registry.ModSoundEvents;
-import it.unimi.dsi.fastutil.objects.Object2IntArrayMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import java.util.concurrent.TimeUnit;
 import net.minecraft.entity.Entity;
@@ -75,7 +74,8 @@ public class CannonballEntity extends ThrownItemEntity implements FlyingItemEnti
             .build(new CacheLoader<>() {
                 @Override
                 public @NotNull CannonballBehavior load(@NotNull CannonballComponent component) {
-                    Object2IntMap<CannonballContents> contentMap = getContentMap(component);
+                    Object2IntMap<CannonballContents> contentMap = CannonballComponent.getContentMap(
+                            component);
                     if (component.core() == CannonballCore.ROSEITE) {
                         return new RoseiteSporeCannonballBehavior(contentMap);
                     } else if (component.core() == CannonballCore.HOLLOW) {
@@ -87,15 +87,6 @@ public class CannonballEntity extends ThrownItemEntity implements FlyingItemEnti
                     }
                 }
             });
-
-    public static Object2IntMap<CannonballContents> getContentMap(CannonballComponent component) {
-        Object2IntMap<CannonballContents> map = new Object2IntArrayMap<>();
-        for (CannonballContents contents : component.contents()) {
-            int quantity = map.getOrDefault(contents, 0);
-            map.put(contents, quantity + 1);
-        }
-        return map;
-    }
 
     private static CannonballBehavior getCannonballBehavior(CannonballComponent component) {
         if (component != null) {

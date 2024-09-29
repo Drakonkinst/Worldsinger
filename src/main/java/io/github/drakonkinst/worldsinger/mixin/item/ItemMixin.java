@@ -43,7 +43,7 @@ import org.spongepowered.asm.mixin.injection.At;
 public abstract class ItemMixin {
 
     @Unique
-    private static final String SALTED_FOOD_NAME_KEY = "item.salted_food";
+    private static final String SALTED_FOOD_NAME_KEY = "item.worldsinger.salted_food";
 
     @WrapOperation(method = "use", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerEntity;canConsume(Z)Z"))
     private boolean allowEatingIfAffectsThirst(PlayerEntity instance, boolean ignoreHunger,

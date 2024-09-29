@@ -59,10 +59,10 @@ public final class SilverLinedUtil {
             int maxDurability = MathHelper.floor(
                     silverItemData.getMaxSilverDurability() * scaleFactor);
             int durability = MathHelper.floor(silverDurability * scaleFactor);
-            tooltip.add(Text.translatable("item.silver_durability", durability, maxDurability)
-                    .setStyle(SilverLinedUtil.SILVER_TEXT_STYLE));
+            tooltip.add(Text.translatable("item.worldsinger.silver_durability", durability,
+                    maxDurability).setStyle(SilverLinedUtil.SILVER_TEXT_STYLE));
         } else {
-            tooltip.add(Text.translatable("item.silver_lined")
+            tooltip.add(Text.translatable("item.worldsinger.silver_lined")
                     .setStyle(SilverLinedUtil.SILVER_TEXT_STYLE));
         }
     }

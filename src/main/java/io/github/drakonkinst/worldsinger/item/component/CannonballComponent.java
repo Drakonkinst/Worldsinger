@@ -35,6 +35,8 @@ import io.github.drakonkinst.worldsinger.cosmere.lumar.SunlightSpores;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.VerdantSpores;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.ZephyrSpores;
 import io.netty.buffer.ByteBuf;
+import it.unimi.dsi.fastutil.objects.Object2IntArrayMap;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
@@ -44,7 +46,11 @@ import net.minecraft.item.tooltip.TooltipAppender;
 import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
+import net.minecraft.text.MutableText;
+import net.minecraft.text.Style;
 import net.minecraft.text.Text;
+import net.minecraft.text.TextColor;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.function.ValueLists;
 import org.jetbrains.annotations.Nullable;
@@ -73,6 +79,15 @@ public record CannonballComponent(CannonballShell shell, CannonballCore core, in
             CannonballComponent::contents, CannonballComponent::new);
     public static final CannonballComponent DEFAULT = new CannonballComponent(
             CannonballShell.CERAMIC, CannonballCore.HOLLOW, 0, Collections.emptyList());
+
+    public static Object2IntMap<CannonballContents> getContentMap(CannonballComponent component) {
+        Object2IntMap<CannonballContents> map = new Object2IntArrayMap<>();
+        for (CannonballContents contents : component.contents()) {
+            int quantity = map.getOrDefault(contents, 0);
+            map.put(contents, quantity + 1);
+        }
+        return map;
+    }
 
     public enum CannonballCore implements StringIdentifiable {
         HOLLOW(0, "hollow", true, false, true),
@@ -202,6 +217,49 @@ public record CannonballComponent(CannonballShell shell, CannonballCore core, in
     @Override
     public void appendTooltip(Item.TooltipContext context, Consumer<Text> tooltip,
             TooltipType type) {
-        // TODO: Model after FireworkExplosionComponent
+        appendCoreTooltip(tooltip);
+        appendContentsTooltip(tooltip);
+        appendFuseTooltip(tooltip);
+    }
+
+    private void appendCoreTooltip(Consumer<Text> textConsumer) {
+        MutableText text = switch (this.core()) {
+            case WATER -> Text.translatable("item.worldsinger.cannonball.core.water");
+            case HOLLOW -> Text.translatable("item.worldsinger.cannonball.core.hollow");
+            case ROSEITE -> Text.translatable("item.worldsinger.cannonball.core.roseite");
+        };
+        textConsumer.accept(text.formatted(Formatting.GRAY));
+    }
+
+    private void appendContentsTooltip(Consumer<Text> textConsumer) {
+        Object2IntMap<CannonballContents> contentMap = getContentMap(this);
+        MutableText contentText = Text.empty();
+        boolean isFirst = true;
+        for (Object2IntMap.Entry<CannonballContents> entry : contentMap.object2IntEntrySet()) {
+            if (isFirst) {
+                isFirst = false;
+            } else {
+                contentText.append(", ").formatted(Formatting.GRAY);
+            }
+            CannonballContents contents = entry.getKey();
+            MutableText entryText = Text.translatable(
+                    "item.worldsinger.cannonball.contents." + contents.name);
+            int quantity = entry.getIntValue();
+            if (quantity > 1) {
+                entryText = Text.translatable("item.worldsinger.cannonball.contents_quantity",
+                        entryText, quantity);
+            }
+            contentText.append(entryText.setStyle(
+                    Style.EMPTY.withColor(TextColor.fromRgb(contents.getColor()))));
+
+        }
+        textConsumer.accept(contentText);
+    }
+
+    private void appendFuseTooltip(Consumer<Text> textConsumer) {
+        if (this.core().canHaveFuse() && this.fuse() > 0) {
+            textConsumer.accept(Text.translatable("item.worldsinger.cannonball.fuse", this.fuse())
+                    .formatted(Formatting.GRAY));
+        }
     }
 }

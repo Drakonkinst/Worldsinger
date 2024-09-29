@@ -51,10 +51,25 @@ effect.worldsinger:
   thirst: Thirst
 itemGroup.worldsinger.worldsinger: Worldsinger
 item:
-  salted_food: Salted %s
-  silver_lined: Silver-Lined
-  silver_durability: 'Silver Durability: %s / %s'
   worldsinger:
+    salted_food: Salted %s
+    silver_lined: Silver-Lined
+    silver_durability: 'Silver Durability: %s / %s'
+    cannonball:
+      core:
+        water: Water-Filled
+        roseite: Roseite Core
+        hollow: Hollow
+      contents:
+        dead_spores: Dead
+        verdant_spores: Verdant
+        crimson_spores: Crimson
+        zephyr_spores: Zephyr
+        sunlight_spores: Sunlight
+        roseite_spores: Roseite
+        midnight_spores: Midnight
+      contents_quantity: '%s x %s'
+      fuse: 'Fuse Duration: %s'
     verdant_vine: Verdant Vine
     crimson_spine: Crimson Spine
     roseite_crystal: Roseite Crystal
