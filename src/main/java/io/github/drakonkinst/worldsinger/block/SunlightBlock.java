@@ -44,6 +44,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldEvents;
 
 public class SunlightBlock extends StillFluidBlock {
 
@@ -107,6 +108,16 @@ public class SunlightBlock extends StillFluidBlock {
         } else if (!SunlightBlock.isTouchingAnyWater(world, pos)) {
             // Will not decay fully if touching water, to halt unnecessary re-catalyzation
             world.setBlockState(pos, Blocks.AIR.getDefaultState());
+        }
+    }
+
+    @Override
+    protected void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock,
+            BlockPos sourcePos, boolean notify) {
+        super.neighborUpdate(state, world, pos, sourceBlock, sourcePos, notify);
+        if (SunlightBlock.isTouchingAnyWater(world, pos)) {
+            world.setBlockState(pos, Blocks.AIR.getDefaultState());
+            world.syncWorldEvent(WorldEvents.LAVA_EXTINGUISHED, pos, 0);
         }
     }
 

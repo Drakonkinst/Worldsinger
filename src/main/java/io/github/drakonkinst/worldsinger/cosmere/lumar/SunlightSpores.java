@@ -31,6 +31,7 @@ import io.github.drakonkinst.worldsinger.item.ModItems;
 import io.github.drakonkinst.worldsinger.registry.ModSoundEvents;
 import io.github.drakonkinst.worldsinger.util.BlockPosUtil;
 import io.github.drakonkinst.worldsinger.util.BoxUtil;
+import io.github.drakonkinst.worldsinger.util.ModConstants;
 import it.unimi.dsi.fastutil.ints.IntObjectImmutablePair;
 import it.unimi.dsi.fastutil.ints.IntObjectPair;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
@@ -40,7 +41,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Queue;
 import java.util.Set;
-import net.minecraft.block.AbstractFireBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -52,6 +52,7 @@ import net.minecraft.fluid.Fluids;
 import net.minecraft.item.Item;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.math.BlockPos;
@@ -90,12 +91,28 @@ public class SunlightSpores extends AetherSpores {
 
     @Override
     public void doReaction(World world, Vec3d pos, int spores, int water, Random random) {
-        // Do nothing
         this.doSunlightSporeReaction(world, BlockPosUtil.toBlockPos(pos), water, random, true, 0);
+    }
+
+    private BlockPos getValidStartingBlock(World world, BlockPos center) {
+        if (this.canFirstSunlightBlockReplace(world.getBlockState(center))) {
+            return center;
+        }
+        BlockPos.Mutable mutable = new BlockPos.Mutable();
+        for (Direction offset : ModConstants.CARDINAL_DIRECTIONS) {
+            mutable.set(center).move(offset);
+            if (this.canFirstSunlightBlockReplace(world.getBlockState(mutable))) {
+                return mutable;
+            }
+        }
+        return center;
     }
 
     public void doSunlightSporeReaction(World world, BlockPos pos, int water, Random random,
             boolean shouldSpreadSunlightBlocks, int fireWaveRadiusBonus) {
+        // Adjust position to look for a good starting block
+        pos = getValidStartingBlock(world, pos);
+
         // Number of blocks of Sunlight generated depends on amount of water
         int maxBlocks = Math.min(water / WATER_PER_BLOCK, MAX_BLOCKS_AFFECTED);
         if (maxBlocks <= 0) {
@@ -140,8 +157,7 @@ public class SunlightSpores extends AetherSpores {
 
         // Always generate one block of Sunlight at the point of interaction
         BlockState blockState = world.getBlockState(startPos);
-        if (blockState.isOf(ModBlocks.SUNLIGHT_SPORE_SEA) || blockState.isOf(
-                ModBlocks.SUNLIGHT_SPORE_BLOCK) || blockState.isOf(Blocks.AIR)) {
+        if (this.canFirstSunlightBlockReplace(blockState)) {
             // Not a waterlogged block
             world.setBlockState(startPos, ModBlocks.SUNLIGHT.getDefaultState());
             affectedBlocks.add(startPos);
@@ -192,15 +208,14 @@ public class SunlightSpores extends AetherSpores {
             Random random) {
         LongSet blocksProcessed = new LongOpenHashSet();
         Mutable mutable = new Mutable();
-        Mutable mutableDown = new Mutable();
         MutableBoolean anyEvaporated = new MutableBoolean();
 
         for (BlockPos pos : affectedBlocks) {
             if (blocksProcessed.size() >= MAX_BLOCKS_PROCESSED) {
                 break;
             }
-            this.doReactionEffectsForBlock(world, pos, blocksProcessed, mutable, mutableDown,
-                    anyEvaporated, random);
+            this.doReactionEffectsForBlock(world, pos, blocksProcessed, mutable, anyEvaporated,
+                    random);
         }
         if (anyEvaporated.booleanValue()) {
             world.playSound(null, originPos, ModSoundEvents.BLOCK_SUNLIGHT_EVAPORATE,
@@ -224,13 +239,17 @@ public class SunlightSpores extends AetherSpores {
                 ModBlocks.SUNLIGHT_SPORE_BLOCK);
     }
 
+    private boolean canFirstSunlightBlockReplace(BlockState state) {
+        return canSunlightReplace(state) || state.isIn(BlockTags.AIR);
+    }
+
     private boolean canSunlightPassThrough(BlockState state) {
         return state.isOf(ModBlocks.SUNLIGHT) || state.getFluidState()
                 .isOf(ModFluids.SUNLIGHT_SPORES);
     }
 
     private void doReactionEffectsForBlock(World world, BlockPos centerPos, LongSet blocksProcessed,
-            Mutable mutable, Mutable mutableDown, MutableBoolean anyEvaporated, Random random) {
+            Mutable mutable, MutableBoolean anyEvaporated, Random random) {
         blocksProcessed.add(centerPos.asLong());
         for (int offsetX = -EFFECT_RADIUS; offsetX <= EFFECT_RADIUS; ++offsetX) {
             for (int offsetY = -EFFECT_RADIUS; offsetY <= EFFECT_RADIUS; ++offsetY) {
@@ -240,15 +259,14 @@ public class SunlightSpores extends AetherSpores {
                     if (!blocksProcessed.add(mutable.asLong())) {
                         continue;
                     }
-                    mutableDown.set(mutable).move(0, -1, 0);
-                    this.processBlock(world, mutable, mutableDown, anyEvaporated, random);
+                    this.processBlock(world, mutable, anyEvaporated, random);
                 }
             }
         }
     }
 
-    private void processBlock(World world, BlockPos mutable, BlockPos mutableDown,
-            MutableBoolean anyEvaporated, Random random) {
+    private void processBlock(World world, BlockPos mutable, MutableBoolean anyEvaporated,
+            Random random) {
         BlockState state = world.getBlockState(mutable);
         if (state.getBlock() instanceof FluidDrainable fluidDrainable && state.getFluidState()
                 .isOf(Fluids.WATER)) {
@@ -257,10 +275,9 @@ public class SunlightSpores extends AetherSpores {
             anyEvaporated.setTrue();
         }
 
-        if (random.nextInt(3) == 0 && state.isAir() && world.getBlockState(mutableDown)
-                .isOpaqueFullCube(world, mutableDown)) {
+        if (random.nextInt(3) == 0 && state.isAir()) {
             // Set fire
-            world.setBlockState(mutable, AbstractFireBlock.getState(world, mutable));
+            world.setBlockState(mutable, Blocks.FIRE.getDefaultState());
         }
     }
 
