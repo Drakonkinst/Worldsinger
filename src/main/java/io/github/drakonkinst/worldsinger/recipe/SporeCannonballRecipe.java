@@ -26,7 +26,7 @@ package io.github.drakonkinst.worldsinger.recipe;
 
 import io.github.drakonkinst.worldsinger.item.ModItems;
 import io.github.drakonkinst.worldsinger.item.component.CannonballComponent;
-import io.github.drakonkinst.worldsinger.item.component.CannonballComponent.CannonballContents;
+import io.github.drakonkinst.worldsinger.item.component.CannonballComponent.CannonballContent;
 import io.github.drakonkinst.worldsinger.item.component.CannonballComponent.CannonballCore;
 import io.github.drakonkinst.worldsinger.registry.ModDataComponentTypes;
 import it.unimi.dsi.fastutil.ints.IntObjectPair;
@@ -49,29 +49,29 @@ public class SporeCannonballRecipe extends SpecialCraftingRecipe {
     private static final int BOTTLE_AMOUNT = 1;
     private static final int BUCKET_AMOUNT = 3;
 
-    private static final Map<Item, IntObjectPair<CannonballContents>> ITEM_TO_CONTENTS = createItemToContentsMap();
+    private static final Map<Item, IntObjectPair<CannonballContent>> ITEM_TO_CONTENTS = createItemToContentsMap();
 
-    private static Map<Item, IntObjectPair<CannonballContents>> createItemToContentsMap() {
-        Map<Item, IntObjectPair<CannonballContents>> itemToContents = new HashMap<>();
+    private static Map<Item, IntObjectPair<CannonballContent>> createItemToContentsMap() {
+        Map<Item, IntObjectPair<CannonballContent>> itemToContents = new HashMap<>();
         addSporesToMap(itemToContents, ModItems.DEAD_SPORES_BOTTLE, ModItems.DEAD_SPORES_BUCKET,
-                CannonballContents.DEAD_SPORES);
+                CannonballContent.DEAD_SPORES);
         addSporesToMap(itemToContents, ModItems.VERDANT_SPORES_BOTTLE,
-                ModItems.VERDANT_SPORES_BUCKET, CannonballContents.VERDANT_SPORES);
+                ModItems.VERDANT_SPORES_BUCKET, CannonballContent.VERDANT_SPORES);
         addSporesToMap(itemToContents, ModItems.CRIMSON_SPORES_BOTTLE,
-                ModItems.CRIMSON_SPORES_BUCKET, CannonballContents.CRIMSON_SPORES);
+                ModItems.CRIMSON_SPORES_BUCKET, CannonballContent.CRIMSON_SPORES);
         addSporesToMap(itemToContents, ModItems.ZEPHYR_SPORES_BOTTLE, ModItems.ZEPHYR_SPORES_BUCKET,
-                CannonballContents.ZEPHYR_SPORES);
+                CannonballContent.ZEPHYR_SPORES);
         addSporesToMap(itemToContents, ModItems.SUNLIGHT_SPORES_BOTTLE,
-                ModItems.SUNLIGHT_SPORES_BUCKET, CannonballContents.SUNLIGHT_SPORES);
+                ModItems.SUNLIGHT_SPORES_BUCKET, CannonballContent.SUNLIGHT_SPORES);
         addSporesToMap(itemToContents, ModItems.ROSEITE_SPORES_BOTTLE,
-                ModItems.ROSEITE_SPORES_BUCKET, CannonballContents.ROSEITE_SPORES);
+                ModItems.ROSEITE_SPORES_BUCKET, CannonballContent.ROSEITE_SPORES);
         addSporesToMap(itemToContents, ModItems.MIDNIGHT_SPORES_BOTTLE,
-                ModItems.MIDNIGHT_SPORES_BUCKET, CannonballContents.MIDNIGHT_SPORES);
+                ModItems.MIDNIGHT_SPORES_BUCKET, CannonballContent.MIDNIGHT_SPORES);
         return itemToContents;
     }
 
-    private static void addSporesToMap(Map<Item, IntObjectPair<CannonballContents>> itemToContents,
-            Item bottleItem, Item bucketItem, CannonballContents contents) {
+    private static void addSporesToMap(Map<Item, IntObjectPair<CannonballContent>> itemToContents,
+            Item bottleItem, Item bucketItem, CannonballContent contents) {
         itemToContents.put(bottleItem, IntObjectPair.of(BOTTLE_AMOUNT, contents));
         itemToContents.put(bucketItem, IntObjectPair.of(BUCKET_AMOUNT, contents));
     }
@@ -110,7 +110,7 @@ public class SporeCannonballRecipe extends SpecialCraftingRecipe {
                     return false;
                 }
             } else {
-                IntObjectPair<CannonballContents> stackContents = ITEM_TO_CONTENTS.get(
+                IntObjectPair<CannonballContent> stackContents = ITEM_TO_CONTENTS.get(
                         stack.getItem());
                 if (stackContents == null) {
                     // Unknown item
@@ -161,7 +161,7 @@ public class SporeCannonballRecipe extends SpecialCraftingRecipe {
         ItemStack cannonballStack = ItemStack.EMPTY;
         boolean hasRoseiteCore = false;
         int numFuse = 0;
-        List<CannonballContents> contents = new ArrayList<>(3);
+        List<CannonballContent> contents = new ArrayList<>(3);
         for (int i = 0; i < input.getSize(); ++i) {
             ItemStack stack = input.getStackInSlot(i);
             if (stack.isEmpty()) {
@@ -181,7 +181,7 @@ public class SporeCannonballRecipe extends SpecialCraftingRecipe {
                     return ItemStack.EMPTY;
                 }
             } else {
-                IntObjectPair<CannonballContents> stackContents = ITEM_TO_CONTENTS.get(
+                IntObjectPair<CannonballContent> stackContents = ITEM_TO_CONTENTS.get(
                         stack.getItem());
                 if (stackContents == null) {
                     // Unknown item
@@ -223,7 +223,7 @@ public class SporeCannonballRecipe extends SpecialCraftingRecipe {
             // Trim contents to size
             contents = contents.subList(0, CannonballComponent.MAX_CONTENTS_LENGTH);
         }
-        contents.sort(Comparator.comparingInt(CannonballContents::getId));
+        contents.sort(Comparator.comparingInt(CannonballContent::getId));
         ItemStack result = cannonballStack.copyWithCount(1);
         result.set(ModDataComponentTypes.CANNONBALL,
                 new CannonballComponent(oldComponent.shell(), newCore, numFuse, contents));

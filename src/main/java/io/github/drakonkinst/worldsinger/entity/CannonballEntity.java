@@ -35,7 +35,7 @@ import io.github.drakonkinst.worldsinger.entity.cannonball.RoseiteSporeCannonbal
 import io.github.drakonkinst.worldsinger.entity.cannonball.WaterCannonballBehavior;
 import io.github.drakonkinst.worldsinger.item.ModItems;
 import io.github.drakonkinst.worldsinger.item.component.CannonballComponent;
-import io.github.drakonkinst.worldsinger.item.component.CannonballComponent.CannonballContents;
+import io.github.drakonkinst.worldsinger.item.component.CannonballComponent.CannonballContent;
 import io.github.drakonkinst.worldsinger.item.component.CannonballComponent.CannonballCore;
 import io.github.drakonkinst.worldsinger.registry.ModDataComponentTypes;
 import io.github.drakonkinst.worldsinger.registry.ModSoundEvents;
@@ -83,7 +83,7 @@ public class CannonballEntity extends ThrownItemEntity implements FlyingItemEnti
             .build(new CacheLoader<>() {
                 @Override
                 public @NotNull CannonballBehavior load(@NotNull CannonballComponent component) {
-                    Object2IntMap<CannonballContents> contentMap = CannonballComponent.getContentMap(
+                    Object2IntMap<CannonballContent> contentMap = CannonballComponent.getContentMap(
                             component);
                     if (component.core() == CannonballCore.ROSEITE) {
                         return new RoseiteSporeCannonballBehavior(contentMap);

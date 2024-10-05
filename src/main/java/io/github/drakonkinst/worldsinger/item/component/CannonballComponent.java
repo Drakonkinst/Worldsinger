@@ -56,7 +56,7 @@ import net.minecraft.util.function.ValueLists;
 import org.jetbrains.annotations.Nullable;
 
 public record CannonballComponent(CannonballShell shell, CannonballCore core, int fuse,
-                                  List<CannonballContents> contents) implements TooltipAppender {
+                                  List<CannonballContent> contents) implements TooltipAppender {
 
     public static final int MAX_FUSE = 3;
     public static final int MAX_CONTENTS_LENGTH = 3;
@@ -68,21 +68,21 @@ public record CannonballComponent(CannonballShell shell, CannonballCore core, in
                             CannonballCore.CODEC.optionalFieldOf("core", CannonballCore.HOLLOW)
                                     .forGetter(CannonballComponent::core),
                             Codec.INT.optionalFieldOf("fuse", 0).forGetter(CannonballComponent::fuse),
-                            CannonballContents.CODEC.listOf(0, MAX_CONTENTS_LENGTH)
+                            CannonballContent.CODEC.listOf(0, MAX_CONTENTS_LENGTH)
                                     .optionalFieldOf("contents", Collections.emptyList())
                                     .forGetter(CannonballComponent::contents))
                     .apply(instance, CannonballComponent::new));
     public static final PacketCodec<ByteBuf, CannonballComponent> PACKET_CODEC = PacketCodec.tuple(
             CannonballShell.PACKET_CODEC, CannonballComponent::shell, CannonballCore.PACKET_CODEC,
             CannonballComponent::core, PacketCodecs.VAR_INT, CannonballComponent::fuse,
-            CannonballContents.PACKET_CODEC.collect(PacketCodecs.toList()),
+            CannonballContent.PACKET_CODEC.collect(PacketCodecs.toList()),
             CannonballComponent::contents, CannonballComponent::new);
     public static final CannonballComponent DEFAULT = new CannonballComponent(
             CannonballShell.CERAMIC, CannonballCore.HOLLOW, 0, Collections.emptyList());
 
-    public static Object2IntMap<CannonballContents> getContentMap(CannonballComponent component) {
-        Object2IntMap<CannonballContents> map = new Object2IntArrayMap<>();
-        for (CannonballContents contents : component.contents()) {
+    public static Object2IntMap<CannonballContent> getContentMap(CannonballComponent component) {
+        Object2IntMap<CannonballContent> map = new Object2IntArrayMap<>();
+        for (CannonballContent contents : component.contents()) {
             int quantity = map.getOrDefault(contents, 0);
             map.put(contents, quantity + 1);
         }
@@ -139,39 +139,51 @@ public record CannonballComponent(CannonballShell shell, CannonballCore core, in
     }
 
     // TODO: This assumes all cannonball contents are spores, which may not be true in the future
-    public enum CannonballContents implements StringIdentifiable {
-        DEAD_SPORES(DeadSpores.ID, "dead_spores", DeadSpores.getInstance().getColor()),
-        VERDANT_SPORES(VerdantSpores.ID, "verdant_spores", VerdantSpores.getInstance().getColor()),
-        CRIMSON_SPORES(CrimsonSpores.ID, "crimson_spores", CrimsonSpores.getInstance().getColor()),
-        ZEPHYR_SPORES(ZephyrSpores.ID, "zephyr_spores", ZephyrSpores.getInstance().getColor()),
+    public enum CannonballContent implements StringIdentifiable {
+        DEAD_SPORES(DeadSpores.ID, "dead_spores", DeadSpores.getInstance().getColor(), 0xaaaaaa),
+        VERDANT_SPORES(VerdantSpores.ID, "verdant_spores", VerdantSpores.getInstance().getColor(),
+                VerdantSpores.getInstance().getColor()),
+        CRIMSON_SPORES(CrimsonSpores.ID, "crimson_spores", CrimsonSpores.getInstance().getColor(),
+                CrimsonSpores.getInstance().getColor()),
+        ZEPHYR_SPORES(ZephyrSpores.ID, "zephyr_spores", ZephyrSpores.getInstance().getColor(),
+                ZephyrSpores.getInstance().getParticleColor()),
         SUNLIGHT_SPORES(SunlightSpores.ID, "sunlight_spores",
-                SunlightSpores.getInstance().getColor()),
-        ROSEITE_SPORES(RoseiteSpores.ID, "roseite_spores", RoseiteSpores.getInstance().getColor()),
-        MIDNIGHT_SPORES(MidnightSpores.ID, "midnight_spores", 0xcccccc);
+                SunlightSpores.getInstance().getColor(), SunlightSpores.getInstance().getColor()),
+        ROSEITE_SPORES(RoseiteSpores.ID, "roseite_spores", RoseiteSpores.getInstance().getColor(),
+                RoseiteSpores.getInstance().getColor()),
+        MIDNIGHT_SPORES(MidnightSpores.ID, "midnight_spores", 0x444444,
+                MidnightSpores.getInstance().getColor());
 
-        private static final IntFunction<CannonballContents> BY_ID = ValueLists.createIdToValueFunction(
-                CannonballContents::getId, values(), ValueLists.OutOfBoundsHandling.ZERO);
-        public static final PacketCodec<ByteBuf, CannonballContents> PACKET_CODEC = PacketCodecs.indexed(
-                BY_ID, CannonballContents::getId);
-        public static final Codec<CannonballContents> CODEC = StringIdentifiable.createBasicCodec(
-                CannonballContents::values);
+        private static final IntFunction<CannonballContent> BY_ID = ValueLists.createIdToValueFunction(
+                CannonballContent::getId, values(), ValueLists.OutOfBoundsHandling.ZERO);
+        public static final PacketCodec<ByteBuf, CannonballContent> PACKET_CODEC = PacketCodecs.indexed(
+                BY_ID, CannonballContent::getId);
+        public static final Codec<CannonballContent> CODEC = StringIdentifiable.createBasicCodec(
+                CannonballContent::values);
 
         private final int id;
         private final String name;
-        private final int color;
+        private final int textColor;
+        private final int barColor;
 
-        CannonballContents(final int id, final String name, final int color) {
+        CannonballContent(final int id, final String name, final int textColor,
+                final int barColor) {
             this.id = id;
             this.name = name;
-            this.color = color;
+            this.textColor = textColor;
+            this.barColor = barColor;
         }
 
         public int getId() {
             return id;
         }
 
-        public int getColor() {
-            return color;
+        public int getTextColor() {
+            return textColor;
+        }
+
+        public int getBarColor() {
+            return barColor;
         }
 
         @Override
@@ -254,15 +266,15 @@ public record CannonballComponent(CannonballShell shell, CannonballCore core, in
     }
 
     private void appendContentsTooltip(Consumer<Text> textConsumer) {
-        Object2IntMap<CannonballContents> contentMap = getContentMap(this);
+        Object2IntMap<CannonballContent> contentMap = getContentMap(this);
         MutableText contentText = Text.empty();
         int numEntries = 0;
-        for (Object2IntMap.Entry<CannonballContents> entry : contentMap.object2IntEntrySet()) {
+        for (Object2IntMap.Entry<CannonballContent> entry : contentMap.object2IntEntrySet()) {
             if (numEntries > 0) {
                 contentText.append(", ").formatted(Formatting.GRAY);
             }
             numEntries++;
-            CannonballContents contents = entry.getKey();
+            CannonballContent contents = entry.getKey();
             MutableText entryText = Text.translatable(
                     "item.worldsinger.cannonball.contents." + contents.name);
             int quantity = entry.getIntValue();
@@ -271,7 +283,7 @@ public record CannonballComponent(CannonballShell shell, CannonballCore core, in
                         entryText, quantity);
             }
             contentText.append(entryText.setStyle(
-                    Style.EMPTY.withColor(TextColor.fromRgb(contents.getColor()))));
+                    Style.EMPTY.withColor(TextColor.fromRgb(contents.getTextColor()))));
         }
         if (numEntries > 0) {
             textConsumer.accept(contentText);

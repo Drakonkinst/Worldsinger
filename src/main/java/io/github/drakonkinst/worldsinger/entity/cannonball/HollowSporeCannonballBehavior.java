@@ -27,16 +27,16 @@ package io.github.drakonkinst.worldsinger.entity.cannonball;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.AetherSpores;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.SporeParticleSpawner;
 import io.github.drakonkinst.worldsinger.entity.CannonballEntity;
-import io.github.drakonkinst.worldsinger.item.component.CannonballComponent.CannonballContents;
+import io.github.drakonkinst.worldsinger.item.component.CannonballComponent.CannonballContent;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.Vec3d;
 
 public class HollowSporeCannonballBehavior implements CannonballBehavior {
 
-    private final Object2IntMap<CannonballContents> contentMap;
+    private final Object2IntMap<CannonballContent> contentMap;
 
-    public HollowSporeCannonballBehavior(Object2IntMap<CannonballContents> contentMap) {
+    public HollowSporeCannonballBehavior(Object2IntMap<CannonballContent> contentMap) {
         this.contentMap = contentMap;
     }
 
@@ -50,7 +50,7 @@ public class HollowSporeCannonballBehavior implements CannonballBehavior {
         if (!(entity.getWorld() instanceof ServerWorld world)) {
             return;
         }
-        for (Object2IntMap.Entry<CannonballContents> entry : contentMap.object2IntEntrySet()) {
+        for (Object2IntMap.Entry<CannonballContent> entry : contentMap.object2IntEntrySet()) {
             AetherSpores sporeType = entry.getKey().getSporeType();
             int strength = entry.getIntValue();
             if (sporeType == null) {

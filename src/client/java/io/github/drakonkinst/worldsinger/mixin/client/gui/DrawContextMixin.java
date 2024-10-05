@@ -28,7 +28,7 @@ import io.github.drakonkinst.worldsinger.Worldsinger;
 import io.github.drakonkinst.worldsinger.cosmere.SaltedFoodUtil;
 import io.github.drakonkinst.worldsinger.item.ModItems;
 import io.github.drakonkinst.worldsinger.item.component.CannonballComponent;
-import io.github.drakonkinst.worldsinger.item.component.CannonballComponent.CannonballContents;
+import io.github.drakonkinst.worldsinger.item.component.CannonballComponent.CannonballContent;
 import io.github.drakonkinst.worldsinger.item.component.CannonballComponent.CannonballCore;
 import io.github.drakonkinst.worldsinger.registry.ModDataComponentTypes;
 import io.github.drakonkinst.worldsinger.registry.ModItemRendering;
@@ -101,22 +101,22 @@ public abstract class DrawContextMixin {
             return;
         }
 
-        List<CannonballContents> contents = component.contents();
+        List<CannonballContent> contents = component.contents();
         drawCannonballContentBar(contents, 0, x, y, 2, 6);
         drawCannonballContentBar(contents, 1, x, y, 6, 10);
         drawCannonballContentBar(contents, 2, x, y, 10, 14);
     }
 
     @Unique
-    private void drawCannonballContentBar(List<CannonballContents> contents, int index, int x,
-            int y, int from, int to) {
+    private void drawCannonballContentBar(List<CannonballContent> contents, int index, int x, int y,
+            int from, int to) {
         if (index >= contents.size()) {
             return;
         }
         int startY = y + 16 - to;
         int endY = y + 16 - from;
         this.fill(RenderLayer.getGuiOverlay(), x, startY, x + 1, endY,
-                contents.get(index).getColor() | Colors.BLACK);
+                contents.get(index).getBarColor() | Colors.BLACK);
     }
 
     @ModifyExpressionValue(method = "drawItem(Lnet/minecraft/entity/LivingEntity;Lnet/minecraft/world/World;Lnet/minecraft/item/ItemStack;IIII)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/item/ItemRenderer;getModel(Lnet/minecraft/item/ItemStack;Lnet/minecraft/world/World;Lnet/minecraft/entity/LivingEntity;I)Lnet/minecraft/client/render/model/BakedModel;"))
