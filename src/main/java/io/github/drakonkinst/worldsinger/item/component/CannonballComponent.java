@@ -213,6 +213,29 @@ public record CannonballComponent(CannonballShell shell, CannonballCore core, in
         }
     }
 
+    // Simplified model string based on what can change currently
+    public String encodeModelString() {
+        // StringBuilder result = new StringBuilder();
+        // result.append(shell.id);
+        // result.append('_');
+        // result.append(core.id);
+        // result.append('_');
+        // result.append(fuse);
+        // result.append('_');
+        //
+        // IntList contentIds = new IntArrayList(3);
+        // for (CannonballContents content : contents) {
+        //     contentIds.add(content.id);
+        // }
+        // contentIds.sort((a, b) -> a - b);
+        // for (int id : contentIds) {
+        //     result.append(id);
+        //     result.append('-');
+        // }
+        // return result.toString();
+        return core.id + "_" + fuse;
+    }
+
     @Override
     public void appendTooltip(Item.TooltipContext context, Consumer<Text> tooltip,
             TooltipType type) {

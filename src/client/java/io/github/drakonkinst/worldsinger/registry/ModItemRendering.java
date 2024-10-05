@@ -29,8 +29,11 @@ import io.github.drakonkinst.worldsinger.cosmere.lumar.AetherSpores;
 import io.github.drakonkinst.worldsinger.item.ModItems;
 import io.github.drakonkinst.worldsinger.util.LayeredBakedModel;
 import io.github.drakonkinst.worldsinger.util.LayeredBakedModelCache;
+import java.util.List;
 import net.fabricmc.fabric.api.client.model.loading.v1.ModelLoadingPlugin;
 import net.fabricmc.fabric.api.client.rendering.v1.ColorProviderRegistry;
+import net.minecraft.client.render.model.BakedModel;
+import net.minecraft.client.render.model.BakedModelManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper.Argb;
 
@@ -39,10 +42,19 @@ public final class ModItemRendering {
     public static final Identifier SALT_OVERLAY = Worldsinger.id("item/salted_overlay");
     public static final Identifier SILVER_LINED_AXE_OVERLAY = Worldsinger.id(
             "item/silver_lined_axe_overlay");
+    public static final Identifier CANNONBALL_CORE_ROSEITE = Worldsinger.id(
+            "item/cannonball/core_roseite");
+    public static final Identifier CANNONBALL_CORE_WATER = Worldsinger.id(
+            "item/cannonball/core_water");
+    public static final Identifier CANNONBALL_FUSE_1 = Worldsinger.id("item/cannonball/fuse_1");
+    public static final Identifier CANNONBALL_FUSE_2 = Worldsinger.id("item/cannonball/fuse_2");
+    public static final Identifier CANNONBALL_FUSE_3 = Worldsinger.id("item/cannonball/fuse_3");
 
     public static final LayeredBakedModelCache SALT_OVERLAY_CACHE = LayeredBakedModel.registerCache(
             new LayeredBakedModelCache());
     public static final LayeredBakedModelCache SILVER_LINED_CACHE = LayeredBakedModel.registerCache(
+            new LayeredBakedModelCache());
+    public static final LayeredBakedModelCache CERAMIC_CANNONBALL_CACHE = LayeredBakedModel.registerCache(
             new LayeredBakedModelCache());
 
     public static void register() {
@@ -55,10 +67,26 @@ public final class ModItemRendering {
                 ModItems.CRIMSON_SPORES_SPLASH_BOTTLE, ModItems.ZEPHYR_SPORES_SPLASH_BOTTLE,
                 ModItems.SUNLIGHT_SPORES_SPLASH_BOTTLE, ModItems.ROSEITE_SPORES_SPLASH_BOTTLE,
                 ModItems.MIDNIGHT_SPORES_SPLASH_BOTTLE);
-        ModelLoadingPlugin.register(pluginContext -> {
-            pluginContext.addModels(ModItemRendering.SALT_OVERLAY,
-                    ModItemRendering.SILVER_LINED_AXE_OVERLAY);
-        });
+        final Identifier[] newModels = new Identifier[] {
+                ModItemRendering.SALT_OVERLAY,
+                ModItemRendering.SILVER_LINED_AXE_OVERLAY,
+                ModItemRendering.CANNONBALL_CORE_ROSEITE,
+                ModItemRendering.CANNONBALL_CORE_WATER,
+                ModItemRendering.CANNONBALL_FUSE_1,
+                ModItemRendering.CANNONBALL_FUSE_2,
+                ModItemRendering.CANNONBALL_FUSE_3,
+        };
+        ModelLoadingPlugin.register(pluginContext -> pluginContext.addModels(newModels));
+    }
+
+    public static boolean attemptAddModel(List<BakedModel> modelList, BakedModelManager manager,
+            Identifier modelId) {
+        BakedModel model = manager.getModel(modelId);
+        if (model == null || model.equals(manager.getMissingModel())) {
+            return false;
+        }
+        modelList.add(model);
+        return true;
     }
 
     private ModItemRendering() {}

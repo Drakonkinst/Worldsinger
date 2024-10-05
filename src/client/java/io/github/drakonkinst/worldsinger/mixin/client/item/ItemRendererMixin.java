@@ -76,7 +76,6 @@ public abstract class ItemRendererMixin {
     }
 
     @Unique
-
     private Identifier getSilverLinedOverlayForItem(ItemStack stack) {
         if (stack.isIn(ItemTags.AXES)) {
             return ModItemRendering.SILVER_LINED_AXE_OVERLAY;

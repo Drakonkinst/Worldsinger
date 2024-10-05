@@ -73,36 +73,36 @@ public class LayeredBakedModel implements BakedModel {
 
     @Override
     public boolean useAmbientOcclusion() {
-        return layers.get(0).useAmbientOcclusion();
+        return layers.getFirst().useAmbientOcclusion();
     }
 
     @Override
     public boolean hasDepth() {
-        return layers.get(0).hasDepth();
+        return layers.getFirst().hasDepth();
     }
 
     @Override
     public boolean isSideLit() {
-        return layers.get(0).isSideLit();
+        return layers.getFirst().isSideLit();
     }
 
     @Override
     public boolean isBuiltin() {
-        return layers.get(0).isBuiltin();
+        return layers.getFirst().isBuiltin();
     }
 
     @Override
     public Sprite getParticleSprite() {
-        return layers.get(0).getParticleSprite();
+        return layers.getFirst().getParticleSprite();
     }
 
     @Override
     public ModelTransformation getTransformation() {
-        return layers.get(0).getTransformation();
+        return layers.getFirst().getTransformation();
     }
 
     @Override
     public ModelOverrideList getOverrides() {
-        return layers.get(0).getOverrides();
+        return layers.getFirst().getOverrides();
     }
 }
