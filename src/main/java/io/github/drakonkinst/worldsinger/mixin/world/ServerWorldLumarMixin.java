@@ -110,8 +110,13 @@ public abstract class ServerWorldLumarMixin extends WorldLumarMixin implements
         if (sporeType == null) {
             return;
         }
+        Block blockToPlace = sporeType.getSolidBlock();
+        // Prevent infinite stacking
+        if (this.getBlockState(belowPos).isOf(blockToPlace)) {
+            return;
+        }
 
-        this.setBlockState(pos, sporeType.getSolidBlock().getDefaultState());
+        this.setBlockState(pos, blockToPlace.getDefaultState());
     }
 
     @Inject(method = "tickWeather", at = @At("TAIL"))

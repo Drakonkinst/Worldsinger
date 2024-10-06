@@ -33,6 +33,7 @@ import io.github.drakonkinst.worldsinger.cosmere.lumar.LunagreeLocation;
 import io.github.drakonkinst.worldsinger.entity.ClientLunagreeDataAccess;
 import io.github.drakonkinst.worldsinger.entity.RainlineEntity;
 import io.github.drakonkinst.worldsinger.mixin.client.accessor.WorldRendererAccessor;
+import io.github.drakonkinst.worldsinger.util.ModEnums.CameraSubmersionType;
 import java.util.List;
 import net.fabricmc.fabric.api.client.rendering.v1.DimensionRenderingRegistry.SkyRenderer;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext;
@@ -179,7 +180,9 @@ public class LumarSkyRenderer implements SkyRenderer {
         matrices.pop();
         RenderSystem.disableBlend();
         RenderSystem.defaultBlendFunc();
-        this.drawMoons(tessellator, matrices, player, tickDelta);
+        if (camera.getSubmersionType() != CameraSubmersionType.SPORE_SEA) {
+            this.drawMoons(tessellator, matrices, player, tickDelta);
+        }
 
         // Draw dark sky
         this.drawDarkSky(matrices, projectionMatrix, shaderProgram, world, tickDelta, player);
