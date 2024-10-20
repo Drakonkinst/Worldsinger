@@ -27,7 +27,7 @@ import io.github.drakonkinst.worldsinger.block.LivingAetherSporeBlock;
 import io.github.drakonkinst.worldsinger.block.ModBlocks;
 import io.github.drakonkinst.worldsinger.effect.ModStatusEffects;
 import io.github.drakonkinst.worldsinger.entity.ModEntityTypes;
-import io.github.drakonkinst.worldsinger.entity.VerdantSporeGrowthEntity;
+import io.github.drakonkinst.worldsinger.entity.spore_growth.VerdantSporeGrowthEntity;
 import io.github.drakonkinst.worldsinger.fluid.ModFluidTags;
 import io.github.drakonkinst.worldsinger.fluid.ModFluids;
 import io.github.drakonkinst.worldsinger.item.ModItems;

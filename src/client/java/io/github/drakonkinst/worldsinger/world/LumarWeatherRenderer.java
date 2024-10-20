@@ -25,7 +25,7 @@
 package io.github.drakonkinst.worldsinger.world;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import io.github.drakonkinst.worldsinger.entity.RainlineEntity;
+import io.github.drakonkinst.worldsinger.entity.rainline.RainlineEntity;
 import io.github.drakonkinst.worldsinger.mixin.client.accessor.WorldRendererAccessor;
 import java.util.List;
 import net.fabricmc.fabric.api.client.rendering.v1.DimensionRenderingRegistry.WeatherRenderer;

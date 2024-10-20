@@ -35,8 +35,12 @@ public interface RainlineManager {
 
     void serverTick(ServerWorld world);
 
-    @Nullable RainlinePathInfo getClosestRainlinePathInfo(float x, float z);
+    @Nullable
+    RainlinePathInfo getClosestRainlinePathInfo(float x, float z);
 
     int applyMapDecorations(ServerWorld world, Map<String, Decoration> decorations,
             MapState mapState);
+
+    @Nullable
+    RainlinePath getRainlinePathById(long id);
 }

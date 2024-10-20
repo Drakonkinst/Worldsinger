@@ -25,6 +25,11 @@ package io.github.drakonkinst.worldsinger.entity;
 
 import io.github.drakonkinst.worldsinger.Worldsinger;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.MidnightCreatureManager;
+import io.github.drakonkinst.worldsinger.entity.rainline.RainlineEntity;
+import io.github.drakonkinst.worldsinger.entity.spore_growth.CrimsonSporeGrowthEntity;
+import io.github.drakonkinst.worldsinger.entity.spore_growth.MidnightSporeGrowthEntity;
+import io.github.drakonkinst.worldsinger.entity.spore_growth.RoseiteSporeGrowthEntity;
+import io.github.drakonkinst.worldsinger.entity.spore_growth.VerdantSporeGrowthEntity;
 import io.github.drakonkinst.worldsinger.registry.tag.ModBlockTags;
 import io.github.drakonkinst.worldsinger.worldgen.dimension.ModDimensions;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;

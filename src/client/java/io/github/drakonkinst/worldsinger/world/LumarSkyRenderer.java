@@ -31,7 +31,7 @@ import io.github.drakonkinst.worldsinger.cosmere.lumar.ClientLunagreeData;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarLunagreeGenerator;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LunagreeLocation;
 import io.github.drakonkinst.worldsinger.entity.ClientLunagreeDataAccess;
-import io.github.drakonkinst.worldsinger.entity.RainlineEntity;
+import io.github.drakonkinst.worldsinger.entity.rainline.RainlineEntity;
 import io.github.drakonkinst.worldsinger.mixin.client.accessor.WorldRendererAccessor;
 import io.github.drakonkinst.worldsinger.util.ModEnums.CameraSubmersionType;
 import java.util.List;

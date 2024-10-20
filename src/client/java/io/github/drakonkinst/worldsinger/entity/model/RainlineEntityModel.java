@@ -25,7 +25,7 @@
 package io.github.drakonkinst.worldsinger.entity.model;
 
 import com.google.common.collect.ImmutableList;
-import io.github.drakonkinst.worldsinger.entity.RainlineEntity;
+import io.github.drakonkinst.worldsinger.entity.rainline.RainlineEntity;
 import net.minecraft.client.model.ModelData;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.model.ModelPartBuilder;

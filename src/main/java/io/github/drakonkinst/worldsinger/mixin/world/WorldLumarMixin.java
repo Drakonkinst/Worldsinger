@@ -5,7 +5,7 @@ import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import io.github.drakonkinst.worldsinger.cosmere.CosmerePlanet;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarManager;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarManagerAccess;
-import io.github.drakonkinst.worldsinger.entity.RainlineEntity;
+import io.github.drakonkinst.worldsinger.entity.rainline.RainlineEntity;
 import java.util.function.Supplier;
 import net.minecraft.block.BlockState;
 import net.minecraft.registry.DynamicRegistryManager;

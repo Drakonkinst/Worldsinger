@@ -29,6 +29,7 @@ import io.github.drakonkinst.worldsinger.item.map.CustomMapDecorationsComponent.
 import java.util.Map;
 import net.minecraft.item.map.MapState;
 import net.minecraft.server.world.ServerWorld;
+import org.jetbrains.annotations.Nullable;
 
 public class NullRainlineManager implements RainlineManager {
 
@@ -46,5 +47,10 @@ public class NullRainlineManager implements RainlineManager {
     public int applyMapDecorations(ServerWorld world, Map<String, Decoration> decorations,
             MapState mapState) {
         return 0;
+    }
+
+    @Override
+    public @Nullable RainlinePath getRainlinePathById(long id) {
+        return null;
     }
 }

@@ -25,9 +25,9 @@ package io.github.drakonkinst.worldsinger.cosmere.lumar;
 
 import io.github.drakonkinst.worldsinger.block.ModBlocks;
 import io.github.drakonkinst.worldsinger.effect.ModStatusEffects;
-import io.github.drakonkinst.worldsinger.entity.MidnightSporeGrowthEntity;
 import io.github.drakonkinst.worldsinger.entity.ModEntityTypes;
 import io.github.drakonkinst.worldsinger.entity.cannonball.CannonballBehavior;
+import io.github.drakonkinst.worldsinger.entity.spore_growth.MidnightSporeGrowthEntity;
 import io.github.drakonkinst.worldsinger.fluid.ModFluids;
 import io.github.drakonkinst.worldsinger.item.ModItems;
 import io.github.drakonkinst.worldsinger.particle.ModParticleTypes;

@@ -27,7 +27,7 @@ package io.github.drakonkinst.worldsinger.cosmere.lumar;
 import io.github.drakonkinst.worldsinger.Worldsinger;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.RainlinePath.ClosestStepResult;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.RainlinePath.RainlinePathInfo;
-import io.github.drakonkinst.worldsinger.entity.RainlineEntity;
+import io.github.drakonkinst.worldsinger.entity.rainline.RainlineEntity;
 import io.github.drakonkinst.worldsinger.item.map.CustomMapDecorationsComponent.Decoration;
 import io.github.drakonkinst.worldsinger.util.ModConstants;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
@@ -42,6 +42,7 @@ import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.TypeFilter;
+import org.jetbrains.annotations.Nullable;
 
 // Rainlines on Lumar are placed around lunagrees, so it is tightly coupled to lunagree generation
 public class LumarRainlineManager implements RainlineManager {
@@ -78,6 +79,11 @@ public class LumarRainlineManager implements RainlineManager {
         }
         // Worldsinger.LOGGER.info("Applying " + numAdded + " rainline icons to map");
         return numAdded;
+    }
+
+    @Override
+    public @Nullable RainlinePath getRainlinePathById(long id) {
+        return rainlinePaths.get(id);
     }
 
     private void doRainlineTick(ServerWorld world) {

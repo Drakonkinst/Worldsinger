@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2023-2024 Drakonkinst
+ * Copyright (c) 2024 Drakonkinst
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,21 +22,15 @@
  * SOFTWARE.
  */
 
-package io.github.drakonkinst.worldsinger.entity.render;
+package io.github.drakonkinst.worldsinger.entity.rainline;
 
-import io.github.drakonkinst.worldsinger.entity.rainline.RainlineEntity;
-import net.minecraft.client.render.entity.EntityRenderer;
-import net.minecraft.client.render.entity.EntityRendererFactory;
-import net.minecraft.util.Identifier;
+import net.minecraft.nbt.NbtCompound;
 
-public class RainlineEntityRenderer extends EntityRenderer<RainlineEntity> {
+public interface RainlineBehavior {
 
-    public RainlineEntityRenderer(EntityRendererFactory.Context context) {
-        super(context);
-    }
+    void serverTick(RainlineEntity entity);
 
-    @Override
-    public Identifier getTexture(RainlineEntity entity) {
-        return null;
-    }
+    boolean isFollowingPath();
+
+    void writeCustomDataToNbt(NbtCompound nbt);
 }
