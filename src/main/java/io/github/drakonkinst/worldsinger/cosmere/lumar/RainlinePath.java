@@ -154,6 +154,7 @@ public class RainlinePath {
 
     public int applyMapDecorations(ServerWorld serverWorld, Map<String, Decoration> decorations,
             MapState mapState) {
+        nextIconId = 0;
         int numAdded = 0;
         NoiseConfig noiseConfig = serverWorld.getChunkManager().getNoiseConfig();
         for (int i = 0; i < RainlinePath.RAINLINE_NODE_COUNT; ++i) {
@@ -166,7 +167,9 @@ public class RainlinePath {
     private int applyMapDecorationsForSpline(NoiseConfig noiseConfig,
             Map<String, Decoration> decorations, MapState mapState, Spline spline) {
         int numAdded = 0;
-        for (int i = 0; i < MAP_SPLINE_STEPS; ++i) {
+        float prevX = spline.applyX(0.0f);
+        float prevZ = spline.applyY(0.0f);
+        for (int i = 1; i <= MAP_SPLINE_STEPS; ++i) {
             float t = (float) i / MAP_SPLINE_STEPS;
             float x = spline.applyX(t);
             float z = spline.applyY(t);
@@ -174,10 +177,14 @@ public class RainlinePath {
             if (isOnMap(mapState, x, z)
                     && LumarChunkGenerator.getSporeSeaEntryAtPos(noiseConfig, (int) x, (int) z).id()
                     != CrimsonSpores.ID) {
+                float rotation = (float) MathHelper.atan2(z - prevZ, x - prevX)
+                        * MathHelper.DEGREES_PER_RADIAN;
                 ++numAdded;
                 decorations.put("rainline-" + (++nextIconId),
-                        new Decoration(CustomMapDecoration.Type.RAINLINE, x, z, 0.0f));
+                        new Decoration(CustomMapDecoration.Type.RAINLINE, x, z, rotation));
             }
+            prevX = x;
+            prevZ = z;
         }
         return numAdded;
     }

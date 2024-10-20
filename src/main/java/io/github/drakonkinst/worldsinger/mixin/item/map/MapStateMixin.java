@@ -96,6 +96,7 @@ public abstract class MapStateMixin extends PersistentState implements CustomMap
         rotation += rotation < 0.0 ? -8.0 : 8.0;
         byte iconX = (byte) ((int) ((double) (mapX * 2.0F) + 0.5));
         byte iconZ = (byte) ((int) ((double) (mapY * 2.0F) + 0.5));
+        // Limits rotation
         byte iconRotation = (byte) ((int) (rotation * 16.0 / 360.0));
 
         CustomMapDecoration mapIcon = new CustomMapDecoration(type, iconX, iconZ, iconRotation,
