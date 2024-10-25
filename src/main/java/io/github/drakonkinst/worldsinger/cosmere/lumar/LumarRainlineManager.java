@@ -32,8 +32,6 @@ import io.github.drakonkinst.worldsinger.item.map.CustomMapDecorationsComponent.
 import io.github.drakonkinst.worldsinger.util.ModConstants;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
-import it.unimi.dsi.fastutil.longs.LongSet;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -93,15 +91,15 @@ public class LumarRainlineManager implements RainlineManager {
         Worldsinger.LOGGER.info("Found " + rainlineEntities.size() + " active rainline entities: "
                 + rainlineEntities);
 
-        LongSet cellsWithValidRainline = new LongOpenHashSet();
-        for (RainlineEntity entity : rainlineEntities) {
-
-        }
-
-        // For each player, check the cells around them for rainlines and determine if they should spawn
-        for (ServerPlayerEntity player : world.getPlayers()) {
-            updateRainlinesAroundPlayer(player);
-        }
+        // LongSet cellsWithValidRainline = new LongOpenHashSet();
+        // for (RainlineEntity entity : rainlineEntities) {
+        //
+        // }
+        //
+        // // For each player, check the cells around them for rainlines and determine if they should spawn
+        // for (ServerPlayerEntity player : world.getPlayers()) {
+        //     updateRainlinesAroundPlayer(player);
+        // }
     }
 
     private void updateRainlinesAroundPlayer(ServerPlayerEntity player) {

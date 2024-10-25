@@ -28,9 +28,9 @@ import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarManager;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.RainlinePath;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec2f;
-import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 public class RainlineFollowPathBehavior implements RainlineBehavior {
@@ -52,24 +52,25 @@ public class RainlineFollowPathBehavior implements RainlineBehavior {
         if (rainlinePath == null) {
             return null;
         }
-        return new RainlineFollowPathBehavior(rainlinePath, rainlineIndex);
+        return new RainlineFollowPathBehavior(rainlinePath, rainlineId, rainlineIndex);
     }
 
     private static final float STEPS_PER_TICK = 1.0f / TICKS_PER_STEP;
     private final RainlinePath rainlinePath;
+    private final long id;
     private final int index;
     private final int stepOffset;
 
-    public RainlineFollowPathBehavior(RainlinePath rainlinePath, int index) {
+    public RainlineFollowPathBehavior(RainlinePath rainlinePath, long id, int index) {
         this.rainlinePath = rainlinePath;
+        this.id = id;
         this.index = index;
         float percentageOffset = index * 1.0f / NUM_RAINLINES_PER_LUNAGREE;
         this.stepOffset = Math.round(percentageOffset * rainlinePath.getMaxSteps());
     }
 
     @Override
-    public void serverTick(RainlineEntity entity) {
-        World world = entity.getWorld();
+    public void serverTick(ServerWorld world, RainlineEntity entity) {
         long gameTime = world.getTime();
         // Given game time and initial offset, what step should we be on?
         float progress = gameTime * STEPS_PER_TICK + stepOffset;
@@ -81,6 +82,7 @@ public class RainlineFollowPathBehavior implements RainlineBehavior {
 
         double x = MathHelper.lerp(progress, currentStep.x, nextStep.x);
         double z = MathHelper.lerp(progress, currentStep.y, nextStep.y);
+        entity.setVelocity(0, 0, 0);
         entity.setPos(x, entity.getY(), z);
     }
 
@@ -91,7 +93,8 @@ public class RainlineFollowPathBehavior implements RainlineBehavior {
 
     @Override
     public void writeCustomDataToNbt(NbtCompound nbt) {
-
+        nbt.putLong(KEY_RAINLINE_ID, id);
+        nbt.putByte(KEY_RAINLINE_INDEX, (byte) index);
     }
 
 }

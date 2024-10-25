@@ -25,13 +25,11 @@
 package io.github.drakonkinst.worldsinger.entity.rainline;
 
 import io.github.drakonkinst.worldsinger.block.WaterReactiveBlock;
-import io.github.drakonkinst.worldsinger.cosmere.lumar.CrimsonSpores;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarManager;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarManagerAccess;
 import io.github.drakonkinst.worldsinger.fluid.WaterReactiveFluid;
 import io.github.drakonkinst.worldsinger.registry.tag.ModBlockTags;
-import io.github.drakonkinst.worldsinger.worldgen.lumar.LumarChunkGenerator;
-import io.github.drakonkinst.worldsinger.worldgen.lumar.LumarChunkGenerator.SporeSeaEntry;
+import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -44,6 +42,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.TypeFilter;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockPos.Mutable;
 import net.minecraft.util.math.Box;
@@ -56,8 +55,9 @@ import net.minecraft.world.biome.Biome.Precipitation;
 public class RainlineEntity extends Entity {
 
     public static final int RAINLINE_RADIUS = 6;
+    public static final int RAINLINE_EFFECT_RADIUS = 2;
     private static final int HEIGHT_OFFSET = -1;
-    private static final int RANDOM_TICK_INTERVAL = 10;
+    private static final int RANDOM_TICK_INTERVAL = 3;
     private static final String KEY_FOLLOWING_PATH = "following_path";
 
     // Particles
@@ -65,19 +65,39 @@ public class RainlineEntity extends Entity {
     private static final double PARTICLE_VERTICAL_DISTANCE = 4.0;
     private static final double PARTICLE_HORIZONTAL_DISTANCE = 16.0;
 
+    // Mainly used for rendering
     public static List<RainlineEntity> getNearbyRainlineEntities(World world, Vec3d pos,
             double bonusRadius) {
         final double x = pos.getX();
         final double z = pos.getZ();
-        final double y = RainlineEntity.getTargetHeight(world);
         final double searchRadius = RAINLINE_RADIUS + bonusRadius;
-        final Box box = new Box(x - searchRadius, y - 1, z - searchRadius, x + searchRadius, y + 1,
-                z + searchRadius);
+        final Box box = new Box(x - searchRadius, world.getBottomY(), z - searchRadius,
+                x + searchRadius, world.getTopY(), z + searchRadius);
         return world.getEntitiesByClass(RainlineEntity.class, box, EntityPredicates.VALID_ENTITY);
     }
 
-    public static boolean isRainlineOver(World world, Vec3d pos) {
-        return !RainlineEntity.getNearbyRainlineEntities(world, pos, 0).isEmpty();
+    public static boolean isRainlineOver(ServerWorld world, Vec3d pos) {
+        final double x = pos.getX();
+        final double z = pos.getZ();
+        // final Box box = new Box(x - RAINLINE_SEARCH_RADIUS, world.getBottomY(),
+        //         z - RAINLINE_SEARCH_RADIUS, x + RAINLINE_SEARCH_RADIUS, world.getTopY(),
+        //         z + RAINLINE_SEARCH_RADIUS);
+        // List<RainlineEntity> nearbyRainlines = world.getEntitiesByClass(RainlineEntity.class, box,
+        //         EntityPredicates.VALID_ENTITY);
+
+        // For some reason there is a bug where the rainline, even though nearby, doesn't
+        List<RainlineEntity> nearbyRainlines = new ArrayList<>();
+        world.collectEntitiesByType(TypeFilter.instanceOf(RainlineEntity.class),
+                EntityPredicates.VALID_ENTITY, nearbyRainlines);
+        for (RainlineEntity entity : nearbyRainlines) {
+            double deltaX = entity.getX() - pos.getX();
+            double deltaZ = entity.getZ() - pos.getZ();
+            double distSq = deltaX * deltaX + deltaZ * deltaZ;
+            if (distSq <= RAINLINE_EFFECT_RADIUS * RAINLINE_EFFECT_RADIUS) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private static int getTargetHeight(World world) {
@@ -92,31 +112,33 @@ public class RainlineEntity extends Entity {
 
     @Override
     public void tick() {
-        World world = this.getWorld();
-        if (world.isClient()) {
-            // TODO: Replace with an actual storm cloud at some point?
-            for (int i = 0; i < NUM_PARTICLES_PER_TICK; ++i) {
-                double x = this.getX() + random.nextDouble() * PARTICLE_HORIZONTAL_DISTANCE * 2
-                        - PARTICLE_HORIZONTAL_DISTANCE;
-                double y = RainlineEntity.getTargetHeight(this.getWorld())
-                        + random.nextDouble() * PARTICLE_VERTICAL_DISTANCE * 2
-                        - PARTICLE_VERTICAL_DISTANCE;
-                double z = this.getZ() + random.nextDouble() * PARTICLE_HORIZONTAL_DISTANCE * 2
-                        - PARTICLE_HORIZONTAL_DISTANCE;
-                world.addParticle(ParticleTypes.CAMPFIRE_COSY_SMOKE, x, y, z, 0.0f, 0.0f, 0.0f);
-            }
-        }
-
-        if (!world.isClient() && world instanceof ServerWorld serverWorld) {
-            doWaterReactiveTicks(serverWorld);
-            rainlineBehavior.serverTick(this);
+        if (this.getWorld().isClient()) {
+            doClientTick();
+        } else {
+            doServerTick();
         }
     }
 
-    private boolean shouldHaveRandomMovement(ServerWorld world) {
-        SporeSeaEntry entry = LumarChunkGenerator.getSporeSeaEntryAtPos(
-                world.getChunkManager().getNoiseConfig(), this.getBlockX(), this.getBlockZ());
-        return entry.id() == CrimsonSpores.ID;
+    private void doClientTick() {
+        World world = this.getWorld();
+        // TODO: Replace with an actual storm cloud at some point?
+        for (int i = 0; i < NUM_PARTICLES_PER_TICK; ++i) {
+            double x = this.getX() + random.nextDouble() * PARTICLE_HORIZONTAL_DISTANCE * 2
+                    - PARTICLE_HORIZONTAL_DISTANCE;
+            double y = RainlineEntity.getTargetHeight(world)
+                    + random.nextDouble() * PARTICLE_VERTICAL_DISTANCE * 2
+                    - PARTICLE_VERTICAL_DISTANCE;
+            double z = this.getZ() + random.nextDouble() * PARTICLE_HORIZONTAL_DISTANCE * 2
+                    - PARTICLE_HORIZONTAL_DISTANCE;
+            world.addParticle(ParticleTypes.CAMPFIRE_COSY_SMOKE, x, y, z, 0.0f, 0.0f, 0.0f);
+        }
+    }
+
+    private void doServerTick() {
+        if (this.getWorld() instanceof ServerWorld serverWorld) {
+            doWaterReactiveTicks(serverWorld);
+            rainlineBehavior.serverTick(serverWorld, this);
+        }
     }
 
     // Cause additional random ticks in place for WaterReactive blocks
@@ -131,8 +153,10 @@ public class RainlineEntity extends Entity {
         BlockPos.Mutable mutable = new Mutable();
         // Note: This is a square radius rather than the circular radius used for rendering,
         // which will be slightly larger
-        int x = this.getBlockX() - RAINLINE_RADIUS + this.random.nextInt(RAINLINE_RADIUS * 2);
-        int z = this.getBlockZ() - RAINLINE_RADIUS + this.random.nextInt(RAINLINE_RADIUS * 2);
+        int x = this.getBlockX() - RAINLINE_EFFECT_RADIUS + this.random.nextInt(
+                RAINLINE_EFFECT_RADIUS * 2);
+        int z = this.getBlockZ() - RAINLINE_EFFECT_RADIUS + this.random.nextInt(
+                RAINLINE_EFFECT_RADIUS * 2);
         int y = world.getTopY(Type.MOTION_BLOCKING, x, z) - 1;
         mutable.set(x, y, z);
         BlockState blockState = world.getBlockState(mutable);
@@ -162,7 +186,7 @@ public class RainlineEntity extends Entity {
 
     @Override
     protected void readCustomDataFromNbt(NbtCompound nbt) {
-        if (!(this.getWorld() instanceof ServerWorld world) || shouldHaveRandomMovement(world)) {
+        if (!(this.getWorld() instanceof ServerWorld world)) {
             return;
         }
 
@@ -170,13 +194,9 @@ public class RainlineEntity extends Entity {
         boolean isFollowingPath = nbt.getBoolean(KEY_FOLLOWING_PATH);
         if (isFollowingPath) {
             rainlineBehavior = RainlineFollowPathBehavior.readFromNbt(lumarManager, nbt);
-            if (rainlineBehavior == null) {
-                isFollowingPath = false;
-            }
         }
-        if (!isFollowingPath) {
-            // TODO read info from this behavior
-            rainlineBehavior = new RainlineWanderBehavior();
+        if (rainlineBehavior == null) {
+            rainlineBehavior = RainlineWanderBehavior.readFromNbt(nbt);
         }
     }
 

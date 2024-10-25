@@ -24,40 +24,64 @@
 
 package io.github.drakonkinst.worldsinger.entity.rainline;
 
+import io.github.drakonkinst.worldsinger.cosmere.lumar.CrimsonSpores;
+import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarLunagreeGenerator;
+import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarManager;
+import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarManagerAccess;
+import io.github.drakonkinst.worldsinger.cosmere.lumar.LunagreeLocation;
+import io.github.drakonkinst.worldsinger.worldgen.lumar.LumarChunkGenerator;
+import io.github.drakonkinst.worldsinger.worldgen.lumar.LumarChunkGenerator.SporeSeaEntry;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.gen.noise.NoiseConfig;
 import org.joml.Vector2d;
 
 public class RainlineWanderBehavior implements RainlineBehavior {
 
     // Steering behaviors
-    private static final float SPEED_BLOCKS_PER_TICK = 0.4f;
+    private static final float SPEED_BLOCKS_PER_TICK = 0.5f;
     private static final float WANDER_CIRCLE_RADIUS = 20.0f;
     private static final float WANDER_CIRCLE_DISTANCE = 20.0f;
     private static final float WANDER_ANGLE_CHANGE = 0.1f;
     private static final float STEERING_SCALE = 1.0f;
+    private static final float AVOIDANCE_FORCE = 50.0f;
+    private static final float SEEK_FORCE = 50.0f;
+    private static final int SEEK_DISTANCE = 16;
+
+    private static final String KEY_WANDER_ANGLE = "wander_angle";
+
+    public static RainlineWanderBehavior readFromNbt(NbtCompound nbt) {
+        if (!nbt.contains(KEY_WANDER_ANGLE, NbtElement.FLOAT_TYPE)) {
+            return new RainlineWanderBehavior(0.0f);
+        }
+        float wanderAngle = nbt.getFloat(KEY_WANDER_ANGLE);
+        return new RainlineWanderBehavior(wanderAngle);
+    }
 
     private final Vector2d steeringForce = new Vector2d();
-    private float wanderAngle = 0.0f;
+    private float wanderAngle;
 
-    private Vec3d getNextVelocity(RainlineEntity entity) {
-        Vec3d velocity = entity.getVelocity();
-        calculateSteeringForce();
-        return new Vec3d(velocity.getX() + steeringForce.x(), 0.0,
-                velocity.getZ() + steeringForce.y());
+    public RainlineWanderBehavior(float startingWanderAngle) {
+        this.wanderAngle = startingWanderAngle;
     }
 
     @Override
-    public void serverTick(RainlineEntity entity) {
-        Vec3d pos = entity.getPos();
-        Vec3d velocity = this.getVelocity();
+    public void serverTick(ServerWorld world, RainlineEntity entity) {
+        BlockPos pos = entity.getBlockPos();
+        Vec3d velocity = entity.getVelocity();
+        LumarManager lumarManager = ((LumarManagerAccess) world).worldsinger$getLumarManager();
 
         // Wander randomly
         if (velocity.equals(Vec3d.ZERO)) {
             // If no velocity, go in a random direction
-            float randomAngle = this.random.nextFloat() * MathHelper.TAU;
+            float randomAngle = entity.getRandom().nextFloat() * MathHelper.TAU;
             float velocityX = MathHelper.cos(randomAngle) * SPEED_BLOCKS_PER_TICK;
             float velocityZ = MathHelper.sin(randomAngle) * SPEED_BLOCKS_PER_TICK;
+            wanderAngle = (float) MathHelper.atan2(velocityZ, velocityX);
             steeringForce.set(velocityX, velocityZ);
         } else {
             // If current velocity, use wander steering behavior
@@ -67,7 +91,8 @@ public class RainlineWanderBehavior implements RainlineBehavior {
             float displacementX = MathHelper.cos(wanderAngle) * WANDER_CIRCLE_RADIUS;
             float displacementZ = MathHelper.sin(wanderAngle) * WANDER_CIRCLE_RADIUS;
             steeringForce.add(displacementX, displacementZ).mul(STEERING_SCALE);
-            wanderAngle += random.nextFloat() * WANDER_ANGLE_CHANGE * 2.0f - WANDER_ANGLE_CHANGE;
+            wanderAngle += entity.getRandom().nextFloat() * WANDER_ANGLE_CHANGE * 2.0f
+                    - WANDER_ANGLE_CHANGE;
             if (wanderAngle < 0) {
                 wanderAngle += MathHelper.TAU;
             }
@@ -75,6 +100,45 @@ public class RainlineWanderBehavior implements RainlineBehavior {
                 wanderAngle -= MathHelper.TAU;
             }
         }
+
+        // Avoid lunagrees
+        LunagreeLocation nearbyLunagree = lumarManager.getLunagreeGenerator()
+                .getNearestLunagree(pos.getX(), pos.getZ(),
+                        LumarLunagreeGenerator.SPORE_FALL_RADIUS * 2);
+        if (nearbyLunagree != null) {
+            Vector2d avoidForce = new Vector2d(pos.getX() - nearbyLunagree.blockX(),
+                    pos.getZ() - nearbyLunagree.blockZ());
+            avoidForce.normalize(AVOIDANCE_FORCE);
+            steeringForce.add(avoidForce);
+        }
+
+        // Avoid other spore seas
+        // Pick 8 points in a grid. Create a pulling force to all points that are in the Crimson Sea
+        // If there are no points in the Crimson Sea, there is no effect; same if all points are in the Crimson Sea
+        NoiseConfig noiseConfig = world.getChunkManager().getNoiseConfig();
+        for (int xOffset = -1; xOffset <= 1; ++xOffset) {
+            for (int zOffset = -1; zOffset <= 1; ++zOffset) {
+                if (xOffset == 0 && zOffset == 0) {
+                    continue;
+                }
+                int x = pos.getX() + xOffset * SEEK_DISTANCE;
+                int z = pos.getZ() + zOffset * SEEK_DISTANCE;
+                SporeSeaEntry entry = LumarChunkGenerator.getSporeSeaEntryAtPos(noiseConfig, x, z);
+                if (entry.id() == CrimsonSpores.ID) {
+                    steeringForce.add(
+                            new Vector2d(x - pos.getX(), z - pos.getZ()).normalize(SEEK_FORCE));
+                }
+            }
+        }
+
+        Vec3d newVelocity = entity.getVelocity()
+                .add(steeringForce.x(), 0.0, steeringForce.y()) // Apply steering force
+                .multiply(1.0, 0.0, 1.0) // Zero out the y-velocity
+                .normalize()
+                .multiply(SPEED_BLOCKS_PER_TICK);
+        Vec3d newPos = entity.getPos().add(newVelocity);
+        entity.setVelocity(newVelocity);
+        entity.setPos(newPos.getX(), entity.getY(), newPos.getZ());
     }
 
     @Override
@@ -82,8 +146,8 @@ public class RainlineWanderBehavior implements RainlineBehavior {
         return false;
     }
 
-    private void calculateSteeringForce() {
+    @Override
+    public void writeCustomDataToNbt(NbtCompound nbt) {
 
-        // TODO While wandering randomly, avoid lunagrees
     }
 }

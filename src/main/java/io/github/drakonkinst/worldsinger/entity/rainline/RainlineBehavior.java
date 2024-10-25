@@ -25,10 +25,11 @@
 package io.github.drakonkinst.worldsinger.entity.rainline;
 
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.server.world.ServerWorld;
 
 public interface RainlineBehavior {
 
-    void serverTick(RainlineEntity entity);
+    void serverTick(ServerWorld world, RainlineEntity entity);
 
     boolean isFollowingPath();
 

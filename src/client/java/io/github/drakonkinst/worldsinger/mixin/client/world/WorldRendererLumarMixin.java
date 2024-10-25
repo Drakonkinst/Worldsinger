@@ -72,8 +72,9 @@ public abstract class WorldRendererLumarMixin {
     @WrapOperation(method = "tickRainSplashing", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/biome/Biome;getPrecipitation(Lnet/minecraft/util/math/BlockPos;)Lnet/minecraft/world/biome/Biome$Precipitation;"))
     private Precipitation addRainlineEffects2(Biome instance, BlockPos pos,
             Operation<Precipitation> original) {
-        if (CosmerePlanet.isLumar(this.world) && RainlineEntity.isRainlineOver(world,
-                pos.toCenterPos())) {
+        if (this.world != null && CosmerePlanet.isLumar(this.world)
+                && !RainlineEntity.getNearbyRainlineEntities(this.world, pos.toCenterPos(), 0)
+                .isEmpty()) {
             return Precipitation.RAIN;
         }
         return original.call(instance, pos);

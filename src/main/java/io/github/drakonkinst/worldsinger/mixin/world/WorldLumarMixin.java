@@ -11,6 +11,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.util.profiler.Profiler;
@@ -55,7 +56,13 @@ public abstract class WorldLumarMixin implements WorldAccess, AutoCloseable, Lum
 
     @ModifyExpressionValue(method = "hasRain", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/World;isRaining()Z"))
     private boolean considerRainlinesAsRaining(boolean original, BlockPos pos) {
-        return original || RainlineEntity.isRainlineOver((World) (Object) this, pos.toCenterPos());
+        if (original) {
+            return original;
+        }
+        if ((Object) this instanceof ServerWorld serverWorld) {
+            return RainlineEntity.isRainlineOver(serverWorld, pos.toCenterPos());
+        }
+        return false;
     }
 
     // This approach isn't perfect, but is minimally invasive

@@ -27,6 +27,7 @@ package io.github.drakonkinst.worldsinger.cosmere.lumar;
 import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.server.network.ServerPlayerEntity;
+import org.jetbrains.annotations.Nullable;
 
 // Generates and manages the access of lunagrees.
 public interface LunagreeGenerator {
@@ -77,6 +78,7 @@ public interface LunagreeGenerator {
 
     // Helper method to get the nearest lunagree, or null if it does not exist.
     // This will typically be the same lunagree as the current position, but not necessarily.
+    @Nullable
     default LunagreeLocation getNearestLunagree(int blockX, int blockZ, int maxDistance) {
         List<LunagreeLocation> candidates = getLunagreesNearPos(blockX, blockZ);
         LunagreeLocation nearestLocation = null;
