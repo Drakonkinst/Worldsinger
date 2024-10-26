@@ -86,7 +86,7 @@ public abstract class WorldRendererLumarMixin {
     @ModifyExpressionValue(method = "tickRainSplashing", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/world/ClientWorld;getRainGradient(F)F"))
     private float addRainlineEffects1(float original, Camera camera) {
         if (nearestRainlineEntity != null) {
-            return Math.max(RainlineEntity.getRainlineGradient(this.world, camera.getPos()),
+            return Math.max(RainlineEntity.getRainlineGradient(this.world, camera.getPos(), false),
                     original);
         }
         return original;
@@ -96,7 +96,7 @@ public abstract class WorldRendererLumarMixin {
     private float renderRainlines1(float original, Matrix4f matrix4f, Matrix4f projectionMatrix,
             float tickDelta, Camera camera, boolean thickFog, Runnable fogCallback) {
         if (nearestRainlineEntity != null) {
-            return Math.max(RainlineEntity.getRainlineGradient(this.world, camera.getPos()),
+            return Math.max(RainlineEntity.getRainlineGradient(this.world, camera.getPos(), true),
                     original);
         }
         return original;
@@ -125,7 +125,7 @@ public abstract class WorldRendererLumarMixin {
             double cameraX, double cameraY, double cameraZ) {
         if (nearestRainlineEntity != null) {
             return Math.max(RainlineEntity.getRainlineGradient(this.world,
-                    new Vec3d(cameraX, cameraY, cameraZ)), original);
+                    new Vec3d(cameraX, cameraY, cameraZ), false), original);
         }
         return original;
     }

@@ -174,7 +174,8 @@ public class LumarSkyRenderer implements SkyRenderer {
                 GlStateManager.DstFactor.ZERO);
         matrices.push();
 
-        float rainGradientMultiplier = 1.0f - RainlineEntity.getRainlineGradient(world, cameraPos);
+        float rainGradientMultiplier =
+                1.0f - RainlineEntity.getRainlineGradient(world, cameraPos, true);
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, rainGradientMultiplier);
         matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-90.0f));
         matrices.multiply(

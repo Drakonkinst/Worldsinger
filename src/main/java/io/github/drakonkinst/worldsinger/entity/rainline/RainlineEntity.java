@@ -58,6 +58,7 @@ public class RainlineEntity extends Entity {
     public static final int RAINLINE_RADIUS = 8;
     public static final int RAINLINE_EFFECT_RADIUS = 4;
     public static final float RAINLINE_GRADIENT_RADIUS = 32;
+    public static final float RAINLINE_SKY_GRADIENT_RADIUS = 128;
     private static final int HEIGHT_OFFSET = -1;
     private static final int RANDOM_TICK_INTERVAL = 3;
     private static final String KEY_FOLLOWING_PATH = "following_path";
@@ -73,17 +74,17 @@ public class RainlineEntity extends Entity {
         return deltaX * deltaX + deltaZ * deltaZ;
     }
 
-    public static float getRainlineGradient(World world, Vec3d pos) {
-        RainlineEntity rainlineEntity = RainlineEntity.getNearestRainlineEntity(world, pos,
-                RAINLINE_GRADIENT_RADIUS);
+    public static float getRainlineGradient(World world, Vec3d pos, boolean isSkyDarken) {
+        float radius = isSkyDarken ? RAINLINE_SKY_GRADIENT_RADIUS : RAINLINE_GRADIENT_RADIUS;
+        RainlineEntity rainlineEntity = RainlineEntity.getNearestRainlineEntity(world, pos, radius);
         if (rainlineEntity == null) {
             return 0.0f;
         }
         double distSq = getHorizontalDistSq(pos, rainlineEntity.getPos());
-        if (distSq > RAINLINE_GRADIENT_RADIUS * RAINLINE_GRADIENT_RADIUS) {
+        if (distSq > radius * radius) {
             return 0.0f;
         }
-        return 1.0f - (float) Math.sqrt(distSq) / RAINLINE_GRADIENT_RADIUS;
+        return 1.0f - (float) Math.sqrt(distSq) / radius;
     }
 
     // Mainly used for client-side rendering since there are server bugs
@@ -186,8 +187,6 @@ public class RainlineEntity extends Entity {
     }
 
     private void doWaterReactiveTick(ServerWorld world) {
-        Profiler profiler = world.getProfiler();
-        BlockPos.Mutable mutable = new Mutable();
         // Note: This is a square radius rather than the circular radius used for rendering,
         // which will be slightly larger
         int x = this.getBlockX() - RAINLINE_EFFECT_RADIUS + this.random.nextInt(
@@ -195,6 +194,10 @@ public class RainlineEntity extends Entity {
         int z = this.getBlockZ() - RAINLINE_EFFECT_RADIUS + this.random.nextInt(
                 RAINLINE_EFFECT_RADIUS * 2);
         int y = world.getTopY(Type.MOTION_BLOCKING, x, z) - 1;
+        if (y > RainlineEntity.getTargetHeight(world)) {
+            return;
+        }
+        BlockPos.Mutable mutable = new Mutable();
         mutable.set(x, y, z);
         BlockState blockState = world.getBlockState(mutable);
         Block block = blockState.getBlock();
@@ -205,6 +208,7 @@ public class RainlineEntity extends Entity {
         // Cauldrons use Block#precipitationTick
         // Fluids use FluidState#doRandomTick
         // Blocks use BlockState#randomTick
+        Profiler profiler = world.getProfiler();
         profiler.push("randomTick");
         block.precipitationTick(blockState, world, mutable, Precipitation.RAIN);
         if (fluidState.hasRandomTicks() && fluid instanceof WaterReactiveFluid) {

@@ -24,12 +24,17 @@
 
 package io.github.drakonkinst.worldsinger.mixin.client.world;
 
+import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import io.github.drakonkinst.worldsinger.cosmere.CosmerePlanet;
+import io.github.drakonkinst.worldsinger.entity.rainline.RainlineEntity;
 import io.github.drakonkinst.worldsinger.mixin.world.WorldCosmereMixin;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.client.world.ClientWorld.Properties;
+import net.minecraft.entity.Entity;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.MutableWorldProperties;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
@@ -54,5 +59,31 @@ public abstract class ClientWorldCosmereMixin extends WorldCosmereMixin {
             return cosmereWorldData.getTimeOfDay();
         }
         return original.call(instance);
+    }
+
+    @ModifyExpressionValue(method = "getSkyBrightness", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/world/ClientWorld;getRainGradient(F)F"))
+    private float renderRainlines1(float original) {
+        Entity cameraEntity = MinecraftClient.getInstance().getCameraEntity();
+        if (cameraEntity == null) {
+            return original;
+        }
+        return Math.max(original, RainlineEntity.getRainlineGradient((ClientWorld) (Object) this,
+                cameraEntity.getPos(), true));
+    }
+
+    @ModifyExpressionValue(method = "getSkyColor", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/world/ClientWorld;getRainGradient(F)F"))
+    private float renderRainlines2(float original, Vec3d cameraPos, float tickDelta) {
+        return Math.max(original,
+                RainlineEntity.getRainlineGradient((ClientWorld) (Object) this, cameraPos, true));
+    }
+
+    @ModifyExpressionValue(method = "getCloudsColor", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/world/ClientWorld;getRainGradient(F)F"))
+    private float renderRainlines3(float original) {
+        Entity cameraEntity = MinecraftClient.getInstance().getCameraEntity();
+        if (cameraEntity == null) {
+            return original;
+        }
+        return Math.max(original, RainlineEntity.getRainlineGradient((ClientWorld) (Object) this,
+                cameraEntity.getPos(), true));
     }
 }
