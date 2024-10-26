@@ -1,5 +1,5 @@
 plugins {
-    id 'fabric-loom' version '1.7-SNAPSHOT'
+    id 'fabric-loom' version '1.8-SNAPSHOT'
     id 'maven-publish'
     id "me.fallenbreath.yamlang" version "1.4.0"
 }
@@ -27,6 +27,13 @@ repositories {
     maven {
         name = "SmartBrainLib (SBL) Maven Repo"
         url = "https://dl.cloudsmith.io/public/tslat/sbl/maven/"
+    }
+    maven {
+        name = 'GeckoLib'
+        url 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/'
+        content {
+            includeGroup("software.bernie.geckolib")
+        }
     }
 }
 
@@ -78,6 +85,9 @@ dependencies {
     modCompileOnly("dev.isxander:yet-another-config-lib:${project.yacl_version}-fabric") {
         exclude(group: "net.fabricmc.fabric-api")
     }
+
+    // GeckoLib
+    modImplementation "software.bernie.geckolib:geckolib-fabric-${minecraft_version}:${project.geckolib_version}"
 }
 
 processResources {
