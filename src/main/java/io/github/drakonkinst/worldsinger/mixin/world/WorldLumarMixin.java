@@ -60,7 +60,7 @@ public abstract class WorldLumarMixin implements WorldAccess, AutoCloseable, Lum
             return original;
         }
         if ((Object) this instanceof ServerWorld serverWorld) {
-            return RainlineEntity.isRainlineOver(serverWorld, pos.toCenterPos());
+            return RainlineEntity.shouldRainlineAffectBlocks(serverWorld, pos.toCenterPos());
         }
         return false;
     }

@@ -34,7 +34,6 @@ import io.github.drakonkinst.worldsinger.entity.ClientLunagreeDataAccess;
 import io.github.drakonkinst.worldsinger.entity.rainline.RainlineEntity;
 import io.github.drakonkinst.worldsinger.mixin.client.accessor.WorldRendererAccessor;
 import io.github.drakonkinst.worldsinger.util.ModEnums.CameraSubmersionType;
-import java.util.List;
 import net.fabricmc.fabric.api.client.rendering.v1.DimensionRenderingRegistry.SkyRenderer;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext;
 import net.minecraft.client.MinecraftClient;
@@ -81,7 +80,32 @@ public class LumarSkyRenderer implements SkyRenderer {
     private static final float MOON_VISUAL_HEIGHT_START = 100.0f;
     private static final float MOON_VISUAL_HEIGHT_END = 300.0f;
 
-    private static final float RAINLINE_GRADIENT_DISTANCE = 128.0f;
+    @NotNull
+    private static Quaternionf solveForRotation(double deltaX, double deltaZ, float verticalAngle) {
+        double horizontalDistance = Math.sqrt(deltaX * deltaX + deltaZ * deltaZ);
+        // We don't actually need to know the height of the moon, but here it is
+        // double moonY = playerPos.getY() + horizontalDistance * Math.tan(verticalAngle);
+
+        // Get desired rotation in axis-angle notation
+        double deltaY = horizontalDistance * Math.tan(verticalAngle);
+        // Get the normalized direction from the player to the moon
+        Vector3d targetDir = new Vector3d(deltaX, deltaY, deltaZ);
+        targetDir.normalize();
+        // Cross with the UP vector to get rotation axis
+        Vector3d rotationAxis = new Vector3d(targetDir.z, 0.0, -targetDir.x);
+        rotationAxis.normalize();
+        // Get angle
+        double rotationAngle = Math.acos(targetDir.y);
+
+        // Convert axis-angle to quaternion (manually, to avoid creating another object)
+        double sin = Math.sin(rotationAngle * 0.5f);
+        double cos = Math.cosFromSin(sin, rotationAngle * 0.5f);
+        float x = (float) (rotationAxis.x * sin);
+        float y = (float) (rotationAxis.y * sin);
+        float z = (float) (rotationAxis.z * sin);
+        float w = (float) cos;
+        return new Quaternionf(x, y, z, w);
+    }
 
     private final VertexBuffer starsBuffer;
     private final VertexBuffer lightSkyBuffer;
@@ -135,28 +159,6 @@ public class LumarSkyRenderer implements SkyRenderer {
         float green = (float) skyColor.y;
         float blue = (float) skyColor.z;
 
-        // TODO: Move to a cached value that updates every tick, and lerp to the desired rain gradient
-        List<RainlineEntity> nearbyRainlines = RainlineEntity.getNearbyRainlineEntities(
-                context.world(), cameraPos, RAINLINE_GRADIENT_DISTANCE);
-        float minDistSq = Float.MAX_VALUE;
-        for (RainlineEntity entity : nearbyRainlines) {
-            double deltaX = cameraPos.getX() - entity.getX();
-            double deltaZ = cameraPos.getZ() - entity.getZ();
-            double distSq = deltaX * deltaX + deltaZ * deltaZ;
-            if (distSq < minDistSq) {
-                minDistSq = (float) distSq;
-            }
-        }
-        if (minDistSq < RAINLINE_GRADIENT_DISTANCE * RAINLINE_GRADIENT_DISTANCE) {
-            float distanceMultiplier = MathHelper.sqrt(minDistSq) / RAINLINE_GRADIENT_DISTANCE;
-            float tintedColor = (red * 0.3f + green * 0.59f + blue * 0.11f) * 0.6f;
-            float originalWeight = distanceMultiplier * 0.75f;
-            float tintWeight = 1.0f - originalWeight;
-            red = red * originalWeight + tintedColor * tintWeight;
-            green = green * originalWeight + tintedColor * tintWeight;
-            blue = blue * originalWeight + tintedColor * tintWeight;
-        }
-
         Tessellator tessellator = Tessellator.getInstance();
         BackgroundRenderer.applyFogColor();
         RenderSystem.depthMask(false);
@@ -171,12 +173,15 @@ public class LumarSkyRenderer implements SkyRenderer {
                 GlStateManager.DstFactor.ONE, GlStateManager.SrcFactor.ONE,
                 GlStateManager.DstFactor.ZERO);
         matrices.push();
-        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
+
+        float rainGradientMultiplier = 1.0f - RainlineEntity.getRainlineGradient(world, cameraPos);
+        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, rainGradientMultiplier);
         matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-90.0f));
         matrices.multiply(
                 RotationAxis.POSITIVE_X.rotationDegrees(world.getSkyAngle(tickDelta) * 360.0f));
         this.drawSun(tessellator, matrices);
-        this.drawStars(matrices, projectionMatrix, world, gameRenderer, camera, tickDelta);
+        this.drawStars(matrices, projectionMatrix, world, gameRenderer, camera, tickDelta,
+                rainGradientMultiplier);
         matrices.pop();
         RenderSystem.disableBlend();
         RenderSystem.defaultBlendFunc();
@@ -254,33 +259,6 @@ public class LumarSkyRenderer implements SkyRenderer {
         drawMoon(tessellator, matrices, moonIndex, MOON_RADIUS, moonVisualDistance, rotation);
     }
 
-    @NotNull
-    private static Quaternionf solveForRotation(double deltaX, double deltaZ, float verticalAngle) {
-        double horizontalDistance = Math.sqrt(deltaX * deltaX + deltaZ * deltaZ);
-        // We don't actually need to know the height of the moon, but here it is
-        // double moonY = playerPos.getY() + horizontalDistance * Math.tan(verticalAngle);
-
-        // Get desired rotation in axis-angle notation
-        double deltaY = horizontalDistance * Math.tan(verticalAngle);
-        // Get the normalized direction from the player to the moon
-        Vector3d targetDir = new Vector3d(deltaX, deltaY, deltaZ);
-        targetDir.normalize();
-        // Cross with the UP vector to get rotation axis
-        Vector3d rotationAxis = new Vector3d(targetDir.z, 0.0, -targetDir.x);
-        rotationAxis.normalize();
-        // Get angle
-        double rotationAngle = Math.acos(targetDir.y);
-
-        // Convert axis-angle to quaternion (manually, to avoid creating another object)
-        double sin = Math.sin(rotationAngle * 0.5f);
-        double cos = Math.cosFromSin(sin, rotationAngle * 0.5f);
-        float x = (float) (rotationAxis.x * sin);
-        float y = (float) (rotationAxis.y * sin);
-        float z = (float) (rotationAxis.z * sin);
-        float w = (float) cos;
-        return new Quaternionf(x, y, z, w);
-    }
-
     private void drawMoon(Tessellator tessellator, MatrixStack matrices, int moonIndex,
             float radius, float height, Quaternionf quaternion) {
         int xIndex = moonIndex % MOON_TEXTURE_SECTIONS_X;
@@ -310,8 +288,8 @@ public class LumarSkyRenderer implements SkyRenderer {
     }
 
     private void drawStars(MatrixStack matrices, Matrix4f projectionMatrix, ClientWorld world,
-            GameRenderer gameRenderer, Camera camera, float tickDelta) {
-        float starBrightness = world.getStarBrightness(tickDelta);
+            GameRenderer gameRenderer, Camera camera, float tickDelta, float rainGradient) {
+        float starBrightness = world.getStarBrightness(tickDelta) * rainGradient;
         if (starBrightness > 0.0f) {
             RenderSystem.setShaderColor(starBrightness, starBrightness, starBrightness,
                     starBrightness);
