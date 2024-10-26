@@ -46,7 +46,7 @@ public class RainlineWanderBehavior implements RainlineBehavior {
     private static final float SPEED_BLOCKS_PER_TICK = 0.5f;
     private static final float WANDER_CIRCLE_RADIUS = 20.0f;
     private static final float WANDER_CIRCLE_DISTANCE = 20.0f;
-    private static final float WANDER_ANGLE_CHANGE = 0.1f;
+    private static final float WANDER_ANGLE_CHANGE = 0.2f;
     private static final float STEERING_SCALE = 1.0f;
     private static final float AVOIDANCE_FORCE = 50.0f;
     private static final float SEEK_FORCE = 50.0f;

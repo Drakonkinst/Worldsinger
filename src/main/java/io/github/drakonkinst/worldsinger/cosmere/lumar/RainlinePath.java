@@ -50,7 +50,7 @@ public class RainlinePath {
     private static final float ANGLE_INCREMENT = MathHelper.TAU / 8;
     private static final float ANGLE_OFFSET = ANGLE_INCREMENT / 8;
     // Should be tuned alongside LumarLunagreeManager values
-    private static final int MAP_SPLINE_STEPS = 100;
+    private static final int MAP_SPLINE_STEPS = 50;
     private static final int LENGTH_APPROX_STEPS = 32;
 
     private static int nextIconId = 0;
