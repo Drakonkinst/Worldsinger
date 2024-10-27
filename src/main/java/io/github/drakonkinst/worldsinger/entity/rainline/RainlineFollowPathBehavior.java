@@ -24,10 +24,14 @@
 
 package io.github.drakonkinst.worldsinger.entity.rainline;
 
+import io.github.drakonkinst.worldsinger.Worldsinger;
+import io.github.drakonkinst.worldsinger.cosmere.lumar.AetherSpores;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarManager;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.RainlinePath;
-import it.unimi.dsi.fastutil.longs.LongIntImmutablePair;
-import it.unimi.dsi.fastutil.longs.LongIntPair;
+import io.github.drakonkinst.worldsinger.worldgen.lumar.LumarChunkGenerator;
+import io.github.drakonkinst.worldsinger.worldgen.lumar.LumarChunkGenerator.SporeSeaEntry;
+import it.unimi.dsi.fastutil.longs.LongByteImmutablePair;
+import it.unimi.dsi.fastutil.longs.LongBytePair;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.server.world.ServerWorld;
@@ -55,17 +59,25 @@ public class RainlineFollowPathBehavior implements RainlineBehavior {
     }
 
     private final RainlinePath rainlinePath;
-    private final LongIntPair pathId;
+    private final LongBytePair pathId;
     private final int stepOffset;
 
-    public RainlineFollowPathBehavior(RainlinePath rainlinePath, long id, int index) {
+    public RainlineFollowPathBehavior(RainlinePath rainlinePath, long id, byte index) {
         this.rainlinePath = rainlinePath;
-        this.pathId = new LongIntImmutablePair(id, index);
+        this.pathId = new LongByteImmutablePair(id, index);
         this.stepOffset = rainlinePath.getStepOffset(index);
     }
 
     @Override
     public void serverTick(ServerWorld world, RainlineEntity entity) {
+        SporeSeaEntry entry = LumarChunkGenerator.getSporeSeaEntryAtPos(
+                world.getChunkManager().getNoiseConfig(), entity.getBlockX(), entity.getBlockZ());
+        if (stepOffset < 0 || !AetherSpores.hasRainlinePathsInSea(entry.id())) {
+            // If step offset is invalid or does not support rainlines in sea, start wandering
+            Worldsinger.LOGGER.info("Rainline following path is now wandering");
+            entity.setRainlineBehavior(new RainlineWanderBehavior(entity.getRandom()));
+            return;
+        }
         Vec2f newPos = rainlinePath.getRainlinePosition(world, stepOffset);
         entity.setVelocity(0, 0, 0);
         entity.setPos(newPos.x, entity.getY(), newPos.y);
@@ -79,10 +91,10 @@ public class RainlineFollowPathBehavior implements RainlineBehavior {
     @Override
     public void writeCustomDataToNbt(NbtCompound nbt) {
         nbt.putLong(KEY_RAINLINE_ID, pathId.firstLong());
-        nbt.putByte(KEY_RAINLINE_INDEX, (byte) pathId.secondInt());
+        nbt.putByte(KEY_RAINLINE_INDEX, pathId.secondByte());
     }
 
-    public LongIntPair getPathId() {
+    public LongBytePair getPathId() {
         return pathId;
     }
 

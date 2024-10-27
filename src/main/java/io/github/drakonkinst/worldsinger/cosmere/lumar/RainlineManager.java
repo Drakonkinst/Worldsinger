@@ -44,7 +44,7 @@ public interface RainlineManager {
     float RAINLINE_SKY_GRADIENT_RADIUS = 128;
     int RAINLINE_RADIUS = 8;
     int RAINLINE_EFFECT_RADIUS = 4;
-    int NUM_RAINLINES_PER_LUNAGREE = 8;
+    int NUM_RAINLINES_PER_LUNAGREE = 4;
 
     static double getHorizontalDistSq(Vec3d a, Vec3d b) {
         double deltaX = a.getX() - b.getX();

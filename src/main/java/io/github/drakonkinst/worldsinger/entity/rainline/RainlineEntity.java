@@ -58,7 +58,7 @@ public class RainlineEntity extends Entity {
     private static final double PARTICLE_VERTICAL_DISTANCE = 4.0;
     private static final double PARTICLE_HORIZONTAL_DISTANCE = 16.0;
 
-    private static int getTargetHeight(World world) {
+    public static int getTargetHeight(World world) {
         return world.getTopY() + HEIGHT_OFFSET;
     }
 
@@ -157,7 +157,7 @@ public class RainlineEntity extends Entity {
             rainlineBehavior = RainlineFollowPathBehavior.readFromNbt(lumarManager, nbt);
         }
         if (rainlineBehavior == null) {
-            rainlineBehavior = RainlineWanderBehavior.readFromNbt(nbt);
+            rainlineBehavior = RainlineWanderBehavior.readFromNbt(nbt, this.getRandom());
         }
     }
 
@@ -169,5 +169,9 @@ public class RainlineEntity extends Entity {
 
     public RainlineBehavior getRainlineBehavior() {
         return rainlineBehavior;
+    }
+
+    public void setRainlineBehavior(RainlineBehavior rainlineBehavior) {
+        this.rainlineBehavior = rainlineBehavior;
     }
 }

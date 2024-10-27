@@ -25,6 +25,7 @@
 package io.github.drakonkinst.worldsinger.cosmere.lumar;
 
 import io.github.drakonkinst.worldsinger.Worldsinger;
+import io.github.drakonkinst.worldsinger.entity.ModEntityTypes;
 import io.github.drakonkinst.worldsinger.entity.rainline.RainlineBehavior;
 import io.github.drakonkinst.worldsinger.entity.rainline.RainlineEntity;
 import io.github.drakonkinst.worldsinger.entity.rainline.RainlineFollowPathBehavior;
@@ -32,8 +33,8 @@ import io.github.drakonkinst.worldsinger.item.map.CustomMapDecorationsComponent.
 import io.github.drakonkinst.worldsinger.util.ModConstants;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.longs.LongIntMutablePair;
-import it.unimi.dsi.fastutil.longs.LongIntPair;
+import it.unimi.dsi.fastutil.longs.LongByteMutablePair;
+import it.unimi.dsi.fastutil.longs.LongBytePair;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -72,16 +73,17 @@ public class LumarRainlineManager implements RainlineManager {
         long key = generator.getKeyForPos(mapState.centerX, mapState.centerZ);
         long[] neighborKeys = generator.getNeighborKeys(key);
 
-        int numAdded = 0;
+        int totalNumAdded = 0;
         RainlinePath centerPath = getOrCreateRainlineData(key);
-        numAdded += centerPath.applyMapDecorations(world, decorations, mapState);
+        totalNumAdded += centerPath.applyMapDecorations(world, decorations, mapState, 1);
         for (int i = 0; i < neighborKeys.length; ++i) {
             long neighborKey = neighborKeys[i];
             RainlinePath neighborPath = getOrCreateRainlineData(neighborKey);
-            numAdded += neighborPath.applyMapDecorations(world, decorations, mapState);
+            int numAdded = neighborPath.applyMapDecorations(world, decorations, mapState, i + 2);
+            totalNumAdded += numAdded;
         }
-        // Worldsinger.LOGGER.info("Applying " + numAdded + " rainline icons to map");
-        return numAdded;
+        // Worldsinger.LOGGER.info("Applying " + totalNumAdded + " rainline icons to map");
+        return totalNumAdded;
     }
 
     @Override
@@ -100,7 +102,7 @@ public class LumarRainlineManager implements RainlineManager {
     }
 
     private void doRainlinePathsTick(ServerWorld world, List<RainlineEntity> rainlineEntities) {
-        Set<LongIntPair> existingPathIds = removeDuplicateRainlinePaths(rainlineEntities);
+        Set<LongBytePair> existingPathIds = removeDuplicateRainlinePaths(rainlineEntities);
         Set<LunagreeLocation> lunagreeLocations = getLunagreeLocationsToUpdate(world);
         for (LunagreeLocation location : lunagreeLocations) {
             spawnRainlinesForLocation(world, location, existingPathIds);
@@ -108,25 +110,46 @@ public class LumarRainlineManager implements RainlineManager {
     }
 
     private void spawnRainlinesForLocation(ServerWorld world, LunagreeLocation location,
-            Set<LongIntPair> existingPathIds) {
-        if (!AetherSpores.canHaveRainlinesInSea(location.sporeId())) {
+            Set<LongBytePair> existingPathIds) {
+        if (!AetherSpores.hasRainlinePathsInSea(location.sporeId())) {
             // No paths in the Crimson Sea
             return;
         }
-        long key = generator.getKeyForPos(location.blockX(), location.blockZ());
-        RainlinePath path = rainlinePaths.get(key);
+        long locationId = generator.getKeyForPos(location.blockX(), location.blockZ());
+        RainlinePath path = rainlinePaths.get(locationId);
         if (path == null) {
             return;
         }
-        LongIntPair pathId = new LongIntMutablePair(key, -1);
+        LongBytePair pathId = new LongByteMutablePair(locationId, (byte) -1);
         for (int pathIndex = 0; pathIndex < NUM_RAINLINES_PER_LUNAGREE; ++pathIndex) {
-            pathId.second(pathIndex);
-            if (!existingPathIds.contains(pathId)) {
-                Vec2f rainlinePos = path.getRainlinePosition(world, path.getStepOffset(pathIndex));
-                if (isPosLoaded(world, rainlinePos)) {
-                    spawnRainline(world, rainlinePos, path, key, pathIndex);
-                }
-            }
+            pathId.second((byte) pathIndex);
+            ensureRainlineIsSpawned(world, pathId, path, existingPathIds);
+        }
+    }
+
+    private void ensureRainlineIsSpawned(ServerWorld world, LongBytePair pathId, RainlinePath path,
+            Set<LongBytePair> existingPathIds) {
+        // Check if a rainline following that path already exists
+        if (existingPathIds.contains(pathId)) {
+            return;
+        }
+        // Check if position is loaded in the world
+        int stepOffset = path.getStepOffset(pathId.secondByte());
+        if (stepOffset < 0) {
+            return;
+        }
+        Vec2f rainlinePos = path.getRainlinePosition(world, stepOffset);
+        if (!isPosLoaded(world, rainlinePos)) {
+            return;
+        }
+        boolean success = spawnRainlineFollowingPath(world, rainlinePos, path, pathId.firstLong(),
+                pathId.secondByte());
+        if (success) {
+            Worldsinger.LOGGER.info("Spawning rainline at ({}, {})", (int) rainlinePos.x,
+                    (int) rainlinePos.y);
+        } else {
+            Worldsinger.LOGGER.warn("Failed to spawn rainline at ({}, {})", (int) rainlinePos.x,
+                    (int) rainlinePos.y);
         }
     }
 
@@ -135,21 +158,24 @@ public class LumarRainlineManager implements RainlineManager {
         return world.isPosLoaded((int) pos.x, (int) pos.y);
     }
 
-    private void spawnRainline(ServerWorld world, Vec2f pos, RainlinePath path, long locationId,
-            int index) {
-        int blockX = (int) pos.x;
-        int blockZ = (int) pos.y;
-        Worldsinger.LOGGER.info("Spawning rainline at ({}, {})", blockX, blockZ);
+    private boolean spawnRainlineFollowingPath(ServerWorld world, Vec2f pos, RainlinePath path,
+            long locationId, byte index) {
         RainlineBehavior behavior = new RainlineFollowPathBehavior(path, locationId, index);
-        // TODO
+        RainlineEntity rainlineEntity = ModEntityTypes.RAINLINE.create(world);
+        if (rainlineEntity == null) {
+            return false;
+        }
+        rainlineEntity.setPosition(pos.x, RainlineEntity.getTargetHeight(world), pos.y);
+        rainlineEntity.setRainlineBehavior(behavior);
+        return world.spawnEntity(rainlineEntity);
     }
 
     private void doRainlineWanderingTick(ServerWorld world) {
         // TODO
     }
 
-    private Set<LongIntPair> removeDuplicateRainlinePaths(List<RainlineEntity> rainlineEntities) {
-        Set<LongIntPair> existingPathIds = new HashSet<>();
+    private Set<LongBytePair> removeDuplicateRainlinePaths(List<RainlineEntity> rainlineEntities) {
+        Set<LongBytePair> existingPathIds = new HashSet<>();
         List<RainlineEntity> rainlineEntitiesToRemove = new ArrayList<>();
         for (RainlineEntity entity : rainlineEntities) {
             if (entity.getRainlineBehavior() instanceof RainlineFollowPathBehavior followPathBehavior) {

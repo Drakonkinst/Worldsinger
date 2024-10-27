@@ -244,8 +244,8 @@ public final class SporeParticleManager {
         // Only cache particle effect if from the AetherSporeType enum
         // Lock size to nearest cached size precision to prevent unintentional imprecision
         size = ((int) (size * CACHED_SIZE_PRECISION)) / CACHED_SIZE_PRECISION;
-        Worldsinger.LOGGER.info("Caching new dust particle effect ({}, {}), {} particles cached",
-                sporeType.getId(), size, cachedDustParticleEffects.size() + 1);
+        // Worldsinger.LOGGER.info("Caching new dust particle effect ({}, {}), {} particles cached",
+        //         sporeType.getId(), size, cachedDustParticleEffects.size() + 1);
 
         // Create particle effect
         if (floating) {

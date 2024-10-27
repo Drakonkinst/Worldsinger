@@ -92,7 +92,7 @@ public abstract class AetherSpores implements StringIdentifiable, Comparable<Aet
         return AETHER_SPORE_MAP;
     }
 
-    public static boolean canHaveRainlinesInSea(int sporeId) {
+    public static boolean hasRainlinePathsInSea(int sporeId) {
         return sporeId != CrimsonSpores.ID;
     }
 

@@ -43,13 +43,13 @@ public class RainlinePath {
     public static final int MAX_RADIUS = 2000;
 
     private static final float STEP_BLOCK_LENGTH = 16.0f;
+    private static final float MAP_ICON_DISTANCE = 24.0f;
 
     private static final double ALPHA = 0.5;    // Centripetal Catmull-Rom Spline
     private static final float INV_TENSION = 1.0f;
     private static final float ANGLE_INCREMENT = MathHelper.TAU / 8;
     private static final float ANGLE_OFFSET = ANGLE_INCREMENT / 8;
     // Should be tuned alongside LumarLunagreeManager values
-    private static final int MAP_SPLINE_STEPS = 50;
     private static final int LENGTH_APPROX_STEPS = 32;
     private static final int TICKS_PER_STEP = 20;
     private static final float STEPS_PER_TICK = 1.0f / TICKS_PER_STEP;
@@ -104,8 +104,6 @@ public class RainlinePath {
         }
     }
 
-    public record RainlinePathInfo(RainlinePath path, int nearestStep) {}
-
     // Based on Catmull-Rom Spline implementation in C++:
     // https://qroph.github.io/2018/07/30/smooth-paths-using-catmull-rom-splines.html
     private static Spline generateSpline(Int2 p0, Int2 p1, Int2 p2, Int2 p3) {
@@ -150,13 +148,13 @@ public class RainlinePath {
     }
 
     public int applyMapDecorations(ServerWorld serverWorld, Map<String, Decoration> decorations,
-            MapState mapState) {
+            MapState mapState, int cellNeighborIndex) {
         nextIconId = 0;
         int numAdded = 0;
         NoiseConfig noiseConfig = serverWorld.getChunkManager().getNoiseConfig();
         for (int i = 0; i < RainlinePath.RAINLINE_NODE_COUNT; ++i) {
-            numAdded += applyMapDecorationsForSpline(noiseConfig, decorations, mapState,
-                    splines[i]);
+            numAdded += applyMapDecorationsForSpline(noiseConfig, decorations, mapState, splines[i],
+                    cellNeighborIndex);
         }
         return numAdded;
     }
@@ -178,22 +176,24 @@ public class RainlinePath {
     }
 
     private int applyMapDecorationsForSpline(NoiseConfig noiseConfig,
-            Map<String, Decoration> decorations, MapState mapState, Spline spline) {
+            Map<String, Decoration> decorations, MapState mapState, Spline spline,
+            int cellNeighborIndex) {
         int numAdded = 0;
         float prevX = spline.applyX(0.0f);
         float prevZ = spline.applyY(0.0f);
-        for (int i = 1; i <= MAP_SPLINE_STEPS; ++i) {
-            float t = (float) i / MAP_SPLINE_STEPS;
+        int splineSteps = MathHelper.floor(spline.length() / MAP_ICON_DISTANCE);
+        for (int i = 1; i <= splineSteps; ++i) {
+            float t = (float) i / splineSteps;
             float x = spline.applyX(t);
             float z = spline.applyY(t);
             // Only add if it is on the map AND it is not in the Crimson Sea
-            if (isOnMap(mapState, x, z) && AetherSpores.canHaveRainlinesInSea(
+            if (isOnMap(mapState, x, z) && AetherSpores.hasRainlinePathsInSea(
                     LumarChunkGenerator.getSporeSeaEntryAtPos(noiseConfig, (int) x, (int) z)
                             .id())) {
                 float rotation = (float) MathHelper.atan2(z - prevZ, x - prevX)
                         * MathHelper.DEGREES_PER_RADIAN;
                 ++numAdded;
-                decorations.put("rainline-" + (++nextIconId),
+                decorations.put("rainline-" + cellNeighborIndex + "-" + (++nextIconId),
                         new Decoration(CustomMapDecoration.Type.RAINLINE, x, z, rotation));
             }
             prevX = x;

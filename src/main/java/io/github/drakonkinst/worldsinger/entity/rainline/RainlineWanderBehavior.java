@@ -37,6 +37,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.gen.noise.NoiseConfig;
 import org.joml.Vector2d;
 
@@ -54,9 +55,9 @@ public class RainlineWanderBehavior implements RainlineBehavior {
 
     private static final String KEY_WANDER_ANGLE = "wander_angle";
 
-    public static RainlineWanderBehavior readFromNbt(NbtCompound nbt) {
+    public static RainlineWanderBehavior readFromNbt(NbtCompound nbt, Random random) {
         if (!nbt.contains(KEY_WANDER_ANGLE, NbtElement.FLOAT_TYPE)) {
-            return new RainlineWanderBehavior(0.0f);
+            return new RainlineWanderBehavior(random);
         }
         float wanderAngle = nbt.getFloat(KEY_WANDER_ANGLE);
         return new RainlineWanderBehavior(wanderAngle);
@@ -64,6 +65,10 @@ public class RainlineWanderBehavior implements RainlineBehavior {
 
     private final Vector2d steeringForce = new Vector2d();
     private float wanderAngle;
+
+    public RainlineWanderBehavior(Random random) {
+        this.wanderAngle = random.nextFloat() * MathHelper.TAU;
+    }
 
     public RainlineWanderBehavior(float startingWanderAngle) {
         this.wanderAngle = startingWanderAngle;
@@ -124,7 +129,7 @@ public class RainlineWanderBehavior implements RainlineBehavior {
                 int x = pos.getX() + xOffset * SEEK_DISTANCE;
                 int z = pos.getZ() + zOffset * SEEK_DISTANCE;
                 SporeSeaEntry entry = LumarChunkGenerator.getSporeSeaEntryAtPos(noiseConfig, x, z);
-                if (!AetherSpores.canHaveRainlinesInSea(entry.id())) {
+                if (!AetherSpores.hasRainlinePathsInSea(entry.id())) {
                     steeringForce.add(
                             new Vector2d(x - pos.getX(), z - pos.getZ()).normalize(SEEK_FORCE));
                 }
