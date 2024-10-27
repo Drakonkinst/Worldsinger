@@ -31,6 +31,8 @@ import io.github.drakonkinst.worldsinger.entity.rainline.RainlineEntity;
 import io.github.drakonkinst.worldsinger.entity.rainline.RainlineFollowPathBehavior;
 import io.github.drakonkinst.worldsinger.item.map.CustomMapDecorationsComponent.Decoration;
 import io.github.drakonkinst.worldsinger.util.ModConstants;
+import io.github.drakonkinst.worldsinger.worldgen.lumar.LumarChunkGenerator;
+import io.github.drakonkinst.worldsinger.worldgen.lumar.LumarChunkGenerator.SporeSeaEntry;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.longs.LongByteMutablePair;
@@ -111,10 +113,6 @@ public class LumarRainlineManager implements RainlineManager {
 
     private void spawnRainlinesForLocation(ServerWorld world, LunagreeLocation location,
             Set<LongBytePair> existingPathIds) {
-        if (!AetherSpores.hasRainlinePathsInSea(location.sporeId())) {
-            // No paths in the Crimson Sea
-            return;
-        }
         long locationId = generator.getKeyForPos(location.blockX(), location.blockZ());
         RainlinePath path = rainlinePaths.get(locationId);
         if (path == null) {
@@ -142,14 +140,21 @@ public class LumarRainlineManager implements RainlineManager {
         if (!isPosLoaded(world, rainlinePos)) {
             return;
         }
+        // Ensure that no rainlines are spawned in the Crimson
+        int blockX = (int) rainlinePos.x;
+        int blockZ = (int) rainlinePos.y;
+        SporeSeaEntry sporeSeaEntry = LumarChunkGenerator.getSporeSeaEntryAtPos(
+                world.getChunkManager().getNoiseConfig(), blockX, blockZ);
+        if (!AetherSpores.hasRainlinePathsInSea(sporeSeaEntry.id())) {
+            return;
+        }
+
         boolean success = spawnRainlineFollowingPath(world, rainlinePos, path, pathId.firstLong(),
                 pathId.secondByte());
         if (success) {
-            Worldsinger.LOGGER.info("Spawning rainline at ({}, {})", (int) rainlinePos.x,
-                    (int) rainlinePos.y);
+            Worldsinger.LOGGER.info("Spawning rainline at ({}, {})", blockX, blockZ);
         } else {
-            Worldsinger.LOGGER.warn("Failed to spawn rainline at ({}, {})", (int) rainlinePos.x,
-                    (int) rainlinePos.y);
+            Worldsinger.LOGGER.warn("Failed to spawn rainline at ({}, {})", blockX, blockZ);
         }
     }
 

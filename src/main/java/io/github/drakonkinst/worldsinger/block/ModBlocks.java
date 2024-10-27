@@ -71,6 +71,7 @@ public final class ModBlocks {
                     .strength(1.0f)
                     .requiresTool()
                     .ticksRandomly()
+                    .allowsSpawning(Blocks::never)
                     .mapColor(MapColor.LIGHT_GRAY)
                     .sounds(ModSoundGroups.VERDANT_VINE_BRANCH)), true);
     public static final Block DEAD_VERDANT_VINE_BRANCH = register("dead_verdant_vine_branch",
@@ -120,6 +121,7 @@ public final class ModBlocks {
                     .strength(1.5f, 3.0f)
                     .requiresTool()
                     .ticksRandomly()
+                    .allowsSpawning(Blocks::never)
                     .mapColor(MapColor.LIGHT_GRAY)
                     .sounds(ModSoundGroups.CRIMSON_GROWTH)), true);
     public static final Block DEAD_CRIMSON_SPIKE = register("dead_crimson_spike",
@@ -277,6 +279,7 @@ public final class ModBlocks {
                     .strength(3.0F, 6.0F)
                     .ticksRandomly()
                     .mapColor(MapColor.TERRACOTTA_PINK)
+                    .allowsSpawning(Blocks::never)
                     .sounds(ModSoundGroups.ROSEITE)), true);
     public static final Block ROSEITE_STAIRS = register("roseite_stairs",
             new RoseiteStairsBlock(ROSEITE_BLOCK.getDefaultState(),
