@@ -26,6 +26,7 @@ package io.github.drakonkinst.worldsinger.mixin.client.world;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import io.github.drakonkinst.worldsinger.cosmere.lumar.RainlineManager;
 import io.github.drakonkinst.worldsinger.entity.rainline.RainlineEntity;
 import io.github.drakonkinst.worldsinger.registry.tag.ModBlockTags;
 import io.github.drakonkinst.worldsinger.util.ModEnums;
@@ -70,8 +71,8 @@ public abstract class WorldRendererLumarMixin {
         if (this.world == null) {
             return;
         }
-        nearestRainlineEntity = RainlineEntity.getNearestRainlineEntity(this.world, camera.getPos(),
-                RainlineEntity.RAINLINE_GRADIENT_RADIUS);
+        nearestRainlineEntity = RainlineManager.getNearestRainlineEntity(this.world,
+                camera.getPos(), RainlineManager.RAINLINE_GRADIENT_RADIUS);
     }
 
     @WrapOperation(method = "tickRainSplashing", at = @At(value = "INVOKE", target = "Lnet/minecraft/block/BlockState;isOf(Lnet/minecraft/block/Block;)Z"), slice = @Slice(from = @At(value = "INVOKE", target = "Lnet/minecraft/fluid/FluidState;getHeight(Lnet/minecraft/world/BlockView;Lnet/minecraft/util/math/BlockPos;)F"), to = @At(value = "INVOKE", target = "Lnet/minecraft/client/world/ClientWorld;addParticle(Lnet/minecraft/particle/ParticleEffect;DDDDDD)V")))
@@ -86,7 +87,7 @@ public abstract class WorldRendererLumarMixin {
     @ModifyExpressionValue(method = "tickRainSplashing", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/world/ClientWorld;getRainGradient(F)F"))
     private float addRainlineEffects1(float original, Camera camera) {
         if (nearestRainlineEntity != null) {
-            return Math.max(RainlineEntity.getRainlineGradient(this.world, camera.getPos(), false),
+            return Math.max(RainlineManager.getRainlineGradient(this.world, camera.getPos(), false),
                     original);
         }
         return original;
@@ -96,7 +97,7 @@ public abstract class WorldRendererLumarMixin {
     private float renderRainlines1(float original, Matrix4f matrix4f, Matrix4f projectionMatrix,
             float tickDelta, Camera camera, boolean thickFog, Runnable fogCallback) {
         if (nearestRainlineEntity != null) {
-            return Math.max(RainlineEntity.getRainlineGradient(this.world, camera.getPos(), true),
+            return Math.max(RainlineManager.getRainlineGradient(this.world, camera.getPos(), true),
                     original);
         }
         return original;
@@ -124,7 +125,7 @@ public abstract class WorldRendererLumarMixin {
     private float renderRainlines3(float original, LightmapTextureManager manager, float tickDelta,
             double cameraX, double cameraY, double cameraZ) {
         if (nearestRainlineEntity != null) {
-            return Math.max(RainlineEntity.getRainlineGradient(this.world,
+            return Math.max(RainlineManager.getRainlineGradient(this.world,
                     new Vec3d(cameraX, cameraY, cameraZ), false), original);
         }
         return original;

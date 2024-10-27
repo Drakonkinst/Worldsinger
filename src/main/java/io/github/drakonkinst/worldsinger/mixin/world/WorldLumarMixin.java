@@ -5,7 +5,7 @@ import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import io.github.drakonkinst.worldsinger.cosmere.CosmerePlanet;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarManager;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarManagerAccess;
-import io.github.drakonkinst.worldsinger.entity.rainline.RainlineEntity;
+import io.github.drakonkinst.worldsinger.cosmere.lumar.RainlineManager;
 import java.util.function.Supplier;
 import net.minecraft.block.BlockState;
 import net.minecraft.registry.DynamicRegistryManager;
@@ -60,7 +60,7 @@ public abstract class WorldLumarMixin implements WorldAccess, AutoCloseable, Lum
             return original;
         }
         if ((Object) this instanceof ServerWorld serverWorld) {
-            return RainlineEntity.shouldRainlineAffectBlocks(serverWorld, pos.toCenterPos());
+            return RainlineManager.shouldRainlineAffectBlocks(serverWorld, pos.toCenterPos());
         }
         return false;
     }

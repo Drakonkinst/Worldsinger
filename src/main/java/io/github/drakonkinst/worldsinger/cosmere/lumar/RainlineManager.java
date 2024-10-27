@@ -25,13 +25,93 @@
 package io.github.drakonkinst.worldsinger.cosmere.lumar;
 
 import io.github.drakonkinst.worldsinger.cosmere.lumar.RainlinePath.RainlinePathInfo;
+import io.github.drakonkinst.worldsinger.entity.rainline.RainlineEntity;
 import io.github.drakonkinst.worldsinger.item.map.CustomMapDecorationsComponent.Decoration;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import net.minecraft.item.map.MapState;
+import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.TypeFilter;
+import net.minecraft.util.math.Box;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 public interface RainlineManager {
+
+    float RAINLINE_GRADIENT_RADIUS = 32;
+    float RAINLINE_SKY_GRADIENT_RADIUS = 128;
+    int RAINLINE_RADIUS = 8;
+    int RAINLINE_EFFECT_RADIUS = 4;
+
+    static double getHorizontalDistSq(Vec3d a, Vec3d b) {
+        double deltaX = a.getX() - b.getX();
+        double deltaZ = a.getZ() - b.getZ();
+        return deltaX * deltaX + deltaZ * deltaZ;
+    }
+
+    static float getRainlineGradient(World world, Vec3d pos, boolean isSkyDarken) {
+        float radius = isSkyDarken ? RAINLINE_SKY_GRADIENT_RADIUS : RAINLINE_GRADIENT_RADIUS;
+        RainlineEntity rainlineEntity = getNearestRainlineEntity(world, pos, radius);
+        if (rainlineEntity == null) {
+            return 0.0f;
+        }
+        double distSq = getHorizontalDistSq(pos, rainlineEntity.getPos());
+        if (distSq > radius * radius) {
+            return 0.0f;
+        }
+        return 1.0f - (float) Math.sqrt(distSq) / radius;
+    }
+
+    // Mainly used for client-side rendering since there are server bugs
+    @Nullable
+    static RainlineEntity getNearestRainlineEntity(World world, Vec3d pos, double bonusRadius) {
+        List<RainlineEntity> nearbyRainlines = getNearbyRainlineEntities(world, pos, bonusRadius);
+        double minDistSq = Double.MAX_VALUE;
+        RainlineEntity nearestEntity = null;
+
+        for (RainlineEntity entity : nearbyRainlines) {
+            double distSq = getHorizontalDistSq(entity.getPos(), pos);
+            if (distSq < minDistSq) {
+                minDistSq = distSq;
+                nearestEntity = entity;
+            }
+        }
+        return nearestEntity;
+    }
+
+    static List<RainlineEntity> getNearbyRainlineEntities(World world, Vec3d pos, double radius) {
+        final double x = pos.getX();
+        final double z = pos.getZ();
+        final double searchRadius = RAINLINE_RADIUS + radius;
+        final Box box = new Box(x - searchRadius, world.getBottomY(), z - searchRadius,
+                x + searchRadius, world.getTopY(), z + searchRadius);
+        return world.getEntitiesByClass(RainlineEntity.class, box, EntityPredicates.VALID_ENTITY);
+    }
+
+    static boolean shouldRainlineAffectBlocks(ServerWorld world, Vec3d pos) {
+        // final double x = pos.getX();
+        // final double z = pos.getZ();
+        // final Box box = new Box(x - RAINLINE_SEARCH_RADIUS, world.getBottomY(),
+        //         z - RAINLINE_SEARCH_RADIUS, x + RAINLINE_SEARCH_RADIUS, world.getTopY(),
+        //         z + RAINLINE_SEARCH_RADIUS);
+        // List<RainlineEntity> nearbyRainlines = world.getEntitiesByClass(RainlineEntity.class, box,
+        //         EntityPredicates.VALID_ENTITY);
+
+        // For some reason there is a bug where the rainline, even though nearby, doesn't get caught in the box after a few seconds. So doing it manually
+        List<RainlineEntity> nearbyRainlines = new ArrayList<>();
+        world.collectEntitiesByType(TypeFilter.instanceOf(RainlineEntity.class),
+                EntityPredicates.VALID_ENTITY, nearbyRainlines);
+        for (RainlineEntity entity : nearbyRainlines) {
+            double distSq = getHorizontalDistSq(entity.getPos(), pos);
+            if (distSq <= RAINLINE_EFFECT_RADIUS * RAINLINE_EFFECT_RADIUS) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     void serverTick(ServerWorld world);
 

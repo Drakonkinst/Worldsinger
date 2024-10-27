@@ -27,8 +27,8 @@ import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.drakonkinst.worldsinger.Worldsinger;
 import io.github.drakonkinst.worldsinger.block.ModBlocks;
+import io.github.drakonkinst.worldsinger.cosmere.lumar.RainlineManager;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.SunlightSpores;
-import io.github.drakonkinst.worldsinger.entity.rainline.RainlineEntity;
 import io.github.drakonkinst.worldsinger.fluid.AetherSporeFluid;
 import io.github.drakonkinst.worldsinger.util.ColorUtil;
 import io.github.drakonkinst.worldsinger.util.ModEnums;
@@ -126,6 +126,7 @@ public abstract class BackgroundRendererMixin {
     @ModifyExpressionValue(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/world/ClientWorld;getRainGradient(F)F"))
     private static float renderRainlines(float original, Camera camera, float tickDelta,
             ClientWorld world, int viewDistance, float skyDarkness) {
-        return Math.max(original, RainlineEntity.getRainlineGradient(world, camera.getPos(), true));
+        return Math.max(original,
+                RainlineManager.getRainlineGradient(world, camera.getPos(), true));
     }
 }

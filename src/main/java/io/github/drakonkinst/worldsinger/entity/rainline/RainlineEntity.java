@@ -27,10 +27,9 @@ package io.github.drakonkinst.worldsinger.entity.rainline;
 import io.github.drakonkinst.worldsinger.block.WaterReactiveBlock;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarManager;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarManagerAccess;
+import io.github.drakonkinst.worldsinger.cosmere.lumar.RainlineManager;
 import io.github.drakonkinst.worldsinger.fluid.WaterReactiveFluid;
 import io.github.drakonkinst.worldsinger.registry.tag.ModBlockTags;
-import java.util.ArrayList;
-import java.util.List;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
@@ -40,25 +39,16 @@ import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.TypeFilter;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockPos.Mutable;
-import net.minecraft.util.math.Box;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.world.Heightmap.Type;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome.Precipitation;
-import org.jetbrains.annotations.Nullable;
 
 public class RainlineEntity extends Entity {
 
-    public static final int RAINLINE_RADIUS = 8;
-    public static final int RAINLINE_EFFECT_RADIUS = 4;
-    public static final float RAINLINE_GRADIENT_RADIUS = 32;
-    public static final float RAINLINE_SKY_GRADIENT_RADIUS = 128;
     private static final int HEIGHT_OFFSET = -1;
     private static final int RANDOM_TICK_INTERVAL = 3;
     private static final String KEY_FOLLOWING_PATH = "following_path";
@@ -67,76 +57,6 @@ public class RainlineEntity extends Entity {
     private static final int NUM_PARTICLES_PER_TICK = 25;
     private static final double PARTICLE_VERTICAL_DISTANCE = 4.0;
     private static final double PARTICLE_HORIZONTAL_DISTANCE = 16.0;
-
-    public static double getHorizontalDistSq(Vec3d a, Vec3d b) {
-        double deltaX = a.getX() - b.getX();
-        double deltaZ = a.getZ() - b.getZ();
-        return deltaX * deltaX + deltaZ * deltaZ;
-    }
-
-    public static float getRainlineGradient(World world, Vec3d pos, boolean isSkyDarken) {
-        float radius = isSkyDarken ? RAINLINE_SKY_GRADIENT_RADIUS : RAINLINE_GRADIENT_RADIUS;
-        RainlineEntity rainlineEntity = RainlineEntity.getNearestRainlineEntity(world, pos, radius);
-        if (rainlineEntity == null) {
-            return 0.0f;
-        }
-        double distSq = getHorizontalDistSq(pos, rainlineEntity.getPos());
-        if (distSq > radius * radius) {
-            return 0.0f;
-        }
-        return 1.0f - (float) Math.sqrt(distSq) / radius;
-    }
-
-    // Mainly used for client-side rendering since there are server bugs
-    @Nullable
-    public static RainlineEntity getNearestRainlineEntity(World world, Vec3d pos,
-            double bonusRadius) {
-        List<RainlineEntity> nearbyRainlines = RainlineEntity.getNearbyRainlineEntities(world, pos,
-                bonusRadius);
-        double minDistSq = Double.MAX_VALUE;
-        RainlineEntity nearestEntity = null;
-
-        for (RainlineEntity entity : nearbyRainlines) {
-            double distSq = getHorizontalDistSq(entity.getPos(), pos);
-            if (distSq < minDistSq) {
-                minDistSq = distSq;
-                nearestEntity = entity;
-            }
-        }
-        return nearestEntity;
-    }
-
-    private static List<RainlineEntity> getNearbyRainlineEntities(World world, Vec3d pos,
-            double radius) {
-        final double x = pos.getX();
-        final double z = pos.getZ();
-        final double searchRadius = RAINLINE_RADIUS + radius;
-        final Box box = new Box(x - searchRadius, world.getBottomY(), z - searchRadius,
-                x + searchRadius, world.getTopY(), z + searchRadius);
-        return world.getEntitiesByClass(RainlineEntity.class, box, EntityPredicates.VALID_ENTITY);
-    }
-
-    public static boolean shouldRainlineAffectBlocks(ServerWorld world, Vec3d pos) {
-        // final double x = pos.getX();
-        // final double z = pos.getZ();
-        // final Box box = new Box(x - RAINLINE_SEARCH_RADIUS, world.getBottomY(),
-        //         z - RAINLINE_SEARCH_RADIUS, x + RAINLINE_SEARCH_RADIUS, world.getTopY(),
-        //         z + RAINLINE_SEARCH_RADIUS);
-        // List<RainlineEntity> nearbyRainlines = world.getEntitiesByClass(RainlineEntity.class, box,
-        //         EntityPredicates.VALID_ENTITY);
-
-        // For some reason there is a bug where the rainline, even though nearby, doesn't get caught in the box after a few seconds. So doing it manually
-        List<RainlineEntity> nearbyRainlines = new ArrayList<>();
-        world.collectEntitiesByType(TypeFilter.instanceOf(RainlineEntity.class),
-                EntityPredicates.VALID_ENTITY, nearbyRainlines);
-        for (RainlineEntity entity : nearbyRainlines) {
-            double distSq = getHorizontalDistSq(entity.getPos(), pos);
-            if (distSq <= RAINLINE_EFFECT_RADIUS * RAINLINE_EFFECT_RADIUS) {
-                return true;
-            }
-        }
-        return false;
-    }
 
     private static int getTargetHeight(World world) {
         return world.getTopY() + HEIGHT_OFFSET;
@@ -189,10 +109,10 @@ public class RainlineEntity extends Entity {
     private void doWaterReactiveTick(ServerWorld world) {
         // Note: This is a square radius rather than the circular radius used for rendering,
         // which will be slightly larger
-        int x = this.getBlockX() - RAINLINE_EFFECT_RADIUS + this.random.nextInt(
-                RAINLINE_EFFECT_RADIUS * 2);
-        int z = this.getBlockZ() - RAINLINE_EFFECT_RADIUS + this.random.nextInt(
-                RAINLINE_EFFECT_RADIUS * 2);
+        int x = this.getBlockX() - RainlineManager.RAINLINE_EFFECT_RADIUS + this.random.nextInt(
+                RainlineManager.RAINLINE_EFFECT_RADIUS * 2);
+        int z = this.getBlockZ() - RainlineManager.RAINLINE_EFFECT_RADIUS + this.random.nextInt(
+                RainlineManager.RAINLINE_EFFECT_RADIUS * 2);
         int y = world.getTopY(Type.MOTION_BLOCKING, x, z) - 1;
         if (y > RainlineEntity.getTargetHeight(world)) {
             return;

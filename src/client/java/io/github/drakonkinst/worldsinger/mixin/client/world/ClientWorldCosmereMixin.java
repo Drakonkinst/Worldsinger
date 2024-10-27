@@ -28,7 +28,7 @@ import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import io.github.drakonkinst.worldsinger.cosmere.CosmerePlanet;
-import io.github.drakonkinst.worldsinger.entity.rainline.RainlineEntity;
+import io.github.drakonkinst.worldsinger.cosmere.lumar.RainlineManager;
 import io.github.drakonkinst.worldsinger.mixin.world.WorldCosmereMixin;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.world.ClientWorld;
@@ -67,14 +67,14 @@ public abstract class ClientWorldCosmereMixin extends WorldCosmereMixin {
         if (cameraEntity == null) {
             return original;
         }
-        return Math.max(original, RainlineEntity.getRainlineGradient((ClientWorld) (Object) this,
+        return Math.max(original, RainlineManager.getRainlineGradient((ClientWorld) (Object) this,
                 cameraEntity.getPos(), true));
     }
 
     @ModifyExpressionValue(method = "getSkyColor", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/world/ClientWorld;getRainGradient(F)F"))
     private float renderRainlines2(float original, Vec3d cameraPos, float tickDelta) {
         return Math.max(original,
-                RainlineEntity.getRainlineGradient((ClientWorld) (Object) this, cameraPos, true));
+                RainlineManager.getRainlineGradient((ClientWorld) (Object) this, cameraPos, true));
     }
 
     @ModifyExpressionValue(method = "getCloudsColor", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/world/ClientWorld;getRainGradient(F)F"))
@@ -83,7 +83,7 @@ public abstract class ClientWorldCosmereMixin extends WorldCosmereMixin {
         if (cameraEntity == null) {
             return original;
         }
-        return Math.max(original, RainlineEntity.getRainlineGradient((ClientWorld) (Object) this,
+        return Math.max(original, RainlineManager.getRainlineGradient((ClientWorld) (Object) this,
                 cameraEntity.getPos(), true));
     }
 }

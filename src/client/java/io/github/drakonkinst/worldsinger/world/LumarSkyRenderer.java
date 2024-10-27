@@ -30,8 +30,8 @@ import io.github.drakonkinst.worldsinger.Worldsinger;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.ClientLunagreeData;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarLunagreeGenerator;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LunagreeLocation;
+import io.github.drakonkinst.worldsinger.cosmere.lumar.RainlineManager;
 import io.github.drakonkinst.worldsinger.entity.ClientLunagreeDataAccess;
-import io.github.drakonkinst.worldsinger.entity.rainline.RainlineEntity;
 import io.github.drakonkinst.worldsinger.mixin.client.accessor.WorldRendererAccessor;
 import io.github.drakonkinst.worldsinger.util.ModEnums.CameraSubmersionType;
 import net.fabricmc.fabric.api.client.rendering.v1.DimensionRenderingRegistry.SkyRenderer;
@@ -175,7 +175,7 @@ public class LumarSkyRenderer implements SkyRenderer {
         matrices.push();
 
         float rainGradientMultiplier =
-                1.0f - RainlineEntity.getRainlineGradient(world, cameraPos, true);
+                1.0f - RainlineManager.getRainlineGradient(world, cameraPos, true);
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, rainGradientMultiplier);
         matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-90.0f));
         matrices.multiply(
