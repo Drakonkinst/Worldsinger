@@ -25,21 +25,26 @@
 package io.github.drakonkinst.worldsinger.cosmere.lumar;
 
 import io.github.drakonkinst.worldsinger.Worldsinger;
-import io.github.drakonkinst.worldsinger.cosmere.lumar.RainlinePath.ClosestStepResult;
-import io.github.drakonkinst.worldsinger.cosmere.lumar.RainlinePath.RainlinePathInfo;
+import io.github.drakonkinst.worldsinger.entity.rainline.RainlineBehavior;
 import io.github.drakonkinst.worldsinger.entity.rainline.RainlineEntity;
+import io.github.drakonkinst.worldsinger.entity.rainline.RainlineFollowPathBehavior;
 import io.github.drakonkinst.worldsinger.item.map.CustomMapDecorationsComponent.Decoration;
 import io.github.drakonkinst.worldsinger.util.ModConstants;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.longs.LongIntMutablePair;
+import it.unimi.dsi.fastutil.longs.LongIntPair;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import net.minecraft.item.map.MapState;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.TypeFilter;
+import net.minecraft.util.math.Vec2f;
 import org.jetbrains.annotations.Nullable;
 
 // Rainlines on Lumar are placed around lunagrees, so it is tightly coupled to lunagree generation
@@ -90,16 +95,81 @@ public class LumarRainlineManager implements RainlineManager {
                 EntityPredicates.VALID_ENTITY, rainlineEntities);
         Worldsinger.LOGGER.info("Found " + rainlineEntities.size() + " active rainline entities: "
                 + rainlineEntities);
+        doRainlinePathsTick(world, rainlineEntities);
+        doRainlineWanderingTick(world);
+    }
 
-        // LongSet cellsWithValidRainline = new LongOpenHashSet();
-        // for (RainlineEntity entity : rainlineEntities) {
-        //
-        // }
-        //
-        // // For each player, check the cells around them for rainlines and determine if they should spawn
-        // for (ServerPlayerEntity player : world.getPlayers()) {
-        //     updateRainlinesAroundPlayer(player);
-        // }
+    private void doRainlinePathsTick(ServerWorld world, List<RainlineEntity> rainlineEntities) {
+        Set<LongIntPair> existingPathIds = removeDuplicateRainlinePaths(rainlineEntities);
+        Set<LunagreeLocation> lunagreeLocations = getLunagreeLocationsToUpdate(world);
+        for (LunagreeLocation location : lunagreeLocations) {
+            spawnRainlinesForLocation(world, location, existingPathIds);
+        }
+    }
+
+    private void spawnRainlinesForLocation(ServerWorld world, LunagreeLocation location,
+            Set<LongIntPair> existingPathIds) {
+        if (!AetherSpores.canHaveRainlinesInSea(location.sporeId())) {
+            // No paths in the Crimson Sea
+            return;
+        }
+        long key = generator.getKeyForPos(location.blockX(), location.blockZ());
+        RainlinePath path = rainlinePaths.get(key);
+        if (path == null) {
+            return;
+        }
+        LongIntPair pathId = new LongIntMutablePair(key, -1);
+        for (int pathIndex = 0; pathIndex < NUM_RAINLINES_PER_LUNAGREE; ++pathIndex) {
+            pathId.second(pathIndex);
+            if (!existingPathIds.contains(pathId)) {
+                Vec2f rainlinePos = path.getRainlinePosition(world, path.getStepOffset(pathIndex));
+                if (isPosLoaded(world, rainlinePos)) {
+                    spawnRainline(world, rainlinePos, path, key, pathIndex);
+                }
+            }
+        }
+    }
+
+    private boolean isPosLoaded(ServerWorld world, Vec2f pos) {
+        // noinspection deprecation
+        return world.isPosLoaded((int) pos.x, (int) pos.y);
+    }
+
+    private void spawnRainline(ServerWorld world, Vec2f pos, RainlinePath path, long locationId,
+            int index) {
+        int blockX = (int) pos.x;
+        int blockZ = (int) pos.y;
+        Worldsinger.LOGGER.info("Spawning rainline at ({}, {})", blockX, blockZ);
+        RainlineBehavior behavior = new RainlineFollowPathBehavior(path, locationId, index);
+        // TODO
+    }
+
+    private void doRainlineWanderingTick(ServerWorld world) {
+        // TODO
+    }
+
+    private Set<LongIntPair> removeDuplicateRainlinePaths(List<RainlineEntity> rainlineEntities) {
+        Set<LongIntPair> existingPathIds = new HashSet<>();
+        List<RainlineEntity> rainlineEntitiesToRemove = new ArrayList<>();
+        for (RainlineEntity entity : rainlineEntities) {
+            if (entity.getRainlineBehavior() instanceof RainlineFollowPathBehavior followPathBehavior) {
+                if (!existingPathIds.add(followPathBehavior.getPathId())) {
+                    rainlineEntitiesToRemove.add(entity);
+                }
+            }
+        }
+        rainlineEntities.removeAll(rainlineEntitiesToRemove);
+        return existingPathIds;
+    }
+
+    private Set<LunagreeLocation> getLunagreeLocationsToUpdate(ServerWorld world) {
+        Set<LunagreeLocation> lunagreeLocations = new HashSet<>();
+        for (ServerPlayerEntity player : world.getPlayers()) {
+            List<LunagreeLocation> locationsNearPlayer = generator.getLunagreesNearPos(
+                    player.getBlockX(), player.getBlockZ());
+            lunagreeLocations.addAll(locationsNearPlayer);
+        }
+        return lunagreeLocations;
     }
 
     private void updateRainlinesAroundPlayer(ServerPlayerEntity player) {
@@ -124,24 +194,5 @@ public class LumarRainlineManager implements RainlineManager {
             rainlinePaths.put(key, entry);
         }
         return entry;
-    }
-
-    @Override
-    public RainlinePathInfo getClosestRainlinePathInfo(float x, float z) {
-        // Get distance to every neighboring rainline
-        long key = generator.getKeyForPos((int) x, (int) z);
-        long[] neighborKeys = generator.getNeighborKeys(key);
-
-        RainlinePath nearestPath = getOrCreateRainlineData(key);
-        ClosestStepResult nearestResult = nearestPath.getClosestStep(x, z);
-        for (long neighborKey : neighborKeys) {
-            RainlinePath neighborPath = getOrCreateRainlineData(neighborKey);
-            ClosestStepResult result = neighborPath.getClosestStep(x, z);
-            if (result.distanceSqFromStep() < nearestResult.distanceSqFromStep()) {
-                nearestPath = neighborPath;
-                nearestResult = result;
-            }
-        }
-        return new RainlinePathInfo(nearestPath, nearestResult.nearestStep());
     }
 }

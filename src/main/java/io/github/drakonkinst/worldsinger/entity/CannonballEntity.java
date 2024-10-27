@@ -77,10 +77,9 @@ public class CannonballEntity extends ThrownItemEntity implements FlyingItemEnti
     private static final CannonballBehavior EMPTY_CANNONBALL_BEHAVIOR = new EmptyCannonballBehavior();
     private static final CannonballBehavior WATER_CANNONBALL_BEHAVIOR = new WaterCannonballBehavior();
     private static final LoadingCache<CannonballComponent, CannonballBehavior> CACHED_CANNONBALL_BEHAVIORS = CacheBuilder.newBuilder()
-            .recordStats() // TODO: Turn off for release build
+            // .recordStats() // TODO: Turn off for release build
             .maximumSize(12) // 12 Aethers :P no other reason
-            .expireAfterWrite(10, TimeUnit.MINUTES)
-            .build(new CacheLoader<>() {
+            .expireAfterWrite(10, TimeUnit.MINUTES).build(new CacheLoader<>() {
                 @Override
                 public @NotNull CannonballBehavior load(@NotNull CannonballComponent component) {
                     Object2IntMap<CannonballContent> contentMap = CannonballComponent.getContentMap(
@@ -104,7 +103,7 @@ public class CannonballEntity extends ThrownItemEntity implements FlyingItemEnti
             } else if (component.core() == CannonballCore.HOLLOW
                     || component.core() == CannonballCore.ROSEITE) {
                 // TODO: Turn off for release build
-                Worldsinger.LOGGER.info(CACHED_CANNONBALL_BEHAVIORS.stats().toString());
+                // Worldsinger.LOGGER.info(CACHED_CANNONBALL_BEHAVIORS.stats().toString());
                 return CACHED_CANNONBALL_BEHAVIORS.getUnchecked(component);
             }
         }

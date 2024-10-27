@@ -57,7 +57,7 @@ public class LumarLunagreeGenerator extends PersistentState implements LunagreeG
     public static final float TRAVEL_DISTANCE = 2000.0f;
     public static final float CELL_SIZE = 1800.0f; // Should always be less than TRAVEL_DISTANCE
     public static final int SEARCH_RADIUS = 1000;  // Should always be less than CELL_SIZE
-    public static final int SPORE_FALL_RADIUS = 200;
+    public static final int SPORE_FALL_RADIUS = 100;
     public static final int NULL_LUNAGREE_SPORE_ID = 0;
     public static final String NAME = "lunagrees";
 

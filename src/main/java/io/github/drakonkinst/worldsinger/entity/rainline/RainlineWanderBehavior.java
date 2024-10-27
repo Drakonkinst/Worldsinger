@@ -24,7 +24,7 @@
 
 package io.github.drakonkinst.worldsinger.entity.rainline;
 
-import io.github.drakonkinst.worldsinger.cosmere.lumar.CrimsonSpores;
+import io.github.drakonkinst.worldsinger.cosmere.lumar.AetherSpores;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarLunagreeGenerator;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarManager;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarManagerAccess;
@@ -124,7 +124,7 @@ public class RainlineWanderBehavior implements RainlineBehavior {
                 int x = pos.getX() + xOffset * SEEK_DISTANCE;
                 int z = pos.getZ() + zOffset * SEEK_DISTANCE;
                 SporeSeaEntry entry = LumarChunkGenerator.getSporeSeaEntryAtPos(noiseConfig, x, z);
-                if (entry.id() == CrimsonSpores.ID) {
+                if (!AetherSpores.canHaveRainlinesInSea(entry.id())) {
                     steeringForce.add(
                             new Vector2d(x - pos.getX(), z - pos.getZ()).normalize(SEEK_FORCE));
                 }

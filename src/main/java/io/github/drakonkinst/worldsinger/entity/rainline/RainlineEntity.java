@@ -166,4 +166,8 @@ public class RainlineEntity extends Entity {
         nbt.putBoolean(KEY_FOLLOWING_PATH, rainlineBehavior.isFollowingPath());
         rainlineBehavior.writeCustomDataToNbt(nbt);
     }
+
+    public RainlineBehavior getRainlineBehavior() {
+        return rainlineBehavior;
+    }
 }

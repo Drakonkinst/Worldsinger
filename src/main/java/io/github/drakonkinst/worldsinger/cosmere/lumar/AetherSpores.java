@@ -92,6 +92,10 @@ public abstract class AetherSpores implements StringIdentifiable, Comparable<Aet
         return AETHER_SPORE_MAP;
     }
 
+    public static boolean canHaveRainlinesInSea(int sporeId) {
+        return sporeId != CrimsonSpores.ID;
+    }
+
     public static void clearAllSporeEffects(LivingEntity entity) {
         for (RegistryEntry<StatusEffect> statusEffect : FLUID_TO_STATUS_EFFECT.values()) {
             entity.removeStatusEffect(statusEffect);

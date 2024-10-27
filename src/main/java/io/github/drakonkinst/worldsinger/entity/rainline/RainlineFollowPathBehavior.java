@@ -26,17 +26,16 @@ package io.github.drakonkinst.worldsinger.entity.rainline;
 
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarManager;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.RainlinePath;
+import it.unimi.dsi.fastutil.longs.LongIntImmutablePair;
+import it.unimi.dsi.fastutil.longs.LongIntPair;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec2f;
 import org.jetbrains.annotations.Nullable;
 
 public class RainlineFollowPathBehavior implements RainlineBehavior {
 
-    private static final int TICKS_PER_STEP = 20;
-    private static final byte NUM_RAINLINES_PER_LUNAGREE = 8;
     private static final String KEY_RAINLINE_ID = "rainline_id";
     private static final String KEY_RAINLINE_INDEX = "rainline_index";
 
@@ -55,35 +54,21 @@ public class RainlineFollowPathBehavior implements RainlineBehavior {
         return new RainlineFollowPathBehavior(rainlinePath, rainlineId, rainlineIndex);
     }
 
-    private static final float STEPS_PER_TICK = 1.0f / TICKS_PER_STEP;
     private final RainlinePath rainlinePath;
-    private final long id;
-    private final int index;
+    private final LongIntPair pathId;
     private final int stepOffset;
 
     public RainlineFollowPathBehavior(RainlinePath rainlinePath, long id, int index) {
         this.rainlinePath = rainlinePath;
-        this.id = id;
-        this.index = index;
-        float percentageOffset = index * 1.0f / NUM_RAINLINES_PER_LUNAGREE;
-        this.stepOffset = Math.round(percentageOffset * rainlinePath.getMaxSteps());
+        this.pathId = new LongIntImmutablePair(id, index);
+        this.stepOffset = rainlinePath.getStepOffset(index);
     }
 
     @Override
     public void serverTick(ServerWorld world, RainlineEntity entity) {
-        long gameTime = world.getTime();
-        // Given game time and initial offset, what step should we be on?
-        float progress = gameTime * STEPS_PER_TICK + stepOffset;
-        int step = (int) progress;
-        progress %= 1.0f;
-
-        Vec2f currentStep = rainlinePath.getPositionAtStep(step);
-        Vec2f nextStep = rainlinePath.getPositionAtStep(step + 1);
-
-        double x = MathHelper.lerp(progress, currentStep.x, nextStep.x);
-        double z = MathHelper.lerp(progress, currentStep.y, nextStep.y);
+        Vec2f newPos = rainlinePath.getRainlinePosition(world, stepOffset);
         entity.setVelocity(0, 0, 0);
-        entity.setPos(x, entity.getY(), z);
+        entity.setPos(newPos.x, entity.getY(), newPos.y);
     }
 
     @Override
@@ -93,8 +78,12 @@ public class RainlineFollowPathBehavior implements RainlineBehavior {
 
     @Override
     public void writeCustomDataToNbt(NbtCompound nbt) {
-        nbt.putLong(KEY_RAINLINE_ID, id);
-        nbt.putByte(KEY_RAINLINE_INDEX, (byte) index);
+        nbt.putLong(KEY_RAINLINE_ID, pathId.firstLong());
+        nbt.putByte(KEY_RAINLINE_INDEX, (byte) pathId.secondInt());
+    }
+
+    public LongIntPair getPathId() {
+        return pathId;
     }
 
 }

@@ -24,7 +24,6 @@
 
 package io.github.drakonkinst.worldsinger.cosmere.lumar;
 
-import io.github.drakonkinst.worldsinger.cosmere.lumar.RainlinePath.RainlinePathInfo;
 import io.github.drakonkinst.worldsinger.entity.rainline.RainlineEntity;
 import io.github.drakonkinst.worldsinger.item.map.CustomMapDecorationsComponent.Decoration;
 import java.util.ArrayList;
@@ -45,6 +44,7 @@ public interface RainlineManager {
     float RAINLINE_SKY_GRADIENT_RADIUS = 128;
     int RAINLINE_RADIUS = 8;
     int RAINLINE_EFFECT_RADIUS = 4;
+    int NUM_RAINLINES_PER_LUNAGREE = 8;
 
     static double getHorizontalDistSq(Vec3d a, Vec3d b) {
         double deltaX = a.getX() - b.getX();
@@ -114,9 +114,6 @@ public interface RainlineManager {
     }
 
     void serverTick(ServerWorld world);
-
-    @Nullable
-    RainlinePathInfo getClosestRainlinePathInfo(float x, float z);
 
     int applyMapDecorations(ServerWorld world, Map<String, Decoration> decorations,
             MapState mapState);

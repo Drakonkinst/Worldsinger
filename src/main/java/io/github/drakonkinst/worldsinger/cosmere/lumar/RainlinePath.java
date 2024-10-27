@@ -24,7 +24,6 @@
 
 package io.github.drakonkinst.worldsinger.cosmere.lumar;
 
-import io.github.drakonkinst.worldsinger.Worldsinger;
 import io.github.drakonkinst.worldsinger.item.map.CustomMapDecoration;
 import io.github.drakonkinst.worldsinger.item.map.CustomMapDecorationsComponent.Decoration;
 import io.github.drakonkinst.worldsinger.util.math.Int2;
@@ -52,6 +51,8 @@ public class RainlinePath {
     // Should be tuned alongside LumarLunagreeManager values
     private static final int MAP_SPLINE_STEPS = 50;
     private static final int LENGTH_APPROX_STEPS = 32;
+    private static final int TICKS_PER_STEP = 20;
+    private static final float STEPS_PER_TICK = 1.0f / TICKS_PER_STEP;
 
     private static int nextIconId = 0;
 
@@ -103,8 +104,6 @@ public class RainlinePath {
         }
     }
 
-    public record ClosestStepResult(int nearestStep, float distanceSqFromStep) {}
-
     public record RainlinePathInfo(RainlinePath path, int nearestStep) {}
 
     // Based on Catmull-Rom Spline implementation in C++:
@@ -142,12 +141,10 @@ public class RainlinePath {
         return rainlineNodes;
     }
 
-    private final Int2[] rainlineNodes;
     private final Spline[] splines;
     private final float totalLength;
 
     public RainlinePath(Int2[] rainlineNodes) {
-        this.rainlineNodes = rainlineNodes;
         this.splines = new Spline[RAINLINE_NODE_COUNT];
         this.totalLength = this.generateAllSplines(rainlineNodes);
     }
@@ -164,6 +161,22 @@ public class RainlinePath {
         return numAdded;
     }
 
+    // Gets the stepProgress offset for the rainline at provided index, or -1 if bad index
+    public int getStepOffset(int index) {
+        if (index < 0 || index >= RainlineManager.NUM_RAINLINES_PER_LUNAGREE) {
+            return -1;
+        }
+        float percentageOffset = index * 1.0f / RainlineManager.NUM_RAINLINES_PER_LUNAGREE;
+        return Math.round(percentageOffset * getMaxSteps());
+    }
+
+    public Vec2f getRainlinePosition(ServerWorld world, int stepOffset) {
+        long gameTime = world.getTime();
+        // Given game time and initial offset, where should we be?
+        float stepProgress = (gameTime * STEPS_PER_TICK + stepOffset) % getMaxSteps();
+        return getPositionForStepProgress(stepProgress);
+    }
+
     private int applyMapDecorationsForSpline(NoiseConfig noiseConfig,
             Map<String, Decoration> decorations, MapState mapState, Spline spline) {
         int numAdded = 0;
@@ -174,9 +187,9 @@ public class RainlinePath {
             float x = spline.applyX(t);
             float z = spline.applyY(t);
             // Only add if it is on the map AND it is not in the Crimson Sea
-            if (isOnMap(mapState, x, z)
-                    && LumarChunkGenerator.getSporeSeaEntryAtPos(noiseConfig, (int) x, (int) z).id()
-                    != CrimsonSpores.ID) {
+            if (isOnMap(mapState, x, z) && AetherSpores.canHaveRainlinesInSea(
+                    LumarChunkGenerator.getSporeSeaEntryAtPos(noiseConfig, (int) x, (int) z)
+                            .id())) {
                 float rotation = (float) MathHelper.atan2(z - prevZ, x - prevX)
                         * MathHelper.DEGREES_PER_RADIAN;
                 ++numAdded;
@@ -219,76 +232,15 @@ public class RainlinePath {
         return totalLength;
     }
 
-    // Get position of the rainline following this rainline path depending on the game time
-    public Vec2f getPositionAtTime(long gameTime, float blocksPerTick) {
-        float ticksPerCycle = totalLength / blocksPerTick;
-        float cycleProgress = (float) gameTime % ticksPerCycle;
-        return getPositionForDistanceAlongCycle(cycleProgress);
-    }
-
-    public Vec2f getPositionAtStep(int step) {
-        float distanceAlongCycle = step * STEP_BLOCK_LENGTH;
+    private Vec2f getPositionForStepProgress(float stepProgress) {
+        float distanceAlongCycle = stepProgress * STEP_BLOCK_LENGTH;
         return getPositionForDistanceAlongCycle(distanceAlongCycle);
     }
 
-    public ClosestStepResult getClosestStep(float x, float z) {
-        // Find the nearest spline on this path
-        int nearestSplineIndex = getNearestSplineIndex(x, z);
-        Spline spline = splines[nearestSplineIndex];
-
-        // Check every position on this spline
-        int numSteps = MathHelper.floor(spline.length() / STEP_BLOCK_LENGTH);
-        Worldsinger.LOGGER.info("Checking " + numSteps + " steps");
-        int nearestStep = 0;
-        float minDistSq = Float.MAX_VALUE;
-        for (int step = 0; step < numSteps; ++step) {
-            Vec2f stepPos = getPositionAtStep(step);
-            float deltaX = stepPos.x - x;
-            float deltaZ = stepPos.y - z;
-            float distSq = deltaX * deltaX + deltaZ * deltaZ;
-            if (distSq < minDistSq) {
-                nearestStep = step;
-                minDistSq = distSq;
-            }
-        }
-        return new ClosestStepResult(nearestStep, minDistSq);
-    }
-
-    private int getNearestSplineIndex(float x, float z) {
-        // Find the index of the closest node
-        int nearestNodeIndex = 0;
-        float minDistSq = Float.MAX_VALUE;
-        float[] cachedDistances = new float[RAINLINE_NODE_COUNT];
-        for (int i = 0; i < RAINLINE_NODE_COUNT; ++i) {
-            Int2 node = rainlineNodes[i];
-            float deltaX = node.x() - x;
-            float deltaZ = node.y() - z;
-            float distSq = deltaX * deltaX + deltaZ * deltaZ;
-            if (distSq < minDistSq) {
-                nearestNodeIndex = i;
-                minDistSq = distSq;
-            }
-            cachedDistances[i] = distSq;
-        }
-
-        // Find the second-closest node and return the spline connecting those two nodes
-        // A spline's index is its first node index
-        int nextNodeIndex = (nearestNodeIndex + 1) % RAINLINE_NODE_COUNT;
-        int prevNodeIndex = (nearestNodeIndex + RAINLINE_NODE_COUNT - 1) % RAINLINE_NODE_COUNT;
-        if (cachedDistances[nextNodeIndex] < cachedDistances[prevNodeIndex]) {
-            // Next node is closer, so use this node's index as the spline
-            return nearestNodeIndex;
-        }
-        // Previous node is closer
-        return prevNodeIndex;
-    }
-
+    // Get position for distance in blocks, assuming distance is in [0, totalLength)
     private Vec2f getPositionForDistanceAlongCycle(float distanceAlongCycle) {
         if (distanceAlongCycle <= 0) {
             return getStartingPoint();
-        }
-        if (distanceAlongCycle > totalLength) {
-            distanceAlongCycle = distanceAlongCycle % totalLength;
         }
 
         float current = 0.0f;
