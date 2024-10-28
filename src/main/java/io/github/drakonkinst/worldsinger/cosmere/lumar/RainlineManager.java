@@ -40,6 +40,7 @@ import org.jetbrains.annotations.Nullable;
 
 public interface RainlineManager {
 
+    RainlineManager NULL = new NullRainlineManager();
     float RAINLINE_GRADIENT_RADIUS = 32;
     float RAINLINE_SKY_GRADIENT_RADIUS = 128;
     int RAINLINE_RADIUS = 8;

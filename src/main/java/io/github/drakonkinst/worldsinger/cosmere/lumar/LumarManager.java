@@ -42,7 +42,7 @@ import net.minecraft.world.gen.feature.MiscConfiguredFeatures;
 public class LumarManager {
 
     public static final LumarManager NULL = new LumarManager(SeetheManager.NULL,
-            LunagreeGenerator.NULL, new NullRainlineManager());
+            LunagreeGenerator.NULL, RainlineManager.NULL);
     private static final int SPAWN_SEARCH_RADIUS = 6400;
     private static final int SPAWN_SEARCH_INTERVAL = 16;
 
@@ -112,11 +112,7 @@ public class LumarManager {
     private final LunagreeGenerator lunagreeGenerator;
     private final RainlineManager rainlineManager;
 
-    public LumarManager(SeetheManager seetheManager, LunagreeGenerator lunagreeGenerator) {
-        this(seetheManager, lunagreeGenerator, new LumarRainlineManager(lunagreeGenerator));
-    }
-
-    protected LumarManager(SeetheManager seetheManager, LunagreeGenerator lunagreeGenerator,
+    public LumarManager(SeetheManager seetheManager, LunagreeGenerator lunagreeGenerator,
             RainlineManager rainlineManager) {
         this.seetheManager = seetheManager;
         this.lunagreeGenerator = lunagreeGenerator;

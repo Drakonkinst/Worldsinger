@@ -33,6 +33,7 @@ import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarManager;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarSeetheManager;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LunagreeGenerator;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LunagreeLocation;
+import io.github.drakonkinst.worldsinger.cosmere.lumar.RainlineManager;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.SporeParticleManager;
 import io.github.drakonkinst.worldsinger.entity.ClientLunagreeDataAccess;
 import io.github.drakonkinst.worldsinger.mixin.world.WorldLumarMixin;
@@ -75,7 +76,8 @@ public abstract class ClientWorldLumarMixin extends WorldLumarMixin {
             int loadDistance, int simulationDistance, Supplier<Profiler> profiler,
             WorldRenderer worldRenderer, boolean debugWorld, long seed, CallbackInfo ci) {
         if (CosmerePlanet.getPlanetFromKey(registryRef).equals(CosmerePlanet.LUMAR)) {
-            lumarManager = new LumarManager(new LumarSeetheManager(), LunagreeGenerator.NULL);
+            lumarManager = new LumarManager(new LumarSeetheManager(), LunagreeGenerator.NULL,
+                    RainlineManager.NULL);
         }
     }
 

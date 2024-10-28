@@ -30,9 +30,11 @@ import io.github.drakonkinst.worldsinger.cosmere.CosmerePlanet;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.AetherSpores;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarLunagreeGenerator;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarManager;
+import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarRainlineManager;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarSeetheManager;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LunagreeGenerator;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LunagreeLocation;
+import io.github.drakonkinst.worldsinger.cosmere.lumar.RainlineManager;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.SeetheManager;
 import io.github.drakonkinst.worldsinger.network.packet.SeetheUpdatePayload;
 import java.util.List;
@@ -85,7 +87,10 @@ public abstract class ServerWorldLumarMixin extends WorldLumarMixin implements
             LunagreeGenerator lunagreeGenerator = this.getPersistentStateManager()
                     .getOrCreate(LumarLunagreeGenerator.getPersistentStateType(
                             (ServerWorld) (Object) (this)), LumarLunagreeGenerator.NAME);
-            lumarManager = new LumarManager(seetheManager, lunagreeGenerator);
+            RainlineManager rainlineManager = this.getPersistentStateManager()
+                    .getOrCreate(LumarRainlineManager.getPersistentStateType(lunagreeGenerator),
+                            LumarRainlineManager.NAME);
+            lumarManager = new LumarManager(seetheManager, lunagreeGenerator, rainlineManager);
         }
     }
 

@@ -24,6 +24,7 @@
 
 package io.github.drakonkinst.worldsinger.entity.rainline;
 
+import io.github.drakonkinst.worldsinger.Worldsinger;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.AetherSpores;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarLunagreeGenerator;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarManager;
@@ -31,6 +32,7 @@ import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarManagerAccess;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LunagreeLocation;
 import io.github.drakonkinst.worldsinger.worldgen.lumar.LumarChunkGenerator;
 import io.github.drakonkinst.worldsinger.worldgen.lumar.LumarChunkGenerator.SporeSeaEntry;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.server.world.ServerWorld;
@@ -52,26 +54,33 @@ public class RainlineWanderBehavior implements RainlineBehavior {
     private static final float AVOIDANCE_FORCE = 50.0f;
     private static final float SEEK_FORCE = 50.0f;
     private static final int SEEK_DISTANCE = 16;
+    private static final float DESPAWN_DISTANCE_THRESHOLD = 128.0f;
+    private static final int MAX_DESPAWN_TIMER = 6000;
 
     private static final String KEY_WANDER_ANGLE = "wander_angle";
+    private static final String KEY_DESPAWN_TIMER = "despawn_timer";
 
     public static RainlineWanderBehavior readFromNbt(NbtCompound nbt, Random random) {
         if (!nbt.contains(KEY_WANDER_ANGLE, NbtElement.FLOAT_TYPE)) {
             return new RainlineWanderBehavior(random);
         }
         float wanderAngle = nbt.getFloat(KEY_WANDER_ANGLE);
-        return new RainlineWanderBehavior(wanderAngle);
+        int despawnTimer = nbt.getInt(KEY_DESPAWN_TIMER);
+        return new RainlineWanderBehavior(wanderAngle, despawnTimer);
     }
 
     private final Vector2d steeringForce = new Vector2d();
     private float wanderAngle;
+    private int despawnTimer;
 
     public RainlineWanderBehavior(Random random) {
         this.wanderAngle = random.nextFloat() * MathHelper.TAU;
+        this.despawnTimer = 0;
     }
 
-    public RainlineWanderBehavior(float startingWanderAngle) {
+    private RainlineWanderBehavior(float startingWanderAngle, int despawnTimer) {
         this.wanderAngle = startingWanderAngle;
+        this.despawnTimer = despawnTimer;
     }
 
     @Override
@@ -79,6 +88,14 @@ public class RainlineWanderBehavior implements RainlineBehavior {
         BlockPos pos = entity.getBlockPos();
         Vec3d velocity = entity.getVelocity();
         LumarManager lumarManager = ((LumarManagerAccess) world).worldsinger$getLumarManager();
+
+        // Tick despawn timer
+        if (!isPlayerNearby(world, entity)) {
+            if (++despawnTimer >= MAX_DESPAWN_TIMER) {
+                Worldsinger.LOGGER.info("Despawned wandering rainline");
+                entity.discard();
+            }
+        }
 
         // Wander randomly
         if (velocity.equals(Vec3d.ZERO)) {
@@ -146,6 +163,18 @@ public class RainlineWanderBehavior implements RainlineBehavior {
         entity.setPos(newPos.getX(), entity.getY(), newPos.getZ());
     }
 
+    private boolean isPlayerNearby(ServerWorld world, RainlineEntity entity) {
+        for (PlayerEntity playerEntity : world.getPlayers()) {
+            double deltaX = playerEntity.getX() - entity.getX();
+            double deltaZ = playerEntity.getZ() - entity.getZ();
+            double distSq = deltaX * deltaX + deltaZ * deltaZ;
+            if (distSq <= DESPAWN_DISTANCE_THRESHOLD * DESPAWN_DISTANCE_THRESHOLD) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     @Override
     public boolean isFollowingPath() {
         return false;
@@ -153,6 +182,7 @@ public class RainlineWanderBehavior implements RainlineBehavior {
 
     @Override
     public void writeCustomDataToNbt(NbtCompound nbt) {
-
+        nbt.putFloat(KEY_WANDER_ANGLE, wanderAngle);
+        nbt.putInt(KEY_DESPAWN_TIMER, despawnTimer);
     }
 }
