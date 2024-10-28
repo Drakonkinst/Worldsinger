@@ -160,7 +160,7 @@ public class RainlineWanderBehavior implements RainlineBehavior {
                 .multiply(SPEED_BLOCKS_PER_TICK);
         Vec3d newPos = entity.getPos().add(newVelocity);
         entity.setVelocity(newVelocity);
-        entity.setPos(newPos.getX(), entity.getY(), newPos.getZ());
+        entity.setPos(newPos.getX(), RainlineEntity.getTargetHeight(world), newPos.getZ());
     }
 
     private boolean isPlayerNearby(ServerWorld world, RainlineEntity entity) {

@@ -23,30 +23,20 @@
  */
 package io.github.drakonkinst.worldsinger.registry;
 
-import io.github.drakonkinst.worldsinger.Worldsinger;
 import io.github.drakonkinst.worldsinger.entity.ModEntityTypes;
-import io.github.drakonkinst.worldsinger.entity.model.RainlineEntityModel;
 import io.github.drakonkinst.worldsinger.entity.render.MidnightCreatureEntityRenderer;
 import io.github.drakonkinst.worldsinger.entity.render.RainlineEntityRenderer;
-import net.fabricmc.fabric.api.client.rendering.v1.EntityModelLayerRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
 import net.minecraft.client.render.entity.FlyingItemEntityRenderer;
-import net.minecraft.client.render.entity.model.EntityModelLayer;
 
 public final class ModEntityRendering {
-
-    public static final EntityModelLayer MODEL_RAINLINE_LAYER = new EntityModelLayer(
-            Worldsinger.id("rainline"), "main");
 
     public static void register() {
         EntityRendererRegistry.register(ModEntityTypes.SPORE_BOTTLE, FlyingItemEntityRenderer::new);
         EntityRendererRegistry.register(ModEntityTypes.CANNONBALL, FlyingItemEntityRenderer::new);
         EntityRendererRegistry.register(ModEntityTypes.MIDNIGHT_CREATURE,
                 MidnightCreatureEntityRenderer::new);
-        // TODO: Can render as a dark cloud later
         EntityRendererRegistry.register(ModEntityTypes.RAINLINE, RainlineEntityRenderer::new);
-        EntityModelLayerRegistry.registerModelLayer(MODEL_RAINLINE_LAYER,
-                RainlineEntityModel::getTexturedModelData);
     }
 
     private ModEntityRendering() {}

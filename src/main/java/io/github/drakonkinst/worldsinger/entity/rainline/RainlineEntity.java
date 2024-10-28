@@ -38,7 +38,6 @@ import net.minecraft.entity.data.DataTracker.Builder;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockPos.Mutable;
@@ -46,17 +45,16 @@ import net.minecraft.util.profiler.Profiler;
 import net.minecraft.world.Heightmap.Type;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome.Precipitation;
+import software.bernie.geckolib.animatable.GeoEntity;
+import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.animation.AnimatableManager.ControllerRegistrar;
+import software.bernie.geckolib.util.GeckoLibUtil;
 
-public class RainlineEntity extends Entity {
+public class RainlineEntity extends Entity implements GeoEntity {
 
     private static final int HEIGHT_OFFSET = -1;
     private static final int RANDOM_TICK_INTERVAL = 3;
     private static final String KEY_FOLLOWING_PATH = "following_path";
-
-    // Particles
-    private static final int NUM_PARTICLES_PER_TICK = 25;
-    private static final double PARTICLE_VERTICAL_DISTANCE = 4.0;
-    private static final double PARTICLE_HORIZONTAL_DISTANCE = 16.0;
 
     public static int getTargetHeight(World world) {
         return world.getTopY() + HEIGHT_OFFSET;
@@ -67,28 +65,16 @@ public class RainlineEntity extends Entity {
     }
 
     private RainlineBehavior rainlineBehavior;
+    private final AnimatableInstanceCache geoCache = GeckoLibUtil.createInstanceCache(this);
 
     @Override
     public void tick() {
-        if (this.getWorld().isClient()) {
-            doClientTick();
-        } else {
+        super.tick();
+        this.prevX = this.getX();
+        this.prevY = this.getY();
+        this.prevZ = this.getZ();
+        if (!this.getWorld().isClient()) {
             doServerTick();
-        }
-    }
-
-    private void doClientTick() {
-        World world = this.getWorld();
-        // TODO: Replace with an actual storm cloud at some point?
-        for (int i = 0; i < NUM_PARTICLES_PER_TICK; ++i) {
-            double x = this.getX() + random.nextDouble() * PARTICLE_HORIZONTAL_DISTANCE * 2
-                    - PARTICLE_HORIZONTAL_DISTANCE;
-            double y = RainlineEntity.getTargetHeight(world)
-                    + random.nextDouble() * PARTICLE_VERTICAL_DISTANCE * 2
-                    - PARTICLE_VERTICAL_DISTANCE;
-            double z = this.getZ() + random.nextDouble() * PARTICLE_HORIZONTAL_DISTANCE * 2
-                    - PARTICLE_HORIZONTAL_DISTANCE;
-            world.addParticle(ParticleTypes.CAMPFIRE_COSY_SMOKE, x, y, z, 0.0f, 0.0f, 0.0f);
         }
     }
 
@@ -173,5 +159,15 @@ public class RainlineEntity extends Entity {
 
     public void setRainlineBehavior(RainlineBehavior rainlineBehavior) {
         this.rainlineBehavior = rainlineBehavior;
+    }
+
+    @Override
+    public void registerControllers(ControllerRegistrar controllers) {
+        // No animations
+    }
+
+    @Override
+    public AnimatableInstanceCache getAnimatableInstanceCache() {
+        return geoCache;
     }
 }

@@ -80,7 +80,7 @@ public class RainlineFollowPathBehavior implements RainlineBehavior {
         }
         Vec2f newPos = rainlinePath.getRainlinePosition(world, stepOffset);
         entity.setVelocity(0, 0, 0);
-        entity.setPos(newPos.x, entity.getY(), newPos.y);
+        entity.setPos(newPos.x, RainlineEntity.getTargetHeight(world), newPos.y);
     }
 
     @Override
