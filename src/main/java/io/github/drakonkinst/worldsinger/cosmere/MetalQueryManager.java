@@ -32,8 +32,8 @@ import net.minecraft.item.ItemStack;
 
 public final class MetalQueryManager {
 
-    private static final int HELD_ITEM_METAL_VALUE = 1;
-    private static final int USING_SHIELD_BONUS = 2;
+    private static final int HELD_ITEM_METAL_VALUE = 10;
+    private static final int USING_SHIELD_BONUS = 10;
 
     public static int getIronContentForEntity(Entity entity, DataTable entityDataTable,
             DataTable armorDataTable) {
@@ -65,7 +65,7 @@ public final class MetalQueryManager {
             if (entity instanceof PlayerEntity playerEntity) {
                 ItemStack activeItem = playerEntity.getActiveItem();
                 if (!activeItem.isEmpty() && activeItem.isIn(metal.getItemTag())) {
-                    if (activeItem.isIn(ConventionalItemTags.SHIELDS_TOOLS)) {
+                    if (activeItem.isIn(ConventionalItemTags.SHIELD_TOOLS)) {
                         ironContent += USING_SHIELD_BONUS;
                     }
                 }

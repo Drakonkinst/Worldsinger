@@ -4,9 +4,9 @@
   "entries": {
     "worldsinger:silver_block": 9,
     "worldsinger:steel_block": 9,
-    "#worldsinger:steel_anvil": 31,
+    "#worldsinger:steel_anvil": 12,
     "minecraft:iron_block": 9,
-    "#minecraft:anvil": 31,
+    "#minecraft:anvil": 12,
     "minecraft:raw_iron_block": 8,
     "worldsinger:raw_silver_block": 8,
     "#worldsinger:all_cauldrons": 7,
