@@ -149,7 +149,7 @@ public abstract class AbstractVerticalGrowthComponentBlock extends Block {
         return placeDirection;
     }
 
-    private boolean canPlaceAtWithDirection(WorldView world, BlockPos pos, Direction direction) {
+    protected boolean canPlaceAtWithDirection(WorldView world, BlockPos pos, Direction direction) {
         BlockPos supportingBlockPos = pos.offset(direction.getOpposite());
         BlockState supportingBlockState = world.getBlockState(supportingBlockPos);
         return supportingBlockState.isSideSolidFullSquare(world, supportingBlockPos, direction)

@@ -24,6 +24,7 @@
 package io.github.drakonkinst.worldsinger.block;
 
 import com.mojang.serialization.MapCodec;
+import io.github.drakonkinst.worldsinger.registry.tag.ModBlockTags;
 import io.github.drakonkinst.worldsinger.util.VoxelShapeUtil;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
@@ -40,6 +41,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.WorldAccess;
+import net.minecraft.world.WorldView;
 import org.jetbrains.annotations.Nullable;
 
 public class TwistingVerdantVineStemBlock extends AbstractVerticalGrowthStemBlock implements
@@ -111,6 +113,12 @@ public class TwistingVerdantVineStemBlock extends AbstractVerticalGrowthStemBloc
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
         builder.add(Properties.PERSISTENT, Properties.WATERLOGGED);
         super.appendProperties(builder);
+    }
+
+    @Override
+    protected boolean canPlaceAtWithDirection(WorldView world, BlockPos pos, Direction direction) {
+        return super.canPlaceAtWithDirection(world, pos, direction) || world.getBlockState(
+                pos.offset(direction.getOpposite())).isIn(ModBlockTags.VERDANT_VINE_BRANCH);
     }
 
     @Override
