@@ -23,6 +23,7 @@
  */
 package io.github.drakonkinst.worldsinger.block;
 
+import io.github.drakonkinst.worldsinger.cosmere.CosmerePlanet;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.SeetheManager;
 import net.minecraft.block.BlockState;
 import net.minecraft.fluid.Fluids;
@@ -33,12 +34,21 @@ import net.minecraft.util.math.random.Random;
 
 public interface SporeGrowthBlock {
 
-    // Spore growth blocks decay if not persistent, is not raining, and seethe is on.
-    // They decay faster if open to sky or above a fluid.
+    // Spore growth blocks decay if not persistent and it is not raining.
     static boolean canDecay(ServerWorld world, BlockPos pos, BlockState state, Random random) {
         BlockPos abovePos = pos.add(0, 1, 0);
-        return SeetheManager.areSporesFluidized(world) && !state.get(Properties.PERSISTENT)
-                && !world.hasRain(abovePos) && (world.isSkyVisible(abovePos)
-                || !world.getFluidState(pos.down()).isOf(Fluids.EMPTY) || random.nextInt(5) == 0);
+        // Decays much slower unless on Lumar and the Seethe is on
+        int chanceDecay;
+        if (CosmerePlanet.isLumar(world) && SeetheManager.areSporesFluidized(world)) {
+            chanceDecay = 1;
+        } else {
+            chanceDecay = 10;
+        }
+        // Decay slower if not open to sky or not above a fluid
+        if (!world.isSkyVisible(abovePos) && world.getFluidState(pos.down()).isOf(Fluids.EMPTY)) {
+            chanceDecay += 5;
+        }
+        return (random.nextInt() == chanceDecay) && !state.get(Properties.PERSISTENT)
+                && !world.hasRain(abovePos);
     }
 }
