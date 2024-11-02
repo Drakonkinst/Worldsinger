@@ -226,6 +226,11 @@
           "type": "minecraft:item",
           "weight": 1,
           "name": "minecraft:map"
+        },
+        {
+          "type": "minecraft:item",
+          "weight": 1,
+          "name": "minecraft:spyglass"
         }
       ]
     }
