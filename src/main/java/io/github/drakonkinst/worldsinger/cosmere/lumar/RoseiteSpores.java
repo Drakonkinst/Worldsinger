@@ -51,8 +51,8 @@ public class RoseiteSpores extends GrowableAetherSpores<RoseiteSporeGrowthEntity
     public static final int ID = 5;
 
     private static final RoseiteSpores INSTANCE = new RoseiteSpores();
-    private static final int COLOR = 0xce9db2;
-    private static final int PARTICLE_COLOR = 0xce9db2;
+    private static final int COLOR = 0xdb86ab;
+    private static final int PARTICLE_COLOR = 0xcf7ea1;
     private static final int NORMAL_SPORE_AMOUNT_ON_DEATH = 25;
 
     public static RoseiteSpores getInstance() {

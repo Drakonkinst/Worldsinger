@@ -48,7 +48,7 @@ public interface SporeGrowthBlock {
         if (!world.isSkyVisible(abovePos) && world.getFluidState(pos.down()).isOf(Fluids.EMPTY)) {
             chanceDecay += 5;
         }
-        return (random.nextInt() == chanceDecay) && !state.get(Properties.PERSISTENT)
+        return (random.nextInt(chanceDecay) == 0) && !state.get(Properties.PERSISTENT)
                 && !world.hasRain(abovePos);
     }
 }
