@@ -59,6 +59,12 @@ public class ModBiomeTagGenerator extends FabricTagProvider<Biome> {
                 .addOptional(ModBiomes.LUMAR_ROCKS);
         getOrCreateTagBuilder(ModBiomeTags.IS_LUMAR_OCEAN).addOptional(ModBiomes.SPORE_SEA)
                 .addOptional(ModBiomes.DEEP_SPORE_SEA);
+        getOrCreateTagBuilder(ModBiomeTags.SEAGULLS_CAN_SPAWN).addOptional(
+                        ModBiomes.SALTSTONE_ISLAND)
+                .addOptional(ModBiomes.LUMAR_ROCKS)
+                .addOptional(ModBiomes.LUMAR_PEAKS)
+                .addOptional(ModBiomes.DEEP_SPORE_SEA)
+                .addOptional(ModBiomes.SPORE_SEA);
 
         // Mod structure tags
         getOrCreateTagBuilder(ModBiomeTags.LUMAR_MINESHAFT_HAS_STRUCTURE).addOptional(

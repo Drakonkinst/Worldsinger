@@ -46,6 +46,7 @@
     "entity.BoatEntityMovementMixin",
     "entity.BoatEntityPassengersMixin",
     "entity.BoatEntitySilverMixin",
+    "entity.ChickenEntityMixin",
     "entity.EntityMixin",
     "entity.FallingBlockEntityMixin",
     "entity.FlyingEntityCustomFluidMovementMixin",

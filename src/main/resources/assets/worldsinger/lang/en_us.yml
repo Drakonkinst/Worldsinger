@@ -41,6 +41,7 @@ entity.worldsinger:
   midnight_creature: Midnight Creature
   midnight_creature.morphed: Midnight %s
   rainline: Rainline
+  seagull: Seagull
 effect.worldsinger:
   verdant_spores: Verdant Spores
   crimson_spores: Crimson Spores

@@ -33,6 +33,7 @@ public final class ModBiomeTags {
 
     public static final TagKey<Biome> IS_LUMAR_BEACH = ModBiomeTags.of("is_lumar_beach");
     public static final TagKey<Biome> IS_LUMAR_OCEAN = ModBiomeTags.of("is_lumar_ocean");
+    public static final TagKey<Biome> SEAGULLS_CAN_SPAWN = ModBiomeTags.of("seagulls_can_spawn");
     public static final TagKey<Biome> LUMAR_MINESHAFT_HAS_STRUCTURE = ModBiomeTags.of(
             "has_structure/lumar_mineshaft");
     public static final TagKey<Biome> LUMAR_SALTSTONE_WELL_HAS_STRUCTURE = ModBiomeTags.of(
