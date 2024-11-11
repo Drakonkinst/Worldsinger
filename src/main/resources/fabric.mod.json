@@ -3,12 +3,12 @@
   "id": "worldsinger",
   "version": "${version}",
   "name": "Worldsinger",
-  "description": "This is an example description! Tell everyone what your mod is about!",
+  "description": "A Cosmere mod for Minecraft",
   "authors": [
     "Drakonkinst"
   ],
   "contact": {
-    "sources": "https://github.com/Drakonkinst/WorldsingerMod"
+    "sources": "https://github.com/Drakonkinst/Worldsinger"
   },
   "license": "MIT",
   "icon": "assets/worldsinger/icon.png",

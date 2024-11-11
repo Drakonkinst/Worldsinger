@@ -44,7 +44,7 @@ public class LumarManager {
     public static final LumarManager NULL = new LumarManager(SeetheManager.NULL,
             LunagreeGenerator.NULL, RainlineManager.NULL);
     private static final int SPAWN_SEARCH_RADIUS = 6400;
-    private static final int SPAWN_SEARCH_INTERVAL = 16;
+    private static final int SPAWN_SEARCH_INTERVAL = 64;
 
     private static Pair<BlockPos, SporeSeaEntry> searchForSpawnPos(ServerWorld lumar,
             IntSet validSporeSeaIds) {

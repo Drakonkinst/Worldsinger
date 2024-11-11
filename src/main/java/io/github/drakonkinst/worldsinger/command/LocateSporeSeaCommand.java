@@ -59,6 +59,7 @@ import net.minecraft.world.Heightmap;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeCoords;
 import net.minecraft.world.biome.source.util.MultiNoiseUtil.MultiNoiseSampler;
+import net.minecraft.world.gen.noise.NoiseConfig;
 import org.jetbrains.annotations.Nullable;
 
 // Not actually an actual command, but mixed into the vanilla /locate command
@@ -161,16 +162,14 @@ public class LocateSporeSeaCommand {
         if (!CosmerePlanet.isLumar(world)) {
             return null;
         }
-        MultiNoiseSampler noiseSampler = world.getChunkManager()
-                .getNoiseConfig()
-                .getMultiNoiseSampler();
+        NoiseConfig noiseConfig = world.getChunkManager().getNoiseConfig();
+        MultiNoiseSampler noiseSampler = noiseConfig.getMultiNoiseSampler();
         int cellRadius = Math.floorDiv(radius, horizontalBlockCheckInterval);
         for (Mutable mutable : BlockPos.iterateInSquare(BlockPos.ORIGIN, cellRadius, Direction.EAST,
                 Direction.SOUTH)) {
             int x = originX + mutable.getX() * horizontalBlockCheckInterval;
             int z = originZ + mutable.getZ() * horizontalBlockCheckInterval;
-            SporeSeaEntry entry = LumarChunkGenerator.getSporeSeaEntryAtPos(
-                    world.getChunkManager().getNoiseConfig(), x, z);
+            SporeSeaEntry entry = LumarChunkGenerator.getSporeSeaEntryAtPos(noiseConfig, x, z);
             if (filterSporeIds.contains(entry.id())) {
                 if (mustBeIdealSpawnHeight) {
                     if (isProbablyIdealSpawnHeight(world, x, z)) {

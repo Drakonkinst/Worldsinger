@@ -61,8 +61,11 @@ public abstract class MinecraftServerMixin {
     @WrapOperation(method = "prepareStartRegion", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/MinecraftServer;getOverworld()Lnet/minecraft/server/world/ServerWorld;"))
     private ServerWorld prepareCosmereWorld(MinecraftServer instance,
             Operation<ServerWorld> original) {
+        ServerWorld lumarWorld = instance.getWorld(ModDimensions.WORLD_LUMAR);
+        // Make sure that a starting pos is always generated, regardless of starting dimension
+        LumarManager.generateOrFetchStartingPos(lumarWorld);
         if (instance.getGameRules().getBoolean(ModGameRules.START_ON_LUMAR)) {
-            return instance.getWorld(ModDimensions.WORLD_LUMAR);
+            return lumarWorld;
         }
         return original.call(instance);
     }
