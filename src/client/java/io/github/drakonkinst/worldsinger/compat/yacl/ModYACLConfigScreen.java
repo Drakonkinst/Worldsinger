@@ -31,11 +31,10 @@ import net.minecraft.text.Text;
 public class ModYACLConfigScreen {
 
     public static Screen generateConfigScreen(Screen parent) {
-        // TODO Hardcoding strings so I know to come back and replace these with translations later
         return YetAnotherConfigLib.createBuilder()
-                .title(Text.literal("WORK IN PROGRESS"))
+                .title(Text.translatable("config.worldsinger.yacl.title"))
                 .category(ConfigCategory.createBuilder()
-                        .name(Text.literal("WORK IN PROGRESS CATEGORY"))
+                        .name(Text.translatable("config.worldsinger.yacl.category.interface.title"))
                         .build())
                 .save(() -> {
                     // Save function

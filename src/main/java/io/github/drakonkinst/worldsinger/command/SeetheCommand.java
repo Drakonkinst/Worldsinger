@@ -54,38 +54,34 @@ public class SeetheCommand {
     private static int activateNoArgs(CommandContext<ServerCommandSource> context) {
         SeetheManager seethe = SeetheCommand.getSeethe(context);
         seethe.startSeetheForRandomDuration();
-        // TODO: Make these translatable
-        context.getSource().sendFeedback(() -> Text.literal("Set seethe to ACTIVE"), true);
+        context.getSource()
+                .sendFeedback(() -> Text.translatable("commands.seethe.on.default"), true);
         return 1;
     }
 
     private static int activateWithArgs(CommandContext<ServerCommandSource> context) {
         SeetheManager seethe = SeetheCommand.getSeethe(context);
         seethe.startSeethe(getInteger(context, "duration"));
-        // TODO: Make these translatable
         context.getSource()
-                .sendFeedback(() -> Text.literal(
-                                "Set seethe to ACTIVE for " + seethe.getTicksUntilNextCycle() + " ticks"),
-                        true);
+                .sendFeedback(() -> Text.translatable("commands.seethe.on.duration",
+                        seethe.getTicksUntilNextCycle()), true);
         return 1;
     }
 
     private static int deactivateNoArgs(CommandContext<ServerCommandSource> context) {
         SeetheManager seethe = SeetheCommand.getSeethe(context);
         seethe.stopSeetheForRandomDuration();
-        // TODO: Make these translatable
-        context.getSource().sendFeedback(() -> Text.literal("Set seethe to INACTIVE"), true);
+        context.getSource()
+                .sendFeedback(() -> Text.translatable("commands.seethe.off.default"), true);
         return 1;
     }
 
     private static int deactivateWithArgs(CommandContext<ServerCommandSource> context) {
         SeetheManager seethe = SeetheCommand.getSeethe(context);
         seethe.stopSeethe(getInteger(context, "duration"));
-        // TODO: Make these translatable
         context.getSource()
-                .sendFeedback(() -> Text.literal(
-                                "Set seethe to INACTIVE for " + seethe.getTicksUntilNextCycle() + " ticks"),
-                        true);
+                .sendFeedback(() -> Text.translatable("commands.seethe.off.duration",
+                        seethe.getTicksUntilNextCycle()), true);
         return 1;
     }
 
@@ -93,12 +89,15 @@ public class SeetheCommand {
         SeetheManager seethe = SeetheCommand.getSeethe(context);
         boolean isSeething = seethe.isSeething();
         int cycleTicks = seethe.getTicksUntilNextCycle();
-        // TODO: Make these translatable
-        context.getSource()
-                .sendMessage(Text.literal(
-                        "Seethe is " + (isSeething ? "ACTIVE" : "INACTIVE") + " for the next "
-                                + cycleTicks + " ticks, or " + (MathHelper.floor(
-                                cycleTicks * ModConstants.TICKS_TO_SECONDS)) + " seconds"));
+        int cycleSeconds = MathHelper.floor(cycleTicks * ModConstants.TICKS_TO_SECONDS);
+        Text response;
+        if (isSeething) {
+            response = Text.translatable("commands.seethe.on.query", cycleTicks, cycleSeconds);
+        } else {
+            response = Text.translatable("commands.seethe.off.query", cycleTicks, cycleSeconds);
+        }
+
+        context.getSource().sendMessage(response);
         return 1;
     }
 

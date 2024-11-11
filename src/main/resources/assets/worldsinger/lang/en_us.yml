@@ -206,6 +206,12 @@ commands:
   locate.spore_sea.success: The nearest %s is at %s (%s blocks away)
   spore.success: Spawned aether spore particle of type %s
   spore.unknown: 'Unknown spore: %s'
+  seethe.on.default: Set seethe to Active
+  seethe.on.duration: Set seethe to Active for %s ticks
+  seethe.off.default: Set seethe to Inactive
+  seethe.off.duration: Set seethe to Inactive for %s ticks
+  seethe.on.query: Seethe is Active for the next %s ticks, or %s seconds
+  seethe.off.query: Seethe is Inactive for the next %s ticks, or %s seconds
 config.worldsinger:
   yacl:
     missing: Yet Another Config Lib is not installed
@@ -214,4 +220,8 @@ config.worldsinger:
     outdated: Yet Another Config Lib is outdated
     outdated.message: The latest version of YACL 3 is required
       to edit the config in game, would you like to update YACL 3?
+  title: Worldsinger Options
+  category:
+    interface:
+      title: Interface
 ...

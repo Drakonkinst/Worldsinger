@@ -80,7 +80,7 @@ public abstract class ItemRendererMixin {
         if (stack.isIn(ItemTags.AXES)) {
             return ModItemRendering.SILVER_LINED_AXE_OVERLAY;
         }
-        // TODO: Add boats
+        // FIXME: Add boats
         return null;
     }
 }
