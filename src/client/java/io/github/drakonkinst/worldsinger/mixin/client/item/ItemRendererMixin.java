@@ -25,6 +25,7 @@
 package io.github.drakonkinst.worldsinger.mixin.client.item;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
+import io.github.drakonkinst.worldsinger.Worldsinger;
 import io.github.drakonkinst.worldsinger.cosmere.SilverLinedUtil;
 import io.github.drakonkinst.worldsinger.registry.ModItemRendering;
 import io.github.drakonkinst.worldsinger.util.LayeredBakedModel;
@@ -35,6 +36,7 @@ import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.BakedModelManager;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.util.Identifier;
@@ -62,8 +64,7 @@ public abstract class ItemRendererMixin {
                         getSilverLinedOverlayForItem(stack));
                 if (silverLinedOverlayModel == null || silverLinedOverlayModel.equals(
                         manager.getMissingModel())) {
-                    // TODO: Model doesn't actually exist yet, but thanks for trying
-                    // Worldsinger.LOGGER.warn("Could not locate silver-lined overlay texture");
+                    Worldsinger.LOGGER.warn("Could not locate silver-lined overlay texture");
                     return original;
                 }
                 LayeredBakedModel layeredModel = new LayeredBakedModel(
@@ -80,7 +81,16 @@ public abstract class ItemRendererMixin {
         if (stack.isIn(ItemTags.AXES)) {
             return ModItemRendering.SILVER_LINED_AXE_OVERLAY;
         }
-        // FIXME: Add boats
+        if (stack.isOf(Items.BAMBOO_CHEST_RAFT)) {
+            return ModItemRendering.SILVER_LINED_CHEST_RAFT_OVERLAY;
+        } else if (stack.isIn(ItemTags.CHEST_BOATS)) {
+            return ModItemRendering.SILVER_LINED_CHEST_BOAT_OVERLAY;
+        }
+        if (stack.isOf(Items.BAMBOO_RAFT)) {
+            return ModItemRendering.SILVER_LINED_RAFT_OVERLAY;
+        } else if (stack.isIn(ItemTags.BOATS)) {
+            return ModItemRendering.SILVER_LINED_BOAT_OVERLAY;
+        }
         return null;
     }
 }

@@ -42,6 +42,14 @@ public final class ModItemRendering {
     public static final Identifier SALT_OVERLAY = Worldsinger.id("item/salted_overlay");
     public static final Identifier SILVER_LINED_AXE_OVERLAY = Worldsinger.id(
             "item/silver_lined_axe_overlay");
+    public static final Identifier SILVER_LINED_BOAT_OVERLAY = Worldsinger.id(
+            "item/silver_lined_boat_overlay");
+    public static final Identifier SILVER_LINED_CHEST_BOAT_OVERLAY = Worldsinger.id(
+            "item/silver_lined_chest_boat_overlay");
+    public static final Identifier SILVER_LINED_RAFT_OVERLAY = Worldsinger.id(
+            "item/silver_lined_raft_overlay");
+    public static final Identifier SILVER_LINED_CHEST_RAFT_OVERLAY = Worldsinger.id(
+            "item/silver_lined_chest_raft_overlay");
     public static final Identifier CANNONBALL_CORE_ROSEITE = Worldsinger.id(
             "item/cannonball/core_roseite");
     public static final Identifier CANNONBALL_CORE_WATER = Worldsinger.id(
@@ -70,6 +78,10 @@ public final class ModItemRendering {
         final Identifier[] newModels = new Identifier[] {
                 ModItemRendering.SALT_OVERLAY,
                 ModItemRendering.SILVER_LINED_AXE_OVERLAY,
+                ModItemRendering.SILVER_LINED_BOAT_OVERLAY,
+                ModItemRendering.SILVER_LINED_CHEST_BOAT_OVERLAY,
+                ModItemRendering.SILVER_LINED_RAFT_OVERLAY,
+                ModItemRendering.SILVER_LINED_CHEST_RAFT_OVERLAY,
                 ModItemRendering.CANNONBALL_CORE_ROSEITE,
                 ModItemRendering.CANNONBALL_CORE_WATER,
                 ModItemRendering.CANNONBALL_FUSE_1,

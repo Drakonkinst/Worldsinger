@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "worldsinger:item/silver_lined_chest_raft_overlay"
+  }
+}
