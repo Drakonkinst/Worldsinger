@@ -51,17 +51,21 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.RandomSequencesState;
 import net.minecraft.world.PersistentStateManager;
 import net.minecraft.world.StructureWorldAccess;
+import net.minecraft.world.WanderingTraderManager;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionOptions;
 import net.minecraft.world.level.ServerWorldProperties;
 import net.minecraft.world.level.storage.LevelStorage.Session;
 import net.minecraft.world.spawner.SpecialSpawner;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Mutable;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.include.com.google.common.collect.ImmutableList;
 
 @Mixin(ServerWorld.class)
 public abstract class ServerWorldLumarMixin extends WorldLumarMixin implements
@@ -70,6 +74,10 @@ public abstract class ServerWorldLumarMixin extends WorldLumarMixin implements
     @Shadow
     public abstract PersistentStateManager getPersistentStateManager();
 
+    @Mutable
+    @Shadow
+    @Final
+    private List<SpecialSpawner> spawners;
     @Unique
     private boolean syncedSeething;
 
@@ -81,6 +89,7 @@ public abstract class ServerWorldLumarMixin extends WorldLumarMixin implements
             long seed, List<SpecialSpawner> spawners, boolean shouldTickTime,
             RandomSequencesState randomSequencesState, CallbackInfo ci) {
         if (CosmerePlanet.getPlanetFromKey(worldKey).equals(CosmerePlanet.LUMAR)) {
+            // Create LumarManager
             SeetheManager seetheManager = this.getPersistentStateManager()
                     .getOrCreate(LumarSeetheManager.getPersistentStateType(),
                             LumarSeetheManager.NAME);
@@ -91,6 +100,13 @@ public abstract class ServerWorldLumarMixin extends WorldLumarMixin implements
                     .getOrCreate(LumarRainlineManager.getPersistentStateType(lunagreeGenerator),
                             LumarRainlineManager.NAME);
             lumarManager = new LumarManager(seetheManager, lunagreeGenerator, rainlineManager);
+
+            // Enable Wandering Traders, maybe?
+            // If you ever find a better way to do this, let me know
+            this.spawners = ImmutableList.<SpecialSpawner>builder()
+                    .addAll(spawners)
+                    .add(new WanderingTraderManager(properties))
+                    .build();
         }
     }
 
