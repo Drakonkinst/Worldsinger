@@ -36,6 +36,7 @@ import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
 import java.util.Optional;
+import java.util.OptionalDouble;
 import java.util.OptionalInt;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -122,6 +123,21 @@ public class JsonStack {
         Optional<JsonPrimitive> child = maybeChild(key, JsonType.NUMBER);
         return child.map(jsonPrimitive -> OptionalInt.of(jsonPrimitive.getAsInt()))
                 .orElseGet(OptionalInt::empty);
+    }
+
+    public double getDouble(String key) {
+        return child(key, JsonType.NUMBER).getAsDouble();
+    }
+
+    public double getDoubleOrElse(String key, double defaultValue) {
+        OptionalDouble child = maybeDouble(key);
+        return child.orElse(defaultValue);
+    }
+
+    public OptionalDouble maybeDouble(String key) {
+        Optional<JsonPrimitive> child = maybeChild(key, JsonType.NUMBER);
+        return child.map(jsonPrimitive -> OptionalDouble.of(jsonPrimitive.getAsDouble()))
+                .orElseGet(OptionalDouble::empty);
     }
 
     public String getString(String key) {

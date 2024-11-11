@@ -48,7 +48,35 @@ public final class WorldsingerConfig {
     private static final String CONFIG_FILE_NAME = "worldsinger_config.json";
     private static final String DEFAULT_CONFIG_FILE_PATH = "/default_config.json";
     private static final String KEY_FLUIDLOGGABLE_FLUIDS = "fluidloggable_fluids";
+    private static final String KEY_THIRST_METER_VISIBILITY = "thirst_meter_visibility";
+    private static final String KEY_THIRST_METER_ON_CONSUME = "thirst_meter_on_consume";
+    private static final String KEY_THIRST_METER_FADE_AFTER = "thirst_meter_fade_after";
     private static WorldsingerConfig INSTANCE;
+
+    // TODO: Finish thirst meter options at some point
+    public enum ThirstMeterVisibility {
+        WHEN_DEHYDRATED, NEVER, ALWAYS,
+    }
+
+    public static class ConfigValues {
+
+        private final Physics physics = new Physics();
+
+        private static class Physics {
+
+            private List<Identifier> fluidloggableFluids;
+        }
+
+        private final Hud hud = new Hud();
+
+        private static class Hud {
+
+            private ThirstMeterVisibility thirstMeterVisibility = ThirstMeterVisibility.WHEN_DEHYDRATED;
+            private boolean showThirstMeterOnConsume = true;
+            private double fadeThirstMeterAfter = 3.0;
+        }
+
+    }
 
     public static WorldsingerConfig instance() {
         if (INSTANCE == null) {
@@ -70,14 +98,14 @@ public final class WorldsingerConfig {
         return INSTANCE;
     }
 
-    private final List<Identifier> fluidloggableFluids;
+    private final ConfigValues configValues;
 
-    private WorldsingerConfig(List<Identifier> fluidloggableFluids) {
-        this.fluidloggableFluids = fluidloggableFluids;
+    private WorldsingerConfig(ConfigValues configValues) {
+        this.configValues = configValues;
     }
 
     public List<Identifier> getFluidloggableFluids() {
-        return fluidloggableFluids;
+        return configValues.physics.fluidloggableFluids;
     }
 
     private static class Serializer implements JsonDeserializer<WorldsingerConfig> {
@@ -100,14 +128,24 @@ public final class WorldsingerConfig {
         public WorldsingerConfig deserialize(JsonElement root, Type type,
                 JsonDeserializationContext context) throws JsonParseException {
             JsonStack jsonStack = new JsonStack(GSON, root);
-            jsonStack.allow(KEY_FLUIDLOGGABLE_FLUIDS);
+            jsonStack.allow(KEY_FLUIDLOGGABLE_FLUIDS, KEY_THIRST_METER_VISIBILITY,
+                    KEY_THIRST_METER_ON_CONSUME, KEY_THIRST_METER_FADE_AFTER);
 
+            ConfigValues configValues = new ConfigValues();
+
+            // Fluidloggables
             List<String> fluidloggableFluidStrings = jsonStack.streamAs(KEY_FLUIDLOGGABLE_FLUIDS,
                     String.class).toList();
-            List<Identifier> fluidloggableFluidIds = Serializer.stringListToIdentifierList(
+            configValues.physics.fluidloggableFluids = Serializer.stringListToIdentifierList(
                     jsonStack, fluidloggableFluidStrings);
 
-            return new WorldsingerConfig(fluidloggableFluidIds);
+            // Thirst Meter
+            configValues.hud.showThirstMeterOnConsume = jsonStack.getBooleanOrElse(
+                    KEY_THIRST_METER_ON_CONSUME, configValues.hud.showThirstMeterOnConsume);
+            configValues.hud.fadeThirstMeterAfter = jsonStack.getDoubleOrElse(
+                    KEY_THIRST_METER_ON_CONSUME, configValues.hud.fadeThirstMeterAfter);
+
+            return new WorldsingerConfig(configValues);
         }
     }
 }

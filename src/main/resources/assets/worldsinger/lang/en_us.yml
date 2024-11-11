@@ -220,8 +220,8 @@ config.worldsinger:
     outdated: Yet Another Config Lib is outdated
     outdated.message: The latest version of YACL 3 is required
       to edit the config in game, would you like to update YACL 3?
-  title: Worldsinger Options
-  category:
-    interface:
-      title: Interface
+    title: Worldsinger Options
+    category:
+      interface:
+        title: Interface
 ...
