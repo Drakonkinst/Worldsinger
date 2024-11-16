@@ -10,7 +10,7 @@
       "tag": "c:storage_blocks/steel"
     },
     "x": {
-      "tag": "c:steel_ingots"
+      "tag": "c:ingots/steel"
     }
   },
   "result": {
