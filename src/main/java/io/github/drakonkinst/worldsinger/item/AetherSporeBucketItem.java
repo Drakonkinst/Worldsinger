@@ -115,6 +115,13 @@ public class AetherSporeBucketItem extends BlockItem implements FluidModificatio
             return TypedActionResult.success(handStack, world.isClient());
         }
 
+        // Writing in some hacks to be able to place a bucket in the same fluid, not sure why this isn't working normally
+        FluidState fluidState = world.getFluidState(placementBlockPos);
+        if (fluidState.isOf(fluid) && fluidState.isStill()) {
+            playEmptyingSound(world, user, placementBlockPos);
+            return TypedActionResult.success(handStack, world.isClient());
+        }
+
         // Try placing as a normal block
         return TypedActionResult.pass(handStack);
     }
