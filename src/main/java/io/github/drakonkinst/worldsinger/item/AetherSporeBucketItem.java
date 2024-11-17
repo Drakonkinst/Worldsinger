@@ -111,9 +111,8 @@ public class AetherSporeBucketItem extends BlockItem implements FluidModificatio
             }
 
             user.incrementStat(Stats.USED.getOrCreateStat(this));
-            ItemStack remainderStack =
-                    user.isCreative() ? handStack : Items.BUCKET.getDefaultStack();
-            return TypedActionResult.success(remainderStack, world.isClient());
+            // We don't need to exchange the stack here because it gets consumed later
+            return TypedActionResult.success(handStack, world.isClient());
         }
 
         // Try placing as a normal block
@@ -127,17 +126,21 @@ public class AetherSporeBucketItem extends BlockItem implements FluidModificatio
             return super.useOnBlock(context);
         }
 
-        ActionResult fluidPlaceResult = this.use(context.getWorld(), context.getPlayer(),
-                context.getHand()).getResult();
-        if (!fluidPlaceResult.isAccepted()) {
-            ActionResult blockResult = super.useOnBlock(context);
-            if (blockResult.isAccepted() && !player.isCreative()) {
-                Hand hand = context.getHand();
-                player.setStackInHand(hand, Items.BUCKET.getDefaultStack());
-            }
-            return blockResult;
+        ActionResult result = attemptUse(context, player);
+        if (result.isAccepted() && !player.isInCreativeMode()) {
+            Hand hand = context.getHand();
+            player.setStackInHand(hand, Items.BUCKET.getDefaultStack());
         }
-        return fluidPlaceResult;
+        return result;
+    }
+
+    private ActionResult attemptUse(ItemUsageContext context, PlayerEntity player) {
+        ActionResult fluidPlaceResult = this.use(context.getWorld(), player, context.getHand())
+                .getResult();
+        if (fluidPlaceResult.isAccepted()) {
+            return fluidPlaceResult;
+        }
+        return super.useOnBlock(context);
     }
 
     @Override
