@@ -41,6 +41,9 @@ public final class ModRecipeSerializer {
     public static final RecipeSerializer<SporeCannonballRecipe> SPORE_CANNONBALL = RecipeSerializer.register(
             Worldsinger.idStr("spore_cannonball"),
             new SpecialRecipeSerializer<>(SporeCannonballRecipe::new));
+    public static final RecipeSerializer<SilverLinedChestBoatRecipe> SILVER_LINED_CHEST_BOAT = RecipeSerializer.register(
+            Worldsinger.idStr("silver_lined_chest_boat"),
+            new SpecialRecipeSerializer<>(SilverLinedChestBoatRecipe::new));
 
     public static void initialize() {}
 
