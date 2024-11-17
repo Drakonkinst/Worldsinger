@@ -26,7 +26,6 @@ package io.github.drakonkinst.worldsinger.mixin.entity;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import io.github.drakonkinst.worldsinger.api.ModAttachmentTypes;
-import io.github.drakonkinst.worldsinger.block.SporeKillable;
 import io.github.drakonkinst.worldsinger.cosmere.SilverLined;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.SeetheManager;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.SporeKillingUtil;
@@ -34,8 +33,6 @@ import io.github.drakonkinst.worldsinger.cosmere.lumar.SporeParticleSpawner;
 import io.github.drakonkinst.worldsinger.fluid.AetherSporeFluid;
 import io.github.drakonkinst.worldsinger.fluid.ModFluidTags;
 import io.github.drakonkinst.worldsinger.registry.ModSoundEvents;
-import io.github.drakonkinst.worldsinger.registry.tag.ModBlockTags;
-import io.github.drakonkinst.worldsinger.util.BlockPosUtil;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.entity.EntityType;
@@ -99,7 +96,7 @@ public abstract class BoatEntityMovementMixin extends VehicleEntity {
     @Inject(method = "tick", at = @At("TAIL"))
     private void injectTick(CallbackInfo ci) {
         addParticlesToRowing();
-        killSporeSeaBlocks();
+        killSporeBlocks();
     }
 
     @Unique
@@ -119,10 +116,8 @@ public abstract class BoatEntityMovementMixin extends VehicleEntity {
     }
 
     @Unique
-    private void killSporeSeaBlocks() {
-        if (!this.inSporeSea) {
-            return;
-        }
+    private void killSporeBlocks() {
+        // TODO: Maybe want to extend this radius a little but in the future
         SilverLined silverData = this.getAttachedOrCreate(ModAttachmentTypes.SILVER_LINED_BOAT);
         int silverDurability = silverData.getSilverDurability();
         if (silverDurability <= 0) {
@@ -130,20 +125,7 @@ public abstract class BoatEntityMovementMixin extends VehicleEntity {
         }
 
         World world = this.getWorld();
-        int sporesKilled = 0;
-        for (BlockPos pos : BlockPosUtil.iterateBoundingBoxForEntity(this, this.getBlockPos())) {
-            BlockState state = world.getBlockState(pos);
-            if (state.isIn(ModBlockTags.AETHER_SPORE_SEA_BLOCKS)
-                    && state.getBlock() instanceof SporeKillable sporeKillable
-                    && sporeKillable.isSporeKillable(world, pos, state)) {
-                BlockState newBlockState = SporeKillingUtil.convertToDeadVariant(sporeKillable,
-                        state);
-                if (world.setBlockState(pos, newBlockState)) {
-                    sporesKilled += 1;
-                }
-            }
-        }
-
+        int sporesKilled = SporeKillingUtil.killSporesAroundEntity(world, this);
         int silverDamage =
                 (this.location == Location.UNDER_FLOWING_WATER ? UNDER_SPORES_SILVER_PENALTY_TICK
                         : 0) + sporesKilled;

@@ -45,6 +45,7 @@ import java.util.List;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Waterloggable;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
@@ -92,49 +93,68 @@ public final class SporeKillingUtil {
         return false;
     }
 
-    public static int killNearbySpores(World world, BlockPos pos, int radius) {
+    public static int killNearbySpores(World world, BlockPos pos, int radius,
+            boolean includeCenter) {
         int numKilled = 0;
         radius = Math.min(radius, MAX_BLOCK_RADIUS);
         int deadSporeFluidIndex = Fluidlogged.getFluidIndex(ModFluids.DEAD_SPORES);
 
         // Not sure if this is the right iteration method, but it works
         for (BlockPos currentPos : BlockPos.iterateOutwards(pos, radius, radius, radius)) {
-            if (currentPos.equals(pos)) {
+            if (currentPos.equals(pos) && !includeCenter) {
                 continue;
             }
 
-            BlockState blockState = world.getBlockState(currentPos);
-            boolean wasChanged = false;
-
-            // Kill SporeKillable block
-            if (blockState.getBlock() instanceof SporeKillable sporeKillable
-                    && sporeKillable.isSporeKillable(world, pos, blockState)) {
-                if (BlockPosUtil.isInvestitureBlocked(world, pos, currentPos)) {
-                    continue;
-                }
-                blockState = SporeKillingUtil.convertToDeadVariant(sporeKillable, blockState);
-                wasChanged = true;
-            }
-
-            // Turn living spore fluids into dead spore fluid
-            if (blockState.getBlock() instanceof Waterloggable) {
-                FluidState fluidState = blockState.getFluidState();
-                if (fluidState.isIn(ModFluidTags.AETHER_SPORES) && !fluidState.isIn(
-                        ModFluidTags.DEAD_SPORES)) {
-                    if (BlockPosUtil.isInvestitureBlocked(world, pos, currentPos)) {
-                        continue;
-                    }
-                    blockState = blockState.with(ModProperties.FLUIDLOGGED, deadSporeFluidIndex);
-                    wasChanged = true;
-                }
-            }
-
+            boolean wasChanged = killSporeAtBlock(world, pos, currentPos, deadSporeFluidIndex);
             if (wasChanged) {
                 numKilled += 1;
-                world.setBlockState(currentPos, blockState, Block.NOTIFY_ALL);
             }
         }
         return numKilled;
+    }
+
+    public static int killSporesAroundEntity(World world, Entity entity) {
+        int numKilled = 0;
+        BlockPos entityPos = entity.getBlockPos();
+        int deadSporeFluidIndex = Fluidlogged.getFluidIndex(ModFluids.DEAD_SPORES);
+        for (BlockPos pos : BlockPosUtil.iterateBoundingBoxForEntity(entity, entityPos)) {
+            boolean wasChanged = killSporeAtBlock(world, entityPos, pos, deadSporeFluidIndex);
+            if (wasChanged) {
+                numKilled += 1;
+            }
+        }
+        return numKilled;
+    }
+
+    private static boolean killSporeAtBlock(World world, BlockPos sourcePos, BlockPos currentPos,
+            int deadSporeFluidIndex) {
+        BlockState blockState = world.getBlockState(currentPos);
+
+        // Kill SporeKillable block
+        if (blockState.getBlock() instanceof SporeKillable sporeKillable
+                && sporeKillable.isSporeKillable(world, sourcePos, blockState)) {
+            if (BlockPosUtil.isInvestitureBlocked(world, sourcePos, currentPos)) {
+                return false;
+            }
+            blockState = SporeKillingUtil.convertToDeadVariant(sporeKillable, blockState);
+            world.setBlockState(currentPos, blockState, Block.NOTIFY_ALL);
+            return true;
+        }
+
+        // Turn living spore fluids into dead spore fluid
+        if (blockState.getBlock() instanceof Waterloggable) {
+            FluidState fluidState = blockState.getFluidState();
+            if (fluidState.isIn(ModFluidTags.AETHER_SPORES) && !fluidState.isIn(
+                    ModFluidTags.DEAD_SPORES)) {
+                if (BlockPosUtil.isInvestitureBlocked(world, sourcePos, currentPos)) {
+                    return false;
+                }
+                blockState = blockState.with(ModProperties.FLUIDLOGGED, deadSporeFluidIndex);
+                world.setBlockState(currentPos, blockState, Block.NOTIFY_ALL);
+                return true;
+            }
+        }
+        return false;
     }
 
     public static BlockState convertToDeadVariant(SporeKillable sporeKillable,

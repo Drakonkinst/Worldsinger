@@ -135,7 +135,7 @@ public abstract class WorldRendererLumarMixin {
     private boolean renderRainlines4(boolean original, LightmapTextureManager manager,
             float tickDelta, double cameraX, double cameraY, double cameraZ) {
         if (original) {
-            return original;
+            return true;
         }
         return nearestRainlineEntity != null;
     }

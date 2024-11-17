@@ -23,6 +23,7 @@
  */
 package io.github.drakonkinst.worldsinger.block;
 
+import io.github.drakonkinst.worldsinger.Worldsinger;
 import io.github.drakonkinst.worldsinger.api.ModAttachmentTypes;
 import io.github.drakonkinst.worldsinger.cosmere.ThirstManager;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.MidnightSpores;
@@ -44,6 +45,7 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.BlockView;
+import net.minecraft.world.Difficulty;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import org.jetbrains.annotations.Nullable;
@@ -103,9 +105,16 @@ public class MidnightEssenceBlock extends Block {
         return 1.0f;
     }
 
+    @SuppressWarnings("UnstableApiUsage")
     @Override
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player,
             BlockHitResult hit) {
+        Difficulty difficulty = world.getDifficulty();
+        // Cannot be interacted with on peaceful
+        if (difficulty == Difficulty.PEACEFUL) {
+            // Still swing hand to indicate it can be interacted with, but not on this difficulty
+            return ActionResult.success(true);
+        }
         ThirstManager thirstManager = player.getAttachedOrCreate(ModAttachmentTypes.THIRST);
         if (!player.isCreative() && thirstManager.get() < WATER_COST) {
             // Not enough water to summon anything, but should still swing hand
@@ -120,7 +129,12 @@ public class MidnightEssenceBlock extends Block {
         entity.setPosition(new Vec3d(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5));
         entity.setController(player);
         entity.acceptWaterBribe(player, MidnightCreatureEntity.INITIAL_BRIBE);
-        world.spawnEntity(entity);
+        if (!world.isClient()) {
+            boolean success = world.spawnEntity(entity);
+            if (!success) {
+                Worldsinger.LOGGER.warn("Failed to spawn Midnight Creature Entity");
+            }
+        }
         world.playSound(null, pos, ModSoundEvents.ENTITY_MIDNIGHT_CREATURE_AMBIENT,
                 SoundCategory.BLOCKS, 1.0f, 1.0f);
         return ActionResult.success(true);

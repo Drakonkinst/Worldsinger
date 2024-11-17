@@ -52,7 +52,7 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 
 public class RainlineEntity extends Entity implements GeoEntity {
 
-    private static final int HEIGHT_OFFSET = -1;
+    private static final int HEIGHT_OFFSET = -64; // At most -1
     private static final int RANDOM_TICK_INTERVAL = 3;
     private static final String KEY_FOLLOWING_PATH = "following_path";
 

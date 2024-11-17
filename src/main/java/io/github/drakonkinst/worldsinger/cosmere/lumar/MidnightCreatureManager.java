@@ -24,7 +24,7 @@
 package io.github.drakonkinst.worldsinger.cosmere.lumar;
 
 import io.github.drakonkinst.worldsinger.entity.MidnightCreatureEntity;
-import net.fabricmc.fabric.api.tag.convention.v1.ConventionalItemTags;
+import net.fabricmc.fabric.api.tag.convention.v2.ConventionalItemTags;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.mob.MobEntity;

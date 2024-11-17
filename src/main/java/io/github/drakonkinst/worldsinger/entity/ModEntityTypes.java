@@ -93,7 +93,7 @@ public final class ModEntityTypes {
     public static final EntityType<RainlineEntity> RAINLINE = register("rainline",
             EntityType.Builder.create(RainlineEntity::new, SpawnGroup.MISC)
                     .dimensions(16.0f, 2.0f)
-                    .maxTrackingRange(20)
+                    .maxTrackingRange(30)
                     .build());
 
     public static void initialize() {
