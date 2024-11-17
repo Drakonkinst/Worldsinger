@@ -47,7 +47,8 @@ public class ModBlockTagGenerator extends BlockTagProvider {
         // Mineable
         getOrCreateTagBuilder(BlockTags.AXE_MINEABLE).addOptionalTag(
                 ModBlockTags.ALL_VERDANT_GROWTH);
-        getOrCreateTagBuilder(BlockTags.PICKAXE_MINEABLE).add(ModBlocks.SALTSTONE)
+        getOrCreateTagBuilder(BlockTags.PICKAXE_MINEABLE).addOptionalTag(ModBlockTags.STEEL_ANVIL)
+                .add(ModBlocks.SALTSTONE)
                 .add(ModBlocks.SILVER_ORE)
                 .add(ModBlocks.DEEPSLATE_SILVER_ORE)
                 .add(ModBlocks.SALTSTONE_SALT_ORE)
@@ -56,6 +57,7 @@ public class ModBlockTagGenerator extends BlockTagProvider {
                 .add(ModBlocks.SILVER_BLOCK)
                 .add(ModBlocks.ALUMINUM_BLOCK)
                 .add(ModBlocks.ALUMINUM_SHEET)
+                .add(ModBlocks.STEEL_BLOCK)
                 .add(ModBlocks.MAGMA_VENT)
                 .addOptionalTag(ModBlockTags.ALL_CRIMSON_GROWTH)
                 .addOptionalTag(ModBlockTags.ALL_ROSEITE_GROWTH);
@@ -213,6 +215,8 @@ public class ModBlockTagGenerator extends BlockTagProvider {
                 .add(ModBlocks.DEAD_CRIMSON_SPIKE);
         getOrCreateTagBuilder(ModBlockTags.CRIMSON_SPINES).add(ModBlocks.CRIMSON_SPINES)
                 .add(ModBlocks.DEAD_CRIMSON_SPINES);
+        getOrCreateTagBuilder(ModBlockTags.CRIMSON_SNARE).add(ModBlocks.CRIMSON_SNARE)
+                .add(ModBlocks.DEAD_CRIMSON_SNARE);
         getOrCreateTagBuilder(ModBlockTags.FLUIDS_CANNOT_BREAK).addOptionalTag(BlockTags.DOORS)
                 .addOptionalTag(BlockTags.SIGNS)
                 .add(Blocks.LADDER)

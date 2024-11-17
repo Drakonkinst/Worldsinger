@@ -23,13 +23,24 @@
  */
 package io.github.drakonkinst.worldsinger.registry;
 
+import io.github.drakonkinst.worldsinger.Worldsinger;
 import io.github.drakonkinst.worldsinger.item.ModItems;
 import net.fabricmc.fabric.api.registry.FabricBrewingRecipeRegistryBuilder;
+import net.minecraft.component.type.PotionContentsComponent;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
+import net.minecraft.potion.Potion;
 import net.minecraft.recipe.BrewingRecipeRegistry;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
+import net.minecraft.registry.entry.RegistryEntry;
 
 public final class ModPotions {
+
+    // Generic spores potion used in recipes
+    public static final RegistryEntry<Potion> SPORES = register("spores", new Potion());
+    public static final PotionContentsComponent SPORE_POTIONS_COMPONENT = new PotionContentsComponent(
+            ModPotions.SPORES);
 
     public static void initialize() {
         FabricBrewingRecipeRegistryBuilder.BUILD.register(builder -> {
@@ -75,6 +86,10 @@ public final class ModPotions {
         builder.registerItemRecipe(regularPotion, Items.GUNPOWDER, splashPotion);
         builder.registerItemRecipe(splashPotion, ModItems.CRIMSON_SPINE, regularPotion);
         builder.registerItemRecipe(regularPotion, ModItems.ZEPHYR_SPORES_BOTTLE, splashPotion);
+    }
+
+    private static RegistryEntry<Potion> register(String name, Potion potion) {
+        return Registry.registerReference(Registries.POTION, Worldsinger.id(name), potion);
     }
 
     private ModPotions() {}

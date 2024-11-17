@@ -58,7 +58,6 @@ public abstract class BrewingStandBlockEntityMixin extends LockableContainerBloc
     @Unique
     private static final int INGREDIENT_SLOT = 3;
 
-    @SuppressWarnings({ "ReferenceToMixin", "UnresolvedMixinReference" })
     @Inject(method = "tick", at = @At("HEAD"))
     private static void consumeCustomFuels(World world, BlockPos pos, BlockState state,
             BrewingStandBlockEntity blockEntity, CallbackInfo ci) {
@@ -110,7 +109,6 @@ public abstract class BrewingStandBlockEntityMixin extends LockableContainerBloc
         super(blockEntityType, blockPos, blockState);
     }
 
-    @SuppressWarnings({ "ReferenceToMixin", "UnresolvedMixinReference" })
     @Inject(method = "isValid", at = @At("RETURN"), cancellable = true)
     private void allowCustomPotionsAndFuels(int slot, ItemStack stack,
             CallbackInfoReturnable<Boolean> cir) {

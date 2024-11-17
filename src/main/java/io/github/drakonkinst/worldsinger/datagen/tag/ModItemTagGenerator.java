@@ -100,8 +100,6 @@ public class ModItemTagGenerator extends ItemTagProvider {
                         ModConventionalItemTags.STEEL_NUGGETS)
                 .addOptionalTag(ModConventionalItemTags.SILVER_NUGGETS)
                 .addOptionalTag(ModConventionalItemTags.ALUMINUM_NUGGETS);
-        getOrCreateTagBuilder(ConventionalItemTags.RAW_BLOCKS).addOptionalTag(
-                ModConventionalItemTags.STORAGE_BLOCKS_RAW_SILVER).add(ModItems.CRUDE_IRON);
         getOrCreateTagBuilder(ConventionalItemTags.RAW_MATERIALS).addOptionalTag(
                 ModConventionalItemTags.SILVER_RAW_MATERIALS);
         copy(ConventionalBlockTags.ORES, ConventionalItemTags.ORES);
@@ -110,11 +108,11 @@ public class ModItemTagGenerator extends ItemTagProvider {
 
         // Add mod tags
         getOrCreateTagBuilder(ModItemTags.ALL_COOKED_MEAT).addOptionalTag(
-                        ConventionalItemTags.COOKED_MEATS_FOODS)
-                .addOptionalTag(ConventionalItemTags.COOKED_FISHES_FOODS);
+                        ConventionalItemTags.COOKED_MEAT_FOODS)
+                .addOptionalTag(ConventionalItemTags.COOKED_FISH_FOODS);
         getOrCreateTagBuilder(ModItemTags.ALL_RAW_MEAT).addOptionalTag(
-                        ConventionalItemTags.RAW_MEATS_FOODS)
-                .addOptionalTag(ConventionalItemTags.RAW_FISHES_FOODS);
+                        ConventionalItemTags.RAW_MEAT_FOODS)
+                .addOptionalTag(ConventionalItemTags.RAW_FISH_FOODS);
         getOrCreateTagBuilder(ModItemTags.ALL_CAULDRONS).add(Items.CAULDRON,
                 ModBlocks.ALUMINUM_CAULDRON.asItem());
         getOrCreateTagBuilder(ModItemTags.ALWAYS_GIVE_THIRST).add(Items.SPIDER_EYE)
@@ -172,7 +170,7 @@ public class ModItemTagGenerator extends ItemTagProvider {
                 .addOptionalTag(ConventionalItemTags.BUCKETS)
                 .add(Items.COMPASS)
                 .add(Items.CROSSBOW)
-                .addOptionalTag(ConventionalItemTags.SHEARS_TOOLS)
+                .addOptionalTag(ConventionalItemTags.SHEAR_TOOLS)
                 .add(Items.SHIELD);
         copy(ModBlockTags.HAS_STEEL, ModItemTags.HAS_STEEL);
         getOrCreateTagBuilder(ModItemTags.HAS_STEEL).add(Items.FLINT_AND_STEEL)

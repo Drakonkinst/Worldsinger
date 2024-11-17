@@ -41,12 +41,14 @@ import io.github.drakonkinst.worldsinger.item.component.CannonballComponent;
 import io.github.drakonkinst.worldsinger.registry.ModArmorMaterials;
 import io.github.drakonkinst.worldsinger.registry.ModDataComponentTypes;
 import io.github.drakonkinst.worldsinger.registry.ModFoodComponents;
+import io.github.drakonkinst.worldsinger.registry.ModPotions;
 import io.github.drakonkinst.worldsinger.registry.ModSoundEvents;
 import io.github.drakonkinst.worldsinger.registry.ModToolMaterials;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.fluid.FlowableFluid;
 import net.minecraft.item.ArmorItem;
 import net.minecraft.item.AxeItem;
@@ -213,11 +215,15 @@ public final class ModItems {
 
     private static Item createSporeBottleItem(AetherSpores sporeType) {
         return new SporeBottleItem(sporeType,
-                new Item.Settings().recipeRemainder(Items.GLASS_BOTTLE).maxCount(16));
+                new Item.Settings().recipeRemainder(Items.GLASS_BOTTLE)
+                        .maxCount(16)
+                        .component(DataComponentTypes.POTION_CONTENTS,
+                                ModPotions.SPORE_POTIONS_COMPONENT));
     }
 
     private static Item createSporeSplashBottleItem(AetherSpores sporeType) {
-        return new SplashSporeBottleItem(sporeType, new Item.Settings().maxCount(1));
+        return new SplashSporeBottleItem(sporeType, new Item.Settings().maxCount(1)
+                .component(DataComponentTypes.POTION_CONTENTS, ModPotions.SPORE_POTIONS_COMPONENT));
     }
 
     public static <T extends Item> T register(String id, T item) {

@@ -219,7 +219,7 @@ public class LumarRainlineManager extends PersistentState implements RainlineMan
             return;
         }
         spawnDelay -= WANDERING_RAINLINE_SPAWN_INTERVAL;
-        Worldsinger.LOGGER.info("Attempting to spawn wandering rainline");
+        // Worldsinger.LOGGER.info("Attempting to spawn wandering rainline");
         if (!attemptSpawnWanderingRainline(world, rainlineEntities)) {
             spawnDelay += WANDERING_RAINLINE_SPAWN_FAIL_BONUS;
         }

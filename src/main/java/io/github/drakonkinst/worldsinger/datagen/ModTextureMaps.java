@@ -34,7 +34,7 @@ public final class ModTextureMaps {
     public static TextureMap aluminumCauldron(Identifier content) {
         return new TextureMap().put(TextureKey.PARTICLE,
                         TextureMap.getSubId(Blocks.CAULDRON, "_side"))
-                .put(TextureKey.SIDE, TextureMap.getSubId(Blocks.CAULDRON, "_side"))
+                .put(TextureKey.SIDE, TextureMap.getSubId(ModBlocks.ALUMINUM_CAULDRON, "_side"))
                 .put(TextureKey.TOP, TextureMap.getSubId(Blocks.CAULDRON, "_top"))
                 .put(TextureKey.BOTTOM, TextureMap.getSubId(Blocks.CAULDRON, "_bottom"))
                 .put(TextureKey.INSIDE, TextureMap.getSubId(Blocks.CAULDRON, "_inner"))
