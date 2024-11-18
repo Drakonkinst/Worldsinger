@@ -3,12 +3,17 @@
   "id": "worldsinger",
   "version": "${version}",
   "name": "Worldsinger",
-  "description": "A Cosmere mod for Minecraft",
+  "description": "A Cosmere mod for Minecraft.",
   "authors": [
     "Drakonkinst"
   ],
+  "contributors": [
+    "Furby_Mom"
+  ],
   "contact": {
-    "sources": "https://github.com/Drakonkinst/Worldsinger"
+    "homepage": "https://modrinth.com/mod/worldsinger",
+    "sources": "https://github.com/Drakonkinst/Worldsinger",
+    "issues": "https://github.com/Drakonkinst/Worldsinger/issues"
   },
   "license": "MIT",
   "icon": "assets/worldsinger/icon.png",
@@ -39,12 +44,14 @@
   ],
   "depends": {
     "minecraft": ">=1.21",
-    "fabricloader": ">=0.15.11",
+    "fabricloader": ">=0.16.7",
     "java": ">=21",
-    "fabric-api": "*"
+    "fabric-api": "*",
+    "smartbrainlib": "*",
+    "geckolib": "*"
   },
   "suggests": {
-    "yet_another_config_lib_v3": ">=3.5.0"
+    "yet_another_config_lib_v3": "*"
   },
   "custom": {
     "modmenu": {

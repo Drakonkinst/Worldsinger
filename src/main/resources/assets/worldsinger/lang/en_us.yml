@@ -1,6 +1,9 @@
 ---
+modmenu:
+  nameTranslation.worldsinger: Worldsinger
+  descriptionTranslation.worldsinger: A Cosmere mod for Minecraft.
 gamerule:
-  worldsinger_startOnLumar: "Start on Lumar, the world of Tress and the Emerald Sea"
+  worldsinger_startOnLumar: Start on Lumar, the world of Tress and the Emerald Sea
 cosmere.worldsinger:
   spore_sea:
     verdant: Emerald Sea
