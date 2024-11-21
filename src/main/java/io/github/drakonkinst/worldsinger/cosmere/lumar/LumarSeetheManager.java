@@ -44,11 +44,11 @@ public class LumarSeetheManager extends PersistentState implements SeetheManager
     private static final IntProvider SEETHE_DURATION_PROVIDER = UniformIntProvider.create(
             5 * ModConstants.MINUTES_TO_TICKS, 2 * ModConstants.GAME_DAYS_TO_TICKS);
     private static final IntProvider STILLING_NORMAL_DURATION_PROVIDER = UniformIntProvider.create(
-            2 * ModConstants.MINUTES_TO_TICKS, 5 * ModConstants.MINUTES_TO_TICKS);
+            ModConstants.MINUTES_TO_TICKS, 3 * ModConstants.MINUTES_TO_TICKS);
     private static final IntProvider STILLING_LONG_DURATION_PROVIDER = BiasedToBottomIntProvider.create(
-            10 * ModConstants.MINUTES_TO_TICKS, 30 * ModConstants.MINUTES_TO_TICKS);
+            3 * ModConstants.MINUTES_TO_TICKS, 5 * ModConstants.MINUTES_TO_TICKS);
     private static final IntProvider STILLING_LONG_CYCLE_PROVIDER = BiasedToBottomIntProvider.create(
-            2, 5);
+            3, 5);
 
     public static PersistentState.Type<LumarSeetheManager> getPersistentStateType() {
         return new PersistentState.Type<>(LumarSeetheManager::new,
