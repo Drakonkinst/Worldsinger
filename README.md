@@ -13,10 +13,12 @@ spore seas on the colorful and deadly world of **Lumar**, as seen in *Tress of t
 [**Download on Modrinth**](https://modrinth.com/mod/worldsinger)
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/c33e0af5-14e1-4475-91f1-71435260c49f">
+  <a href="https://modrinth.com/mod/worldsinger" target="_blank">
+    <img src="https://github.com/user-attachments/assets/c33e0af5-14e1-4475-91f1-71435260c49f">
+  </a>
 </p>
 
-## Acknowledgements
+## Credits & Acknowledgements
 
 * Drakonkinst - Mod Author
 
