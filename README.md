@@ -59,5 +59,6 @@ something is not credited properly.
   dicedpixels, Xanthian, ArkoSammy12, and GreemDev (text guy). Apologies if I missed anyone!
 
 *And of course, Brandon Sanderson and the excellent team at Dragonsteel. For creating worlds that
-inspired ours.*
+continue to
+inspire ours.*
 
