@@ -24,9 +24,11 @@
 
 package io.github.drakonkinst.worldsinger.datagen;
 
+import io.github.drakonkinst.worldsinger.block.ModBlocks;
 import java.util.concurrent.CompletableFuture;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricBlockLootTableProvider;
+import net.minecraft.block.Blocks;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 
 public class ModBlockLootTableGenerator extends FabricBlockLootTableProvider {
@@ -38,7 +40,57 @@ public class ModBlockLootTableGenerator extends FabricBlockLootTableProvider {
 
     @Override
     public void generate() {
-        // Not going to use this for now since it doesn't add random sequence for some reason?
-        // addDrop(ModBlocks.ALUMINUM_BLOCK);
+        // TODO: Figure out how to add random_sequence back
+
+        // Drops itself
+        addDrop(ModBlocks.ALUMINUM_BLOCK);
+        addDrop(ModBlocks.ALUMINUM_CAULDRON);
+        addDrop(ModBlocks.STEEL_ANVIL);
+        addDrop(ModBlocks.CHIPPED_STEEL_ANVIL);
+        addDrop(ModBlocks.DAMAGED_STEEL_ANVIL);
+        addDrop(ModBlocks.RAW_SILVER_BLOCK);
+        addDrop(ModBlocks.MAGMA_VENT);
+        addDrop(ModBlocks.SALT_BLOCK);
+        addDrop(ModBlocks.SILVER_BLOCK);
+
+        // Silk touch
+        addDropWithSilkTouch(ModBlocks.DEAD_CRIMSON_GROWTH);
+        addDropWithSilkTouch(ModBlocks.DEAD_CRIMSON_SNARE);
+        addDropWithSilkTouch(ModBlocks.DEAD_CRIMSON_SPIKE);
+        addDropWithSilkTouch(ModBlocks.DEAD_CRIMSON_SPINES);
+        addDropWithSilkTouch(ModBlocks.DEAD_TALL_CRIMSON_SPINES);
+        addDropWithSilkTouch(ModBlocks.DEAD_TWISTING_VERDANT_VINES);
+        addDropWithSilkTouch(ModBlocks.DEAD_TWISTING_VERDANT_VINES_PLANT,
+                ModBlocks.DEAD_TWISTING_VERDANT_VINES);
+        addDropWithSilkTouch(ModBlocks.DEAD_VERDANT_VINE_BLOCK);
+        addDropWithSilkTouch(ModBlocks.DEAD_VERDANT_VINE_BRANCH);
+        addDropWithSilkTouch(ModBlocks.DEAD_VERDANT_VINE_SNARE);
+        addDropWithSilkTouch(ModBlocks.LARGE_ROSEITE_BUD);
+        addDropWithSilkTouch(ModBlocks.MEDIUM_ROSEITE_BUD);
+        addDropWithSilkTouch(ModBlocks.SMALL_ROSEITE_BUD);
+
+        // Drops another block
+        addDrop(ModBlocks.ALUMINUM_WATER_CAULDRON, ModBlocks.ALUMINUM_CAULDRON);
+        addDrop(ModBlocks.ALUMINUM_LAVA_CAULDRON, ModBlocks.ALUMINUM_CAULDRON);
+        addDrop(ModBlocks.ALUMINUM_POWDER_SNOW_CAULDRON, ModBlocks.ALUMINUM_CAULDRON);
+        addDrop(ModBlocks.ALUMINUM_DEAD_SPORE_CAULDRON, ModBlocks.ALUMINUM_CAULDRON);
+        addDrop(ModBlocks.ALUMINUM_VERDANT_SPORE_CAULDRON, ModBlocks.ALUMINUM_CAULDRON);
+        addDrop(ModBlocks.ALUMINUM_CRIMSON_SPORE_CAULDRON, ModBlocks.ALUMINUM_CAULDRON);
+        addDrop(ModBlocks.ALUMINUM_ZEPHYR_SPORE_CAULDRON, ModBlocks.ALUMINUM_CAULDRON);
+        addDrop(ModBlocks.ALUMINUM_SUNLIGHT_SPORE_CAULDRON, ModBlocks.ALUMINUM_CAULDRON);
+        addDrop(ModBlocks.ALUMINUM_ROSEITE_SPORE_CAULDRON, ModBlocks.ALUMINUM_CAULDRON);
+        addDrop(ModBlocks.ALUMINUM_MIDNIGHT_SPORE_CAULDRON, ModBlocks.ALUMINUM_CAULDRON);
+        addDrop(ModBlocks.DEAD_SPORE_CAULDRON, Blocks.CAULDRON);
+        addDrop(ModBlocks.VERDANT_SPORE_CAULDRON, Blocks.CAULDRON);
+        addDrop(ModBlocks.CRIMSON_SPORE_CAULDRON, Blocks.CAULDRON);
+        addDrop(ModBlocks.ZEPHYR_SPORE_CAULDRON, Blocks.CAULDRON);
+        addDrop(ModBlocks.SUNLIGHT_SPORE_CAULDRON, Blocks.CAULDRON);
+        addDrop(ModBlocks.ROSEITE_SPORE_CAULDRON, Blocks.CAULDRON);
+        addDrop(ModBlocks.MIDNIGHT_SPORE_CAULDRON, Blocks.CAULDRON);
+
+        addPottedPlantDrops(ModBlocks.POTTED_DEAD_TWISTING_VERDANT_VINES);
+        addPottedPlantDrops(ModBlocks.POTTED_DEAD_VERDANT_VINE_SNARE);
+        addPottedPlantDrops(ModBlocks.POTTED_TWISTING_VERDANT_VINES);
+        addPottedPlantDrops(ModBlocks.POTTED_VERDANT_VINE_SNARE);
     }
 }
