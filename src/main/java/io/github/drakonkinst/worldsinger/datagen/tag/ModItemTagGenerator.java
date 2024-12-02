@@ -145,6 +145,8 @@ public class ModItemTagGenerator extends ItemTagProvider {
                 .addOptionalTag(ItemTags.AXES);
         getOrCreateTagBuilder(ModItemTags.TEMPTS_MIDNIGHT_CREATURES).add(Items.POTION)
                 .addOptionalTag(ConventionalItemTags.WATER_BUCKETS);
+        getOrCreateTagBuilder(ModItemTags.REPLACES_QUARTZ_IN_REDSTONE).add(Items.QUARTZ,
+                ModItems.ROSEITE_CRYSTAL);
 
         copy(ModBlockTags.HAS_IRON, ModItemTags.HAS_IRON);
         getOrCreateTagBuilder(ModItemTags.HAS_IRON).add(Items.IRON_SHOVEL)
