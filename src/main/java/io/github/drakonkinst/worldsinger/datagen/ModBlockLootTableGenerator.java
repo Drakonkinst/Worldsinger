@@ -24,12 +24,42 @@
 
 package io.github.drakonkinst.worldsinger.datagen;
 
+import static io.github.drakonkinst.worldsinger.datagen.ModLootTableGenerator.itemEntry;
+
 import io.github.drakonkinst.worldsinger.block.ModBlocks;
+import io.github.drakonkinst.worldsinger.item.ModItems;
+import io.github.drakonkinst.worldsinger.util.ModProperties;
 import java.util.concurrent.CompletableFuture;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricBlockLootTableProvider;
+import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.enums.SlabType;
+import net.minecraft.enchantment.Enchantments;
+import net.minecraft.entity.EntityType;
+import net.minecraft.loot.LootPool;
+import net.minecraft.loot.LootTable;
+import net.minecraft.loot.condition.BlockStatePropertyLootCondition;
+import net.minecraft.loot.condition.EntityPropertiesLootCondition;
+import net.minecraft.loot.condition.LootCondition;
+import net.minecraft.loot.condition.TableBonusLootCondition;
+import net.minecraft.loot.condition.ValueCheckLootCondition;
+import net.minecraft.loot.context.LootContext.EntityTarget;
+import net.minecraft.loot.entry.AlternativeEntry;
+import net.minecraft.loot.entry.ItemEntry;
+import net.minecraft.loot.entry.LeafEntry;
+import net.minecraft.loot.function.ApplyBonusLootFunction;
+import net.minecraft.loot.function.LimitCountLootFunction;
+import net.minecraft.loot.function.LootFunction;
+import net.minecraft.loot.function.SetCountLootFunction;
+import net.minecraft.loot.operator.BoundedIntUnaryOperator;
+import net.minecraft.loot.provider.number.ConstantLootNumberProvider;
+import net.minecraft.loot.provider.number.UniformLootNumberProvider;
+import net.minecraft.predicate.StatePredicate;
+import net.minecraft.predicate.entity.EntityPredicate;
+import net.minecraft.predicate.entity.EntityTypePredicate;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
+import net.minecraft.state.property.Properties;
 
 public class ModBlockLootTableGenerator extends FabricBlockLootTableProvider {
 
@@ -88,9 +118,94 @@ public class ModBlockLootTableGenerator extends FabricBlockLootTableProvider {
         addDrop(ModBlocks.ROSEITE_SPORE_CAULDRON, Blocks.CAULDRON);
         addDrop(ModBlocks.MIDNIGHT_SPORE_CAULDRON, Blocks.CAULDRON);
 
+        // Other
+        addDrop(ModBlocks.ALUMINUM_SHEET, block -> this.multifaceGrowthDrops(block,
+                // Always passes condition
+                ValueCheckLootCondition.builder(ConstantLootNumberProvider.create(0),
+                        BoundedIntUnaryOperator.create(0))));
+        addDrop(ModBlocks.SALTSTONE, block -> this.dropsWithSilkTouch(block,
+                this.addSurvivesExplosionCondition(block, ItemEntry.builder(ModItems.SALT)
+                        // Identical to gravel/flint logic
+                        .conditionally(TableBonusLootCondition.builder(
+                                ModLootTableGenerator.getEnchantment(this.registryLookup,
+                                        Enchantments.FORTUNE), 0.1F, 0.14285715F, 0.25F, 1.0F))
+                        .alternatively(ItemEntry.builder(block)))));
+
+        // Ores
+        addDrop(ModBlocks.SILVER_ORE, block -> oreDrops(block, ModItems.RAW_SILVER));
+        addDrop(ModBlocks.DEEPSLATE_SILVER_ORE, block -> oreDrops(block, ModItems.RAW_SILVER));
+        addDrop(ModBlocks.SALTSTONE_SALT_ORE, block -> this.dropsWithSilkTouch(block,
+                this.applyExplosionDecay(block, ItemEntry.builder(ModItems.SALT)
+                        .apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(4, 5)))
+                        .apply(ApplyBonusLootFunction.uniformBonusCount(
+                                ModLootTableGenerator.getEnchantment(this.registryLookup,
+                                        Enchantments.FORTUNE))))));
+
+        // Potted plants
         addPottedPlantDrops(ModBlocks.POTTED_DEAD_TWISTING_VERDANT_VINES);
         addPottedPlantDrops(ModBlocks.POTTED_DEAD_VERDANT_VINE_SNARE);
         addPottedPlantDrops(ModBlocks.POTTED_TWISTING_VERDANT_VINES);
         addPottedPlantDrops(ModBlocks.POTTED_VERDANT_VINE_SNARE);
+
+        // Spore growths
+        addSporeGrowthDrop(ModBlocks.VERDANT_VINE_BLOCK, itemEntry(ModItems.VERDANT_VINE, 2, 4));
+        addSporeGrowthDrop(ModBlocks.VERDANT_VINE_BRANCH, itemEntry(ModItems.VERDANT_VINE, 1, 3));
+        addSporeGrowthDrop(ModBlocks.VERDANT_VINE_SNARE, itemEntry(ModItems.VERDANT_VINE, 0, 2));
+        addSporeGrowthDrop(ModBlocks.TWISTING_VERDANT_VINES,
+                itemEntry(ModItems.VERDANT_VINE, 0, 1));
+        addSporeGrowthDrop(ModBlocks.TWISTING_VERDANT_VINES_PLANT,
+                itemEntry(ModBlocks.TWISTING_VERDANT_VINES),
+                itemEntry(ModItems.VERDANT_VINE, 0, 1));
+        addSporeGrowthDrop(ModBlocks.CRIMSON_GROWTH, itemEntry(ModItems.CRIMSON_SPINE, 3, 5));
+        addSporeGrowthDrop(ModBlocks.CRIMSON_SNARE, itemEntry(ModItems.CRIMSON_SPINE, 1, 3));
+        addSporeGrowthDrop(ModBlocks.CRIMSON_SPIKE, itemEntry(ModItems.CRIMSON_SPINE, 1, 3));
+        addSporeGrowthDrop(ModBlocks.TALL_CRIMSON_SPINES, itemEntry(ModItems.CRIMSON_SPINE, 0, 2));
+        addSporeGrowthDrop(ModBlocks.CRIMSON_SPINES, itemEntry(ModItems.CRIMSON_SPINE, 0, 2));
+        addSporeGrowthDrop(ModBlocks.ROSEITE_BLOCK,
+                itemEntry(ModItems.ROSEITE_CRYSTAL, 2, 4).apply(limitToMax(4)));
+        addSporeGrowthDrop(ModBlocks.ROSEITE_STAIRS,
+                itemEntry(ModItems.ROSEITE_CRYSTAL, 1, 3).apply(limitToMax(3)));
+        addSporeGrowthDrop(ModBlocks.ROSEITE_SLAB, itemEntry(ModBlocks.ROSEITE_SLAB).apply(
+                        SetCountLootFunction.builder(ConstantLootNumberProvider.create(2))
+                                .conditionally(getDoubleSlabCondition(ModBlocks.ROSEITE_SLAB))),
+                itemEntry(ModItems.ROSEITE_CRYSTAL, 0, 2).apply(limitToMax(2))
+                        .apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(2),
+                                        true)
+                                .conditionally(getDoubleSlabCondition(ModBlocks.ROSEITE_SLAB))));
+        addSporeGrowthDrop(ModBlocks.ROSEITE_CLUSTER,
+                itemEntry(ModItems.ROSEITE_CRYSTAL, 0, 1).apply(limitToMax(1)));
+    }
+
+    private LootCondition.Builder getDoubleSlabCondition(Block block) {
+        return BlockStatePropertyLootCondition.builder(block)
+                .properties(StatePredicate.Builder.create()
+                        .exactMatch(Properties.SLAB_TYPE, SlabType.DOUBLE));
+    }
+
+    private LootFunction.Builder limitToMax(int count) {
+        return LimitCountLootFunction.builder(BoundedIntUnaryOperator.createMax(count));
+    }
+
+    private void addSporeGrowthDrop(Block block, LeafEntry.Builder<?> normalDrop) {
+        addSporeGrowthDrop(block, ItemEntry.builder(block), normalDrop);
+    }
+
+    private void addSporeGrowthDrop(Block block, LeafEntry.Builder<?> silkTouchDrop,
+            LeafEntry.Builder<?> normalDrop) {
+        addDrop(block, LootTable.builder()
+                .pool(LootPool.builder()
+                        .rolls(ConstantLootNumberProvider.create(1))
+                        .conditionally(EntityPropertiesLootCondition.builder(EntityTarget.THIS,
+                                EntityPredicate.Builder.create()
+                                        .type(EntityTypePredicate.create(EntityType.PLAYER))))
+                        .conditionally(BlockStatePropertyLootCondition.builder(block)
+                                .properties(StatePredicate.Builder.create()
+                                        .exactMatch(ModProperties.CATALYZED, true)))
+                        .with(AlternativeEntry.builder(
+                                silkTouchDrop.conditionally(this.createSilkTouchCondition()),
+                                normalDrop.apply(ApplyBonusLootFunction.uniformBonusCount(
+                                        ModLootTableGenerator.getEnchantment(this.registryLookup,
+                                                Enchantments.FORTUNE)))))
+                        .build()));
     }
 }

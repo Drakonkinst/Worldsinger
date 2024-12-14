@@ -37,46 +37,25 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiConsumer;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
-import net.fabricmc.fabric.api.datagen.v1.provider.SimpleFabricLootTableProvider;
-import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.Items;
 import net.minecraft.loot.LootPool;
 import net.minecraft.loot.LootTable;
 import net.minecraft.loot.LootTable.Builder;
 import net.minecraft.loot.context.LootContextTypes;
-import net.minecraft.loot.entry.ItemEntry;
-import net.minecraft.loot.entry.LeafEntry;
 import net.minecraft.loot.function.EnchantRandomlyLootFunction;
 import net.minecraft.loot.function.SetComponentsLootFunction;
-import net.minecraft.loot.function.SetCountLootFunction;
 import net.minecraft.loot.function.SetDamageLootFunction;
 import net.minecraft.loot.function.SetPotionLootFunction;
-import net.minecraft.loot.provider.number.ConstantLootNumberProvider;
 import net.minecraft.loot.provider.number.UniformLootNumberProvider;
 import net.minecraft.potion.Potions;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 
-public class ModChestLootTableGenerator extends SimpleFabricLootTableProvider {
+public class ModChestLootTableGenerator extends ModLootTableGenerator {
 
     public ModChestLootTableGenerator(FabricDataOutput output,
             CompletableFuture<WrapperLookup> registryLookup) {
         super(output, registryLookup, LootContextTypes.CHEST);
-    }
-
-    private LeafEntry.Builder<?> itemEntry(ItemConvertible item, int minCount, int maxCount) {
-        return ItemEntry.builder(item)
-                .apply(SetCountLootFunction.builder(
-                        UniformLootNumberProvider.create(minCount, maxCount)));
-    }
-
-    private LeafEntry.Builder<?> itemEntry(ItemConvertible item, int count) {
-        return ItemEntry.builder(item)
-                .apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(count)));
-    }
-
-    private LeafEntry.Builder<?> itemEntry(ItemConvertible item) {
-        return ItemEntry.builder(item);
     }
 
     @Override
