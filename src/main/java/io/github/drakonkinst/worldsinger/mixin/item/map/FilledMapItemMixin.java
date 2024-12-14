@@ -35,15 +35,15 @@ import java.util.HashMap;
 import java.util.Map;
 import net.minecraft.component.type.MapIdComponent;
 import net.minecraft.item.FilledMapItem;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.NetworkSyncedItem;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
 @Mixin(FilledMapItem.class)
-public abstract class FilledMapItemMixin extends NetworkSyncedItem {
+public abstract class FilledMapItemMixin extends Item {
 
     public FilledMapItemMixin(Settings settings) {
         super(settings);

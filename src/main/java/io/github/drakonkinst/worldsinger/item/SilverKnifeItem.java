@@ -27,22 +27,22 @@ import io.github.drakonkinst.worldsinger.api.ModAttachmentTypes;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.MidnightAetherBondManager;
 import io.github.drakonkinst.worldsinger.entity.SilverVulnerable;
 import io.github.drakonkinst.worldsinger.mixin.accessor.LivingEntityAccessor;
-import io.github.drakonkinst.worldsinger.registry.ModToolMaterials;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.ToolMaterial;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 
 public class SilverKnifeItem extends KnifeItem {
 
     public static final float SILVER_BONUS_DAMAGE = 6.0f;
 
-    public SilverKnifeItem(Settings settings) {
-        super(ModToolMaterials.SILVER, settings);
+    public SilverKnifeItem(ToolMaterial toolMaterial, float attackDamage, float attackSpeed,
+            Settings settings) {
+        super(toolMaterial, settings);
     }
 
     @Override
@@ -57,6 +57,7 @@ public class SilverKnifeItem extends KnifeItem {
     }
 
     // For now, we only support this using the silver knife, not any other spore-growth killing items.
+    @SuppressWarnings("UnstableApiUsage")
     @Override
     public ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity,
             Hand hand) {
@@ -67,14 +68,15 @@ public class SilverKnifeItem extends KnifeItem {
                 midnightAetherBondData.dispelAllBonds(targetPlayer, true);
                 stack.damage(1, user,
                         hand == Hand.MAIN_HAND ? EquipmentSlot.MAINHAND : EquipmentSlot.OFFHAND);
-                return ActionResult.success(true);
+                return ActionResult.SUCCESS;
             }
         }
         return super.useOnEntity(stack, user, entity, hand);
     }
 
+    @SuppressWarnings("UnstableApiUsage")
     @Override
-    public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
+    public ActionResult use(World world, PlayerEntity user, Hand hand) {
         if (!user.getWorld().isClient()) {
             MidnightAetherBondManager midnightAetherBondData = user.getAttachedOrCreate(
                     ModAttachmentTypes.MIDNIGHT_AETHER_BOND);
@@ -83,7 +85,7 @@ public class SilverKnifeItem extends KnifeItem {
                 midnightAetherBondData.dispelAllBonds(user, true);
                 stack.damage(1, user,
                         hand == Hand.MAIN_HAND ? EquipmentSlot.MAINHAND : EquipmentSlot.OFFHAND);
-                return TypedActionResult.success(stack);
+                return ActionResult.SUCCESS;
             }
         }
         return super.use(world, user, hand);

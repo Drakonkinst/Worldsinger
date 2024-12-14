@@ -29,7 +29,6 @@ import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.SimpleFabricLootTableProvider;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.item.ItemConvertible;
-import net.minecraft.loot.context.LootContextType;
 import net.minecraft.loot.entry.ItemEntry;
 import net.minecraft.loot.entry.LeafEntry;
 import net.minecraft.loot.function.SetCountLootFunction;
@@ -40,6 +39,7 @@ import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.util.context.ContextType;
 
 public abstract class ModLootTableGenerator extends SimpleFabricLootTableProvider {
 
@@ -60,13 +60,13 @@ public abstract class ModLootTableGenerator extends SimpleFabricLootTableProvide
 
     public static RegistryEntry<Enchantment> getEnchantment(WrapperLookup registryLookup,
             RegistryKey<Enchantment> enchantmentKey) {
-        RegistryWrapper.Impl<Enchantment> impl = registryLookup.getWrapperOrThrow(
+        RegistryWrapper.Impl<Enchantment> impl = registryLookup.getOrThrow(
                 RegistryKeys.ENCHANTMENT);
         return impl.getOrThrow(enchantmentKey);
     }
 
     public ModLootTableGenerator(FabricDataOutput output,
-            CompletableFuture<WrapperLookup> registryLookup, LootContextType lootContextType) {
-        super(output, registryLookup, lootContextType);
+            CompletableFuture<WrapperLookup> registryLookup, ContextType contextType) {
+        super(output, registryLookup, contextType);
     }
 }

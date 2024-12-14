@@ -160,10 +160,10 @@ public abstract class CustomNoiseChunkGenerator extends NoiseChunkGenerator {
     @Override
     public CompletableFuture<Chunk> populateBiomes(NoiseConfig noiseConfig, Blender blender,
             StructureAccessor structureAccessor, Chunk chunk) {
-        return CompletableFuture.supplyAsync(Util.debugSupplier("init_biomes", () -> {
+        return CompletableFuture.supplyAsync(() -> {
             this.populateBiomes(blender, noiseConfig, structureAccessor, chunk);
             return chunk;
-        }), Util.getMainWorkerExecutor());
+        }, Util.getMainWorkerExecutor().named("init_biomes"));
     }
 
     private void populateBiomes(Blender blender, NoiseConfig noiseConfig,
@@ -199,22 +199,29 @@ public abstract class CustomNoiseChunkGenerator extends NoiseChunkGenerator {
         if (k <= 0) {
             return CompletableFuture.completedFuture(chunk);
         }
-        int maxSectionIndex = chunk.getSectionIndex(
-                k * generationShapeConfig.verticalCellBlockCount() - 1 + minY);
-        int minSectionIndex = chunk.getSectionIndex(minY);
-        HashSet<ChunkSection> set = Sets.newHashSet();
-        for (int sectionIndex = maxSectionIndex; sectionIndex >= minSectionIndex; --sectionIndex) {
-            ChunkSection chunkSection = chunk.getSection(sectionIndex);
-            chunkSection.lock();
-            set.add(chunkSection);
-        }
-        return CompletableFuture.supplyAsync(Util.debugSupplier("wgen_fill_noise",
-                        () -> this.populateNoise(blender, structureAccessor, noiseConfig, chunk, j, k)),
-                Util.getMainWorkerExecutor()).whenCompleteAsync((chunk2, throwable) -> {
-            for (ChunkSection chunkSection : set) {
-                chunkSection.unlock();
+        return CompletableFuture.supplyAsync(() -> {
+            int maxSectionIndex = chunk.getSectionIndex(
+                    k * generationShapeConfig.verticalCellBlockCount() - 1 + minY);
+            int minSectionIndex = chunk.getSectionIndex(minY);
+            HashSet<ChunkSection> set = Sets.newHashSet();
+            for (int sectionIndex = maxSectionIndex; sectionIndex >= minSectionIndex;
+                    --sectionIndex) {
+                ChunkSection chunkSection = chunk.getSection(sectionIndex);
+                chunkSection.lock();
+                set.add(chunkSection);
             }
-        }, Util.getMainWorkerExecutor());
+
+            Chunk populatedChunk;
+            try {
+                populatedChunk = this.populateNoise(blender, structureAccessor, noiseConfig, chunk,
+                        j, k);
+            } finally {
+                for (ChunkSection chunkSection : set) {
+                    chunkSection.unlock();
+                }
+            }
+            return populatedChunk;
+        }, Util.getMainWorkerExecutor().named("wgen_fill_noise"));
     }
 
     protected Chunk populateNoise(Blender blender, StructureAccessor structureAccessor,

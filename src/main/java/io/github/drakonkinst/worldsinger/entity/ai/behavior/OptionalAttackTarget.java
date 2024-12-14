@@ -27,7 +27,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.server.world.ServerWorld;
 import net.tslat.smartbrainlib.api.core.behaviour.custom.target.SetAttackTarget;
-import net.tslat.smartbrainlib.util.BrainUtils;
+import net.tslat.smartbrainlib.util.BrainUtil;
 
 // AttackTarget behavior that fails if no valid target is found.
 // Useful for FirstApplicableBehavior, as it allows for pass-through.
@@ -50,8 +50,8 @@ public class OptionalAttackTarget<E extends LivingEntity> extends SetAttackTarge
     @Override
     protected void start(E entity) {
         if (cachedTarget != null) {
-            BrainUtils.setMemory(entity, MemoryModuleType.ATTACK_TARGET, cachedTarget);
-            BrainUtils.clearMemory(entity, MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE);
+            BrainUtil.setMemory(entity, MemoryModuleType.ATTACK_TARGET, cachedTarget);
+            BrainUtil.clearMemory(entity, MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE);
         }
     }
 }

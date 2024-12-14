@@ -31,8 +31,8 @@ import io.github.drakonkinst.worldsinger.worldgen.lumar.LumarChunkGenerator;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.fluid.FluidState;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 import net.minecraft.world.chunk.WorldChunk;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -43,14 +43,14 @@ public abstract class WorldChunkMixin {
 
     // Run a block tick on all generated spore sea blocks at sea level to check for spore-killing
     // blocks, creating the dead spore ring around saltstone islands
-    @WrapOperation(method = "runPostProcessing", at = @At(value = "INVOKE", target = "Lnet/minecraft/fluid/FluidState;onScheduledTick(Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;)V"))
-    private void addDeadSporePostProcessing(FluidState instance, World world, BlockPos pos,
-            Operation<Void> original) {
+    @WrapOperation(method = "runPostProcessing", at = @At(value = "INVOKE", target = "Lnet/minecraft/fluid/FluidState;onScheduledTick(Lnet/minecraft/server/world/ServerWorld;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/BlockState;)V"))
+    private void addDeadSporePostProcessing(FluidState instance, ServerWorld world, BlockPos pos,
+            BlockState state, Operation<Void> original) {
         if (pos.getY() == LumarChunkGenerator.SEA_LEVEL - 1 && instance.isIn(
                 ModFluidTags.AETHER_SPORES)) {
-            world.scheduleBlockTick(pos, world.getBlockState(pos).getBlock(), 1);
+            world.scheduleBlockTick(pos, state.getBlock(), 1);
         }
-        original.call(instance, world, pos);
+        original.call(instance, world, pos, state);
     }
 
     // If the block is different from what was actually placed when executing setBlockState,
@@ -63,7 +63,8 @@ public abstract class WorldChunkMixin {
             return true;
         }
 
-        return (desiredBlock instanceof SporeKillable sporeKillable && instance.isOf(sporeKillable.getDeadSporeBlock()));
+        return (desiredBlock instanceof SporeKillable sporeKillable && instance.isOf(
+                sporeKillable.getDeadSporeBlock()));
     }
 
 }

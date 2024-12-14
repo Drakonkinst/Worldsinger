@@ -41,6 +41,7 @@ import net.minecraft.item.PotionItem;
 import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.stat.Stats;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
@@ -67,10 +68,11 @@ public class SporeBottleItem extends PotionItem implements SporeEmitting {
         if (playerEntity instanceof ServerPlayerEntity serverPlayerEntity) {
             Criteria.CONSUME_ITEM.trigger(serverPlayerEntity, stack);
         }
-        if (!world.isClient) {
+        if (world instanceof ServerWorld serverWorld) {
             RegistryEntry<StatusEffect> statusEffect = sporeType.getStatusEffect();
             if (statusEffect == null) {
-                user.damage(ModDamageTypes.createSource(world, ModDamageTypes.DROWN_SPORE),
+                user.damage(serverWorld,
+                        ModDamageTypes.createSource(world, ModDamageTypes.DROWN_SPORE),
                         SPORE_DEFAULT_DAMAGE);
             } else {
                 SporeParticleManager.applySporeEffect(user, statusEffect,

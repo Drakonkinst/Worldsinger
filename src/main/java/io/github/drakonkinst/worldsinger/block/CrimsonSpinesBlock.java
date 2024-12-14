@@ -49,8 +49,8 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
+import net.minecraft.world.tick.ScheduledTickView;
 import org.jetbrains.annotations.Nullable;
 
 public class CrimsonSpinesBlock extends Block implements Waterloggable, SporeGrowthBlock {
@@ -92,10 +92,10 @@ public class CrimsonSpinesBlock extends Block implements Waterloggable, SporeGro
         } else if (CrimsonSpikeBlock.isMoving(entity)) {
             // Slow and damage normally
             entity.slowMovement(state, new Vec3d(0.9, 0.9, 0.9));
-            if (world.isClient()) {
-                return;
+            if (world instanceof ServerWorld serverWorld) {
+                entity.damage(serverWorld, ModDamageTypes.createSource(world, ModDamageTypes.SPIKE),
+                        2.0f);
             }
-            entity.damage(ModDamageTypes.createSource(world, ModDamageTypes.SPIKE), 2.0f);
         }
     }
 
@@ -151,17 +151,18 @@ public class CrimsonSpinesBlock extends Block implements Waterloggable, SporeGro
     }
 
     @Override
-    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction,
-            BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
+    public BlockState getStateForNeighborUpdate(BlockState state, WorldView world,
+            ScheduledTickView tickView, BlockPos pos, Direction direction, BlockPos neighborPos,
+            BlockState neighborState, Random random) {
         if (state.get(Properties.WATERLOGGED)) {
-            world.scheduleFluidTick(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
+            tickView.scheduleFluidTick(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
         }
         if (direction == state.get(Properties.FACING).getOpposite() && !state.canPlaceAt(world,
                 pos)) {
             return Blocks.AIR.getDefaultState();
         }
-        return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos,
-                neighborPos);
+        return super.getStateForNeighborUpdate(state, world, tickView, pos, direction, neighborPos,
+                neighborState, random);
     }
 
     @Override

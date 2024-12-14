@@ -23,61 +23,23 @@
  */
 package io.github.drakonkinst.worldsinger.registry;
 
-import io.github.drakonkinst.worldsinger.item.ModItems;
+import io.github.drakonkinst.worldsinger.registry.tag.ModConventionalItemTags;
 import java.util.EnumMap;
-import java.util.List;
-import java.util.function.Supplier;
-import net.minecraft.item.ArmorItem;
-import net.minecraft.item.ArmorMaterial;
-import net.minecraft.item.ArmorMaterial.Layer;
-import net.minecraft.recipe.Ingredient;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
-import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.sound.SoundEvent;
-import net.minecraft.util.Identifier;
+import net.minecraft.item.equipment.ArmorMaterial;
+import net.minecraft.item.equipment.EquipmentType;
+import net.minecraft.util.Util;
 
 public final class ModArmorMaterials {
 
-    public static final int STEEL_DURABILITY_MULTIPLIER = 20;
-    public static final RegistryEntry<ArmorMaterial> STEEL = ModArmorMaterials.register("steel",
-            ModArmorMaterials.createMap(2, 5, 6, 2, 5), 11, ModSoundEvents.ITEM_ARMOR_EQUIP_STEEL,
-            1.0f, 0.0f, () -> Ingredient.ofItems(ModItems.STEEL_INGOT));
-
-    private static EnumMap<ArmorItem.Type, Integer> createMap(int boots, int leggings,
-            int chestplate, int helmet, int body) {
-        EnumMap<ArmorItem.Type, Integer> map = new EnumMap<>(ArmorItem.Type.class);
-        map.put(ArmorItem.Type.BOOTS, boots);
-        map.put(ArmorItem.Type.LEGGINGS, leggings);
-        map.put(ArmorItem.Type.CHESTPLATE, chestplate);
-        map.put(ArmorItem.Type.HELMET, helmet);
-        map.put(ArmorItem.Type.BODY, body);
-        return map;
-    }
-
-    private static RegistryEntry<ArmorMaterial> register(String id,
-            EnumMap<ArmorItem.Type, Integer> defense, int enchantability,
-            RegistryEntry<SoundEvent> equipSound, float toughness, float knockbackResistance,
-            Supplier<Ingredient> repairIngredient, List<ArmorMaterial.Layer> layers) {
-        EnumMap<ArmorItem.Type, Integer> enumMap = new EnumMap<>(ArmorItem.Type.class);
-
-        for (ArmorItem.Type type : ArmorItem.Type.values()) {
-            enumMap.put(type, defense.get(type));
-        }
-
-        return Registry.registerReference(Registries.ARMOR_MATERIAL, Identifier.of(id),
-                new ArmorMaterial(enumMap, enchantability, equipSound, repairIngredient, layers,
-                        toughness, knockbackResistance));
-    }
-
-    private static RegistryEntry<ArmorMaterial> register(String id,
-            EnumMap<ArmorItem.Type, Integer> defense, int enchantability,
-            RegistryEntry<SoundEvent> equipSound, float toughness, float knockbackResistance,
-            Supplier<Ingredient> repairIngredient) {
-        List<Layer> list = List.of(new ArmorMaterial.Layer(Identifier.of(id)));
-        return ModArmorMaterials.register(id, defense, enchantability, equipSound, toughness,
-                knockbackResistance, repairIngredient, list);
-    }
+    public static final ArmorMaterial STEEL = new ArmorMaterial(20,
+            Util.make(new EnumMap<>(EquipmentType.class), map -> {
+                map.put(EquipmentType.BOOTS, 2);
+                map.put(EquipmentType.LEGGINGS, 5);
+                map.put(EquipmentType.CHESTPLATE, 6);
+                map.put(EquipmentType.HELMET, 2);
+                map.put(EquipmentType.BODY, 5);
+            }), 11, ModSoundEvents.ITEM_ARMOR_EQUIP_STEEL, 1.0f, 0.0f,
+            ModConventionalItemTags.STEEL_TOOL_MATERIALS, ModEquipmentModels.STEEL);
 
     private ModArmorMaterials() {}
 }

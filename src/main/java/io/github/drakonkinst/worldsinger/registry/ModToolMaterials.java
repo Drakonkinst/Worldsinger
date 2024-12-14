@@ -23,69 +23,21 @@
  */
 package io.github.drakonkinst.worldsinger.registry;
 
-import com.google.common.base.Suppliers;
-import io.github.drakonkinst.worldsinger.item.ModItems;
-import java.util.function.Supplier;
-import net.minecraft.block.Block;
+import io.github.drakonkinst.worldsinger.registry.tag.ModBlockTags;
+import io.github.drakonkinst.worldsinger.registry.tag.ModConventionalItemTags;
 import net.minecraft.item.ToolMaterial;
-import net.minecraft.recipe.Ingredient;
-import net.minecraft.registry.tag.BlockTags;
-import net.minecraft.registry.tag.TagKey;
 
-public enum ModToolMaterials implements ToolMaterial {
+public final class ModToolMaterials {
 
     // Steel is identical to Iron, but has more durability and slightly more enchantability
-    STEEL(BlockTags.INCORRECT_FOR_IRON_TOOL, 484, 6.5f, 2.0f, 16,
-            () -> Ingredient.ofItems(ModItems.STEEL_INGOT)),
+    public static final ToolMaterial STEEL = new ToolMaterial(
+            ModBlockTags.INCORRECT_FOR_SILVER_TOOL, 484, 6.5f, 2.0f, 16,
+            ModConventionalItemTags.STEEL_TOOL_MATERIALS);
     // Silver is similar to Gold, but does not mine as fast and has more durability
     // Not planned to support a full toolset for silver
-    SILVER(BlockTags.INCORRECT_FOR_WOODEN_TOOL, 181, 6.0F, 0.0F, 22,
-            () -> Ingredient.ofItems(ModItems.SILVER_INGOT));
+    public static final ToolMaterial SILVER = new ToolMaterial(
+            ModBlockTags.INCORRECT_FOR_SILVER_TOOL, 181, 6.0F, 0.0F, 22,
+            ModConventionalItemTags.SILVER_TOOL_MATERIALS);
 
-    private final TagKey<Block> inverseTag;
-    private final int itemDurability;
-    private final float miningSpeed;
-    private final float attackDamage;
-    private final int enchantability;
-    private final Supplier<Ingredient> repairIngredient;
-
-    ModToolMaterials(TagKey<Block> inverseTag, int itemDurability, float miningSpeed,
-            float attackDamage, int enchantability, Supplier<Ingredient> repairIngredient) {
-        this.inverseTag = inverseTag;
-        this.itemDurability = itemDurability;
-        this.miningSpeed = miningSpeed;
-        this.attackDamage = attackDamage;
-        this.enchantability = enchantability;
-        this.repairIngredient = Suppliers.memoize(repairIngredient::get);
-    }
-
-    @Override
-    public int getDurability() {
-        return itemDurability;
-    }
-
-    @Override
-    public float getMiningSpeedMultiplier() {
-        return miningSpeed;
-    }
-
-    @Override
-    public float getAttackDamage() {
-        return attackDamage;
-    }
-
-    @Override
-    public TagKey<Block> getInverseTag() {
-        return inverseTag;
-    }
-
-    @Override
-    public int getEnchantability() {
-        return enchantability;
-    }
-
-    @Override
-    public Ingredient getRepairIngredient() {
-        return repairIngredient.get();
-    }
+    private ModToolMaterials() {}
 }

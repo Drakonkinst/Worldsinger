@@ -127,7 +127,7 @@ public class ModBlockLootTableGenerator extends FabricBlockLootTableProvider {
                 this.addSurvivesExplosionCondition(block, ItemEntry.builder(ModItems.SALT)
                         // Identical to gravel/flint logic
                         .conditionally(TableBonusLootCondition.builder(
-                                ModLootTableGenerator.getEnchantment(this.registryLookup,
+                                ModLootTableGenerator.getEnchantment(this.registries,
                                         Enchantments.FORTUNE), 0.1F, 0.14285715F, 0.25F, 1.0F))
                         .alternatively(ItemEntry.builder(block)))));
 
@@ -138,7 +138,7 @@ public class ModBlockLootTableGenerator extends FabricBlockLootTableProvider {
                 this.applyExplosionDecay(block, ItemEntry.builder(ModItems.SALT)
                         .apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(4, 5)))
                         .apply(ApplyBonusLootFunction.uniformBonusCount(
-                                ModLootTableGenerator.getEnchantment(this.registryLookup,
+                                ModLootTableGenerator.getEnchantment(this.registries,
                                         Enchantments.FORTUNE))))));
 
         // Potted plants
@@ -204,7 +204,7 @@ public class ModBlockLootTableGenerator extends FabricBlockLootTableProvider {
                         .with(AlternativeEntry.builder(
                                 silkTouchDrop.conditionally(this.createSilkTouchCondition()),
                                 normalDrop.apply(ApplyBonusLootFunction.uniformBonusCount(
-                                        ModLootTableGenerator.getEnchantment(this.registryLookup,
+                                        ModLootTableGenerator.getEnchantment(this.registries,
                                                 Enchantments.FORTUNE)))))
                         .build()));
     }

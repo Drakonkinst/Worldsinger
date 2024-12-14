@@ -66,6 +66,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
+import net.minecraft.world.Heightmap.Type;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -177,9 +178,10 @@ public abstract class AetherSpores implements StringIdentifiable, Comparable<Aet
             }
         }
 
-        if (!entity.getType().isIn(ModEntityTypeTags.SPORES_NEVER_SUFFOCATE)) {
+        if (!entity.getType().isIn(ModEntityTypeTags.SPORES_NEVER_SUFFOCATE)
+                && entity.getWorld() instanceof ServerWorld serverWorld) {
             // Also take suffocation damage, mainly for dead spores
-            entity.damage(
+            entity.damage(serverWorld,
                     ModDamageTypes.createSource(entity.getWorld(), ModDamageTypes.DROWN_SPORE),
                     1.0f);
         }
@@ -226,7 +228,8 @@ public abstract class AetherSpores implements StringIdentifiable, Comparable<Aet
             TagKey<Fluid> fluidTag) {
         BlockPos.Mutable mutable = entity.getBlockPos().mutableCopy();
 
-        while (world.getFluidState(mutable).isIn(fluidTag) && mutable.getY() < world.getTopY()) {
+        while (world.getFluidState(mutable).isIn(fluidTag) && mutable.getY() < world.getTopY(
+                Type.WORLD_SURFACE, mutable.getX(), mutable.getY())) {
             mutable.move(Direction.UP);
         }
 

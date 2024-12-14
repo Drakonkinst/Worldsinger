@@ -68,10 +68,9 @@ public abstract class BrewingStandBlockEntityMixin extends LockableContainerBloc
             ((BrewingStandBlockEntityAccessor) blockEntity).worldsinger$setFuel(
                     BREWING_FUEL_AMOUNT);
 
-            Item remainderItem = itemStack.getItem().getRecipeRemainder();
+            ItemStack remainderStack = itemStack.getItem().getRecipeRemainder();
             itemStack.decrement(1);
-            if (remainderItem != null) {
-                ItemStack remainderStack = remainderItem.getDefaultStack();
+            if (!remainderStack.isEmpty()) {
                 if (itemStack.isEmpty()) {
                     itemStack = remainderStack;
                 } else {

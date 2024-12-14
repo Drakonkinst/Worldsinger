@@ -33,6 +33,7 @@ import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.MathHelper;
 
 @SuppressWarnings({ "UnqualifiedStaticUsage", "UnstableApiUsage" })
@@ -91,18 +92,21 @@ public final class ServerNetworkHandler {
                 // Not possessing anything according to the server
                 return;
             }
+            if (!(player.getWorld() instanceof ServerWorld serverWorld)) {
+                return;
+            }
 
             // The player can only possess one entity at a time, so no need to check the attacker ID
             final int targetId = payload.targetEntityId();
             LivingEntity attacker = possessedEntity.toEntity();
-            Entity target = player.getWorld().getEntityById(targetId);
+            Entity target = serverWorld.getEntityById(targetId);
 
             if (target == null) {
                 // Target does not exist
                 return;
             }
 
-            boolean success = attacker.tryAttack(target);
+            boolean success = attacker.tryAttack(serverWorld, target);
             // Set player's attacking target so other pets respond
             if (success) {
                 player.onAttacking(target);

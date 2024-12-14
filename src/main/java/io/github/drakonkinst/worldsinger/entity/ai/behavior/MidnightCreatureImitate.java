@@ -44,7 +44,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.tslat.smartbrainlib.api.core.behaviour.ExtendedBehaviour;
 import net.tslat.smartbrainlib.registry.SBLMemoryTypes;
-import net.tslat.smartbrainlib.util.BrainUtils;
+import net.tslat.smartbrainlib.util.BrainUtil;
 import org.jetbrains.annotations.Nullable;
 
 public class MidnightCreatureImitate<E extends MidnightCreatureEntity> extends
@@ -80,8 +80,8 @@ public class MidnightCreatureImitate<E extends MidnightCreatureEntity> extends
         ++imitationAttemptTicks;
         if (imitationAttemptTicks >= IMITATION_ATTEMPT_INTERVAL) {
             imitationAttemptTicks = 0;
-            BrainUtils.withMemory(entity, MemoryModuleType.MOBS, nearbyEntities -> {
-                List<Pair<BlockPos, BlockState>> nearbyBlocks = BrainUtils.memoryOrDefault(entity,
+            BrainUtil.withMemory(entity, MemoryModuleType.MOBS, nearbyEntities -> {
+                List<Pair<BlockPos, BlockState>> nearbyBlocks = BrainUtil.memoryOrDefault(entity,
                         SBLMemoryTypes.NEARBY_BLOCKS.get(), Collections::emptyList);
                 attemptImitation(entity, nearbyEntities, nearbyBlocks);
             });

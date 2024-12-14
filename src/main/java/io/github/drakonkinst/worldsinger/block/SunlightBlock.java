@@ -128,8 +128,8 @@ public class SunlightBlock extends StillFluidBlock {
             entity.setOnFireFor(15);
         }
 
-        if (entity.damage(ModDamageTypes.createSource(world, ModDamageTypes.SUNLIGHT),
-                DAMAGE_PER_TICK)) {
+        if (world instanceof ServerWorld serverWorld && entity.damage(serverWorld,
+                ModDamageTypes.createSource(world, ModDamageTypes.SUNLIGHT), DAMAGE_PER_TICK)) {
             entity.playSound(SoundEvents.ENTITY_GENERIC_BURN, 0.4f,
                     2.0f + world.getRandom().nextFloat() * 0.4f);
         }

@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2023-2024 Drakonkinst
+ * Copyright (c) 2024 Drakonkinst
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,28 +22,13 @@
  * SOFTWARE.
  */
 
-package io.github.drakonkinst.worldsinger.datagen;
+package io.github.drakonkinst.worldsinger.registry;
 
-import java.util.concurrent.CompletableFuture;
-import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
-import net.fabricmc.fabric.api.datagen.v1.provider.FabricDynamicRegistryProvider;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.registry.RegistryWrapper.WrapperLookup;
+import io.github.drakonkinst.worldsinger.Worldsinger;
+import net.minecraft.util.Identifier;
 
-public class ModDamageTypeGenerator extends FabricDynamicRegistryProvider {
+public class ModEquipmentModels {
 
-    public ModDamageTypeGenerator(FabricDataOutput output,
-            CompletableFuture<WrapperLookup> registriesFuture) {
-        super(output, registriesFuture);
-    }
-
-    @Override
-    protected void configure(WrapperLookup registries, Entries entries) {
-        entries.addAll(registries.getOrThrow(RegistryKeys.DAMAGE_TYPE));
-    }
-
-    @Override
-    public String getName() {
-        return "Worldsinger Damage Types";
-    }
+    public static final Identifier STEEL = Worldsinger.id("steel");
+    // TODO: Register
 }

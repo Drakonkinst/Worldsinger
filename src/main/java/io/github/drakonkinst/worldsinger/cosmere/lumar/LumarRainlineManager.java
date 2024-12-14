@@ -45,6 +45,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import net.minecraft.datafixer.DataFixTypes;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.map.MapState;
 import net.minecraft.nbt.NbtCompound;
@@ -200,7 +201,7 @@ public class LumarRainlineManager extends PersistentState implements RainlineMan
     private boolean spawnRainlineFollowingPath(ServerWorld world, Vec2f pos, RainlinePath path,
             long locationId, byte index) {
         RainlineBehavior behavior = new RainlineFollowPathBehavior(path, locationId, index);
-        RainlineEntity rainlineEntity = ModEntityTypes.RAINLINE.create(world);
+        RainlineEntity rainlineEntity = ModEntityTypes.RAINLINE.create(world, SpawnReason.NATURAL);
         if (rainlineEntity == null) {
             return false;
         }
@@ -254,7 +255,7 @@ public class LumarRainlineManager extends PersistentState implements RainlineMan
         if (AetherSpores.hasRainlinePathsInSea(sporeSeaEntry.id())) {
             return false;
         }
-        RainlineEntity rainlineEntity = ModEntityTypes.RAINLINE.create(world);
+        RainlineEntity rainlineEntity = ModEntityTypes.RAINLINE.create(world, SpawnReason.NATURAL);
         if (rainlineEntity == null) {
             return false;
         }

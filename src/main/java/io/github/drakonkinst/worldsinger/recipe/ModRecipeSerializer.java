@@ -26,7 +26,7 @@ package io.github.drakonkinst.worldsinger.recipe;
 
 import io.github.drakonkinst.worldsinger.Worldsinger;
 import net.minecraft.recipe.RecipeSerializer;
-import net.minecraft.recipe.SpecialRecipeSerializer;
+import net.minecraft.recipe.SpecialCraftingRecipe.SpecialRecipeSerializer;
 
 public final class ModRecipeSerializer {
 

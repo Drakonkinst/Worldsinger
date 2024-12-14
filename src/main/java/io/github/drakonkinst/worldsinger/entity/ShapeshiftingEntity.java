@@ -85,12 +85,9 @@ public abstract class ShapeshiftingEntity extends PathAwareEntity implements Sha
 
     // Make attacking animations play for entities that don't use the arms
     @Override
-    public boolean tryAttack(Entity target) {
-        // Should always be true
-        if (this.getWorld() instanceof ServerWorld world) {
-            ShapeshiftingManager.onAttackServer(world, this);
-        }
-        return super.tryAttack(target);
+    public boolean tryAttack(ServerWorld world, Entity target) {
+        ShapeshiftingManager.onAttackServer(world, this);
+        return super.tryAttack(world, target);
     }
 
     private void checkMorphOnLoad() {

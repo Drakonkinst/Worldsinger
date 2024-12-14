@@ -47,7 +47,6 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult.Type;
 import net.minecraft.util.math.BlockPos;
@@ -77,18 +76,18 @@ public class AetherSporeBucketItem extends BlockItem implements FluidModificatio
     }
 
     @Override
-    public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
+    public ActionResult use(World world, PlayerEntity user, Hand hand) {
         ItemStack handStack = user.getStackInHand(hand);
         BlockHitResult blockHitResult = Item.raycast(world, user, FluidHandling.NONE);
         if (blockHitResult.getType() != Type.BLOCK) {
-            return TypedActionResult.pass(handStack);
+            return ActionResult.PASS;
         }
         BlockPos blockPos = blockHitResult.getBlockPos();
         Direction direction = blockHitResult.getSide();
         BlockPos adjacentBlock = blockPos.offset(direction);
         if (!world.canPlayerModifyAt(user, blockPos) || !user.canPlaceOn(adjacentBlock, direction,
                 handStack)) {
-            return TypedActionResult.fail(handStack);
+            return ActionResult.FAIL;
         }
         BlockState blockState = world.getBlockState(blockPos);
 
@@ -112,18 +111,18 @@ public class AetherSporeBucketItem extends BlockItem implements FluidModificatio
 
             user.incrementStat(Stats.USED.getOrCreateStat(this));
             // We don't need to exchange the stack here because it gets consumed later
-            return TypedActionResult.success(handStack, world.isClient());
+            return ActionResult.SUCCESS;
         }
 
         // Writing in some hacks to be able to place a bucket in the same fluid, not sure why this isn't working normally
         FluidState fluidState = world.getFluidState(placementBlockPos);
         if (fluidState.isOf(fluid) && fluidState.isStill()) {
             playEmptyingSound(world, user, placementBlockPos);
-            return TypedActionResult.success(handStack, world.isClient());
+            return ActionResult.SUCCESS;
         }
 
         // Try placing as a normal block
-        return TypedActionResult.pass(handStack);
+        return ActionResult.PASS;
     }
 
     @Override
@@ -142,17 +141,11 @@ public class AetherSporeBucketItem extends BlockItem implements FluidModificatio
     }
 
     private ActionResult attemptUse(ItemUsageContext context, PlayerEntity player) {
-        ActionResult fluidPlaceResult = this.use(context.getWorld(), player, context.getHand())
-                .getResult();
+        ActionResult fluidPlaceResult = this.use(context.getWorld(), player, context.getHand());
         if (fluidPlaceResult.isAccepted()) {
             return fluidPlaceResult;
         }
         return super.useOnBlock(context);
-    }
-
-    @Override
-    public String getTranslationKey() {
-        return this.getOrCreateTranslationKey();
     }
 
     @Override

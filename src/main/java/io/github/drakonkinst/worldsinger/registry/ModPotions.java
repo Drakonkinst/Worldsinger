@@ -38,7 +38,7 @@ import net.minecraft.registry.entry.RegistryEntry;
 public final class ModPotions {
 
     // Generic spores potion used in recipes
-    public static final RegistryEntry<Potion> SPORES = register("spores", new Potion());
+    public static final RegistryEntry<Potion> SPORES = register("spores", new Potion("spores"));
     public static final PotionContentsComponent SPORE_POTIONS_COMPONENT = new PotionContentsComponent(
             ModPotions.SPORES);
 

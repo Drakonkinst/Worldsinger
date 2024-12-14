@@ -46,11 +46,13 @@ import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldAccess;
+import net.minecraft.world.WorldView;
+import net.minecraft.world.tick.ScheduledTickView;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -87,13 +89,13 @@ public abstract class AbstractBlockStateMixin {
     }
 
     @Inject(method = "getStateForNeighborUpdate", at = @At("HEAD"))
-    private void makeCustomFluidTickable(Direction direction, BlockState neighborState,
-            WorldAccess world, BlockPos pos, BlockPos neighborPos,
+    private void makeCustomFluidTickable(WorldView world, ScheduledTickView tickView, BlockPos pos,
+            Direction direction, BlockPos neighborPos, BlockState neighborState, Random random,
             CallbackInfoReturnable<BlockState> cir) {
         Fluid fluid = Fluidlogged.getFluid(this.asBlockState());
         boolean noFluid = (fluid == null) || Fluids.EMPTY.equals(fluid);
         if (!noFluid) {
-            world.scheduleFluidTick(pos, fluid, fluid.getTickRate(world));
+            tickView.scheduleFluidTick(pos, fluid, fluid.getTickRate(world));
         }
     }
 

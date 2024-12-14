@@ -87,11 +87,14 @@ public class SporeCannonballRecipe extends SpecialCraftingRecipe {
 
     @Override
     public boolean matches(CraftingRecipeInput input, World world) {
+        if (input.getStackCount() < 2) {
+            return false;
+        }
         ItemStack cannonballStack = ItemStack.EMPTY;
         boolean hasRoseiteCore = false;
         int numFuse = 0;
         int numContents = 0;
-        for (int i = 0; i < input.getSize(); ++i) {
+        for (int i = 0; i < input.size(); ++i) {
             ItemStack stack = input.getStackInSlot(i);
             if (stack.isEmpty()) {
                 continue;
@@ -162,7 +165,7 @@ public class SporeCannonballRecipe extends SpecialCraftingRecipe {
         boolean hasRoseiteCore = false;
         int numFuse = 0;
         List<CannonballContent> contents = new ArrayList<>(3);
-        for (int i = 0; i < input.getSize(); ++i) {
+        for (int i = 0; i < input.size(); ++i) {
             ItemStack stack = input.getStackInSlot(i);
             if (stack.isEmpty()) {
                 continue;
@@ -231,12 +234,7 @@ public class SporeCannonballRecipe extends SpecialCraftingRecipe {
     }
 
     @Override
-    public boolean fits(int width, int height) {
-        return width * height >= 2;
-    }
-
-    @Override
-    public RecipeSerializer<?> getSerializer() {
+    public RecipeSerializer<SporeCannonballRecipe> getSerializer() {
         return ModRecipeSerializer.SPORE_CANNONBALL;
     }
 }

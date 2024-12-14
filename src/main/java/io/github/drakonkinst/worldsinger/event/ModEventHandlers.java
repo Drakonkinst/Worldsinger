@@ -79,7 +79,7 @@ public final class ModEventHandlers {
 
             if (SporeKillingUtil.killSporeGrowthUsingTool(world, sporeGrowth, state, pos, player,
                     hand)) {
-                return ActionResult.success(true);
+                return ActionResult.SUCCESS;
             }
             return ActionResult.PASS;
         });
@@ -98,7 +98,7 @@ public final class ModEventHandlers {
             // This automatically checks the item too
             if (SporeKillingUtil.killSporeGrowthUsingTool(world, sporeGrowth, state, pos, player,
                     hand)) {
-                return ActionResult.success(true);
+                return ActionResult.SUCCESS;
             }
             return ActionResult.PASS;
         });

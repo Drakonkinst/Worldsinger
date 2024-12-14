@@ -50,10 +50,10 @@ public final class MidnightCreatureManager {
     public static DefaultAttributeContainer.Builder createMidnightCreatureAttributes() {
         // Before transforming, should not be able to move or attack
         return MobEntity.createMobAttributes()
-                .add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.0)
-                .add(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE, 1.0)
-                .add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 0.0)
-                .add(EntityAttributes.GENERIC_MAX_HEALTH, DEFAULT_MAX_HEALTH);
+                .add(EntityAttributes.MOVEMENT_SPEED, 0.0)
+                .add(EntityAttributes.KNOCKBACK_RESISTANCE, 1.0)
+                .add(EntityAttributes.ATTACK_DAMAGE, 0.0)
+                .add(EntityAttributes.MAX_HEALTH, DEFAULT_MAX_HEALTH);
     }
 
     public static double getMaxHealthForSize(float size) {

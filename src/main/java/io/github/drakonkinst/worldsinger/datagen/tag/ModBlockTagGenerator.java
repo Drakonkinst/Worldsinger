@@ -167,6 +167,10 @@ public class ModBlockTagGenerator extends BlockTagProvider {
                 .add(ModBlocks.SUNLIGHT_SPORE_CAULDRON)
                 .add(ModBlocks.ROSEITE_SPORE_CAULDRON)
                 .add(ModBlocks.MIDNIGHT_SPORE_CAULDRON);
+        getOrCreateTagBuilder(ModBlockTags.INCORRECT_FOR_STEEL_TOOL).addOptionalTag(
+                BlockTags.INCORRECT_FOR_IRON_TOOL);
+        getOrCreateTagBuilder(ModBlockTags.INCORRECT_FOR_SILVER_TOOL).addOptionalTag(
+                BlockTags.INCORRECT_FOR_WOODEN_TOOL);
 
         // Merge conventional tags
         getOrCreateTagBuilder(ConventionalBlockTags.ORES).addOptionalTag(

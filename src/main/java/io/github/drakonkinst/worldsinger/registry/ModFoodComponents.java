@@ -23,19 +23,22 @@
  */
 package io.github.drakonkinst.worldsinger.registry;
 
+import net.minecraft.component.type.ConsumableComponent;
+import net.minecraft.component.type.ConsumableComponents;
 import net.minecraft.component.type.FoodComponent;
 
 public final class ModFoodComponents {
 
     public static final FoodComponent SALT = new FoodComponent.Builder().nutrition(1)
             .saturationModifier(0.1f)
-            .snack()
             .alwaysEdible()
             .build();
     // Same as Dried Kelp
     public static final FoodComponent VERDANT_VINE = new FoodComponent.Builder().nutrition(1)
             .saturationModifier(0.3f)
-            .snack()
+            .build();
+    public static final ConsumableComponent SNACK = ConsumableComponents.food()
+            .consumeSeconds(0.8F)
             .build();
 
     private ModFoodComponents() {}

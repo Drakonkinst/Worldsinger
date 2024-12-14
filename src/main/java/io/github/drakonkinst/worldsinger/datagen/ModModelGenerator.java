@@ -23,10 +23,8 @@
  */
 package io.github.drakonkinst.worldsinger.datagen;
 
-import com.mojang.datafixers.util.Pair;
 import io.github.drakonkinst.worldsinger.block.ModBlocks;
 import io.github.drakonkinst.worldsinger.item.ModItems;
-import java.util.function.Function;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricModelProvider;
 import net.minecraft.block.Block;
@@ -39,17 +37,12 @@ import net.minecraft.data.client.BlockStateVariantMap;
 import net.minecraft.data.client.ItemModelGenerator;
 import net.minecraft.data.client.ModelIds;
 import net.minecraft.data.client.Models;
-import net.minecraft.data.client.MultipartBlockStateSupplier;
 import net.minecraft.data.client.TextureMap;
 import net.minecraft.data.client.VariantSettings;
 import net.minecraft.data.client.VariantsBlockStateSupplier;
-import net.minecraft.data.client.When;
-import net.minecraft.item.ArmorItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
-import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.Util;
 
 // Datagen is limited and does not work for the more complex items.
 public class ModModelGenerator extends FabricModelProvider {
@@ -169,7 +162,7 @@ public class ModModelGenerator extends FabricModelProvider {
 
         registerAliasedModel(blockStateModelGenerator, ModBlocks.ALUMINUM_SHEET,
                 ModBlocks.ALUMINUM_BLOCK);
-        registerMultifaceBlock(blockStateModelGenerator, ModBlocks.ALUMINUM_SHEET);
+        blockStateModelGenerator.registerWallPlant(ModBlocks.ALUMINUM_SHEET);
     }
 
     private void generateBlockStatesOnly(BlockStateModelGenerator blockStateModelGenerator) {
@@ -284,33 +277,6 @@ public class ModModelGenerator extends FabricModelProvider {
                                                         blockStateModelGenerator.modelCollector)))));
     }
 
-    private void registerMultifaceBlock(BlockStateModelGenerator blockStateModelGenerator,
-            Block block) {
-        Identifier identifier = ModelIds.getBlockModelId(block);
-        MultipartBlockStateSupplier multipartBlockStateSupplier = MultipartBlockStateSupplier.create(
-                block);
-        When.PropertyCondition propertyCondition = Util.make(When.create(),
-                propertyConditionx -> BlockStateModelGenerator.CONNECTION_VARIANT_FUNCTIONS.stream()
-                        .map(Pair::getFirst)
-                        .forEach(property -> {
-                            if (block.getDefaultState().contains(property)) {
-                                propertyConditionx.set(property, false);
-                            }
-                        }));
-
-        for (Pair<BooleanProperty, Function<Identifier, BlockStateVariant>> pair : BlockStateModelGenerator.CONNECTION_VARIANT_FUNCTIONS) {
-            BooleanProperty booleanProperty = pair.getFirst();
-            Function<Identifier, BlockStateVariant> function = pair.getSecond();
-            if (block.getDefaultState().contains(booleanProperty)) {
-                multipartBlockStateSupplier.with(When.create().set(booleanProperty, true),
-                        function.apply(identifier));
-                multipartBlockStateSupplier.with(propertyCondition, function.apply(identifier));
-            }
-        }
-
-        blockStateModelGenerator.blockStateCollector.accept(multipartBlockStateSupplier);
-    }
-
     @Override
     public void generateItemModels(ItemModelGenerator itemModelGenerator) {
         registerGeneratedItems(itemModelGenerator, new ItemConvertible[] {
@@ -347,12 +313,7 @@ public class ModModelGenerator extends FabricModelProvider {
                 ModItems.STEEL_SWORD,
                 ModItems.SILVER_KNIFE
         });
-
-        // Adds armor trim models as well, which we didn't have before
-        itemModelGenerator.registerArmor((ArmorItem) ModItems.STEEL_HELMET);
-        itemModelGenerator.registerArmor((ArmorItem) ModItems.STEEL_CHESTPLATE);
-        itemModelGenerator.registerArmor((ArmorItem) ModItems.STEEL_LEGGINGS);
-        itemModelGenerator.registerArmor((ArmorItem) ModItems.STEEL_BOOTS);
+        // TODO: Ensure steel armor generated properly
     }
 
     private void registerGeneratedItems(ItemModelGenerator itemModelGenerator,

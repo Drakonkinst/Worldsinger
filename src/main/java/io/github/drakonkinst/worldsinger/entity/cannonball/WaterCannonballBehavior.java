@@ -36,6 +36,7 @@ import net.minecraft.entity.passive.AxolotlEntity;
 import net.minecraft.entity.projectile.thrown.PotionEntity;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.tag.BlockTags;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
@@ -84,8 +85,9 @@ public class WaterCannonballBehavior implements CannonballBehavior {
                 PotionEntity.AFFECTED_BY_WATER)) {
             double distSq = entity.squaredDistanceTo(otherEntity);
             if (distSq < WATER_SPLASH_RADIUS_HORIZONTAL * WATER_SPLASH_RADIUS_HORIZONTAL) {
-                if (otherEntity.hurtByWater()) {
-                    otherEntity.damage(
+                if (otherEntity.hurtByWater()
+                        && entity.getWorld() instanceof ServerWorld serverWorld) {
+                    otherEntity.damage(serverWorld,
                             entity.getDamageSources().indirectMagic(entity, entity.getOwner()),
                             1.0F);
                 }

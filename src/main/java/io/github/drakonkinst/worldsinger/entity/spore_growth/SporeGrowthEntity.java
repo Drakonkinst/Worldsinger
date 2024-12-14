@@ -38,6 +38,7 @@ import java.util.List;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.particle.BlockStateParticleEffect;
@@ -193,6 +194,11 @@ public abstract class SporeGrowthEntity extends ServerSideEntity {
                 this.grow();
             }
         }
+    }
+
+    @Override
+    public final boolean damage(ServerWorld world, DamageSource source, float amount) {
+        return false;
     }
 
     // Called if entity was killed but still has spores remaining

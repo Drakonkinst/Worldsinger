@@ -38,8 +38,8 @@ import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.stat.Stats;
 import net.minecraft.text.Text;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Position;
 import net.minecraft.world.World;
@@ -51,7 +51,7 @@ public class CannonballItem extends Item implements ProjectileItem {
     }
 
     @Override
-    public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
+    public ActionResult use(World world, PlayerEntity user, Hand hand) {
         ItemStack itemStack = user.getStackInHand(hand);
         world.playSound(null, user.getX(), user.getY(), user.getZ(),
                 ModSoundEvents.ENTITY_CANNONBALL_THROW, SoundCategory.NEUTRAL, 0.5F,
@@ -65,7 +65,7 @@ public class CannonballItem extends Item implements ProjectileItem {
 
         user.incrementStat(Stats.USED.getOrCreateStat(this));
         itemStack.decrementUnlessCreative(1, user);
-        return TypedActionResult.success(itemStack, world.isClient());
+        return ActionResult.SUCCESS;
     }
 
     @Override

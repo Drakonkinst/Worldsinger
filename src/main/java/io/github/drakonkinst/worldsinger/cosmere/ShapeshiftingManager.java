@@ -41,6 +41,7 @@ import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.mob.GuardianEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.PhantomEntity;
@@ -130,7 +131,7 @@ public final class ShapeshiftingManager {
                 String playerName = morphNbt.getString(PlayerMorphDummy.KEY_PLAYER_NAME);
                 morph = Worldsinger.PROXY.createPlayerMorph(world, playerUuid, playerName);
             } else {
-                morph = (LivingEntity) type.create(world);
+                morph = (LivingEntity) type.create(world, SpawnReason.LOAD);
             }
         }
 
@@ -153,7 +154,7 @@ public final class ShapeshiftingManager {
                 morph = Worldsinger.PROXY.createPlayerMorph(world, toCopy.getUuid(),
                         toCopy.getName().getString());
             } else {
-                morph = (LivingEntity) toCopy.getType().create(world);
+                morph = (LivingEntity) toCopy.getType().create(world, SpawnReason.LOAD);
             }
         }
         if (morph != null) {

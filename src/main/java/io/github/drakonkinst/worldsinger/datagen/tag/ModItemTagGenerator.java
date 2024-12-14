@@ -90,6 +90,10 @@ public class ModItemTagGenerator extends ItemTagProvider {
                 ModConventionalItemTags.STORAGE_BLOCKS_SALT);
         copy(ModConventionalBlockTags.STORAGE_BLOCKS_RAW_SILVER,
                 ModConventionalItemTags.STORAGE_BLOCKS_RAW_SILVER);
+        getOrCreateTagBuilder(ModConventionalItemTags.STEEL_TOOL_MATERIALS).addOptionalTag(
+                ModConventionalItemTags.STEEL_INGOTS);
+        getOrCreateTagBuilder(ModConventionalItemTags.SILVER_TOOL_MATERIALS).addOptionalTag(
+                ModConventionalItemTags.SILVER_INGOTS);
 
         // Merge fabric and mod conventional tags
         getOrCreateTagBuilder(ConventionalItemTags.INGOTS).addOptionalTag(

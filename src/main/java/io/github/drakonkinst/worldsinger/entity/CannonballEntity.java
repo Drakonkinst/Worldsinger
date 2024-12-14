@@ -58,6 +58,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ItemStackParticleEffect;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
@@ -114,12 +115,12 @@ public class CannonballEntity extends ThrownItemEntity implements FlyingItemEnti
         super(entityType, world);
     }
 
-    public CannonballEntity(World world, LivingEntity owner) {
-        super(ModEntityTypes.CANNONBALL, owner, world);
+    public CannonballEntity(World world, LivingEntity owner, ItemStack stack) {
+        super(ModEntityTypes.CANNONBALL, owner, world, stack);
     }
 
-    public CannonballEntity(World world, double x, double y, double z) {
-        super(ModEntityTypes.CANNONBALL, x, y, z, world);
+    public CannonballEntity(World world, double x, double y, double z, ItemStack stack) {
+        super(ModEntityTypes.CANNONBALL, x, y, z, world, stack);
     }
 
     @Override
@@ -191,8 +192,10 @@ public class CannonballEntity extends ThrownItemEntity implements FlyingItemEnti
     protected void onEntityHit(EntityHitResult entityHitResult) {
         super.onEntityHit(entityHitResult);
         Entity entity = entityHitResult.getEntity();
-        entity.damage(this.getDamageSources().thrown(this, this.getOwner()),
-                ENTITY_COLLISION_DAMAGE);
+        if (entity.getWorld() instanceof ServerWorld serverWorld) {
+            entity.damage(serverWorld, this.getDamageSources().thrown(this, this.getOwner()),
+                    ENTITY_COLLISION_DAMAGE);
+        }
     }
 
     @Override

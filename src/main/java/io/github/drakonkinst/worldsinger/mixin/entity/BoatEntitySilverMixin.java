@@ -32,7 +32,7 @@ import io.github.drakonkinst.worldsinger.registry.ModSoundEvents;
 import io.github.drakonkinst.worldsinger.registry.tag.ModConventionalItemTags;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.vehicle.BoatEntity;
+import net.minecraft.entity.vehicle.AbstractBoatEntity;
 import net.minecraft.entity.vehicle.VehicleEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ActionResult;
@@ -45,7 +45,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @SuppressWarnings("UnstableApiUsage")
-@Mixin(BoatEntity.class)
+@Mixin(AbstractBoatEntity.class)
 public abstract class BoatEntitySilverMixin extends VehicleEntity {
 
     public BoatEntitySilverMixin(EntityType<?> type, World world) {
@@ -75,7 +75,7 @@ public abstract class BoatEntitySilverMixin extends VehicleEntity {
             if (!player.getAbilities().creativeMode) {
                 itemStack.decrement(1);
             }
-            cir.setReturnValue(ActionResult.success(this.getWorld().isClient()));
+            cir.setReturnValue(ActionResult.SUCCESS);
         }
     }
 

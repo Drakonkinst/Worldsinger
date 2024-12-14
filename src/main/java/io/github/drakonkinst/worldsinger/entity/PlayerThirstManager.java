@@ -35,6 +35,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.world.Difficulty;
 
 // Similar to Hunger, but uses different names.
@@ -105,27 +106,30 @@ public class PlayerThirstManager implements ThirstManager {
         }
 
         // Start taking damage
-        if (thirstLevel <= 0) {
-            ++dehydrationTickTimer;
-            if (dehydrationTickTimer >= DAMAGE_TICK_INTERVAL) {
-                DamageSource thirstDamageSource = ModDamageTypes.createSource(entity.getWorld(),
-                        ModDamageTypes.THIRST);
-                if (entity instanceof PlayerEntity) {
-                    // Respect difficulty settings
-                    Difficulty difficulty = entity.getWorld().getDifficulty();
-                    float health = entity.getHealth();
-                    if (difficulty != Difficulty.PEACEFUL && (difficulty != Difficulty.EASY
-                            || health > MIN_HEALTH_ON_EASY) && (difficulty != Difficulty.NORMAL
-                            || health > MIN_HEALTH_ON_NORMAL)) {
-                        entity.damage(thirstDamageSource, DAMAGE_FROM_THIRST);
+        if (entity.getWorld() instanceof ServerWorld serverWorld) {
+            if (thirstLevel <= 0) {
+                ++dehydrationTickTimer;
+                if (dehydrationTickTimer >= DAMAGE_TICK_INTERVAL) {
+                    DamageSource thirstDamageSource = ModDamageTypes.createSource(serverWorld,
+                            ModDamageTypes.THIRST);
+                    if (entity instanceof PlayerEntity) {
+                        // Respect difficulty settings
+                        Difficulty difficulty = entity.getWorld().getDifficulty();
+                        float health = entity.getHealth();
+                        if (difficulty != Difficulty.PEACEFUL && (difficulty != Difficulty.EASY
+                                || health > MIN_HEALTH_ON_EASY) && (difficulty != Difficulty.NORMAL
+                                || health > MIN_HEALTH_ON_NORMAL)) {
+                            entity.damage(serverWorld, thirstDamageSource, DAMAGE_FROM_THIRST);
+                        }
+                    } else {
+                        // Just kill them
+                        entity.damage(serverWorld, thirstDamageSource, DAMAGE_FROM_THIRST);
                     }
-                } else {
-                    // Just kill them
-                    entity.damage(thirstDamageSource, DAMAGE_FROM_THIRST);
+                    dehydrationTickTimer = 0;
                 }
-                dehydrationTickTimer = 0;
             }
         }
+
     }
 
     @Override

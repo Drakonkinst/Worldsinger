@@ -35,7 +35,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.tslat.smartbrainlib.api.core.sensor.ExtendedSensor;
 import net.tslat.smartbrainlib.api.core.sensor.PredicateSensor;
-import net.tslat.smartbrainlib.util.BrainUtils;
+import net.tslat.smartbrainlib.util.BrainUtil;
 
 // Now unused, but keeping it around
 public class NearbyRepellentSensor<E extends LivingEntity> extends PredicateSensor<BlockState, E> {
@@ -75,7 +75,7 @@ public class NearbyRepellentSensor<E extends LivingEntity> extends PredicateSens
     @Override
     protected void sense(ServerWorld world, E entity) {
         Brain<?> brain = entity.getBrain();
-        BrainUtils.setMemory(brain, MemoryModuleType.NEAREST_REPELLENT,
+        BrainUtil.setMemory(brain, MemoryModuleType.NEAREST_REPELLENT,
                 BlockPos.findClosest(entity.getBlockPos(), horizontalRange, verticalRange,
                         pos -> predicate().test(world.getBlockState(pos), entity)).orElse(null));
     }

@@ -41,7 +41,7 @@ public final class ModDataComponentTypes {
     public static final ComponentType<Boolean> SALTED = register("salted",
             builder -> builder.codec(Codec.BOOL).packetCodec(PacketCodecs.BOOL));
     public static final ComponentType<Integer> SILVER_DURABILITY = register("silver_durability",
-            builder -> builder.codec(Codecs.NONNEGATIVE_INT).packetCodec(PacketCodecs.VAR_INT));
+            builder -> builder.codec(Codecs.NON_NEGATIVE_INT).packetCodec(PacketCodecs.VAR_INT));
     public static final ComponentType<CustomMapDecorationsComponent> CUSTOM_MAP_DECORATIONS = register(
             "custom_map_decorations",
             builder -> builder.codec(CustomMapDecorationsComponent.CODEC));

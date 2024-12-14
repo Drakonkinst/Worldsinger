@@ -58,9 +58,8 @@ public class PossessableMoveControl<E extends MobEntity & CameraPossessable> ext
 
     private void doPossessedTick() {
         if (this.state == MoveControl.State.STRAFE) {
-            float speed =
-                    (float) this.entity.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED)
-                            * POSSESSED_MOVEMENT_MULTIPLIER;
+            float speed = (float) this.entity.getAttributeValue(EntityAttributes.MOVEMENT_SPEED)
+                    * POSSESSED_MOVEMENT_MULTIPLIER;
             if (castEntity.isSprinting()) {
                 speed *= this.speedMultiplier;
             }
@@ -70,7 +69,7 @@ public class PossessableMoveControl<E extends MobEntity & CameraPossessable> ext
             this.state = MoveControl.State.WAIT;
         } else if (this.state == MoveControl.State.JUMPING) {
             float baseMovementSpeed = (float) this.entity.getAttributeValue(
-                    EntityAttributes.GENERIC_MOVEMENT_SPEED);
+                    EntityAttributes.MOVEMENT_SPEED);
             // Instead of using the speed control, use the speed multiplier from the constructor
             float speed = this.speedMultiplier * baseMovementSpeed;
             this.entity.setMovementSpeed(speed);

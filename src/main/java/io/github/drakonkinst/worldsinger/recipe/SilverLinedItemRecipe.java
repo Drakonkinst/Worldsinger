@@ -44,9 +44,12 @@ public class SilverLinedItemRecipe extends SpecialCraftingRecipe {
 
     @Override
     public boolean matches(CraftingRecipeInput input, World world) {
+        if (input.getStackCount() < 2) {
+            return false;
+        }
         ItemStack silverLinedItem = ItemStack.EMPTY;
         int numSilverIngots = 0;
-        for (int i = 0; i < input.getSize(); ++i) {
+        for (int i = 0; i < input.size(); ++i) {
             ItemStack stack = input.getStackInSlot(i);
             if (stack.isEmpty()) {
                 continue;
@@ -71,7 +74,7 @@ public class SilverLinedItemRecipe extends SpecialCraftingRecipe {
     public ItemStack craft(CraftingRecipeInput input, RegistryWrapper.WrapperLookup lookup) {
         ItemStack silverLinedItem = ItemStack.EMPTY;
         int numSilverIngots = 0;
-        for (int i = 0; i < input.getSize(); ++i) {
+        for (int i = 0; i < input.size(); ++i) {
             ItemStack stack = input.getStackInSlot(i);
             if (stack.isEmpty()) {
                 continue;
@@ -101,12 +104,7 @@ public class SilverLinedItemRecipe extends SpecialCraftingRecipe {
     }
 
     @Override
-    public boolean fits(int width, int height) {
-        return width * height >= 2;
-    }
-
-    @Override
-    public RecipeSerializer<?> getSerializer() {
+    public RecipeSerializer<SilverLinedItemRecipe> getSerializer() {
         return ModRecipeSerializer.SILVER_LINED_ITEM;
     }
 }

@@ -36,6 +36,7 @@ import net.minecraft.block.FluidDrainable;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.tag.FluidTags;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
@@ -59,7 +60,7 @@ public abstract class LivingAetherSporeFluid extends AetherSporeFluid implements
     }
 
     @Override
-    protected void onRandomTick(World world, BlockPos pos, FluidState state, Random random) {
+    protected void onRandomTick(ServerWorld world, BlockPos pos, FluidState state, Random random) {
         super.onRandomTick(world, pos, state, random);
 
         if (world.hasRain(pos.up())) {

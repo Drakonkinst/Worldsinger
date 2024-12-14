@@ -39,6 +39,7 @@ import net.minecraft.fluid.FlowableFluid;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.math.BlockPos;
@@ -87,13 +88,13 @@ public abstract class AetherSporeFluid extends FlowableFluid implements SporeEmi
     }
 
     @Override
-    public void onScheduledTick(World world, BlockPos pos, FluidState state) {
-        if (this.isStill(state) && !AetherSporeFluidBlock.shouldFluidize(
+    public void onScheduledTick(ServerWorld world, BlockPos pos, BlockState blockState,
+            FluidState fluidState) {
+        if (this.isStill(fluidState) && !AetherSporeFluidBlock.shouldFluidize(
                 world.getBlockState(pos.down()))) {
-            AetherSporeFluidBlock.updateFluidizationForBlock(world, pos, state.getBlockState(),
-                    false);
+            AetherSporeFluidBlock.updateFluidizationForBlock(world, pos, blockState, false);
         }
-        super.onScheduledTick(world, pos, state);
+        super.onScheduledTick(world, pos, blockState, fluidState);
     }
 
     @Override
@@ -161,7 +162,7 @@ public abstract class AetherSporeFluid extends FlowableFluid implements SporeEmi
     }
 
     @Override
-    protected FluidState getUpdatedState(World world, BlockPos pos, BlockState state) {
+    protected FluidState getUpdatedState(ServerWorld world, BlockPos pos, BlockState state) {
         int maxNeighboringFluidLevel = 0;
         int neighboringSourceBlocks = 0;
         for (Direction direction : Direction.Type.HORIZONTAL) {
@@ -206,7 +207,7 @@ public abstract class AetherSporeFluid extends FlowableFluid implements SporeEmi
     }
 
     @Override
-    protected boolean isInfinite(World world) {
+    protected boolean isInfinite(ServerWorld world) {
         return true;
     }
 

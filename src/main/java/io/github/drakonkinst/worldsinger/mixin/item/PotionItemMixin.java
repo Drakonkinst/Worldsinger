@@ -98,7 +98,7 @@ public abstract class PotionItemMixin extends Item {
                     1.0F, 1.0F);
             world.emitGameEvent(null, GameEvent.FLUID_PLACE, blockPos);
             waterReactive.reactToWater(world, blockPos, WATER_AMOUNT);
-            cir.setReturnValue(ActionResult.success(world.isClient));
+            cir.setReturnValue(ActionResult.SUCCESS);
         }
     }
 }

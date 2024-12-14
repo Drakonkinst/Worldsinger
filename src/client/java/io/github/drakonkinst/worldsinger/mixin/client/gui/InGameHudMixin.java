@@ -37,6 +37,8 @@ import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.profiler.Profiler;
+import net.minecraft.util.profiler.Profilers;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -67,9 +69,10 @@ public abstract class InGameHudMixin {
             return;
         }
         if (ThirstStatusBar.shouldRenderThirstBar(player)) {
-            this.client.getProfiler().push("thirst");
+            Profiler profiler = Profilers.get();
+            profiler.push("thirst");
             ThirstStatusBar.renderThirstStatusBar(client, context, player);
-            this.client.getProfiler().pop();
+            profiler.pop();
         }
     }
 

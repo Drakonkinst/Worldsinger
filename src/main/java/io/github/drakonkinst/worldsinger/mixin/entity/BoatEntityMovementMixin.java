@@ -36,8 +36,8 @@ import io.github.drakonkinst.worldsinger.registry.ModSoundEvents;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.vehicle.BoatEntity;
-import net.minecraft.entity.vehicle.BoatEntity.Location;
+import net.minecraft.entity.vehicle.AbstractBoatEntity;
+import net.minecraft.entity.vehicle.AbstractBoatEntity.Location;
 import net.minecraft.entity.vehicle.VehicleEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.server.world.ServerWorld;
@@ -62,7 +62,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @SuppressWarnings("UnstableApiUsage")
-@Mixin(BoatEntity.class)
+@Mixin(AbstractBoatEntity.class)
 public abstract class BoatEntityMovementMixin extends VehicleEntity {
 
     @Unique
@@ -159,14 +159,14 @@ public abstract class BoatEntityMovementMixin extends VehicleEntity {
                 && (paddlePhase + (Math.PI / 8)) % (Math.PI * 2) >= Math.PI / 4;
     }
 
-    @Inject(method = "getPaddleSoundEvent", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "getPaddleSound", at = @At("HEAD"), cancellable = true)
     private void addSporeSeaPaddleSound(CallbackInfoReturnable<SoundEvent> cir) {
         if (this.inSporeSea) {
             cir.setReturnValue(ModSoundEvents.ENTITY_BOAT_PADDLE_SPORE_SEA);
         }
     }
 
-    @Inject(method = "checkLocation", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/vehicle/BoatEntity;getNearbySlipperiness()F"), cancellable = true)
+    @Inject(method = "checkLocation", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/vehicle/AbstractBoatEntity;getNearbySlipperiness()F"), cancellable = true)
     private void checkSporeSeaLocation(CallbackInfoReturnable<Location> cir) {
         this.inSporeSea = false;
         this.lastAetherSporeFluid = null;
@@ -262,15 +262,15 @@ public abstract class BoatEntityMovementMixin extends VehicleEntity {
         return inSporeSea;
     }
 
-    @Inject(method = "updateVelocity", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/vehicle/BoatEntity;setVelocity(DDD)V"), slice = @Slice(to = @At(value = "FIELD", opcode = Opcodes.PUTFIELD, target = "Lnet/minecraft/entity/vehicle/BoatEntity;yawVelocity:F")))
+    @Inject(method = "updateVelocity", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/vehicle/AbstractBoatEntity;setVelocity(DDD)V"), slice = @Slice(to = @At(value = "FIELD", opcode = Opcodes.PUTFIELD, target = "Lnet/minecraft/entity/vehicle/AbstractBoatEntity;yawVelocity:F")))
     private void addSporeSeaVelocityLogic(CallbackInfo ci) {
         if (this.inSporeSea && !SeetheManager.areSporesFluidized(this.getWorld())) {
             this.velocityDecay = 0.0f;
         }
     }
 
-    @WrapOperation(method = "updatePaddles", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/vehicle/BoatEntity;setVelocity(Lnet/minecraft/util/math/Vec3d;)V"))
-    private void restrictMovementInSporeSea(BoatEntity instance, Vec3d velocity,
+    @WrapOperation(method = "updatePaddles", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/vehicle/AbstractBoatEntity;setVelocity(Lnet/minecraft/util/math/Vec3d;)V"))
+    private void restrictMovementInSporeSea(AbstractBoatEntity instance, Vec3d velocity,
             Operation<Void> original) {
         if (this.inSporeSea && this.location != Location.ON_LAND
                 && !SeetheManager.areSporesFluidized(this.getWorld())) {

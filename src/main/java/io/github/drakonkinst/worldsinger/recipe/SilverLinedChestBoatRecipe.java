@@ -64,9 +64,12 @@ public class SilverLinedChestBoatRecipe extends SpecialCraftingRecipe {
 
     @Override
     public boolean matches(CraftingRecipeInput input, World world) {
+        if (input.getStackCount() < 2) {
+            return false;
+        }
         Item boatItem = null;
         boolean hasChest = false;
-        for (int i = 0; i < input.getSize(); ++i) {
+        for (int i = 0; i < input.size(); ++i) {
             ItemStack stack = input.getStackInSlot(i);
             if (stack.isEmpty()) {
                 continue;
@@ -93,7 +96,7 @@ public class SilverLinedChestBoatRecipe extends SpecialCraftingRecipe {
     public ItemStack craft(CraftingRecipeInput input, WrapperLookup lookup) {
         Item boatItem = null;
         int silverDurability = -1;
-        for (int i = 0; i < input.getSize(); ++i) {
+        for (int i = 0; i < input.size(); ++i) {
             ItemStack stack = input.getStackInSlot(i);
             if (stack.isEmpty()) {
                 continue;
@@ -113,12 +116,7 @@ public class SilverLinedChestBoatRecipe extends SpecialCraftingRecipe {
     }
 
     @Override
-    public boolean fits(int width, int height) {
-        return width * height >= 2;
-    }
-
-    @Override
-    public RecipeSerializer<?> getSerializer() {
+    public RecipeSerializer<SilverLinedChestBoatRecipe> getSerializer() {
         return ModRecipeSerializer.SILVER_LINED_CHEST_BOAT;
     }
 }

@@ -25,6 +25,7 @@ package io.github.drakonkinst.worldsinger.block;
 
 import io.github.drakonkinst.worldsinger.cosmere.WaterReactionManager;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.RoseiteSpores;
+import io.github.drakonkinst.worldsinger.util.ModConstants;
 import io.github.drakonkinst.worldsinger.util.ModProperties;
 import io.github.drakonkinst.worldsinger.util.math.Int3;
 import net.minecraft.block.Block;
@@ -43,7 +44,8 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldAccess;
+import net.minecraft.world.WorldView;
+import net.minecraft.world.tick.ScheduledTickView;
 import org.jetbrains.annotations.Nullable;
 
 public class RoseiteSlabBlock extends SlabBlock implements SporeGrowthBlock, WaterReactiveBlock {
@@ -75,8 +77,9 @@ public class RoseiteSlabBlock extends SlabBlock implements SporeGrowthBlock, Wat
     }
 
     @Override
-    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction,
-            BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
+    public BlockState getStateForNeighborUpdate(BlockState state, WorldView world,
+            ScheduledTickView tickView, BlockPos pos, Direction direction, BlockPos neighborPos,
+            BlockState neighborState, Random random) {
         if (this.canReactToWater(pos, state) && world instanceof World realWorld) {
             BlockPos waterNeighborPos = LivingVerdantVineBlock.getWaterNeighborPos(world, pos);
             if (waterNeighborPos != null) {
@@ -84,8 +87,8 @@ public class RoseiteSlabBlock extends SlabBlock implements SporeGrowthBlock, Wat
                 state = state.with(ModProperties.CATALYZED, true);
             }
         }
-        return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos,
-                neighborPos);
+        return super.getStateForNeighborUpdate(state, world, tickView, pos, direction, neighborPos,
+                neighborState, random);
     }
 
     @Override
@@ -119,14 +122,14 @@ public class RoseiteSlabBlock extends SlabBlock implements SporeGrowthBlock, Wat
     }
 
     @Override
-    public boolean isTransparent(BlockState state, BlockView world, BlockPos pos) {
+    public boolean isTransparent(BlockState state) {
         return false;
     }
 
     @Override
-    public int getOpacity(BlockState state, BlockView world, BlockPos pos) {
+    public int getOpacity(BlockState state) {
         if (state.get(TYPE) == SlabType.DOUBLE) {
-            return world.getMaxLightLevel();
+            return ModConstants.MAX_LIGHT_LEVEL;
         }
         return 1;
     }

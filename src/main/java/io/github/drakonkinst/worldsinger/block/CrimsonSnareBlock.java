@@ -45,7 +45,8 @@ import net.minecraft.util.math.random.Random;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldAccess;
+import net.minecraft.world.WorldView;
+import net.minecraft.world.tick.ScheduledTickView;
 import org.jetbrains.annotations.Nullable;
 
 public class CrimsonSnareBlock extends Block implements Waterloggable, SporeGrowthBlock {
@@ -78,19 +79,21 @@ public class CrimsonSnareBlock extends Block implements Waterloggable, SporeGrow
             return;
         }
 
-        if (CrimsonSpikeBlock.isMoving(entity)) {
-            entity.damage(ModDamageTypes.createSource(world, ModDamageTypes.SPIKE), 2.0f);
+        if (CrimsonSpikeBlock.isMoving(entity) && world instanceof ServerWorld serverWorld) {
+            entity.damage(serverWorld, ModDamageTypes.createSource(world, ModDamageTypes.SPIKE),
+                    2.0f);
         }
     }
 
     @Override
-    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction,
-            BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
+    public BlockState getStateForNeighborUpdate(BlockState state, WorldView world,
+            ScheduledTickView tickView, BlockPos pos, Direction direction, BlockPos neighborPos,
+            BlockState neighborState, Random random) {
         if (state.get(Properties.WATERLOGGED)) {
-            world.scheduleFluidTick(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
+            tickView.scheduleFluidTick(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
         }
-        return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos,
-                neighborPos);
+        return super.getStateForNeighborUpdate(state, world, tickView, pos, direction, neighborPos,
+                neighborState, random);
     }
 
     @Nullable

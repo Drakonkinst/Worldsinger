@@ -229,7 +229,9 @@ public class SunlightSpores extends AetherSpores {
         List<LivingEntity> affectedEntities = world.getNonSpectatingEntities(LivingEntity.class,
                 box);
         for (LivingEntity entity : affectedEntities) {
-            entity.damage(entity.getDamageSources().inFire(), 3.0f);
+            if (world instanceof ServerWorld serverWorld) {
+                entity.damage(serverWorld, entity.getDamageSources().inFire(), 3.0f);
+            }
             entity.setOnFireFor(5);
         }
     }

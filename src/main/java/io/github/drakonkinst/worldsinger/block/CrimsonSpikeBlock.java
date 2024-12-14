@@ -54,8 +54,8 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
+import net.minecraft.world.tick.ScheduledTickView;
 import org.jetbrains.annotations.Nullable;
 
 public class CrimsonSpikeBlock extends Block implements Waterloggable, SporeGrowthBlock {
@@ -206,21 +206,22 @@ public class CrimsonSpikeBlock extends Block implements Waterloggable, SporeGrow
     }
 
     @Override
-    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction,
-            BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
+    public BlockState getStateForNeighborUpdate(BlockState state, WorldView world,
+            ScheduledTickView tickView, BlockPos pos, Direction direction, BlockPos neighborPos,
+            BlockState neighborState, Random random) {
         if (state.get(Properties.WATERLOGGED)) {
-            world.scheduleFluidTick(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
+            tickView.scheduleFluidTick(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
         }
         // if (direction != Direction.UP && direction != Direction.DOWN) {
         //     return state;
         // }
         Direction attachDirection = state.get(Properties.FACING);
-        if (attachDirection == Direction.DOWN && world.getBlockTickScheduler()
+        if (attachDirection == Direction.DOWN && tickView.getBlockTickScheduler()
                 .isQueued(pos, this)) {
             return state;
         }
         if (direction == attachDirection.getOpposite() && !this.canPlaceAt(state, world, pos)) {
-            world.scheduleBlockTick(pos, this, 1);
+            tickView.scheduleBlockTick(pos, this, 1);
             return state;
         }
         Thickness thickness = CrimsonSpikeBlock.getThickness(world, pos, attachDirection);
@@ -250,6 +251,9 @@ public class CrimsonSpikeBlock extends Block implements Waterloggable, SporeGrow
 
     @Override
     public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
+        if (!(world instanceof ServerWorld serverWorld)) {
+            return;
+        }
         // Spikes do not destroy items
         if (entity instanceof ItemEntity) {
             return;
@@ -276,7 +280,7 @@ public class CrimsonSpikeBlock extends Block implements Waterloggable, SporeGrow
                 || !VoxelShapes.matchesAnywhere(entityShape, damageShape, BooleanBiFunction.AND)) {
             return;
         }
-        entity.damage(ModDamageTypes.createSource(world, ModDamageTypes.SPIKE), 2.0f);
+        entity.damage(serverWorld, ModDamageTypes.createSource(world, ModDamageTypes.SPIKE), 2.0f);
     }
 
     @Override
@@ -286,7 +290,7 @@ public class CrimsonSpikeBlock extends Block implements Waterloggable, SporeGrow
     }
 
     @Override
-    public VoxelShape getCullingShape(BlockState state, BlockView world, BlockPos pos) {
+    protected VoxelShape getCullingShape(BlockState state) {
         return VoxelShapes.empty();
     }
 

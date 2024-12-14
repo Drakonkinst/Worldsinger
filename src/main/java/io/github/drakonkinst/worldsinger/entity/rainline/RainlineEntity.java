@@ -42,6 +42,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockPos.Mutable;
 import net.minecraft.util.profiler.Profiler;
+import net.minecraft.util.profiler.Profilers;
 import net.minecraft.world.Heightmap.Type;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome.Precipitation;
@@ -114,7 +115,7 @@ public class RainlineEntity extends Entity implements GeoEntity {
         // Cauldrons use Block#precipitationTick
         // Fluids use FluidState#doRandomTick
         // Blocks use BlockState#randomTick
-        Profiler profiler = world.getProfiler();
+        Profiler profiler = Profilers.get();
         profiler.push("randomTick");
         block.precipitationTick(blockState, world, mutable, Precipitation.RAIN);
         if (fluidState.hasRandomTicks() && fluid instanceof WaterReactiveFluid) {

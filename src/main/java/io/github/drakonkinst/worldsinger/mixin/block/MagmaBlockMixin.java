@@ -33,7 +33,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldAccess;
+import net.minecraft.world.WorldView;
+import net.minecraft.world.tick.ScheduledTickView;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -65,11 +66,11 @@ public abstract class MagmaBlockMixin extends Block {
     }
 
     @Inject(method = "getStateForNeighborUpdate", at = @At("RETURN"))
-    private void addSporeFluidizationCheckNeighborUpdate(BlockState state, Direction direction,
-            BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos,
-            CallbackInfoReturnable<BlockState> cir) {
+    private void addSporeFluidizationCheckNeighborUpdate(BlockState state, WorldView world,
+            ScheduledTickView tickView, BlockPos pos, Direction direction, BlockPos neighborPos,
+            BlockState neighborState, Random random, CallbackInfoReturnable<BlockState> cir) {
         if (direction == Direction.UP && neighborState.isIn(ModBlockTags.AETHER_SPORE_BLOCKS)) {
-            world.scheduleBlockTick(pos, (MagmaBlock) (Object) this, 20);
+            tickView.scheduleBlockTick(pos, (MagmaBlock) (Object) this, 20);
         }
     }
 }
