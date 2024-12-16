@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2023-2024 Drakonkinst
+ * Copyright (c) 2024 Drakonkinst
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,34 +21,26 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.github.drakonkinst.worldsinger.mixin.item;
+
+package io.github.drakonkinst.worldsinger.mixin.component;
 
 import io.github.drakonkinst.worldsinger.event.FinishConsumingItemCallback;
-import net.fabricmc.fabric.api.item.v1.FabricItem;
-import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.ConsumableComponent;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
-import net.minecraft.resource.featuretoggle.ToggleableFeature;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin(Item.class)
-public abstract class DrinkableItemFinishConsumingItemMixin implements ToggleableFeature,
-        ItemConvertible, FabricItem {
+@Mixin(ConsumableComponent.class)
+public abstract class ConsumableComponentMixin {
 
-    @Inject(method = "finishUsing", at = @At("HEAD"))
-    private void onFinishConsumingItem(ItemStack stack, World world, LivingEntity user,
+    @Inject(method = "finishConsumption", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;streamAll(Ljava/lang/Class;)Ljava/util/stream/Stream;"))
+    private void invokeCallback(World world, LivingEntity user, ItemStack stack,
             CallbackInfoReturnable<ItemStack> cir) {
-        // TODO: Does this need to be a mixin anymore?
-        if (stack.contains(DataComponentTypes.FOOD)) {
-            FinishConsumingItemCallback.EVENT.invoker()
-                    .onConsume(user, stack, stack.get(DataComponentTypes.FOOD));
-        }
-    }
+        FinishConsumingItemCallback.EVENT.invoker().onConsume(user, stack);
 
+    }
 }

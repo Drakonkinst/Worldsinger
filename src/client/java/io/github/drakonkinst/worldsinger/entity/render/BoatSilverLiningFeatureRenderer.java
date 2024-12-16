@@ -23,12 +23,10 @@
  */
 package io.github.drakonkinst.worldsinger.entity.render;
 
-import com.mojang.datafixers.util.Pair;
 import io.github.drakonkinst.worldsinger.Worldsinger;
 import io.github.drakonkinst.worldsinger.api.ModAttachmentTypes;
 import io.github.drakonkinst.worldsinger.cosmere.SilverLined;
 import io.github.drakonkinst.worldsinger.cosmere.SilverLiningLevel;
-import java.util.Map;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
@@ -36,16 +34,16 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.feature.FeatureRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.model.BoatEntityModel;
-import net.minecraft.client.render.entity.model.CompositeEntityModel;
 import net.minecraft.client.render.entity.model.EntityModel;
+import net.minecraft.client.render.entity.state.BoatEntityRenderState;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.vehicle.BoatEntity;
-import net.minecraft.entity.vehicle.BoatEntity.Type;
 import net.minecraft.entity.vehicle.ChestBoatEntity;
 import net.minecraft.util.Identifier;
 
-public class BoatSilverLiningFeatureRenderer extends FeatureRenderer<BoatEntity, BoatEntityModel> {
+public class BoatSilverLiningFeatureRenderer extends
+        FeatureRenderer<BoatEntityRenderState, BoatEntityModel> {
 
     private static final int CHEST_VALUE = 8;
     private static final int RAFT_VALUE = 4;
@@ -111,10 +109,13 @@ public class BoatSilverLiningFeatureRenderer extends FeatureRenderer<BoatEntity,
         this.texturesToModels = texturesToModels;
     }
 
+    private EntityModel<BoatEntity> getModelForBoat(BoatEntity entity) {
+        return texturesToModels.get(entity.getVariant()).getSecond();
+    }
+
     @Override
     public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light,
-            BoatEntity entity, float limbAngle, float limbDistance, float tickDelta,
-            float animationProgress, float headYaw, float headPitch) {
+            BoatEntityRenderState state, float limbAngle, float limbDistance) {
         int encodedVariant = BoatSilverLiningFeatureRenderer.encodeBoatVariant(entity);
         if (encodedVariant < 0) {
             return;
@@ -123,9 +124,5 @@ public class BoatSilverLiningFeatureRenderer extends FeatureRenderer<BoatEntity,
         Identifier texture = TEXTURE_MAP[encodedVariant];
         BoatSilverLiningFeatureRenderer.renderModel(this.getModelForBoat(entity), texture, matrices,
                 vertexConsumers, light);
-    }
-
-    private EntityModel<BoatEntity> getModelForBoat(BoatEntity entity) {
-        return texturesToModels.get(entity.getVariant()).getSecond();
     }
 }

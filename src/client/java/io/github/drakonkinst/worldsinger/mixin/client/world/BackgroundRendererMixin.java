@@ -42,23 +42,17 @@ import net.minecraft.client.render.Camera;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.fluid.FluidState;
+import org.joml.Vector4f;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(BackgroundRenderer.class)
 public abstract class BackgroundRendererMixin {
 
-    @Shadow
-    private static float red;
-    @Shadow
-    private static float green;
-    @Shadow
-    private static float blue;
-
-    @ModifyExpressionValue(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/Camera;getSubmersionType()Lnet/minecraft/block/enums/CameraSubmersionType;", ordinal = 0))
+    @ModifyExpressionValue(method = "getFogColor", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/Camera;getSubmersionType()Lnet/minecraft/block/enums/CameraSubmersionType;", ordinal = 0))
     private static CameraSubmersionType skipExpensiveCalculation(CameraSubmersionType original) {
         // Pretend to be lava, skipping the expensive default "else" calculation
         if (original == ModEnums.CameraSubmersionType.SPORE_SEA) {
@@ -67,9 +61,9 @@ public abstract class BackgroundRendererMixin {
         return original;
     }
 
-    @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/BackgroundRenderer;getFogModifier(Lnet/minecraft/entity/Entity;F)Lnet/minecraft/client/render/BackgroundRenderer$StatusEffectFogModifier;"))
+    @Inject(method = "getFogColor", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/BackgroundRenderer;getFogModifier(Lnet/minecraft/entity/Entity;F)Lnet/minecraft/client/render/BackgroundRenderer$StatusEffectFogModifier;"))
     private static void correctCustomFluidColors(Camera camera, float tickDelta, ClientWorld world,
-            int viewDistance, float skyDarkness, CallbackInfo ci) {
+            int clampedViewDistance, float skyDarkness, CallbackInfoReturnable<Vector4f> cir) {
         CameraSubmersionType cameraSubmersionType = camera.getSubmersionType();
 
         if (cameraSubmersionType != ModEnums.CameraSubmersionType.SPORE_SEA) {
@@ -123,7 +117,7 @@ public abstract class BackgroundRendererMixin {
         }
     }
 
-    @ModifyExpressionValue(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/world/ClientWorld;getRainGradient(F)F"))
+    @ModifyExpressionValue(method = "getFogColor", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/world/ClientWorld;getRainGradient(F)F"))
     private static float renderRainlines(float original, Camera camera, float tickDelta,
             ClientWorld world, int viewDistance, float skyDarkness) {
         return Math.max(original,

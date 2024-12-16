@@ -58,6 +58,7 @@ import net.minecraft.loot.provider.number.UniformLootNumberProvider;
 import net.minecraft.predicate.StatePredicate;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.EntityTypePredicate;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.state.property.Properties;
 
@@ -197,7 +198,8 @@ public class ModBlockLootTableGenerator extends FabricBlockLootTableProvider {
                         .rolls(ConstantLootNumberProvider.create(1))
                         .conditionally(EntityPropertiesLootCondition.builder(EntityTarget.THIS,
                                 EntityPredicate.Builder.create()
-                                        .type(EntityTypePredicate.create(EntityType.PLAYER))))
+                                        .type(EntityTypePredicate.create(this.registries.getOrThrow(
+                                                RegistryKeys.ENTITY_TYPE), EntityType.PLAYER))))
                         .conditionally(BlockStatePropertyLootCondition.builder(block)
                                 .properties(StatePredicate.Builder.create()
                                         .exactMatch(ModProperties.CATALYZED, true)))

@@ -27,6 +27,7 @@ import io.github.drakonkinst.worldsinger.Worldsinger;
 import io.github.drakonkinst.worldsinger.block.ModBlocks;
 import io.github.drakonkinst.worldsinger.entity.MidnightCreatureEntity;
 import io.github.drakonkinst.worldsinger.entity.model.MidnightCreatureEntityModel;
+import io.github.drakonkinst.worldsinger.entity.render.state.MidnightCreatureEntityRenderState;
 import io.github.drakonkinst.worldsinger.util.ColorUtil;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.VertexConsumerProvider;
@@ -39,7 +40,7 @@ import net.minecraft.entity.passive.SchoolingFishEntity;
 import net.minecraft.util.Identifier;
 
 public class MidnightCreatureEntityRenderer extends
-        ShapeshiftingEntityRenderer<MidnightCreatureEntity, MidnightCreatureEntityModel> {
+        ShapeshiftingEntityRenderer<MidnightCreatureEntity, MidnightCreatureEntityRenderState, MidnightCreatureEntityModel> {
 
     public static final int MIDNIGHT_OVERLAY_COLOR = ColorUtil.colorToInt(0, 0, 0, 251);
     public static final int MIDNIGHT_OVERLAY_UV = OverlayTexture.packUv(0, 0);
@@ -49,29 +50,42 @@ public class MidnightCreatureEntityRenderer extends
     private final BlockRenderManager blockRenderManager;
 
     public MidnightCreatureEntityRenderer(EntityRendererFactory.Context context) {
-        super(context, new MidnightCreatureEntityModel(), 0.5f);
+        // TODO: Make this actually render a block instead of hacking one in
+        super(context, new MidnightCreatureEntityModel(null), 0.5f);
         this.blockRenderManager = context.getBlockRenderManager();
     }
 
     @Override
-    protected void renderDefault(MidnightCreatureEntity entity, float yaw, float tickDelta,
-            MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light) {
-        matrices.push();
-        matrices.translate(-0.5, 0.0, -0.5);
+    public MidnightCreatureEntityRenderState createRenderState() {
+        return new MidnightCreatureEntityRenderState();
+    }
+
+    @Override
+    protected void renderDefault(MidnightCreatureEntityRenderState entityRenderState,
+            MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
+        matrixStack.push();
+        matrixStack.translate(-0.5, 0.0, -0.5);
         blockRenderManager.renderBlockAsEntity(ModBlocks.MIDNIGHT_ESSENCE.getDefaultState(),
-                matrices, vertexConsumers, light, LivingEntityRenderer.getOverlay(entity, 0.0f));
-        matrices.pop();
-        super.renderDefault(entity, yaw, tickDelta, matrices, vertexConsumers, light);
-    }
-
-    // Always render fish upright
-    @Override
-    protected boolean shouldBeTouchingWater(MidnightCreatureEntity entity, LivingEntity morph) {
-        return super.shouldBeTouchingWater(entity, morph) || morph instanceof SchoolingFishEntity;
+                matrixStack, vertexConsumerProvider, i,
+                LivingEntityRenderer.getOverlay(entityRenderState, 0.0f));
+        matrixStack.pop();
+        super.renderDefault(entityRenderState, matrixStack, vertexConsumerProvider, i);
     }
 
     @Override
-    public Identifier getTexture(MidnightCreatureEntity entity) {
+    public void updateRenderState(MidnightCreatureEntity entity,
+            MidnightCreatureEntityRenderState entityRenderState, float f) {
+        super.updateRenderState(entity, entityRenderState, f);
+        LivingEntity morph = entity.getMorph();
+        if (morph instanceof SchoolingFishEntity) {
+            // Always render fish upright
+            entityRenderState.touchingWater = true;
+        }
+
+    }
+
+    @Override
+    public Identifier getTexture(MidnightCreatureEntityRenderState state) {
         return Worldsinger.id("textures/block/midnight_essence.png");
     }
 }

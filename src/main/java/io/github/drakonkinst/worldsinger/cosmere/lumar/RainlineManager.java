@@ -88,7 +88,7 @@ public interface RainlineManager {
         final double z = pos.getZ();
         final double searchRadius = RAINLINE_RADIUS + radius;
         final Box box = new Box(x - searchRadius, world.getBottomY(), z - searchRadius,
-                x + searchRadius, world.getTopY(), z + searchRadius);
+                x + searchRadius, world.getTopYInclusive(), z + searchRadius);
         return world.getEntitiesByClass(RainlineEntity.class, box, EntityPredicates.VALID_ENTITY);
     }
 
@@ -96,7 +96,7 @@ public interface RainlineManager {
         // final double x = pos.getX();
         // final double z = pos.getZ();
         // final Box box = new Box(x - RAINLINE_SEARCH_RADIUS, world.getBottomY(),
-        //         z - RAINLINE_SEARCH_RADIUS, x + RAINLINE_SEARCH_RADIUS, world.getTopY(),
+        //         z - RAINLINE_SEARCH_RADIUS, x + RAINLINE_SEARCH_RADIUS, world.getTopYInclusive(),
         //         z + RAINLINE_SEARCH_RADIUS);
         // List<RainlineEntity> nearbyRainlines = world.getEntitiesByClass(RainlineEntity.class, box,
         //         EntityPredicates.VALID_ENTITY);

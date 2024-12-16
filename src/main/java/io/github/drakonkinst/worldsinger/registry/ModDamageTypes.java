@@ -62,7 +62,7 @@ public final class ModDamageTypes {
 
     public static DamageSource createSource(World world, RegistryKey<DamageType> key) {
         return new DamageSource(
-                world.getRegistryManager().get(RegistryKeys.DAMAGE_TYPE).entryOf(key));
+                world.getRegistryManager().getOrThrow(RegistryKeys.DAMAGE_TYPE).getOrThrow(key));
     }
 
     public static void generateTypes(Registerable<DamageType> damageTypeRegisterable) {

@@ -254,8 +254,8 @@ public final class ShapeshiftingManager {
             tameableEntity.setSitting(entity.isSneaking());
         }
 
-        ((EntityAccessor) morph).worldsinger$setFlag(
-                EntityAccessor.worldsinger$getFallFlyingIndex(), entity.isFallFlying());
+        ((EntityAccessor) morph).worldsinger$setFlag(EntityAccessor.worldsinger$getGlidingIndex(),
+                entity.isGliding());
         ((LivingEntityAccessor) morph).worldsinger$tickActiveItemStack();
     }
 

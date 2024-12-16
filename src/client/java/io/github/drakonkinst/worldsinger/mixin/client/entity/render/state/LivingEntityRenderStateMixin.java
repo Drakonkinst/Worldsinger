@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2023-2024 Drakonkinst
+ * Copyright (c) 2024 Drakonkinst
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,27 +21,28 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.github.drakonkinst.worldsinger.mixin.accessor;
 
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.server.world.ServerWorld;
+package io.github.drakonkinst.worldsinger.mixin.client.entity.render.state;
+
+import io.github.drakonkinst.worldsinger.entity.render.state.ExtendedLivingEntityRenderState;
+import net.minecraft.client.render.entity.state.EntityRenderState;
+import net.minecraft.client.render.entity.state.LivingEntityRenderState;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.gen.Accessor;
-import org.spongepowered.asm.mixin.gen.Invoker;
+import org.spongepowered.asm.mixin.Unique;
 
-@Mixin(LivingEntity.class)
-public interface LivingEntityAccessor {
+@Mixin(LivingEntityRenderState.class)
+public abstract class LivingEntityRenderStateMixin extends EntityRenderState implements
+        ExtendedLivingEntityRenderState {
 
-    @Invoker("tickActiveItemStack")
-    void worldsinger$tickActiveItemStack();
+    @Unique
+    // Can be extended in the future to have other types of overlays, but too lazy rn
+    private boolean hasMidnightOverlay = false;
 
-    @Invoker("setLivingFlag")
-    void worldsinger$setLivingFlag(int mask, boolean value);
+    public void worldsinger$setMidnightOverlay(boolean flag) {
+        this.hasMidnightOverlay = flag;
+    }
 
-    @Accessor("jumping")
-    boolean worldsinger$isJumping();
-
-    @Invoker("applyDamage")
-    void worldsinger$applyDamage(ServerWorld world, DamageSource source, float amount);
+    public boolean worldsinger$hasMidnightOverlay() {
+        return hasMidnightOverlay;
+    }
 }

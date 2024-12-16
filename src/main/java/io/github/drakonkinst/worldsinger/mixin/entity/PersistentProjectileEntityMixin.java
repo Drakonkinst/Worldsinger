@@ -42,8 +42,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class PersistentProjectileEntityMixin extends ProjectileEntity {
 
     @Shadow
-    protected boolean inGround;
-    @Shadow
     private @Nullable BlockState inBlockState;
 
     public PersistentProjectileEntityMixin(EntityType<? extends ProjectileEntity> entityType,
@@ -60,10 +58,13 @@ public abstract class PersistentProjectileEntityMixin extends ProjectileEntity {
     @Shadow
     protected abstract void fall();
 
+    @Shadow
+    protected abstract boolean isInGround();
+
     @Inject(method = "tick", at = @At("HEAD"))
     private void collideWithSolidSpores(CallbackInfo ci) {
         // Spore sea blocks can change solidity without warning, so check if it should fall even if there is no block update
-        if (this.inGround && !this.isNoClip() && this.inBlockState != null
+        if (this.isInGround() && !this.isNoClip() && this.inBlockState != null
                 && this.inBlockState.isIn(ModBlockTags.AETHER_SPORE_SEA_BLOCKS)
                 && this.shouldFall()) {
             this.fall();

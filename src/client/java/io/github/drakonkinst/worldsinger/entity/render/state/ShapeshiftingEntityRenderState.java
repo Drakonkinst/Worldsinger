@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2023-2024 Drakonkinst
+ * Copyright (c) 2024 Drakonkinst
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,27 +21,21 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.github.drakonkinst.worldsinger.mixin.accessor;
 
+package io.github.drakonkinst.worldsinger.entity.render.state;
+
+import net.minecraft.client.render.entity.state.LivingEntityRenderState;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.server.world.ServerWorld;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.gen.Accessor;
-import org.spongepowered.asm.mixin.gen.Invoker;
+import org.jetbrains.annotations.Nullable;
 
-@Mixin(LivingEntity.class)
-public interface LivingEntityAccessor {
+public abstract class ShapeshiftingEntityRenderState extends LivingEntityRenderState implements
+        ShapeshifterRenderState {
 
-    @Invoker("tickActiveItemStack")
-    void worldsinger$tickActiveItemStack();
+    @Nullable
+    public LivingEntity morph = null;
 
-    @Invoker("setLivingFlag")
-    void worldsinger$setLivingFlag(int mask, boolean value);
-
-    @Accessor("jumping")
-    boolean worldsinger$isJumping();
-
-    @Invoker("applyDamage")
-    void worldsinger$applyDamage(ServerWorld world, DamageSource source, float amount);
+    @Override
+    public LivingEntity getMorph() {
+        return morph;
+    }
 }

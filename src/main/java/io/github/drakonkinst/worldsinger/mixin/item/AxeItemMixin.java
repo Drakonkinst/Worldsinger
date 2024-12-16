@@ -42,6 +42,7 @@ import net.minecraft.item.MiningToolItem;
 import net.minecraft.item.ToolMaterial;
 import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.registry.tag.TagKey;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -50,8 +51,9 @@ import org.spongepowered.asm.mixin.Mixin;
 @Mixin(AxeItem.class)
 public abstract class AxeItemMixin extends MiningToolItem {
 
-    public AxeItemMixin(ToolMaterial material, TagKey<Block> effectiveBlocks, Settings settings) {
-        super(material, effectiveBlocks, settings);
+    public AxeItemMixin(ToolMaterial material, TagKey<Block> effectiveBlocks, float attackDamage,
+            float attackSpeed, Settings settings) {
+        super(material, effectiveBlocks, attackDamage, attackSpeed, settings);
     }
 
     @Override
@@ -84,9 +86,11 @@ public abstract class AxeItemMixin extends MiningToolItem {
             if (target instanceof SilverVulnerable) {
                 // applyDamage() always applies the damage, versus damage() which only damages the mob
                 // with the highest damage value that frame. So this is ideal for bonus damage
-                ((LivingEntityAccessor) target).worldsinger$applyDamage(
-                        attacker.getDamageSources().mobAttack(attacker),
-                        SilverKnifeItem.SILVER_BONUS_DAMAGE);
+                if (target.getWorld() instanceof ServerWorld serverWorld) {
+                    ((LivingEntityAccessor) target).worldsinger$applyDamage(serverWorld,
+                            attacker.getDamageSources().mobAttack(attacker),
+                            SilverKnifeItem.SILVER_BONUS_DAMAGE);
+                }
                 if (isNotCreativePlayer) {
                     silverData.decrementDurability();
                 }

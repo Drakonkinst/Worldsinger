@@ -52,6 +52,8 @@ import net.minecraft.item.Items;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.book.RecipeCategory;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.registry.tag.TagKey;
@@ -68,7 +70,7 @@ public class ModRecipeGenerator extends FabricRecipeProvider {
     @Override
     protected RecipeGenerator getRecipeGenerator(WrapperLookup wrapperLookup,
             RecipeExporter recipeExporter) {
-        return new RecipeGenerator() {
+        return new RecipeGenerator(wrapperLookup, recipeExporter) {
             public void generate() {
                 offerStairsRecipe(ModBlocks.ROSEITE_STAIRS, true, ModBlocks.ROSEITE_BLOCK);
                 offerSlabRecipe(ModBlocks.ROSEITE_SLAB, true, ModBlocks.ROSEITE_BLOCK);
@@ -150,7 +152,8 @@ public class ModRecipeGenerator extends FabricRecipeProvider {
                         .input('#', ModItems.ROSEITE_CRYSTAL)
                         .criterion(hasItem(ModItems.ROSEITE_CRYSTAL),
                                 this.conditionsFromItem(ModItems.ROSEITE_CRYSTAL))
-                        .offerTo(exporter, Worldsinger.id("glass_bottle_from_roseite_crystal"));
+                        .offerTo(exporter, RegistryKey.of(RegistryKeys.RECIPE,
+                                Worldsinger.id("glass_bottle_from_roseite_crystal")));
                 this.createShaped(RecipeCategory.MISC, ModItems.ROSEITE_CORE)
                         .pattern("###")
                         .pattern("#B#")
@@ -415,8 +418,8 @@ public class ModRecipeGenerator extends FabricRecipeProvider {
                     blasting.criterion("has_" + itemId, this.conditionsFromItem(item));
                 }
 
-                smelting.offerTo(RecipeProvider.getSmeltingItemPath(output));
-                blasting.offerTo(RecipeProvider.getBlastingItemPath(output));
+                smelting.offerTo(exporter);
+                blasting.offerTo(exporter);
             }
 
             private void offerReversibleNuggetIngotRecipe(Item nugget, Item ingot) {

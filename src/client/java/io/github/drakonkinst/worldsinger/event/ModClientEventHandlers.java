@@ -44,7 +44,6 @@ import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.math.MathHelper;
 
 @SuppressWarnings("UnstableApiUsage")
@@ -78,7 +77,7 @@ public final class ModClientEventHandlers {
                 }
                 final float forwardSpeed = player.input.movementForward;
                 final float sidewaysSpeed = player.input.movementSideways;
-                final boolean jumping = player.input.jumping;
+                final boolean jumping = player.input.playerInput.jump();
                 final boolean sprinting = MinecraftClient.getInstance().options.sprintKey.isPressed();
                 cameraPossessable.commandMovement(yaw, pitch, forwardSpeed, sidewaysSpeed, jumping,
                         sprinting);
@@ -115,15 +114,14 @@ public final class ModClientEventHandlers {
         }));
 
         UseItemCallback.EVENT.register((player, world, hand) -> {
-            ItemStack stack = player.getStackInHand(hand);
             if (player.isSpectator()) {
-                return TypedActionResult.pass(stack);
+                return ActionResult.PASS;
             }
             CameraPossessable possessedEntity = PossessionClientUtil.getPossessedEntity();
             if (possessedEntity != null && !possessedEntity.canInteractWithEntities()) {
-                return TypedActionResult.fail(stack);
+                return ActionResult.FAIL;
             }
-            return TypedActionResult.pass(stack);
+            return ActionResult.PASS;
         });
 
         UseBlockCallback.EVENT.register((player, world, hand, hitResult) -> {

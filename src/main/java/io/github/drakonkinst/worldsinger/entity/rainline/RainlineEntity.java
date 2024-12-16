@@ -34,6 +34,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker.Builder;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
@@ -58,7 +59,7 @@ public class RainlineEntity extends Entity implements GeoEntity {
     private static final String KEY_FOLLOWING_PATH = "following_path";
 
     public static int getTargetHeight(World world) {
-        return world.getTopY() + HEIGHT_OFFSET;
+        return world.getTopYInclusive() + HEIGHT_OFFSET;
     }
 
     public RainlineEntity(EntityType<? extends RainlineEntity> type, World world) {
@@ -170,5 +171,10 @@ public class RainlineEntity extends Entity implements GeoEntity {
     @Override
     public AnimatableInstanceCache getAnimatableInstanceCache() {
         return geoCache;
+    }
+
+    @Override
+    public final boolean damage(ServerWorld world, DamageSource source, float amount) {
+        return false;
     }
 }

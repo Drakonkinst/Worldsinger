@@ -32,6 +32,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ToolMaterial;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.world.World;
@@ -42,15 +43,16 @@ public class SilverKnifeItem extends KnifeItem {
 
     public SilverKnifeItem(ToolMaterial toolMaterial, float attackDamage, float attackSpeed,
             Settings settings) {
-        super(toolMaterial, settings);
+        super(toolMaterial, attackDamage, attackSpeed, settings);
     }
 
     @Override
     public boolean postHit(ItemStack stack, LivingEntity target, LivingEntity attacker) {
-        if (target instanceof SilverVulnerable) {
+        if (target instanceof SilverVulnerable
+                && target.getWorld() instanceof ServerWorld serverWorld) {
             // applyDamage() always applies the damage, versus damage() which only damages the mob
             // with the highest damage value that frame. So this is ideal for bonus damage
-            ((LivingEntityAccessor) target).worldsinger$applyDamage(
+            ((LivingEntityAccessor) target).worldsinger$applyDamage(serverWorld,
                     attacker.getDamageSources().mobAttack(attacker), SILVER_BONUS_DAMAGE);
         }
         return super.postHit(stack, target, attacker);

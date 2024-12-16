@@ -43,6 +43,7 @@ import net.minecraft.fluid.FluidState;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.registry.tag.TagKey;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
@@ -64,7 +65,7 @@ public abstract class LivingEntityCustomFluidMovementMixin extends Entity {
     }
 
     @Shadow
-    public abstract boolean damage(DamageSource source, float amount);
+    public abstract boolean damage(ServerWorld world, DamageSource source, float amount);
 
     @Shadow
     protected abstract boolean shouldSwimInFluids();
@@ -146,7 +147,7 @@ public abstract class LivingEntityCustomFluidMovementMixin extends Entity {
         return false;
     }
 
-    @Inject(method = "travel", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;isFallFlying()Z"), cancellable = true)
+    @Inject(method = "travel", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;isGliding()Z"), cancellable = true)
     private void injectCustomFluidPhysics(Vec3d movementInput, CallbackInfo ci) {
         FluidState fluidState = this.getWorld().getFluidState(this.getBlockPos());
 

@@ -85,7 +85,7 @@ public class LumarManager {
                     Worldsinger.LOGGER.info("Spawning bonus chest!");
                     world.getRegistryManager()
                             .getOptional(RegistryKeys.CONFIGURED_FEATURE)
-                            .flatMap(featureRegistry -> featureRegistry.getEntry(
+                            .flatMap(featureRegistry -> featureRegistry.getOptional(
                                     MiscConfiguredFeatures.BONUS_CHEST))
                             .ifPresent(feature -> feature.value()
                                     .generate(world, world.getChunkManager().getChunkGenerator(),

@@ -50,12 +50,12 @@ public class SporeBottleEntity extends ThrownItemEntity implements FlyingItemEnt
         super(entityType, world);
     }
 
-    public SporeBottleEntity(World world, LivingEntity owner) {
-        super(ModEntityTypes.SPORE_BOTTLE, owner, world);
+    public SporeBottleEntity(World world, LivingEntity owner, ItemStack stack) {
+        super(ModEntityTypes.SPORE_BOTTLE, owner, world, stack);
     }
 
-    public SporeBottleEntity(World world, double x, double y, double z) {
-        super(ModEntityTypes.SPORE_BOTTLE, x, y, z, world);
+    public SporeBottleEntity(World world, double x, double y, double z, ItemStack stack) {
+        super(ModEntityTypes.SPORE_BOTTLE, x, y, z, world, stack);
     }
 
     @Override

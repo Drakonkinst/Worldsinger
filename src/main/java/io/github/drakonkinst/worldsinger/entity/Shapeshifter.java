@@ -42,6 +42,10 @@ public interface Shapeshifter {
         // Do nothing
     }
 
+    default void copyDataToMorph(LivingEntity morph) {
+        // Do nothing
+    }
+
     default boolean shouldCopyEquipmentVisuals() {
         return false;
     }
@@ -50,9 +54,15 @@ public interface Shapeshifter {
         return true;
     }
 
-    @Nullable LivingEntity getMorph();
+    default boolean shouldMorphReplaceSelf() {
+        return true;
+    }
+
+    @Nullable
+    LivingEntity getMorph();
 
     default LivingEntity toEntity() {
         return (LivingEntity) this;
     }
+
 }

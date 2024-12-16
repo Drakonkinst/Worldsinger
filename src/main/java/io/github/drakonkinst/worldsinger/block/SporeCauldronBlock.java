@@ -32,12 +32,9 @@ import net.minecraft.block.LeveledCauldronBlock;
 import net.minecraft.block.cauldron.CauldronBehavior;
 import net.minecraft.block.cauldron.CauldronBehavior.CauldronBehaviorMap;
 import net.minecraft.entity.Entity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldView;
 import net.minecraft.world.biome.Biome.Precipitation;
 
 public class SporeCauldronBlock extends LeveledCauldronBlock implements SporeEmitting {
@@ -49,12 +46,14 @@ public class SporeCauldronBlock extends LeveledCauldronBlock implements SporeEmi
                                     .forGetter(block -> block.behaviorMap),
                             AetherSpores.CODEC.fieldOf("sporeType")
                                     .forGetter(SporeCauldronBlock::getSporeType))
-                    .apply(instance, SporeCauldronBlock::new));
+                    .apply(instance,
+                            (settings1, behaviorMap1, sporeType1) -> new SporeCauldronBlock(
+                                    behaviorMap1, sporeType1, settings1)));
 
     protected final AetherSpores sporeType;
 
-    public SporeCauldronBlock(Settings settings, CauldronBehaviorMap behaviorMap,
-            AetherSpores sporeType) {
+    public SporeCauldronBlock(CauldronBehaviorMap behaviorMap, AetherSpores sporeType,
+            Settings settings) {
         super(Precipitation.NONE, behaviorMap, settings);
         this.sporeType = sporeType;
     }

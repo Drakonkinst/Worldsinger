@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2023-2024 Drakonkinst
+ * Copyright (c) 2024 Drakonkinst
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,27 +21,12 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.github.drakonkinst.worldsinger.mixin.accessor;
 
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.server.world.ServerWorld;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.gen.Accessor;
-import org.spongepowered.asm.mixin.gen.Invoker;
+package io.github.drakonkinst.worldsinger.registry;
 
-@Mixin(LivingEntity.class)
-public interface LivingEntityAccessor {
+import net.minecraft.item.map.MapDecorationType;
+import net.minecraft.registry.entry.RegistryEntry;
 
-    @Invoker("tickActiveItemStack")
-    void worldsinger$tickActiveItemStack();
-
-    @Invoker("setLivingFlag")
-    void worldsinger$setLivingFlag(int mask, boolean value);
-
-    @Accessor("jumping")
-    boolean worldsinger$isJumping();
-
-    @Invoker("applyDamage")
-    void worldsinger$applyDamage(ServerWorld world, DamageSource source, float amount);
+public class ModMapDecorationTypes {
+    public static final RegistryEntry<MapDecorationType>
 }

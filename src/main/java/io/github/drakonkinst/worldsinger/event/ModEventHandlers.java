@@ -30,10 +30,12 @@ import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarManagerAccess;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.MidnightAetherBondManager;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.SporeKillingUtil;
 import io.github.drakonkinst.worldsinger.effect.ModStatusEffects;
+import io.github.drakonkinst.worldsinger.item.ModItems;
 import io.github.drakonkinst.worldsinger.registry.tag.ModItemTags;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.player.AttackBlockCallback;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
+import net.fabricmc.fabric.api.registry.FuelRegistryEvents;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -47,8 +49,16 @@ public final class ModEventHandlers {
 
     @SuppressWarnings("UnstableApiUsage")
     public static void initialize() {
+        // Furnace fuels
+        FuelRegistryEvents.BUILD.register((builder, context) -> {
+            // // Using the time required to cook most items
+            int numItemsToTicks = 20 * 10;
+            builder.add(ModItems.SUNLIGHT_SPORES_BOTTLE, 8 * numItemsToTicks);
+            builder.add(ModItems.SUNLIGHT_SPORES_BUCKET, 100 * numItemsToTicks);
+        });
+        
         // Add Thirst-related effects when consuming an item
-        FinishConsumingItemCallback.EVENT.register((entity, stack, foodComponent) -> {
+        FinishConsumingItemCallback.EVENT.register((entity, stack) -> {
             if (entity instanceof PlayerEntity player) {
                 player.getAttachedOrCreate(ModAttachmentTypes.THIRST).drink(stack.getItem(), stack);
 

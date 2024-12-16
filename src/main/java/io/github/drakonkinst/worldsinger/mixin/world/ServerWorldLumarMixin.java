@@ -168,8 +168,9 @@ public abstract class ServerWorldLumarMixin extends WorldLumarMixin implements
 
     @Unique
     private boolean canPlaceSporeBlock(BlockPos pos, BlockPos belowPos) {
-        return pos.getY() >= this.getBottomY() && pos.getY() < this.getTopY() && this.isSkyVisible(
-                pos) && this.getBlockState(pos).isAir() && Block.isFaceFullSquare(
+        return pos.getY() >= this.getBottomY() && pos.getY() < this.getTopYInclusive()
+                && this.isSkyVisible(pos) && this.getBlockState(pos).isAir()
+                && Block.isFaceFullSquare(
                 this.getBlockState(belowPos).getCollisionShape(this, belowPos), Direction.UP);
     }
 }

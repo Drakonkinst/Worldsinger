@@ -6,14 +6,16 @@
     "accessor.EntityRendererAccessor",
     "accessor.WorldRendererAccessor",
     "block.FluidRendererMixin",
+    "entity.AbstractBoatEntityRendererMixin",
     "entity.BoatEntityRendererMixin",
     "entity.ClientPlayerEntityFreeLookMixin",
     "entity.ClientPlayerEntityLunagreeMixin",
     "entity.ClientPlayerEntityPossessionMixin",
     "entity.EntityRenderDispatcherMixin",
     "entity.EyesFeatureRendererMixin",
-    "entity.LivingEntityRendererMixin",
     "entity.OverlayTextureMixin",
+    "entity.render.state.LivingEntityRendererMixin",
+    "entity.render.state.LivingEntityRenderStateMixin",
     "gui.DebugHudMixin",
     "gui.DrawContextMixin",
     "gui.InGameHudMixin",
@@ -32,7 +34,8 @@
     "world.ClientWorldLumarMixin",
     "world.GameRendererMixin",
     "world.WorldRendererLumarMixin",
-    "world.WorldRendererPossessionMixin"
+    "world.WorldRendererPossessionMixin",
+    "world.WorldRendererShapeshifterMixin"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2023-2024 Drakonkinst
+ * Copyright (c) 2024 Drakonkinst
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,12 +22,11 @@
  * SOFTWARE.
  */
 
-package io.github.drakonkinst.worldsinger.world;
+package io.github.drakonkinst.worldsinger.entity.render.state;
 
-import io.github.drakonkinst.worldsinger.world.PersistentByteData.ByteDataType;
+import net.minecraft.entity.LivingEntity;
 
-public interface PersistentByteDataManagerAccess {
+public interface ShapeshifterRenderState {
 
-    <T extends PersistentByteData> T worldsinger$getOrCreateFromBytes(ByteDataType<T> type,
-            String id);
+    LivingEntity getMorph();
 }

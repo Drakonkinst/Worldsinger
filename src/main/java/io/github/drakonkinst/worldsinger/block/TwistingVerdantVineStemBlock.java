@@ -96,8 +96,9 @@ public class TwistingVerdantVineStemBlock extends AbstractVerticalGrowthStemBloc
         if (state.get(Properties.WATERLOGGED)) {
             tickView.scheduleFluidTick(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
         }
-        return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos,
-                neighborPos).with(Properties.PERSISTENT, state.get(Properties.PERSISTENT));
+        return super.getStateForNeighborUpdate(state, world, tickView, pos, direction, neighborPos,
+                        neighborState, random)
+                .with(Properties.PERSISTENT, state.get(Properties.PERSISTENT));
     }
 
     @Override

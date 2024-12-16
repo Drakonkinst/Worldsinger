@@ -35,6 +35,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ProjectileItem;
 import net.minecraft.item.tooltip.TooltipType;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.stat.Stats;
 import net.minecraft.text.Text;
@@ -56,11 +57,9 @@ public class CannonballItem extends Item implements ProjectileItem {
         world.playSound(null, user.getX(), user.getY(), user.getZ(),
                 ModSoundEvents.ENTITY_CANNONBALL_THROW, SoundCategory.NEUTRAL, 0.5F,
                 0.4F / (world.getRandom().nextFloat() * 0.4F + 0.8F));
-        if (!world.isClient) {
-            CannonballEntity cannonballEntity = new CannonballEntity(world, user);
-            cannonballEntity.setItem(itemStack);
-            cannonballEntity.setVelocity(user, user.getPitch(), user.getYaw(), -20.0F, 0.5F, 1.0F);
-            world.spawnEntity(cannonballEntity);
+        if (world instanceof ServerWorld serverWorld) {
+            ProjectileEntity.spawnWithVelocity(CannonballEntity::new, serverWorld, itemStack, user,
+                    -20.0F, 0.5F, 1.0F);
         }
 
         user.incrementStat(Stats.USED.getOrCreateStat(this));
@@ -72,7 +71,7 @@ public class CannonballItem extends Item implements ProjectileItem {
     public ProjectileEntity createEntity(World world, Position pos, ItemStack stack,
             Direction direction) {
         CannonballEntity cannonballEntity = new CannonballEntity(world, pos.getX(), pos.getY(),
-                pos.getZ());
+                pos.getZ(), stack);
         cannonballEntity.setItem(stack);
         return cannonballEntity;
     }

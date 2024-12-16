@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2023-2024 Drakonkinst
+ * Copyright (c) 2024 Drakonkinst
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,31 +22,8 @@
  * SOFTWARE.
  */
 
-package io.github.drakonkinst.worldsinger.world;
+package io.github.drakonkinst.worldsinger.entity.render.state;
 
-import java.io.File;
-import java.util.function.Supplier;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.registry.RegistryWrapper;
-import net.minecraft.world.PersistentState;
+public class MidnightCreatureEntityRenderState extends ShapeshiftingEntityRenderState {
 
-// A variation of PersistentState that stores a byte array instead of NBT
-public abstract class PersistentByteData extends PersistentState {
-
-    public record ByteDataType<T extends PersistentState>(Supplier<T> constructor) {}
-
-    public abstract void loadBytesFromFile(File file);
-
-    public abstract void saveBytesToFile(File file);
-
-    @Override
-    public void save(File file, RegistryWrapper.WrapperLookup registryLookup) {
-        saveBytesToFile(file);
-    }
-
-    // Does not use NBT
-    @Override
-    public NbtCompound writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-        throw new UnsupportedOperationException();
-    }
 }

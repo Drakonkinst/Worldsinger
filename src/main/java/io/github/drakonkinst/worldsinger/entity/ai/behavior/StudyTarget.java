@@ -27,10 +27,10 @@ import com.mojang.datafixers.util.Pair;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import java.util.List;
 import java.util.function.BiPredicate;
+import net.minecraft.command.argument.EntityAnchorArgumentType.EntityAnchor;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
-import net.minecraft.entity.ai.brain.task.LookTargetUtil;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.tslat.smartbrainlib.api.core.behaviour.DelayedBehaviour;
@@ -75,7 +75,9 @@ public class StudyTarget<E extends MobEntity> extends DelayedBehaviour<E> {
 
     @Override
     protected void start(E entity) {
-        LookTargetUtil.lookAt(entity, this.target);
+        if (this.target != null) {
+            entity.lookAt(EntityAnchor.EYES, this.target.getPos());
+        }
     }
 
     @Override

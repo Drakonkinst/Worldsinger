@@ -45,6 +45,8 @@ import net.minecraft.util.math.random.Random;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldEvents;
+import net.minecraft.world.block.WireOrientation;
+import org.jetbrains.annotations.Nullable;
 
 public class SunlightBlock extends StillFluidBlock {
 
@@ -113,8 +115,8 @@ public class SunlightBlock extends StillFluidBlock {
 
     @Override
     protected void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock,
-            BlockPos sourcePos, boolean notify) {
-        super.neighborUpdate(state, world, pos, sourceBlock, sourcePos, notify);
+            @Nullable WireOrientation wireOrientation, boolean notify) {
+        super.neighborUpdate(state, world, pos, sourceBlock, wireOrientation, notify);
         if (SunlightBlock.isTouchingAnyWater(world, pos)) {
             world.setBlockState(pos, Blocks.AIR.getDefaultState());
             world.syncWorldEvent(WorldEvents.LAVA_EXTINGUISHED, pos, 0);

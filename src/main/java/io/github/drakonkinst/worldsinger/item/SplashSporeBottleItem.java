@@ -31,6 +31,7 @@ import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ProjectileItem;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.ActionResult;
@@ -51,11 +52,9 @@ public class SplashSporeBottleItem extends SporeBottleItem implements Projectile
                 ModSoundEvents.ENTITY_SPORE_POTION_THROW, SoundCategory.PLAYERS, 0.5F,
                 0.4F / (world.getRandom().nextFloat() * 0.4F + 0.8F));
         ItemStack itemStack = user.getStackInHand(hand);
-        if (!world.isClient) {
-            SporeBottleEntity potionEntity = new SporeBottleEntity(world, user);
-            potionEntity.setItem(itemStack);
-            potionEntity.setVelocity(user, user.getPitch(), user.getYaw(), -20.0F, 0.5F, 1.0F);
-            world.spawnEntity(potionEntity);
+        if (world instanceof ServerWorld serverWorld) {
+            ProjectileEntity.spawnWithVelocity(SporeBottleEntity::new, serverWorld, itemStack, user,
+                    -20.0F, 0.5F, 1.0F);
         }
 
         user.incrementStat(Stats.USED.getOrCreateStat(this));
@@ -67,7 +66,7 @@ public class SplashSporeBottleItem extends SporeBottleItem implements Projectile
     public ProjectileEntity createEntity(World world, Position pos, ItemStack stack,
             Direction direction) {
         SporeBottleEntity sporeBottleEntity = new SporeBottleEntity(world, pos.getX(), pos.getY(),
-                pos.getZ());
+                pos.getZ(), stack);
         sporeBottleEntity.setItem(stack);
         return sporeBottleEntity;
     }

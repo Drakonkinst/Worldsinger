@@ -55,6 +55,9 @@ public abstract class ServerWorldCosmereMixin extends WorldCosmereMixin {
     @Shadow
     public abstract PersistentStateManager getPersistentStateManager();
 
+    @Shadow
+    public abstract GameRules getGameRules();
+
     @Inject(method = "<init>", at = @At("TAIL"))
     private void initializeCosmereData(MinecraftServer server, Executor workerExecutor,
             Session session, ServerWorldProperties properties, RegistryKey<World> worldKey,
@@ -87,7 +90,7 @@ public abstract class ServerWorldCosmereMixin extends WorldCosmereMixin {
 
     @Inject(method = "tickTime", at = @At("RETURN"))
     private void tickCosmereTime(CallbackInfo ci) {
-        if (CosmerePlanet.isCosmerePlanet((World) (Object) this) && this.properties.getGameRules()
+        if (CosmerePlanet.isCosmerePlanet((World) (Object) this) && this.getGameRules()
                 .getBoolean(GameRules.DO_DAYLIGHT_CYCLE)) {
             cosmereWorldData.setTimeOfDay(cosmereWorldData.getTimeOfDay() + 1L);
             cosmereWorldData.markDirty();

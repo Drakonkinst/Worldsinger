@@ -139,7 +139,7 @@ public abstract class AetherSporeFluid extends FlowableFluid implements SporeEmi
         // Play particles and sounds during seething only
         BlockPos posAbove = pos.up();
         if (world.getBlockState(posAbove).isAir() && !world.getBlockState(posAbove)
-                .isOpaqueFullCube(world, posAbove)) {
+                .isOpaqueFullCube()) {
             if (random.nextInt(100) == 0) {
                 double spawnX = (double) pos.getX() + random.nextDouble();
                 double spawnY = (double) pos.getY() + 1.0 + random.nextDouble();

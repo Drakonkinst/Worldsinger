@@ -81,7 +81,7 @@ public class CrimsonSpikeBlock extends Block implements Waterloggable, SporeGrow
 
     // Conditional XZ offsetter that acts normally when on Y-axis, and is disabled on other axes.
     public static Offsetter getOffsetter() {
-        return (state, world, pos) -> {
+        return (state, pos) -> {
             if (state.get(Properties.FACING).getAxis() != Axis.Y) {
                 return Vec3d.ZERO;
             }
@@ -312,7 +312,7 @@ public class CrimsonSpikeBlock extends Block implements Waterloggable, SporeGrow
             voxelShape = BASE_SHAPES[axis.ordinal()];
         }
         if (axis == Axis.Y) {
-            Vec3d modelOffset = state.getModelOffset(world, pos);
+            Vec3d modelOffset = state.getModelOffset(pos);
             return voxelShape.offset(modelOffset.x, 0.0, modelOffset.z);
         }
         return voxelShape;

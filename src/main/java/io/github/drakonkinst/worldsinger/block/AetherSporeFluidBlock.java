@@ -81,7 +81,8 @@ public class AetherSporeFluidBlock extends FluidBlock implements SporeEmitting {
 
         // Iterate upwards and update fluidization
         while (AetherSporeFluidBlock.updateFluidizationForBlock(world, mutable,
-                world.getBlockState(mutable), fluidized) && mutable.getY() < world.getTopY()) {
+                world.getBlockState(mutable), fluidized)
+                && mutable.getY() < world.getTopYInclusive()) {
             mutable.move(Direction.UP);
         }
     }

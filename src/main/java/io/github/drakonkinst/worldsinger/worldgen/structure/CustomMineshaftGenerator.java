@@ -38,6 +38,7 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.MobSpawnerBlockEntity;
 import net.minecraft.block.enums.RailShape;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.vehicle.ChestMinecartEntity;
 import net.minecraft.loot.LootTable;
 import net.minecraft.nbt.NbtCompound;
@@ -628,8 +629,7 @@ public class CustomMineshaftGenerator {
                         .with(RailBlock.SHAPE, RailShape.NORTH_SOUTH);
                 for (int z = 0; z <= maxZ; ++z) {
                     BlockState blockState3 = this.getBlockAt(world, 1, -1, z, chunkBox);
-                    if (blockState3.isAir() || !blockState3.isOpaqueFullCube(world,
-                            this.offsetPos(1, -1, z))) {
+                    if (blockState3.isAir() || !blockState3.isOpaqueFullCube()) {
                         continue;
                     }
                     float f = this.isUnderSeaLevel(world, 1, 0, z, chunkBox) ? 0.7f : 0.9f;
@@ -685,11 +685,14 @@ public class CustomMineshaftGenerator {
                         .with(RailBlock.SHAPE,
                                 random.nextBoolean() ? RailShape.NORTH_SOUTH : RailShape.EAST_WEST);
                 this.addBlock(world, blockState, x, y, z, boundingBox);
-                ChestMinecartEntity chestMinecartEntity = new ChestMinecartEntity(
-                        world.toServerWorld(), (double) blockPos.getX() + 0.5,
-                        (double) blockPos.getY() + 0.5, (double) blockPos.getZ() + 0.5);
-                chestMinecartEntity.setLootTable(lootTable, random.nextLong());
-                world.spawnEntity(chestMinecartEntity);
+                ChestMinecartEntity chestMinecartEntity = EntityType.CHEST_MINECART.create(
+                        world.toServerWorld(), SpawnReason.CHUNK_GENERATION);
+                if (chestMinecartEntity != null) {
+                    chestMinecartEntity.initPosition((double) blockPos.getX() + 0.5,
+                            (double) blockPos.getY() + 0.5, (double) blockPos.getZ() + 0.5);
+                    chestMinecartEntity.setLootTable(lootTable, random.nextLong());
+                    world.spawnEntity(chestMinecartEntity);
+                }
                 return true;
             }
             return false;
@@ -760,8 +763,8 @@ public class CustomMineshaftGenerator {
                                 startY + yOffset);
                         return;
                     }
-                    belowWorldTop =
-                            yOffset <= 50 && canReplace && mutable.getY() < world.getTopY() - 1;
+                    belowWorldTop = yOffset <= 50 && canReplace
+                            && mutable.getY() < world.getTopYInclusive() - 1;
                 }
                 ++yOffset;
             }

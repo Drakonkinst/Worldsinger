@@ -166,7 +166,8 @@ public class TallCrimsonSpinesBlock extends Block implements Waterloggable, Spor
     public BlockState getPlacementState(ItemPlacementContext ctx) {
         BlockPos pos = ctx.getBlockPos();
         World world = ctx.getWorld();
-        if (pos.getY() >= world.getTopY() - 1 || !world.getBlockState(pos.up()).canReplace(ctx)) {
+        if (pos.getY() >= world.getTopYInclusive() - 1 || !world.getBlockState(pos.up())
+                .canReplace(ctx)) {
             return null;
         }
         return this.getDefaultState()

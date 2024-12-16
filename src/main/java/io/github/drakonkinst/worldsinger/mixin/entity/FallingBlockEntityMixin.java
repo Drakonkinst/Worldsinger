@@ -37,6 +37,7 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
@@ -115,7 +116,9 @@ public abstract class FallingBlockEntityMixin extends Entity {
     // solidifying the sea too easy.
     @Inject(method = "tick", at = @At("RETURN"))
     private void destroyIfInSporeSea(CallbackInfo ci) {
-        World world = this.getWorld();
+        if (!(this.getWorld() instanceof ServerWorld world)) {
+            return;
+        }
         if (!SeetheManager.areSporesFluidized(world)) {
             // Let normal fluid hitbox handle this
             return;
@@ -129,7 +132,7 @@ public abstract class FallingBlockEntityMixin extends Entity {
                 && fluidState.isStill()) {
             this.discard();
             if (this.dropItem) {
-                this.dropItem(this.block.getBlock());
+                this.dropItem(world, this.block.getBlock());
             }
         }
     }
