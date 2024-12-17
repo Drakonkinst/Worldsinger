@@ -25,10 +25,17 @@
 package io.github.drakonkinst.worldsinger.registry;
 
 import io.github.drakonkinst.worldsinger.Worldsinger;
+import net.minecraft.item.equipment.EquipmentModel;
 import net.minecraft.util.Identifier;
 
 public class ModEquipmentModels {
 
     public static final Identifier STEEL = Worldsinger.id("steel");
     // TODO: Register
+
+    public static EquipmentModel buildHumanoid(String name) {
+        return EquipmentModel.builder().addHumanoidLayers(Worldsinger.id(name)).build();
+    }
+
+    private ModEquipmentModels() {}
 }

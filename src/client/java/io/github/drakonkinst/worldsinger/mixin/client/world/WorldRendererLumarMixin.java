@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2023-2024 Drakonkinst
+ * Copyright (c) 2024 Drakonkinst
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,22 +21,32 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+
 package io.github.drakonkinst.worldsinger.mixin.client.world;
 
-import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
-import io.github.drakonkinst.worldsinger.cosmere.lumar.RainlineManager;
-import io.github.drakonkinst.worldsinger.entity.rainline.RainlineEntity;
-import io.github.drakonkinst.worldsinger.util.ModEnums;
-import net.minecraft.block.enums.CameraSubmersionType;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import com.mojang.blaze3d.systems.RenderSystem;
+import io.github.drakonkinst.worldsinger.cosmere.CosmerePlanet;
+import io.github.drakonkinst.worldsinger.world.LumarSkyRendering;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.render.BufferBuilderStorage;
 import net.minecraft.client.render.Camera;
-import net.minecraft.client.render.GameRenderer;
-import net.minecraft.client.render.LightmapTextureManager;
-import net.minecraft.client.render.RenderTickCounter;
+import net.minecraft.client.render.DimensionEffects;
+import net.minecraft.client.render.Fog;
+import net.minecraft.client.render.FrameGraphBuilder;
+import net.minecraft.client.render.RenderPass;
+import net.minecraft.client.render.RenderPhase;
+import net.minecraft.client.render.SkyRendering;
+import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.WorldRenderer;
-import net.minecraft.client.util.ObjectAllocator;
+import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
+import net.minecraft.client.render.entity.EntityRenderDispatcher;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.ClientWorld;
+import net.minecraft.util.math.ColorHelper;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Matrix4f;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -49,97 +59,63 @@ public abstract class WorldRendererLumarMixin {
 
     @Shadow
     private @Nullable ClientWorld world;
+    @Shadow
+    @Final
+    private MinecraftClient client;
 
+    @Shadow
+    protected abstract boolean isSkyDark(float tickDelta);
+
+    @Shadow
+    @Final
+    private SkyRendering skyRendering;
     @Unique
-    @Nullable
-    private RainlineEntity nearestRainlineEntity = null;
+    private LumarSkyRendering lumarSkyRendering;
 
-    @Inject(method = "render", at = @At("HEAD"))
-    private void trackNearbyRainlineEntities(ObjectAllocator allocator,
-            RenderTickCounter tickCounter, boolean renderBlockOutline, Camera camera,
-            GameRenderer gameRenderer, LightmapTextureManager lightmapTextureManager,
-            Matrix4f positionMatrix, Matrix4f projectionMatrix, CallbackInfo ci) {
-        if (this.world == null) {
+    @Inject(method = "<init>", at = @At("TAIL"))
+    private void initializeLumarSkyRendering(MinecraftClient client,
+            EntityRenderDispatcher entityRenderDispatcher,
+            BlockEntityRenderDispatcher blockEntityRenderDispatcher,
+            BufferBuilderStorage bufferBuilders, CallbackInfo ci) {
+        this.lumarSkyRendering = new LumarSkyRendering(skyRendering);
+    }
+
+    @WrapOperation(method = "renderSky", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/RenderPass;setRenderer(Ljava/lang/Runnable;)V"))
+    private void renderLumarCustomSky(RenderPass instance, Runnable runnable,
+            Operation<Void> original, FrameGraphBuilder frameGraphBuilder, Camera camera,
+            float tickDelta, Fog fog) {
+        if (this.world == null || !CosmerePlanet.isLumar(this.world)) {
+            original.call(instance, runnable);
             return;
         }
-        nearestRainlineEntity = RainlineManager.getNearestRainlineEntity(this.world,
-                camera.getPos(), RainlineManager.RAINLINE_GRADIENT_RADIUS);
+        original.call(instance, (Runnable) (() -> {
+            RenderSystem.setShaderFog(fog);
+            RenderPhase.MAIN_TARGET.startDrawing();
+
+            MatrixStack matrixStack = new MatrixStack();
+            Tessellator tessellator = Tessellator.getInstance();
+            DimensionEffects dimensionEffects = this.world.getDimensionEffects();
+            float skyAngleRadians = this.world.getSkyAngleRadians(tickDelta);
+            float skyAngle = this.world.getSkyAngle(tickDelta);
+            float skyAlpha = 1.0F - this.world.getRainGradient(tickDelta);
+            float starBrightness = this.world.getStarBrightness(tickDelta) * skyAlpha;
+            int dimensionSkyColor = dimensionEffects.getSkyColor(skyAngle);
+            int skyColor = this.world.getSkyColor(this.client.gameRenderer.getCamera().getPos(),
+                    tickDelta);
+            float r = ColorHelper.floatFromChannel(ColorHelper.getRed(skyColor));
+            float g = ColorHelper.floatFromChannel(ColorHelper.getGreen(skyColor));
+            float b = ColorHelper.floatFromChannel(ColorHelper.getBlue(skyColor));
+            this.skyRendering.renderSky(r, g, b);
+            if (dimensionEffects.isSunRisingOrSetting(skyAngle)) {
+                this.skyRendering.renderGlowingSky(matrixStack, tessellator, skyAngleRadians,
+                        dimensionSkyColor);
+            }
+
+            lumarSkyRendering.renderLumarCelestialBodies(matrixStack, tessellator, tickDelta,
+                    skyAngle, skyAlpha, starBrightness, fog);
+            if (this.isSkyDark(tickDelta)) {
+                this.skyRendering.renderSkyDark(matrixStack);
+            }
+        }));
     }
-
-    // TODO: RESTORE
-
-    // @WrapOperation(method = "tickRainSplashing", at = @At(value = "INVOKE", target = "Lnet/minecraft/block/BlockState;isOf(Lnet/minecraft/block/Block;)Z"), slice = @Slice(from = @At(value = "INVOKE", target = "Lnet/minecraft/fluid/FluidState;getHeight(Lnet/minecraft/world/BlockView;Lnet/minecraft/util/math/BlockPos;)F"), to = @At(value = "INVOKE", target = "Lnet/minecraft/client/world/ClientWorld;addParticle(Lnet/minecraft/particle/ParticleEffect;DDDDDD)V")))
-    // private boolean makeLavaRainEffectsDataDriven(BlockState instance, Block block,
-    //         Operation<Boolean> original) {
-    //     if (original.call(instance, block)) {
-    //         return true;
-    //     }
-    //     return instance.isIn(ModBlockTags.SMOKES_IN_RAIN);
-    // }
-    //
-    // @ModifyExpressionValue(method = "tickRainSplashing", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/world/ClientWorld;getRainGradient(F)F"))
-    // private float addRainlineEffects1(float original, Camera camera) {
-    //     if (nearestRainlineEntity != null) {
-    //         return Math.max(RainlineManager.getRainlineGradient(this.world, camera.getPos(), false),
-    //                 original);
-    //     }
-    //     return original;
-    // }
-    //
-    // @ModifyExpressionValue(method = "renderSky", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/world/ClientWorld;getRainGradient(F)F"))
-    // private float renderRainlines1(float original, Matrix4f matrix4f, Matrix4f projectionMatrix,
-    //         float tickDelta, Camera camera, boolean thickFog, Runnable fogCallback) {
-    //     if (nearestRainlineEntity != null) {
-    //         return Math.max(RainlineManager.getRainlineGradient(this.world, camera.getPos(), true),
-    //                 original);
-    //     }
-    //     return original;
-    // }
-    //
-    // @WrapOperation(method = "tickRainSplashing", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/biome/Biome;getPrecipitation(Lnet/minecraft/util/math/BlockPos;)Lnet/minecraft/world/biome/Biome$Precipitation;"))
-    // private Precipitation addRainlineEffects2(Biome instance, BlockPos pos,
-    //         Operation<Precipitation> original) {
-    //     if (nearestRainlineEntity != null) {
-    //         return Precipitation.RAIN;
-    //     }
-    //     return original.call(instance, pos);
-    // }
-    //
-    // @WrapOperation(method = "renderWeather", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/biome/Biome;getPrecipitation(Lnet/minecraft/util/math/BlockPos;)Lnet/minecraft/world/biome/Biome$Precipitation;"))
-    // private Precipitation renderRainlines2(Biome instance, BlockPos pos,
-    //         Operation<Precipitation> original) {
-    //     if (nearestRainlineEntity != null) {
-    //         return Precipitation.RAIN;
-    //     }
-    //     return original.call(instance, pos);
-    // }
-    //
-    // @ModifyExpressionValue(method = "renderWeather", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/world/ClientWorld;getRainGradient(F)F"))
-    // private float renderRainlines3(float original, LightmapTextureManager manager, float tickDelta,
-    //         double cameraX, double cameraY, double cameraZ) {
-    //     if (nearestRainlineEntity != null) {
-    //         return Math.max(RainlineManager.getRainlineGradient(this.world,
-    //                 new Vec3d(cameraX, cameraY, cameraZ), false), original);
-    //     }
-    //     return original;
-    // }
-    //
-    // @ModifyExpressionValue(method = "renderWeather", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/biome/Biome;hasPrecipitation()Z"))
-    // private boolean renderRainlines4(boolean original, LightmapTextureManager manager,
-    //         float tickDelta, double cameraX, double cameraY, double cameraZ) {
-    //     if (original) {
-    //         return true;
-    //     }
-    //     return nearestRainlineEntity != null;
-    // }
-
-    @ModifyExpressionValue(method = "renderSky", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/Camera;getSubmersionType()Lnet/minecraft/block/enums/CameraSubmersionType;"))
-    private CameraSubmersionType skipRenderingSkyInSporeFluid(CameraSubmersionType original) {
-        // Treat spore sea camera like lava, so that it skips sky rendering when submerged
-        if (original == ModEnums.CameraSubmersionType.SPORE_SEA) {
-            return CameraSubmersionType.LAVA;
-        }
-        return original;
-    }
-
 }

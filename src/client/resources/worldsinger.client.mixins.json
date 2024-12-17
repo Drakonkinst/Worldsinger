@@ -31,8 +31,10 @@
     "world.ClientWorldCosmereMixin",
     "world.ClientWorldLumarMixin",
     "world.GameRendererMixin",
+    "world.SkyRenderingInvoker",
     "world.WorldRendererLumarMixin",
     "world.WorldRendererPossessionMixin",
+    "world.WorldRendererRainlineMixin",
     "world.WorldRendererShapeshifterMixin"
   ],
   "injectors": {

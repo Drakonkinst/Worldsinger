@@ -26,6 +26,7 @@ package io.github.drakonkinst.worldsinger.datagen;
 import com.mojang.datafixers.util.Pair;
 import io.github.drakonkinst.worldsinger.block.ModBlocks;
 import io.github.drakonkinst.worldsinger.item.ModItems;
+import io.github.drakonkinst.worldsinger.registry.ModEquipmentModels;
 import java.util.function.Function;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricModelProvider;
@@ -45,8 +46,10 @@ import net.minecraft.data.client.TextureMap;
 import net.minecraft.data.client.VariantSettings;
 import net.minecraft.data.client.VariantsBlockStateSupplier;
 import net.minecraft.data.client.When;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
+import net.minecraft.item.equipment.EquipmentModel;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
@@ -168,7 +171,6 @@ public class ModModelGenerator extends FabricModelProvider {
         roseiteTexturePool.stairs(ModBlocks.ROSEITE_STAIRS);
         roseiteTexturePool.slab(ModBlocks.ROSEITE_SLAB);
 
-        // TODO: RESTORE
         registerAliasedModel(blockStateModelGenerator, ModBlocks.ALUMINUM_SHEET,
                 ModBlocks.ALUMINUM_BLOCK);
         registerWallPlantWithoutItem(blockStateModelGenerator, ModBlocks.ALUMINUM_SHEET);
@@ -350,34 +352,17 @@ public class ModModelGenerator extends FabricModelProvider {
                 ModItems.STEEL_SWORD,
                 ModItems.SILVER_KNIFE
         });
-        registerArmor(itemModelGenerator, new ItemConvertible[] {
-                ModItems.STEEL_HELMET,
-                ModItems.STEEL_CHESTPLATE,
-                ModItems.STEEL_LEGGINGS,
-                ModItems.STEEL_BOOTS
-        });
-    }
 
-    // TODO: Ensure steel armor generated properly
-    private void registerArmor(ItemModelGenerator itemModelGenerator, ItemConvertible[] items) {
-        // TODO
-        // for (ItemConvertible entry : items) {
-        //     Item item = entry.asItem();
-        //     EquippableComponent equippableComponent = item.getComponents()
-        //             .get(DataComponentTypes.EQUIPPABLE);
-        //     if (equippableComponent != null
-        //             && equippableComponent.slot().getType() == EquipmentSlot.Type.HUMANOID_ARMOR
-        //             && equippableComponent.model().isPresent()) {
-        //         Identifier identifier = equippableComponent.model().get();
-        //         EquipmentModel equipmentModel = (EquipmentModel) map.get(identifier);
-        //         if (equipmentModel == null) {
-        //             throw new IllegalStateException(
-        //                     "Referenced equipment model does not exist: " + identifier);
-        //         }
-        //
-        //         this.registerArmor(item, identifier, equipmentModel, equippableComponent.slot());
-        //     }
-        // }
+        // Steel armor
+        EquipmentModel steelEquipmentModel = ModEquipmentModels.buildHumanoid("steel");
+        itemModelGenerator.registerArmor(ModItems.STEEL_HELMET, ModEquipmentModels.STEEL,
+                steelEquipmentModel, EquipmentSlot.HEAD);
+        itemModelGenerator.registerArmor(ModItems.STEEL_CHESTPLATE, ModEquipmentModels.STEEL,
+                steelEquipmentModel, EquipmentSlot.CHEST);
+        itemModelGenerator.registerArmor(ModItems.STEEL_LEGGINGS, ModEquipmentModels.STEEL,
+                steelEquipmentModel, EquipmentSlot.LEGS);
+        itemModelGenerator.registerArmor(ModItems.STEEL_BOOTS, ModEquipmentModels.STEEL,
+                steelEquipmentModel, EquipmentSlot.FEET);
     }
 
     private void registerGeneratedItems(ItemModelGenerator itemModelGenerator,

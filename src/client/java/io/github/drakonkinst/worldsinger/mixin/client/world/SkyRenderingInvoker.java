@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2023-2024 Drakonkinst
+ * Copyright (c) 2024 Drakonkinst
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,22 +21,26 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.github.drakonkinst.worldsinger.registry;
 
-import io.github.drakonkinst.worldsinger.world.LumarDimensionEffects;
-import io.github.drakonkinst.worldsinger.worldgen.dimension.ModDimensions;
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
-import net.fabricmc.fabric.api.client.rendering.v1.DimensionRenderingRegistry;
+package io.github.drakonkinst.worldsinger.mixin.client.world;
 
-public final class ModDimensionRenderers {
+import net.minecraft.client.render.Fog;
+import net.minecraft.client.render.SkyRendering;
+import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.util.math.MatrixStack;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.gen.Invoker;
 
-    public static void initialize() {
-        DimensionRenderingRegistry.registerDimensionEffects(ModDimensions.LUMAR,
-                new LumarDimensionEffects());
-        ClientLifecycleEvents.CLIENT_STARTED.register(client -> {
-            // TODO: Add some sky renderers here
-        });
-    }
+@Mixin(SkyRendering.class)
+public interface SkyRenderingInvoker {
 
-    private ModDimensionRenderers() {}
+    @Invoker("renderSun")
+    void worldsinger$renderSun(float alpha, Tessellator tesselator, MatrixStack matrices);
+
+    @Invoker("renderMoon")
+    void worldsinger$renderMoon(int phase, float alpha, Tessellator tesselator,
+            MatrixStack matrices);
+
+    @Invoker("renderStars")
+    void worldsinger$renderStars(Fog fog, float color, MatrixStack matrices);
 }
