@@ -23,6 +23,7 @@
  */
 package io.github.drakonkinst.worldsinger.block;
 
+import io.github.drakonkinst.worldsinger.Worldsinger;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.CrimsonSpores;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.DeadSpores;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.MidnightSpores;
@@ -52,7 +53,6 @@ import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.sound.BlockSoundGroup;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.intprovider.ConstantIntProvider;
 import net.minecraft.util.math.intprovider.UniformIntProvider;
 import net.minecraft.world.biome.Biome;
@@ -527,10 +527,11 @@ public final class ModBlocks {
     public static Block register(RegistryKey<Block> key, Function<Settings, Block> factory,
             AbstractBlock.Settings settings, boolean shouldRegisterItem) {
         Block block = factory.apply(settings.registryKey(key));
+        Registry.register(Registries.BLOCK, key, block);
         if (shouldRegisterItem) {
             ModItems.register(block);
         }
-        return Registry.register(Registries.BLOCK, key, block);
+        return block;
     }
 
     public static Block register(RegistryKey<Block> key, AbstractBlock.Settings settings,
@@ -539,7 +540,7 @@ public final class ModBlocks {
     }
 
     private static RegistryKey<Block> keyOf(String id) {
-        return RegistryKey.of(RegistryKeys.BLOCK, Identifier.ofVanilla(id));
+        return RegistryKey.of(RegistryKeys.BLOCK, Worldsinger.id(id));
     }
 
     private static Block register(String id, Function<AbstractBlock.Settings, Block> factory,

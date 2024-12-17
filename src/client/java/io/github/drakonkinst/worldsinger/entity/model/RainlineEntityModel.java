@@ -30,6 +30,7 @@ import net.minecraft.client.render.RenderLayer;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.model.GeoModel;
+import software.bernie.geckolib.renderer.GeoRenderer;
 
 public class RainlineEntityModel extends GeoModel<RainlineEntity> {
 
@@ -38,12 +39,14 @@ public class RainlineEntityModel extends GeoModel<RainlineEntity> {
             "textures/entity/rainline/rainline.png");
 
     @Override
-    public Identifier getModelResource(RainlineEntity animatable) {
+    public Identifier getModelResource(RainlineEntity entity,
+            @Nullable GeoRenderer<RainlineEntity> geoRenderer) {
         return MODEL_PATH;
     }
 
     @Override
-    public Identifier getTextureResource(RainlineEntity animatable) {
+    public Identifier getTextureResource(RainlineEntity entity,
+            @Nullable GeoRenderer<RainlineEntity> geoRenderer) {
         return TEXTURE_PATH;
     }
 

@@ -49,6 +49,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Final;
@@ -81,7 +82,8 @@ public abstract class PlayerManagerMixin {
         }
         if (planet != CosmerePlanet.NONE) {
             ServerPlayNetworking.send(player,
-                    new CosmereTimeUpdatePayload(planet, world.getTimeOfDay()));
+                    new CosmereTimeUpdatePayload(planet, world.getTime(), world.getTimeOfDay(),
+                            world.getGameRules().getBoolean(GameRules.DO_DAYLIGHT_CYCLE)));
         }
     }
 

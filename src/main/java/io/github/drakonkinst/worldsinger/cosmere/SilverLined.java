@@ -27,7 +27,7 @@ import io.github.drakonkinst.worldsinger.Worldsinger;
 import io.github.drakonkinst.worldsinger.api.ModApi;
 import io.github.drakonkinst.worldsinger.api.ModAttachmentTypes;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.vehicle.BoatEntity;
+import net.minecraft.entity.vehicle.AbstractBoatEntity;
 import net.minecraft.item.ItemStack;
 
 @SuppressWarnings("UnstableApiUsage")
@@ -45,7 +45,7 @@ public interface SilverLined {
         }
     }
 
-    static void transferDataFromItemStackToEntity(ItemStack itemStack, BoatEntity entity) {
+    static void transferDataFromItemStackToEntity(ItemStack itemStack, AbstractBoatEntity entity) {
         SilverLined silverItemData = ModApi.SILVER_LINED_ITEM.find(itemStack, null);
         if (silverItemData == null || silverItemData.getSilverDurability() <= 0) {
             return;

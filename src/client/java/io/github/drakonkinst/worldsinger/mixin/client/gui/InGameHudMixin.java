@@ -122,8 +122,9 @@ public abstract class InGameHudMixin {
         // Use darkness = 1.0f, so no changes needed
         final int scaledWidth = context.getScaledWindowWidth();
         final int scaledHeight = context.getScaledWindowHeight();
-        context.drawTexture(VIGNETTE_TEXTURE, 0, 0, -90, 0.0f, 0.0f, scaledWidth, scaledHeight,
-                scaledWidth, scaledHeight);
+        // TODO: RESTORE
+        // context.drawTexture(VIGNETTE_TEXTURE, 0, 0, -90, 0.0f, 0.0f, scaledWidth, scaledHeight,
+        //         scaledWidth, scaledHeight);
 
         // Reset
         RenderSystem.depthMask(true);

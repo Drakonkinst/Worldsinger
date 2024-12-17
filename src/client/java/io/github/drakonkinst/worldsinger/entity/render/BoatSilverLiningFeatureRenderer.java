@@ -36,10 +36,12 @@ import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.model.BoatEntityModel;
 import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.render.entity.state.BoatEntityRenderState;
+import net.minecraft.client.render.entity.state.EntityRenderState;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.vehicle.BoatEntity;
+import net.minecraft.entity.vehicle.AbstractBoatEntity;
 import net.minecraft.entity.vehicle.ChestBoatEntity;
+import net.minecraft.entity.vehicle.ChestRaftEntity;
+import net.minecraft.entity.vehicle.RaftEntity;
 import net.minecraft.util.Identifier;
 
 public class BoatSilverLiningFeatureRenderer extends
@@ -73,7 +75,7 @@ public class BoatSilverLiningFeatureRenderer extends
     // Boat variant can be represented as a binary number
     // Chest = 1 bit, Raft = 1 bit, Silver Lining State = 2 bits
     // Returns a negative number if not silver-lined
-    private static int encodeBoatVariant(BoatEntity entity) {
+    private static int encodeBoatVariant(AbstractBoatEntity entity) {
         SilverLined silverData = entity.getAttached(ModAttachmentTypes.SILVER_LINED_BOAT);
         if (silverData == null) {
             return -1;
@@ -86,43 +88,51 @@ public class BoatSilverLiningFeatureRenderer extends
             return -1;
         }
 
-        boolean hasChest = entity instanceof ChestBoatEntity;
-        boolean isRaft = entity.getVariant() == Type.BAMBOO;
+        boolean hasChest = entity instanceof ChestBoatEntity || entity instanceof ChestRaftEntity;
+        boolean isRaft = entity instanceof RaftEntity || entity instanceof ChestRaftEntity;
         int silverLiningValue = level.ordinal() - 1;
         int encoded = (hasChest ? CHEST_VALUE : 0) + (isRaft ? RAFT_VALUE : 0) + silverLiningValue;
         return encoded;
     }
 
-    protected static <T extends Entity> void renderModel(EntityModel<T> model, Identifier texture,
-            MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light) {
+    protected static <T extends EntityRenderState> void renderModel(EntityModel<T> model,
+            Identifier texture, MatrixStack matrices, VertexConsumerProvider vertexConsumers,
+            int light) {
         VertexConsumer vertexConsumer = vertexConsumers.getBuffer(
                 RenderLayer.getEntityCutoutNoCull(texture));
         model.render(matrices, vertexConsumer, light, OverlayTexture.DEFAULT_UV, -1);
     }
 
-    private final Map<Type, Pair<Identifier, CompositeEntityModel<BoatEntity>>> texturesToModels;
-
     public BoatSilverLiningFeatureRenderer(
-            FeatureRendererContext<BoatEntity, BoatEntityModel> context,
-            Map<Type, Pair<Identifier, CompositeEntityModel<BoatEntity>>> texturesToModels) {
+            FeatureRendererContext<BoatEntityRenderState, BoatEntityModel> context) {
         super(context);
-        this.texturesToModels = texturesToModels;
     }
 
-    private EntityModel<BoatEntity> getModelForBoat(BoatEntity entity) {
-        return texturesToModels.get(entity.getVariant()).getSecond();
-    }
+    // TODO: RESTORE
+
+    // private final Map<Type, Pair<Identifier, CompositeEntityModel<BoatEntity>>> texturesToModels;
+    //
+    // public BoatSilverLiningFeatureRenderer(
+    //         FeatureRendererContext<BoatEntity, BoatEntityModel> context,
+    //         Map<Type, Pair<Identifier, CompositeEntityModel<BoatEntity>>> texturesToModels) {
+    //     super(context);
+    //     this.texturesToModels = texturesToModels;
+    // }
+
+    // private EntityModel<BoatEntityRenderState> getModelForBoat(BoatEntity entity) {
+    //     return texturesToModels.get(entity.getVariant()).getSecond();
+    // }
 
     @Override
     public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light,
             BoatEntityRenderState state, float limbAngle, float limbDistance) {
-        int encodedVariant = BoatSilverLiningFeatureRenderer.encodeBoatVariant(entity);
-        if (encodedVariant < 0) {
-            return;
-        }
-
-        Identifier texture = TEXTURE_MAP[encodedVariant];
-        BoatSilverLiningFeatureRenderer.renderModel(this.getModelForBoat(entity), texture, matrices,
-                vertexConsumers, light);
+        // int encodedVariant = BoatSilverLiningFeatureRenderer.encodeBoatVariant(entity);
+        // if (encodedVariant < 0) {
+        //     return;
+        // }
+        //
+        // Identifier texture = TEXTURE_MAP[encodedVariant];
+        // BoatSilverLiningFeatureRenderer.renderModel(this.getModelForBoat(entity), texture, matrices,
+        //         vertexConsumers, light);
     }
 }

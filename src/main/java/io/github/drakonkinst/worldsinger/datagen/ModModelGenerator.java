@@ -23,13 +23,16 @@
  */
 package io.github.drakonkinst.worldsinger.datagen;
 
+import com.mojang.datafixers.util.Pair;
 import io.github.drakonkinst.worldsinger.block.ModBlocks;
 import io.github.drakonkinst.worldsinger.item.ModItems;
+import java.util.function.Function;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricModelProvider;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.LeveledCauldronBlock;
+import net.minecraft.block.MultifaceGrowthBlock;
 import net.minecraft.data.client.BlockStateModelGenerator;
 import net.minecraft.data.client.BlockStateModelGenerator.TintType;
 import net.minecraft.data.client.BlockStateVariant;
@@ -37,12 +40,17 @@ import net.minecraft.data.client.BlockStateVariantMap;
 import net.minecraft.data.client.ItemModelGenerator;
 import net.minecraft.data.client.ModelIds;
 import net.minecraft.data.client.Models;
+import net.minecraft.data.client.MultipartBlockStateSupplier;
 import net.minecraft.data.client.TextureMap;
 import net.minecraft.data.client.VariantSettings;
 import net.minecraft.data.client.VariantsBlockStateSupplier;
+import net.minecraft.data.client.When;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
+import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Util;
+import net.minecraft.util.math.Direction;
 
 // Datagen is limited and does not work for the more complex items.
 public class ModModelGenerator extends FabricModelProvider {
@@ -160,9 +168,10 @@ public class ModModelGenerator extends FabricModelProvider {
         roseiteTexturePool.stairs(ModBlocks.ROSEITE_STAIRS);
         roseiteTexturePool.slab(ModBlocks.ROSEITE_SLAB);
 
+        // TODO: RESTORE
         registerAliasedModel(blockStateModelGenerator, ModBlocks.ALUMINUM_SHEET,
                 ModBlocks.ALUMINUM_BLOCK);
-        blockStateModelGenerator.registerWallPlant(ModBlocks.ALUMINUM_SHEET);
+        registerWallPlantWithoutItem(blockStateModelGenerator, ModBlocks.ALUMINUM_SHEET);
     }
 
     private void generateBlockStatesOnly(BlockStateModelGenerator blockStateModelGenerator) {
@@ -194,6 +203,34 @@ public class ModModelGenerator extends FabricModelProvider {
         Item item = target.asItem();
         Models.GENERATED.upload(ModelIds.getItemModelId(item), TextureMap.layer0(texture),
                 blockStateModelGenerator.modelCollector);
+    }
+
+    private void registerWallPlantWithoutItem(BlockStateModelGenerator blockStateModelGenerator,
+            Block block) {
+        Identifier identifier = ModelIds.getBlockModelId(block);
+        MultipartBlockStateSupplier multipartBlockStateSupplier = MultipartBlockStateSupplier.create(
+                block);
+        When.PropertyCondition propertyCondition = Util.make(When.create(),
+                propertyConditionx -> BlockStateModelGenerator.CONNECTION_VARIANT_FUNCTIONS.stream()
+                        .map(Pair::getFirst)
+                        .map(MultifaceGrowthBlock::getProperty)
+                        .forEach(property -> {
+                            if (block.getDefaultState().contains(property)) {
+                                propertyConditionx.set(property, false);
+                            }
+                        }));
+
+        for (Pair<Direction, Function<Identifier, BlockStateVariant>> pair : BlockStateModelGenerator.CONNECTION_VARIANT_FUNCTIONS) {
+            BooleanProperty booleanProperty = MultifaceGrowthBlock.getProperty(pair.getFirst());
+            Function<Identifier, BlockStateVariant> function = pair.getSecond();
+            if (block.getDefaultState().contains(booleanProperty)) {
+                multipartBlockStateSupplier.with(When.create().set(booleanProperty, true),
+                        function.apply(identifier));
+                multipartBlockStateSupplier.with(propertyCondition, function.apply(identifier));
+            }
+        }
+
+        blockStateModelGenerator.blockStateCollector.accept(multipartBlockStateSupplier);
     }
 
     private void registerSimpleCrossBlocks(BlockStateModelGenerator blockStateModelGenerator,
@@ -302,7 +339,7 @@ public class ModModelGenerator extends FabricModelProvider {
                 ModItems.QUARTZ_AND_STEEL,
                 ModItems.ROSEITE_CRYSTAL,
                 ModItems.ROSEITE_CORE,
-                ModItems.CERAMIC_CANNONBALL
+                ModItems.CERAMIC_CANNONBALL,
         });
         registerHandheldItems(itemModelGenerator, new ItemConvertible[] {
                 ModItems.CRIMSON_SPINE,
@@ -313,7 +350,34 @@ public class ModModelGenerator extends FabricModelProvider {
                 ModItems.STEEL_SWORD,
                 ModItems.SILVER_KNIFE
         });
-        // TODO: Ensure steel armor generated properly
+        registerArmor(itemModelGenerator, new ItemConvertible[] {
+                ModItems.STEEL_HELMET,
+                ModItems.STEEL_CHESTPLATE,
+                ModItems.STEEL_LEGGINGS,
+                ModItems.STEEL_BOOTS
+        });
+    }
+
+    // TODO: Ensure steel armor generated properly
+    private void registerArmor(ItemModelGenerator itemModelGenerator, ItemConvertible[] items) {
+        // TODO
+        // for (ItemConvertible entry : items) {
+        //     Item item = entry.asItem();
+        //     EquippableComponent equippableComponent = item.getComponents()
+        //             .get(DataComponentTypes.EQUIPPABLE);
+        //     if (equippableComponent != null
+        //             && equippableComponent.slot().getType() == EquipmentSlot.Type.HUMANOID_ARMOR
+        //             && equippableComponent.model().isPresent()) {
+        //         Identifier identifier = equippableComponent.model().get();
+        //         EquipmentModel equipmentModel = (EquipmentModel) map.get(identifier);
+        //         if (equipmentModel == null) {
+        //             throw new IllegalStateException(
+        //                     "Referenced equipment model does not exist: " + identifier);
+        //         }
+        //
+        //         this.registerArmor(item, identifier, equipmentModel, equippableComponent.slot());
+        //     }
+        // }
     }
 
     private void registerGeneratedItems(ItemModelGenerator itemModelGenerator,

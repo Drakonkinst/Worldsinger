@@ -24,9 +24,7 @@
 
 package io.github.drakonkinst.worldsinger.registry;
 
-import net.minecraft.item.map.MapDecorationType;
-import net.minecraft.registry.entry.RegistryEntry;
-
 public class ModMapDecorationTypes {
-    public static final RegistryEntry<MapDecorationType>
+    // public static final RegistryEntry<MapDecorationType>
+    // TODO
 }

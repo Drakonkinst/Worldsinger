@@ -82,8 +82,8 @@ public class Worldsinger implements ModInitializer {
         ModParticleTypes.initialize();
         ModSoundEvents.initialize();
         ModFluids.initialize();
-        ModBlocks.initialize();
         ModItems.initialize();
+        ModBlocks.initialize();
         ModRecipeSerializer.initialize();
         ModEntityTypes.initialize();
         ModCommands.initialize();

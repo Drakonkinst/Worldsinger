@@ -24,29 +24,23 @@
 package io.github.drakonkinst.worldsinger.mixin.client.world;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
-import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.drakonkinst.worldsinger.Worldsinger;
 import io.github.drakonkinst.worldsinger.block.ModBlocks;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.RainlineManager;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.SunlightSpores;
 import io.github.drakonkinst.worldsinger.fluid.AetherSporeFluid;
-import io.github.drakonkinst.worldsinger.util.ColorUtil;
 import io.github.drakonkinst.worldsinger.util.ModEnums;
 import io.github.drakonkinst.worldsinger.world.CameraPosAccess;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.enums.CameraSubmersionType;
 import net.minecraft.client.render.BackgroundRenderer;
-import net.minecraft.client.render.BackgroundRenderer.FogData;
-import net.minecraft.client.render.BackgroundRenderer.FogType;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.world.ClientWorld;
-import net.minecraft.entity.Entity;
 import net.minecraft.fluid.FluidState;
 import org.joml.Vector4f;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(BackgroundRenderer.class)
@@ -77,45 +71,49 @@ public abstract class BackgroundRendererMixin {
         if (blockState.isOf(ModBlocks.SUNLIGHT)) {
             // Use Sunlight Spore colors for Sunlight blocks
             int color = SunlightSpores.getInstance().getColor();
-            red = ColorUtil.getNormalizedRed(color);
-            green = ColorUtil.getNormalizedGreen(color);
-            blue = ColorUtil.getNormalizedBlue(color);
+            // TODO: RESTORE
+            // red = ColorUtil.getNormalizedRed(color);
+            // green = ColorUtil.getNormalizedGreen(color);
+            // blue = ColorUtil.getNormalizedBlue(color);
             return;
         }
 
         FluidState fluidState = ((CameraPosAccess) camera).worldsinger$getSubmersedFluidState();
         if (fluidState.getFluid() instanceof AetherSporeFluid aetherSporeFluid) {
-            red = aetherSporeFluid.getFogRed();
-            green = aetherSporeFluid.getFogGreen();
-            blue = aetherSporeFluid.getFogBlue();
+            // TODO: RESTORE
+            // red = aetherSporeFluid.getFogRed();
+            // green = aetherSporeFluid.getFogGreen();
+            // blue = aetherSporeFluid.getFogBlue();
         } else {
             Worldsinger.LOGGER.error(
                     "Expected fluid to be an instance of AetherSporeFluid since Spore Sea submersion type is being used");
         }
     }
 
-    @Inject(method = "applyFog", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/systems/RenderSystem;setShaderFogStart(F)V"), cancellable = true)
-    private static void injectCustomFluidFogSettings(Camera camera, FogType fogType,
-            float viewDistance, boolean thickFog, float tickDelta, CallbackInfo ci) {
-        if (camera.getSubmersionType() == ModEnums.CameraSubmersionType.SPORE_SEA) {
-            FogData fogData = new FogData(fogType);
-            Entity entity = camera.getFocusedEntity();
-            if (entity.isSpectator()) {
-                // Match spectator mode settings for other fluids
-                fogData.fogStart = -8.0f;
-                fogData.fogEnd = viewDistance * 0.5f;
-            } else {
-                fogData.fogStart = AetherSporeFluid.FOG_START;
-                fogData.fogEnd = AetherSporeFluid.FOG_END;
-            }
-
-            // Call the end of the method
-            RenderSystem.setShaderFogStart(fogData.fogStart);
-            RenderSystem.setShaderFogEnd(fogData.fogEnd);
-            RenderSystem.setShaderFogShape(fogData.fogShape);
-            ci.cancel();
-        }
-    }
+    // TODO: RESTORE
+    // @Inject(method = "applyFog", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/systems/RenderSystem;setShaderFogStart(F)V"), cancellable = true)
+    // private static void injectCustomFluidFogSettings(Camera camera, FogType fogType, Vector4f color,
+    //         float viewDistance, boolean thickenFog, float tickDelta,
+    //         CallbackInfoReturnable<Fog> cir) {
+    //     if (camera.getSubmersionType() == ModEnums.CameraSubmersionType.SPORE_SEA) {
+    //         FogData fogData = new FogData(fogType);
+    //         Entity entity = camera.getFocusedEntity();
+    //         if (entity.isSpectator()) {
+    //             // Match spectator mode settings for other fluids
+    //             fogData.fogStart = -8.0f;
+    //             fogData.fogEnd = viewDistance * 0.5f;
+    //         } else {
+    //             fogData.fogStart = AetherSporeFluid.FOG_START;
+    //             fogData.fogEnd = AetherSporeFluid.FOG_END;
+    //         }
+    //
+    //         // Call the end of the method
+    //         RenderSystem.setShaderFogStart(fogData.fogStart);
+    //         RenderSystem.setShaderFogEnd(fogData.fogEnd);
+    //         RenderSystem.setShaderFogShape(fogData.fogShape);
+    //         ci.cancel();
+    //     }
+    // }
 
     @ModifyExpressionValue(method = "getFogColor", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/world/ClientWorld;getRainGradient(F)F"))
     private static float renderRainlines(float original, Camera camera, float tickDelta,

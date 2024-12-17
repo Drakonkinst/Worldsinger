@@ -25,22 +25,12 @@
 package io.github.drakonkinst.worldsinger.mixin.client.item;
 
 import io.github.drakonkinst.worldsinger.Worldsinger;
-import io.github.drakonkinst.worldsinger.item.map.CustomMapDecoration;
-import io.github.drakonkinst.worldsinger.item.map.CustomMapStateAccess;
 import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.map.MapState;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.RotationAxis;
-import org.joml.Matrix4f;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(targets = "net.minecraft.client.render.MapRenderer$MapTexture")
 public abstract class MapRendererMapTextureMixin {
@@ -55,48 +45,49 @@ public abstract class MapRendererMapTextureMixin {
     @Shadow
     private MapState state;
 
-    @Inject(method = "draw", at = @At("TAIL"))
-    private void drawCustomMapIcons(MatrixStack matrices, VertexConsumerProvider vertexConsumers,
-            boolean hidePlayerIcons, int light, CallbackInfo ci) {
-        CustomMapStateAccess customMapState = (CustomMapStateAccess) state;
-        int layer = 0;
-        for (CustomMapDecoration mapIcon : customMapState.worldsinger$getCustomMapIcons()
-                .values()) {
-            if (mapIcon.type() != CustomMapDecoration.Type.RAINLINE) {
-                // Idk how to do those yet
-                continue;
-            }
-            matrices.push();
-            matrices.translate(mapIcon.x() / 2.0f + 64.0f, mapIcon.z() / 2.0f + 64.0f, -0.02f);
-            matrices.multiply(
-                    RotationAxis.POSITIVE_Z.rotationDegrees((mapIcon.rotation() * 360) / 16.0f));
-            matrices.scale(4.0f, 4.0f, 3.0f);
-            matrices.translate(-0.125f, 0.125f, 0.0f);
-
-            float minU = 0.0f;
-            float minV = 0.0f;
-            float maxU = 1.0f;
-            float maxV = 1.0f;
-            Matrix4f matrix = matrices.peek().getPositionMatrix();
-            VertexConsumer vertexConsumer2 = vertexConsumers.getBuffer(RAINLINE_RENDER_LAYER);
-            vertexConsumer2.vertex(matrix, -1.0F, 1.0F, layer * -0.001F)
-                    .color(255, 255, 255, 255)
-                    .texture(minU, minV)
-                    .light(light);
-            vertexConsumer2.vertex(matrix, 1.0F, 1.0F, layer * -0.001F)
-                    .color(255, 255, 255, 255)
-                    .texture(maxU, minV)
-                    .light(light);
-            vertexConsumer2.vertex(matrix, 1.0F, -1.0F, layer * -0.001F)
-                    .color(255, 255, 255, 255)
-                    .texture(maxU, maxV)
-                    .light(light);
-            vertexConsumer2.vertex(matrix, -1.0F, -1.0F, layer * -0.001F)
-                    .color(255, 255, 255, 255)
-                    .texture(minU, maxV)
-                    .light(light);
-            matrices.pop();
-            ++layer;
-        }
-    }
+    // TODO: RESTORE
+    // @Inject(method = "draw", at = @At("TAIL"))
+    // private void drawCustomMapIcons(MatrixStack matrices, VertexConsumerProvider vertexConsumers,
+    //         boolean hidePlayerIcons, int light, CallbackInfo ci) {
+    //     CustomMapStateAccess customMapState = (CustomMapStateAccess) state;
+    //     int layer = 0;
+    //     for (CustomMapDecoration mapIcon : customMapState.worldsinger$getCustomMapIcons()
+    //             .values()) {
+    //         if (mapIcon.type() != CustomMapDecoration.Type.RAINLINE) {
+    //             // Idk how to do those yet
+    //             continue;
+    //         }
+    //         matrices.push();
+    //         matrices.translate(mapIcon.x() / 2.0f + 64.0f, mapIcon.z() / 2.0f + 64.0f, -0.02f);
+    //         matrices.multiply(
+    //                 RotationAxis.POSITIVE_Z.rotationDegrees((mapIcon.rotation() * 360) / 16.0f));
+    //         matrices.scale(4.0f, 4.0f, 3.0f);
+    //         matrices.translate(-0.125f, 0.125f, 0.0f);
+    //
+    //         float minU = 0.0f;
+    //         float minV = 0.0f;
+    //         float maxU = 1.0f;
+    //         float maxV = 1.0f;
+    //         Matrix4f matrix = matrices.peek().getPositionMatrix();
+    //         VertexConsumer vertexConsumer2 = vertexConsumers.getBuffer(RAINLINE_RENDER_LAYER);
+    //         vertexConsumer2.vertex(matrix, -1.0F, 1.0F, layer * -0.001F)
+    //                 .color(255, 255, 255, 255)
+    //                 .texture(minU, minV)
+    //                 .light(light);
+    //         vertexConsumer2.vertex(matrix, 1.0F, 1.0F, layer * -0.001F)
+    //                 .color(255, 255, 255, 255)
+    //                 .texture(maxU, minV)
+    //                 .light(light);
+    //         vertexConsumer2.vertex(matrix, 1.0F, -1.0F, layer * -0.001F)
+    //                 .color(255, 255, 255, 255)
+    //                 .texture(maxU, maxV)
+    //                 .light(light);
+    //         vertexConsumer2.vertex(matrix, -1.0F, -1.0F, layer * -0.001F)
+    //                 .color(255, 255, 255, 255)
+    //                 .texture(minU, maxV)
+    //                 .light(light);
+    //         matrices.pop();
+    //         ++layer;
+    //     }
+    // }
 }

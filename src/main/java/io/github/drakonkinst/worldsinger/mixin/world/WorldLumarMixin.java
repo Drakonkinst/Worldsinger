@@ -6,7 +6,6 @@ import io.github.drakonkinst.worldsinger.cosmere.CosmerePlanet;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarManager;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarManagerAccess;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.RainlineManager;
-import java.util.function.Supplier;
 import net.minecraft.block.BlockState;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.RegistryKey;
@@ -14,7 +13,6 @@ import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
-import net.minecraft.util.profiler.Profiler;
 import net.minecraft.world.MutableWorldProperties;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
@@ -49,8 +47,8 @@ public abstract class WorldLumarMixin implements WorldAccess, AutoCloseable, Lum
     @Inject(method = "<init>", at = @At("TAIL"))
     private void initializeLumar(MutableWorldProperties properties, RegistryKey<World> registryRef,
             DynamicRegistryManager registryManager, RegistryEntry<DimensionType> dimensionEntry,
-            Supplier<Profiler> profiler, boolean isClient, boolean debugWorld, long biomeAccess,
-            int maxChainedNeighborUpdates, CallbackInfo ci) {
+            boolean isClient, boolean debugWorld, long seed, int maxChainedNeighborUpdates,
+            CallbackInfo ci) {
         lumarManager = LumarManager.NULL;
     }
 
@@ -70,7 +68,7 @@ public abstract class WorldLumarMixin implements WorldAccess, AutoCloseable, Lum
     // Another approach would be to inject at HEAD, but this would require re-doing checks
     // and be less compatible
     // Another approach would be some kind of captured local, but trying to avoid this
-    @ModifyExpressionValue(method = "hasRain", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/biome/Biome;getPrecipitation(Lnet/minecraft/util/math/BlockPos;)Lnet/minecraft/world/biome/Biome$Precipitation;"))
+    @ModifyExpressionValue(method = "hasRain", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/biome/Biome;getPrecipitation(Lnet/minecraft/util/math/BlockPos;I)Lnet/minecraft/world/biome/Biome$Precipitation;"))
     private Precipitation makeLumarAlwaysRaining(Precipitation original) {
         if (CosmerePlanet.isLumar((World) (Object) this)) {
             return Precipitation.RAIN;

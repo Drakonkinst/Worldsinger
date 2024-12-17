@@ -36,7 +36,6 @@ import io.github.drakonkinst.worldsinger.util.LayeredBakedModel;
 import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.model.BakedModel;
@@ -52,8 +51,6 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(DrawContext.class)
 public abstract class DrawContextMixin {
@@ -90,22 +87,23 @@ public abstract class DrawContextMixin {
         return original;
     }
 
-    @Inject(method = "drawItemInSlot(Lnet/minecraft/client/font/TextRenderer;Lnet/minecraft/item/ItemStack;IILjava/lang/String;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;isItemBarVisible()Z"))
-    private void renderCannonballContentBar(TextRenderer textRenderer, ItemStack stack, int x,
-            int y, String countOverride, CallbackInfo ci) {
-        if (!stack.isOf(ModItems.CERAMIC_CANNONBALL)) {
-            return;
-        }
-        CannonballComponent component = stack.get(ModDataComponentTypes.CANNONBALL);
-        if (component == null || !component.core().isFillable()) {
-            return;
-        }
-
-        List<CannonballContent> contents = component.contents();
-        drawCannonballContentBar(contents, 0, x, y, 2, 6);
-        drawCannonballContentBar(contents, 1, x, y, 6, 10);
-        drawCannonballContentBar(contents, 2, x, y, 10, 14);
-    }
+    // TODO: RESTORE
+    // @Inject(method = "drawItemInSlot(Lnet/minecraft/client/font/TextRenderer;Lnet/minecraft/item/ItemStack;IILjava/lang/String;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;isItemBarVisible()Z"))
+    // private void renderCannonballContentBar(TextRenderer textRenderer, ItemStack stack, int x,
+    //         int y, String countOverride, CallbackInfo ci) {
+    //     if (!stack.isOf(ModItems.CERAMIC_CANNONBALL)) {
+    //         return;
+    //     }
+    //     CannonballComponent component = stack.get(ModDataComponentTypes.CANNONBALL);
+    //     if (component == null || !component.core().isFillable()) {
+    //         return;
+    //     }
+    //
+    //     List<CannonballContent> contents = component.contents();
+    //     drawCannonballContentBar(contents, 0, x, y, 2, 6);
+    //     drawCannonballContentBar(contents, 1, x, y, 6, 10);
+    //     drawCannonballContentBar(contents, 2, x, y, 10, 14);
+    // }
 
     @Unique
     private void drawCannonballContentBar(List<CannonballContent> contents, int index, int x, int y,

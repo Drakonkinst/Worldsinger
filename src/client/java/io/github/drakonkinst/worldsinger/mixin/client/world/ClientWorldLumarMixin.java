@@ -37,7 +37,6 @@ import io.github.drakonkinst.worldsinger.cosmere.lumar.RainlineManager;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.SporeParticleManager;
 import io.github.drakonkinst.worldsinger.entity.ClientLunagreeDataAccess;
 import io.github.drakonkinst.worldsinger.mixin.world.WorldLumarMixin;
-import java.util.function.Supplier;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
@@ -52,7 +51,6 @@ import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockPos.Mutable;
 import net.minecraft.util.math.random.Random;
-import net.minecraft.util.profiler.Profiler;
 import net.minecraft.world.Heightmap.Type;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
@@ -72,9 +70,9 @@ public abstract class ClientWorldLumarMixin extends WorldLumarMixin {
 
     @Inject(method = "<init>", at = @At("TAIL"))
     private void initialize(ClientPlayNetworkHandler networkHandler, Properties properties,
-            RegistryKey<World> registryRef, RegistryEntry<DimensionType> dimensionTypeEntry,
-            int loadDistance, int simulationDistance, Supplier<Profiler> profiler,
-            WorldRenderer worldRenderer, boolean debugWorld, long seed, CallbackInfo ci) {
+            RegistryKey<World> registryRef, RegistryEntry<DimensionType> dimensionType,
+            int loadDistance, int simulationDistance, WorldRenderer worldRenderer,
+            boolean debugWorld, long seed, int seaLevel, CallbackInfo ci) {
         if (CosmerePlanet.getPlanetFromKey(registryRef).equals(CosmerePlanet.LUMAR)) {
             lumarManager = new LumarManager(new LumarSeetheManager(), LunagreeGenerator.NULL,
                     RainlineManager.NULL);

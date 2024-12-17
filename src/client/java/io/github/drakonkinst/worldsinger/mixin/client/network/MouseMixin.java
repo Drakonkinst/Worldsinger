@@ -23,7 +23,7 @@
  */
 package io.github.drakonkinst.worldsinger.mixin.client.network;
 
-import com.llamalad7.mixinextras.injector.WrapWithCondition;
+import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import io.github.drakonkinst.worldsinger.entity.CameraPossessable;
@@ -47,9 +47,8 @@ public abstract class MouseMixin {
     @Unique
     private static final float MAX_PITCH = 90.0f;
 
-    @WrapWithCondition(method = "onMouseScroll", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerInventory;scrollInHotbar(D)V"))
-    private boolean preventHotbarSwitchWithScrollIfPossessing(PlayerInventory instance,
-            double scrollAmount) {
+    @WrapWithCondition(method = "onMouseScroll", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerInventory;setSelectedSlot(I)V"))
+    private boolean preventHotbarSwitchWithScrollIfPossessing(PlayerInventory instance, int slot) {
         CameraPossessable possessedEntity = PossessionClientUtil.getPossessedEntity();
         return possessedEntity == null || possessedEntity.canModifyInventory();
     }

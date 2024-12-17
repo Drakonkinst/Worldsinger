@@ -169,9 +169,10 @@ public abstract class AetherSporeFluid extends FlowableFluid implements SporeEmi
             BlockPos currPos = pos.offset(direction);
             BlockState currBlockState = world.getBlockState(currPos);
             FluidState currFluidState = currBlockState.getFluidState();
+            // noinspection ConstantValue
             if (!(currFluidState.getFluid() instanceof AetherSporeFluid)
-                    || !((FlowableFluidInvoker) this).worldsinger$receivesFlow(direction, world,
-                    pos, state, currPos, currBlockState)) {
+                    || !FlowableFluidInvoker.worldsinger$receivesFlow(direction, world, pos, state,
+                    currPos, currBlockState)) {
                 continue;
             }
             if (currFluidState.isStill()) {
@@ -194,9 +195,10 @@ public abstract class AetherSporeFluid extends FlowableFluid implements SporeEmi
         BlockPos posAbove = pos.up();
         BlockState stateAbove = world.getBlockState(posAbove);
         FluidState aboveFluidState = stateAbove.getFluidState();
+        // noinspection ConstantValue
         if (!aboveFluidState.isEmpty() && aboveFluidState.getFluid() instanceof AetherSporeFluid
-                && ((FlowableFluidInvoker) this).worldsinger$receivesFlow(Direction.UP, world, pos,
-                state, posAbove, stateAbove)) {
+                && FlowableFluidInvoker.worldsinger$receivesFlow(Direction.UP, world, pos, state,
+                posAbove, stateAbove)) {
             return this.getFlowing(AetherSporeFluid.MAX_LEVEL, true);
         }
         int updatedFluidLevel = maxNeighboringFluidLevel - this.getLevelDecreasePerBlock(world);

@@ -35,7 +35,6 @@ import net.minecraft.client.world.ClientWorld;
 import net.minecraft.client.world.ClientWorld.Properties;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.MutableWorldProperties;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -43,7 +42,7 @@ import org.spongepowered.asm.mixin.injection.At;
 @Mixin(ClientWorld.class)
 public abstract class ClientWorldCosmereMixin extends WorldCosmereMixin {
 
-    @WrapOperation(method = "setTimeOfDay", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/world/ClientWorld$Properties;setTimeOfDay(J)V"))
+    @WrapOperation(method = "setTime", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/world/ClientWorld$Properties;setTimeOfDay(J)V"))
     private void setCosmereTimeOfDay(Properties instance, long timeOfDay,
             Operation<Void> original) {
         if (CosmerePlanet.isCosmerePlanet((ClientWorld) (Object) this)) {
@@ -53,8 +52,8 @@ public abstract class ClientWorldCosmereMixin extends WorldCosmereMixin {
         }
     }
 
-    @WrapOperation(method = "tickTime", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/MutableWorldProperties;getTimeOfDay()J"))
-    private long tickCosmereTime(MutableWorldProperties instance, Operation<Long> original) {
+    @WrapOperation(method = "tickTime", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/world/ClientWorld$Properties;getTimeOfDay()J"))
+    private long tickCosmereTime(Properties instance, Operation<Long> original) {
         if (CosmerePlanet.isCosmerePlanet((World) (Object) this)) {
             return cosmereWorldData.getTimeOfDay();
         }

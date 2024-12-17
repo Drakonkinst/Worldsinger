@@ -1,25 +1,19 @@
 {
-  "targets": [
-    "swap"
+  "vertex": "minecraft:post/sobel",
+  "fragment": "minecraft:post/color_convolve",
+  "samplers": [
+    {
+      "name": "InSampler"
+    }
   ],
-  "passes": [
+  "uniforms": [
     {
-      "name": "color_convolve",
-      "intarget": "minecraft:main",
-      "outtarget": "swap",
-      "uniforms": [
-        {
-          "name": "Saturation",
-          "values": [
-            0.2
-          ]
-        }
+      "name": "Saturation",
+      "type": "float",
+      "count": 1,
+      "values": [
+        0.2
       ]
-    },
-    {
-      "name": "blit",
-      "intarget": "swap",
-      "outtarget": "minecraft:main"
     }
   ]
 }

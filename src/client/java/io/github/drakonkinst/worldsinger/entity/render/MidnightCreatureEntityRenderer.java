@@ -34,6 +34,7 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.BlockRenderManager;
 import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
+import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.passive.SchoolingFishEntity;
@@ -51,7 +52,8 @@ public class MidnightCreatureEntityRenderer extends
 
     public MidnightCreatureEntityRenderer(EntityRendererFactory.Context context) {
         // TODO: Make this actually render a block instead of hacking one in
-        super(context, new MidnightCreatureEntityModel(null), 0.5f);
+        super(context, new MidnightCreatureEntityModel(context.getPart(EntityModelLayers.PLAYER)),
+                0.5f);
         this.blockRenderManager = context.getBlockRenderManager();
     }
 

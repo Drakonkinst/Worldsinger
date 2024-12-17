@@ -1,11 +1,9 @@
 {
-  "carvers": {
-    "air": [
-      "worldsinger:lumar_cave",
-      "worldsinger:lumar_cave_extra_underground",
-      "worldsinger:lumar_canyon"
-    ]
-  },
+  "carvers": [
+    "worldsinger:lumar_cave",
+    "worldsinger:lumar_cave_extra_underground",
+    "worldsinger:lumar_canyon"
+  ],
   "downfall": 0.0,
   "effects": {
     "fog_color": 12638463,
@@ -83,7 +81,8 @@
     ]
   ],
   "has_precipitation": false,
-  "spawn_costs": {},
+  "spawn_costs": {
+  },
   "spawners": {
     "ambient": [
       {

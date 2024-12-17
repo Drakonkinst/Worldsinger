@@ -1,9 +1,7 @@
 {
-  "carvers": {
-    "air": [
-      "worldsinger:lumar_cave_extra_underground"
-    ]
-  },
+  "carvers": [
+    "worldsinger:lumar_cave_extra_underground"
+  ],
   "downfall": 0.0,
   "effects": {
     "fog_color": 12638463,

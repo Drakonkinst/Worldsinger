@@ -418,8 +418,9 @@ public class ModRecipeGenerator extends FabricRecipeProvider {
                     blasting.criterion("has_" + itemId, this.conditionsFromItem(item));
                 }
 
-                smelting.offerTo(exporter);
-                blasting.offerTo(exporter);
+                String outputId = Registries.ITEM.getId(output).getPath();
+                smelting.offerTo(exporter, outputId + "_from_smelting");
+                blasting.offerTo(exporter, outputId + "_from_blasting");
             }
 
             private void offerReversibleNuggetIngotRecipe(Item nugget, Item ingot) {

@@ -23,7 +23,7 @@
  */
 package io.github.drakonkinst.worldsinger.mixin.item;
 
-import com.llamalad7.mixinextras.sugar.Local;
+import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import io.github.drakonkinst.worldsinger.api.ModApi;
 import io.github.drakonkinst.worldsinger.cosmere.SilverLined;
 import io.github.drakonkinst.worldsinger.cosmere.SilverLinedUtil;
@@ -32,16 +32,16 @@ import io.github.drakonkinst.worldsinger.registry.tag.ModItemTags;
 import io.github.drakonkinst.worldsinger.util.ModConstants;
 import java.util.List;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.vehicle.BoatEntity;
+import net.minecraft.entity.vehicle.AbstractBoatEntity;
 import net.minecraft.item.BoatItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.text.Text;
-import net.minecraft.util.Hand;
+import net.minecraft.util.hit.HitResult;
+import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
 @Mixin(BoatItem.class)
 public abstract class BoatItemMixin extends Item {
@@ -86,11 +86,13 @@ public abstract class BoatItemMixin extends Item {
         return step;
     }
 
-    @ModifyVariable(method = "use", at = @At(value = "STORE"))
-    private BoatEntity addDataToEntity(BoatEntity entity, @Local PlayerEntity user,
-            @Local Hand hand) {
-        ItemStack itemStack = user.getStackInHand(hand);
-        SilverLined.transferDataFromItemStackToEntity(itemStack, entity);
-        return entity;
+    @ModifyReturnValue(method = "createEntity", at = @At("RETURN"))
+    private AbstractBoatEntity addDataToEntity(AbstractBoatEntity original, World world,
+            HitResult hitResult, ItemStack stack, PlayerEntity player) {
+        if (original == null) {
+            return null;
+        }
+        SilverLined.transferDataFromItemStackToEntity(stack, original);
+        return original;
     }
 }

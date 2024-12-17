@@ -81,7 +81,7 @@ public final class ClientNetworkHandler {
 
                     CosmerePlanet currentPlanet = CosmerePlanet.getPlanet(world);
                     if (currentPlanet.getId() == payload.cosmereWorldId()) {
-                        world.setTimeOfDay(payload.timeOfDay());
+                        world.setTime(payload.time(), payload.timeOfDay(), payload.tickDayTime());
                     }
                 });
 

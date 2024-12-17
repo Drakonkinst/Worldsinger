@@ -27,13 +27,11 @@ package io.github.drakonkinst.worldsinger.mixin.world;
 import io.github.drakonkinst.worldsinger.cosmere.CosmerePlanet;
 import io.github.drakonkinst.worldsinger.cosmere.CosmereWorldAccess;
 import io.github.drakonkinst.worldsinger.cosmere.CosmereWorldData;
-import java.util.function.Supplier;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.profiler.Profiler;
 import net.minecraft.world.MutableWorldProperties;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
@@ -66,9 +64,8 @@ public abstract class WorldCosmereMixin implements WorldAccess, AutoCloseable, C
     @Inject(method = "<init>", at = @At("TAIL"))
     private void initializeCosmereWorld(MutableWorldProperties properties,
             RegistryKey<World> registryRef, DynamicRegistryManager registryManager,
-            RegistryEntry<DimensionType> dimensionEntry, Supplier<Profiler> profiler,
-            boolean isClient, boolean debugWorld, long biomeAccess, int maxChainedNeighborUpdates,
-            CallbackInfo ci) {
+            RegistryEntry<DimensionType> dimensionEntry, boolean isClient, boolean debugWorld,
+            long seed, int maxChainedNeighborUpdates, CallbackInfo ci) {
         planet = CosmerePlanet.getPlanetFromKey(registryRef);
         cosmereWorldData = new CosmereWorldData();
     }

@@ -72,12 +72,13 @@ public final class ThirstStatusBar {
             }
 
             int xPos = halfWidth + THIRST_BAR_OFFSET_X - i * (ICON_SIZE - 1) - ICON_SIZE;
-            context.drawGuiTexture(emptyTexture, xPos, yPos, ICON_SIZE, ICON_SIZE);
-            if (i * 2 + 1 < thirstLevel) {
-                context.drawGuiTexture(fullTexture, xPos, yPos, ICON_SIZE, ICON_SIZE);
-            } else if (i * 2 + 1 == thirstLevel) {
-                context.drawGuiTexture(halfTexture, xPos, yPos, ICON_SIZE, ICON_SIZE);
-            }
+            // TODO: RESTORE
+            // context.drawGuiTexture(emptyTexture, xPos, yPos, ICON_SIZE, ICON_SIZE);
+            // if (i * 2 + 1 < thirstLevel) {
+            //     context.drawGuiTexture(fullTexture, xPos, yPos, ICON_SIZE, ICON_SIZE);
+            // } else if (i * 2 + 1 == thirstLevel) {
+            //     context.drawGuiTexture(halfTexture, xPos, yPos, ICON_SIZE, ICON_SIZE);
+            // }
         }
     }
 

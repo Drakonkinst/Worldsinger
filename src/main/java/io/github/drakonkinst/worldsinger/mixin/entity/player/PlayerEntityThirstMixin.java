@@ -41,7 +41,7 @@ public abstract class PlayerEntityThirstMixin extends LivingEntity {
     }
 
     @SuppressWarnings("UnstableApiUsage")
-    @Inject(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/HungerManager;update(Lnet/minecraft/entity/player/PlayerEntity;)V"))
+    @Inject(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/HungerManager;update(Lnet/minecraft/server/network/ServerPlayerEntity;)V"))
     private void updateThirst(CallbackInfo ci) {
         this.getAttachedOrCreate(ModAttachmentTypes.THIRST).update(this);
     }

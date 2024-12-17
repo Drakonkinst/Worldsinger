@@ -48,7 +48,7 @@ import net.minecraft.block.Waterloggable;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.vehicle.BoatEntity;
+import net.minecraft.entity.vehicle.AbstractBoatEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Hand;
@@ -190,8 +190,8 @@ public final class SporeKillingUtil {
     }
 
     private static boolean checkNearbyEntitiesInBox(World world, Box box) {
-        List<BoatEntity> entitiesInRange = world.getEntitiesByClass(BoatEntity.class, box,
-                boatEntity -> {
+        List<AbstractBoatEntity> entitiesInRange = world.getEntitiesByClass(
+                AbstractBoatEntity.class, box, boatEntity -> {
                     SilverLinedEntityData silverData = boatEntity.getAttached(
                             ModAttachmentTypes.SILVER_LINED_BOAT);
                     boolean hasSilver = silverData != null && silverData.getSilverDurability() > 0;

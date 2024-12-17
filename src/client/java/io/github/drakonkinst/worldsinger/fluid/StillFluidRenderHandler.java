@@ -51,7 +51,7 @@ public class StillFluidRenderHandler implements FluidRenderHandler {
             BlockState state) {
         if (state.isOpaque()) {
             VoxelShape voxelShape = VoxelShapes.fullCube();
-            VoxelShape neighborVoxelShape = state.getCullingShape(world, pos.offset(direction));
+            VoxelShape neighborVoxelShape = state.getCullingShape();
             return VoxelShapes.isSideCovered(voxelShape, neighborVoxelShape, direction);
         }
         return false;
@@ -103,21 +103,21 @@ public class StillFluidRenderHandler implements FluidRenderHandler {
         BlockState blockStateEast = world.getBlockState(pos.offset(Direction.EAST));
         FluidState fluidStateEast = blockStateEast.getFluidState();
         boolean shouldRenderUp =
-                FluidRenderer.shouldRenderSide(world, pos, fluidState, blockState, Direction.UP,
-                        fluidStateUp) && !StillFluidRenderHandler.isSideCovered(world, pos,
-                        Direction.UP, blockStateUp);
+                FluidRenderer.shouldRenderSide(fluidState, blockState, Direction.UP, fluidStateUp)
+                        && !StillFluidRenderHandler.isSideCovered(world, pos, Direction.UP,
+                        blockStateUp);
         boolean shouldRenderDown =
-                FluidRenderer.shouldRenderSide(world, pos, fluidState, blockState, Direction.DOWN,
+                FluidRenderer.shouldRenderSide(fluidState, blockState, Direction.DOWN,
                         fluidStateDown) && !StillFluidRenderHandler.isSideCovered(world, pos,
                         Direction.DOWN, blockStateDown);
-        boolean shouldRenderNorth = FluidRenderer.shouldRenderSide(world, pos, fluidState,
-                blockState, Direction.NORTH, fluidStateNorth);
-        boolean shouldRenderSouth = FluidRenderer.shouldRenderSide(world, pos, fluidState,
-                blockState, Direction.SOUTH, fluidStateSouth);
-        boolean shouldRenderWest = FluidRenderer.shouldRenderSide(world, pos, fluidState,
-                blockState, Direction.WEST, fluidStateWest);
-        boolean shouldRenderEast = FluidRenderer.shouldRenderSide(world, pos, fluidState,
-                blockState, Direction.EAST, fluidStateEast);
+        boolean shouldRenderNorth = FluidRenderer.shouldRenderSide(fluidState, blockState,
+                Direction.NORTH, fluidStateNorth);
+        boolean shouldRenderSouth = FluidRenderer.shouldRenderSide(fluidState, blockState,
+                Direction.SOUTH, fluidStateSouth);
+        boolean shouldRenderWest = FluidRenderer.shouldRenderSide(fluidState, blockState,
+                Direction.WEST, fluidStateWest);
+        boolean shouldRenderEast = FluidRenderer.shouldRenderSide(fluidState, blockState,
+                Direction.EAST, fluidStateEast);
         if (!(shouldRenderUp || shouldRenderDown || shouldRenderEast || shouldRenderWest
                 || shouldRenderNorth || shouldRenderSouth)) {
             return;

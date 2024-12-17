@@ -7,7 +7,6 @@
     "accessor.WorldRendererAccessor",
     "block.FluidRendererMixin",
     "entity.AbstractBoatEntityRendererMixin",
-    "entity.BoatEntityRendererMixin",
     "entity.ClientPlayerEntityFreeLookMixin",
     "entity.ClientPlayerEntityLunagreeMixin",
     "entity.ClientPlayerEntityPossessionMixin",
@@ -22,7 +21,6 @@
     "gui.InGameOverlayRendererPossessionMixin",
     "item.ItemModelsMixin",
     "item.ItemRendererMixin",
-    "item.MapRendererMapTextureMixin",
     "network.ClientPlayerInteractionManagerPossessionMixin",
     "network.GameOptionsMixin",
     "network.MinecraftClientPossessionMixin",
@@ -39,5 +37,8 @@
   ],
   "injectors": {
     "defaultRequire": 1
-  }
+  },
+  "mixins": [
+    "item.MapRendererMapTextureMixin"
+  ]
 }

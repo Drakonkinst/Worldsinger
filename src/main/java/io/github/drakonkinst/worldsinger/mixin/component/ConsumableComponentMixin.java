@@ -24,9 +24,13 @@
 
 package io.github.drakonkinst.worldsinger.mixin.component;
 
+import com.llamalad7.mixinextras.injector.ModifyReturnValue;
+import io.github.drakonkinst.worldsinger.api.ModAttachmentTypes;
+import io.github.drakonkinst.worldsinger.cosmere.ThirstManager;
 import io.github.drakonkinst.worldsinger.event.FinishConsumingItemCallback;
 import net.minecraft.component.type.ConsumableComponent;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
@@ -41,6 +45,19 @@ public abstract class ConsumableComponentMixin {
     private void invokeCallback(World world, LivingEntity user, ItemStack stack,
             CallbackInfoReturnable<ItemStack> cir) {
         FinishConsumingItemCallback.EVENT.invoker().onConsume(user, stack);
+    }
 
+    @SuppressWarnings("UnstableApiUsage")
+    @ModifyReturnValue(method = "canConsume", at = @At("RETURN"))
+    private boolean allowConsumptionIfAffectsThirst(boolean original, LivingEntity user,
+            ItemStack stack) {
+        if (original) {
+            return original;
+        }
+        // TODO: Move thirst to its own component
+        Item item = stack.getItem();
+        int thirstModifier = ThirstManager.getThirst(item, stack);
+        ThirstManager thirstManager = user.getAttachedOrCreate(ModAttachmentTypes.THIRST);
+        return thirstModifier < 0 || (thirstModifier > 0 && !thirstManager.isFull());
     }
 }

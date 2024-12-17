@@ -36,6 +36,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.GameRules;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -53,7 +54,8 @@ public abstract class MinecraftServerMixin {
         CosmerePlanet planet = CosmerePlanet.getPlanet(world);
         if (planet != CosmerePlanet.NONE) {
             this.playerManager.sendToDimension(new CustomPayloadS2CPacket(
-                            new CosmereTimeUpdatePayload(planet, world.getTimeOfDay())),
+                            new CosmereTimeUpdatePayload(planet, world.getTime(), world.getTimeOfDay(),
+                                    world.getGameRules().getBoolean(GameRules.DO_DAYLIGHT_CYCLE))),
                     world.getRegistryKey());
         }
     }

@@ -23,22 +23,15 @@
  */
 package io.github.drakonkinst.worldsinger.mixin.client.entity;
 
-import io.github.drakonkinst.worldsinger.entity.render.BoatSilverLiningFeatureRenderer;
-import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.AbstractBoatEntityRenderer;
 import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.render.entity.EntityRendererFactory.Context;
 import net.minecraft.client.render.entity.feature.FeatureRenderer;
 import net.minecraft.client.render.entity.model.BoatEntityModel;
 import net.minecraft.client.render.entity.state.BoatEntityRenderState;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.vehicle.AbstractBoatEntity;
-import net.minecraft.entity.vehicle.BoatEntity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(AbstractBoatEntityRenderer.class)
 public abstract class AbstractBoatEntityRendererMixin extends
@@ -51,19 +44,20 @@ public abstract class AbstractBoatEntityRendererMixin extends
         super(context);
     }
 
-    @Inject(method = "<init>", at = @At("TAIL"))
-    private void addSilverLiningFeature(Context context, CallbackInfo ci) {
-        silverLiningFeatureRenderer = new BoatSilverLiningFeatureRenderer(this, texturesAndModels);
-    }
+    // TODO: RESTORE
+    // @Inject(method = "<init>", at = @At("TAIL"))
+    // private void addSilverLiningFeature(Context context, CallbackInfo ci) {
+    //     silverLiningFeatureRenderer = new BoatSilverLiningFeatureRenderer(this, texturesAndModels);
+    // }
 
-    @Inject(method = "render(Lnet/minecraft/entity/vehicle/BoatEntity;FFLnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;I)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/util/math/MatrixStack;pop()V"))
-    private void renderSilverLining(BoatEntity boatEntity, float f, float g,
-            MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i,
-            CallbackInfo ci) {
-        silverLiningFeatureRenderer.render();
-        for (FeatureRenderer<BoatEntity, BoatEntityModel> featureRenderer : this.features) {
-            featureRenderer.render(matrixStack, vertexConsumerProvider, i, boatEntity, 0.0f, 0.0f,
-                    0.0f, 0.0f, 0.0f, 0.0f);
-        }
-    }
+    // @Inject(method = "render(Lnet/minecraft/entity/vehicle/BoatEntity;FFLnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;I)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/util/math/MatrixStack;pop()V"))
+    // private void renderSilverLining(BoatEntity boatEntity, float f, float g,
+    //         MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i,
+    //         CallbackInfo ci) {
+    //     silverLiningFeatureRenderer.render();
+    //     for (FeatureRenderer<BoatEntity, BoatEntityModel> featureRenderer : this.features) {
+    //         featureRenderer.render(matrixStack, vertexConsumerProvider, i, boatEntity, 0.0f, 0.0f,
+    //                 0.0f, 0.0f, 0.0f, 0.0f);
+    //     }
+    // }
 }
