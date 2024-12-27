@@ -36,9 +36,7 @@ import net.minecraft.client.render.DimensionEffects;
 import net.minecraft.client.render.Fog;
 import net.minecraft.client.render.FrameGraphBuilder;
 import net.minecraft.client.render.RenderPass;
-import net.minecraft.client.render.RenderPhase;
 import net.minecraft.client.render.SkyRendering;
-import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexConsumerProvider.Immediate;
 import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
@@ -94,10 +92,8 @@ public abstract class WorldRendererLumarMixin {
         }
         original.call(instance, (Runnable) (() -> {
             RenderSystem.setShaderFog(fog);
-            RenderPhase.MAIN_TARGET.startDrawing();
 
-            MatrixStack matrixStack = new MatrixStack();
-            Tessellator tessellator = Tessellator.getInstance();
+            MatrixStack matrices = new MatrixStack();
             DimensionEffects dimensionEffects = this.world.getDimensionEffects();
             float skyAngleRadians = this.world.getSkyAngleRadians(tickDelta);
             float skyAngle = this.world.getSkyAngle(tickDelta);
@@ -110,16 +106,20 @@ public abstract class WorldRendererLumarMixin {
             float g = ColorHelper.getGreenFloat(skyColor);
             float b = ColorHelper.getBlueFloat(skyColor);
             this.skyRendering.renderSky(r, g, b);
-            Immediate immediate = this.bufferBuilders.getEntityVertexConsumers();
+            Immediate vertexConsumers = this.bufferBuilders.getEntityVertexConsumers();
             if (dimensionEffects.isSunRisingOrSetting(skyAngle)) {
-                this.skyRendering.renderGlowingSky(matrixStack, immediate, skyAngleRadians,
+                this.skyRendering.renderGlowingSky(matrices, vertexConsumers, skyAngleRadians,
                         dimensionSkyColor);
             }
 
-            lumarSkyRendering.renderLumarCelestialBodies(matrixStack, immediate, tickDelta,
-                    skyAngle, skyAlpha, starBrightness, fog);
+            // TODO: Restore
+            // lumarSkyRendering.renderLumarCelestialBodies(matrices, vertexConsumers, tickDelta,
+            // skyAngle, skyAlpha, starBrightness, fog);
+            skyRendering.renderCelestialBodies(matrices, vertexConsumers, skyAngle, 0, skyAlpha,
+                    starBrightness, fog);
+            vertexConsumers.draw();
             if (this.isSkyDark(tickDelta)) {
-                this.skyRendering.renderSkyDark(matrixStack);
+                this.skyRendering.renderSkyDark(matrices);
             }
         }));
     }

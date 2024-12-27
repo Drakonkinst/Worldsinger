@@ -6,13 +6,14 @@
     "accessor.EntityRendererAccessor",
     "accessor.WorldRendererAccessor",
     "block.FluidRendererMixin",
-    "entity.AbstractBoatEntityRendererMixin",
     "entity.ClientPlayerEntityFreeLookMixin",
     "entity.ClientPlayerEntityLunagreeMixin",
     "entity.ClientPlayerEntityPossessionMixin",
     "entity.EntityRenderDispatcherMixin",
-    "entity.EyesFeatureRendererMixin",
-    "entity.OverlayTextureMixin",
+    "entity.render.AbstractBoatEntityRendererMixin",
+    "entity.render.EntityRendererMixin",
+    "entity.render.EyesFeatureRendererMixin",
+    "entity.render.OverlayTextureMixin",
     "entity.render.state.LivingEntityRendererMixin",
     "entity.render.state.LivingEntityRenderStateMixin",
     "gui.DebugHudMixin",
@@ -39,8 +40,5 @@
   ],
   "injectors": {
     "defaultRequire": 1
-  },
-  "mixins": [
-    "item.MapRendererMapTextureMixin"
-  ]
+  }
 }

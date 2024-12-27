@@ -44,11 +44,13 @@ public class WorldRendererShapeshifterMixin {
             VertexConsumerProvider vertexConsumers, Operation<Void> original) {
         if (entity instanceof Shapeshifter shapeshifter) {
             LivingEntity morph = shapeshifter.getMorph();
-            shapeshifter.copyDataToMorph(morph);
-            original.call(instance, morph, cameraX, cameraY, cameraZ, tickDelta, matrices,
-                    vertexConsumers);
-            if (shapeshifter.shouldMorphReplaceSelf()) {
-                return;
+            if (morph != null) {
+                shapeshifter.copyDataToMorph(morph);
+                original.call(instance, morph, cameraX, cameraY, cameraZ, tickDelta, matrices,
+                        vertexConsumers);
+                if (shapeshifter.shouldMorphReplaceSelf()) {
+                    return;
+                }
             }
         }
         original.call(instance, entity, cameraX, cameraY, cameraZ, tickDelta, matrices,

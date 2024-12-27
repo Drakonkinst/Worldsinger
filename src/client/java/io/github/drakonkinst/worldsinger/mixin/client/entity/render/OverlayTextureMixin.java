@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2023-2024 Drakonkinst
+ * Copyright (c) 2024 Drakonkinst
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,12 +21,17 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.github.drakonkinst.worldsinger.mixin.client.entity;
+package io.github.drakonkinst.worldsinger.mixin.client.entity.render;
 
+import com.llamalad7.mixinextras.sugar.Local;
+import io.github.drakonkinst.worldsinger.entity.render.MidnightCreatureEntityRenderer;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.texture.NativeImage;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /* This mixin modifies OverlayTexture to fill unused rows with additional colors. More can be added
  * as needed. Vanilla uses row 3 for the red hurt animation, and row 10 for flashing TNT.
@@ -43,18 +48,17 @@ import org.spongepowered.asm.mixin.Unique;
 @Mixin(OverlayTexture.class)
 public abstract class OverlayTextureMixin {
 
-    // TODO: RESTORE
-    // @Inject(method = "<init>", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/systems/RenderSystem;activeTexture(I)V", ordinal = 0))
-    // private void populateUnusedRows(CallbackInfo ci, @Local NativeImage nativeImage) {
-    //     this.setRowColor(nativeImage, 0, MidnightCreatureEntityRenderer.MIDNIGHT_OVERLAY_COLOR);
-    //     this.setRowColor(nativeImage, 1,
-    //             MidnightCreatureEntityRenderer.MIDNIGHT_OVERLAY_HURT_COLOR);
-    // }
+    @SuppressWarnings("UnresolvedLocalCapture")
+    @Inject(method = "<init>", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/systems/RenderSystem;activeTexture(I)V", ordinal = 0))
+    private void populateUnusedRows(CallbackInfo ci, @Local NativeImage nativeImage) {
+        this.setRowColor(nativeImage, 0, MidnightCreatureEntityRenderer.MIDNIGHT_OVERLAY_COLOR);
+        this.setRowColor(nativeImage, 1,
+                MidnightCreatureEntityRenderer.MIDNIGHT_OVERLAY_HURT_COLOR);
+    }
 
     @Unique
     private void setRowColor(NativeImage nativeImage, int row, int color) {
         for (int col = 0; col < 16; ++col) {
-            // TODO: May need to fix the color here
             nativeImage.setColorArgb(col, row, color);
         }
     }

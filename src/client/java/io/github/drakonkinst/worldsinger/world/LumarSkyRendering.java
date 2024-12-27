@@ -30,7 +30,6 @@ import io.github.drakonkinst.worldsinger.cosmere.lumar.ClientLunagreeData;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarLunagreeGenerator;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LunagreeLocation;
 import io.github.drakonkinst.worldsinger.entity.ClientLunagreeDataAccess;
-import io.github.drakonkinst.worldsinger.mixin.client.world.SkyRenderingInvoker;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.ShaderProgramKeys;
 import net.minecraft.client.network.ClientPlayerEntity;
@@ -44,7 +43,6 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.RotationAxis;
 import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
@@ -67,7 +65,8 @@ public class LumarSkyRendering {
     private static final float MOON_VISUAL_HEIGHT_START = 100.0f;
     private static final float MOON_VISUAL_HEIGHT_END = 300.0f;
 
-    private final SkyRendering skyRendering;
+    // TODO: Temp
+    public final SkyRendering skyRendering;
 
     public LumarSkyRendering(SkyRendering skyRendering) {
         this.skyRendering = skyRendering;
@@ -107,23 +106,27 @@ public class LumarSkyRendering {
     }
 
     public void renderLumarCelestialBodies(MatrixStack matrices, Immediate vertexConsumers,
-            float rot, float tickDelta, float alpha, float starBrightness, Fog fog) {
+            float skyAngle, float tickDelta, float skyAlpha, float starBrightness, Fog fog) {
+        skyRendering.renderCelestialBodies(matrices, vertexConsumers, skyAngle, 0, skyAlpha,
+                starBrightness, fog);
+
+        // TODO: Restore
         // Render normal sky without moon
-        matrices.push();
-        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-90.0F));
-        matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(rot * 360.0F));
-        ((SkyRenderingInvoker) skyRendering).worldsinger$renderSun(alpha, vertexConsumers,
-                matrices);
-        vertexConsumers.draw();
-        if (starBrightness > 0.0F) {
-            ((SkyRenderingInvoker) skyRendering).worldsinger$renderStars(fog, starBrightness,
-                    matrices);
-        }
-        matrices.pop();
+        // matrices.push();
+        // matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-90.0F));
+        // matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(skyAngle * 360.0F));
+        // ((SkyRenderingInvoker) skyRendering).worldsinger$renderSun(skyAlpha, vertexConsumers,
+        //         matrices);
+        // vertexConsumers.draw();
+        // if (starBrightness > 0.0F) {
+        //     ((SkyRenderingInvoker) skyRendering).worldsinger$renderStars(fog, starBrightness,
+        //             matrices);
+        // }
+        // matrices.pop();
 
         // Render moons
-        renderMoons(vertexConsumers, matrices, tickDelta);
-        vertexConsumers.draw();
+        // renderMoons(vertexConsumers, matrices, tickDelta);
+        // vertexConsumers.draw();
     }
 
     public void renderMoons(Immediate vertexConsumers, MatrixStack matrices, float tickDelta) {
