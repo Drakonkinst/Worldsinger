@@ -147,7 +147,7 @@ public class CustomMineshaftGenerator {
         public MineshaftCrossing(StructureContext structureContext, NbtCompound nbt) {
             super(ModStructurePieceTypes.CUSTOM_MINESHAFT_CROSSING, nbt);
             this.twoFloors = nbt.getBoolean("tf");
-            this.direction = Direction.fromHorizontal(nbt.getInt("D"));
+            this.direction = Direction.fromHorizontalQuarterTurns(nbt.getInt("D"));
         }
 
         public MineshaftCrossing(int chainLength, BlockBox boundingBox,
@@ -302,7 +302,7 @@ public class CustomMineshaftGenerator {
         protected void writeNbt(StructureContext context, NbtCompound nbt) {
             super.writeNbt(context, nbt);
             nbt.putBoolean("tf", this.twoFloors);
-            nbt.putInt("D", this.direction.getHorizontal());
+            nbt.putInt("D", this.direction.getHorizontalQuarterTurns());
         }
     }
 

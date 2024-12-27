@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2023-2024 Drakonkinst
+ * Copyright (c) 2024 Drakonkinst
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,30 +21,24 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+
 package io.github.drakonkinst.worldsinger.registry;
 
-import io.github.drakonkinst.worldsinger.Worldsinger;
-import io.github.drakonkinst.worldsinger.api.ModApi;
-import io.github.drakonkinst.worldsinger.cosmere.SilverLined;
-import net.minecraft.client.item.ClampedModelPredicateProvider;
-import net.minecraft.client.item.ModelPredicateProviderRegistry;
+import net.minecraft.item.equipment.EquipmentAsset;
+import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.util.Identifier;
 
-public final class ModModelPredicates {
+public class ModEquipmentAssetKeys {
 
-    public static void register() {
-        ModModelPredicates.registerModelPredicate("silver_lined", ((stack, world, entity, seed) -> {
-            SilverLined silverItemData = ModApi.SILVER_LINED_ITEM.find(stack, null);
-            if (silverItemData == null) {
-                return 0.0f;
-            }
-            return silverItemData.getSilverDurability();
-        }));
+    private static final RegistryKey<? extends Registry<EquipmentAsset>> REGISTRY_KEY = RegistryKey.ofRegistry(
+            Identifier.ofVanilla("equipment_asset"));
+
+    public static final RegistryKey<EquipmentAsset> STEEL = register("steel");
+
+    private static RegistryKey<EquipmentAsset> register(String name) {
+        return RegistryKey.of(REGISTRY_KEY, Identifier.ofVanilla(name));
     }
 
-    // Note: Unlike vanilla model predicates, you must specify the mod ID namespace for these
-    private static void registerModelPredicate(String id, ClampedModelPredicateProvider provider) {
-        ModelPredicateProviderRegistry.register(Worldsinger.id(id), provider);
-    }
-
-    private ModModelPredicates() {}
+    private ModEquipmentAssetKeys() {}
 }

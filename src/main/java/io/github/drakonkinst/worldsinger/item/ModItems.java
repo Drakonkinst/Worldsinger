@@ -183,8 +183,7 @@ public final class ModItems {
 
     // Admin
     public static final Item MIDNIGHT_CREATURE_SPAWN_EGG = register("midnight_creature_spawn_egg",
-            settings -> new SpawnEggItem(ModEntityTypes.MIDNIGHT_CREATURE, 0x000000, 0x111111,
-                    settings));
+            settings -> new SpawnEggItem(ModEntityTypes.MIDNIGHT_CREATURE, settings));
 
     // Item Groups
     private static final ItemGroup WORLDSINGER_ITEM_GROUP = FabricItemGroup.builder()

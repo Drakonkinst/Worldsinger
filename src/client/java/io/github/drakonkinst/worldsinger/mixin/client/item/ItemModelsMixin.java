@@ -24,18 +24,15 @@
 
 package io.github.drakonkinst.worldsinger.mixin.client.item;
 
-import io.github.drakonkinst.worldsinger.util.LayeredBakedModel;
-import net.minecraft.client.render.item.ItemModels;
+import net.minecraft.client.data.ItemModels;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ItemModels.class)
 public abstract class ItemModelsMixin {
 
-    @Inject(method = "clearModels", at = @At("TAIL"))
-    private void reloadLayeredBakedModelCache(CallbackInfo ci) {
-        LayeredBakedModel.clearCaches();
-    }
+    // TODO: RESTORE
+    // @Inject(method = "clearModels", at = @At("TAIL"))
+    // private void reloadLayeredBakedModelCache(CallbackInfo ci) {
+    //     LayeredBakedModel.clearCaches();
+    // }
 }

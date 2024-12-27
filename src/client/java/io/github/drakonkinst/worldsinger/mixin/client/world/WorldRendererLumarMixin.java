@@ -39,6 +39,7 @@ import net.minecraft.client.render.RenderPass;
 import net.minecraft.client.render.RenderPhase;
 import net.minecraft.client.render.SkyRendering;
 import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.render.VertexConsumerProvider.Immediate;
 import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
@@ -69,6 +70,9 @@ public abstract class WorldRendererLumarMixin {
     @Shadow
     @Final
     private SkyRendering skyRendering;
+    @Shadow
+    @Final
+    private BufferBuilderStorage bufferBuilders;
     @Unique
     private LumarSkyRendering lumarSkyRendering;
 
@@ -102,16 +106,17 @@ public abstract class WorldRendererLumarMixin {
             int dimensionSkyColor = dimensionEffects.getSkyColor(skyAngle);
             int skyColor = this.world.getSkyColor(this.client.gameRenderer.getCamera().getPos(),
                     tickDelta);
-            float r = ColorHelper.floatFromChannel(ColorHelper.getRed(skyColor));
-            float g = ColorHelper.floatFromChannel(ColorHelper.getGreen(skyColor));
-            float b = ColorHelper.floatFromChannel(ColorHelper.getBlue(skyColor));
+            float r = ColorHelper.getRedFloat(skyColor);
+            float g = ColorHelper.getGreenFloat(skyColor);
+            float b = ColorHelper.getBlueFloat(skyColor);
             this.skyRendering.renderSky(r, g, b);
+            Immediate immediate = this.bufferBuilders.getEntityVertexConsumers();
             if (dimensionEffects.isSunRisingOrSetting(skyAngle)) {
-                this.skyRendering.renderGlowingSky(matrixStack, tessellator, skyAngleRadians,
+                this.skyRendering.renderGlowingSky(matrixStack, immediate, skyAngleRadians,
                         dimensionSkyColor);
             }
 
-            lumarSkyRendering.renderLumarCelestialBodies(matrixStack, tessellator, tickDelta,
+            lumarSkyRendering.renderLumarCelestialBodies(matrixStack, immediate, tickDelta,
                     skyAngle, skyAlpha, starBrightness, fog);
             if (this.isSkyDark(tickDelta)) {
                 this.skyRendering.renderSkyDark(matrixStack);

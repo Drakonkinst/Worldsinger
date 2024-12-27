@@ -32,7 +32,6 @@ import io.github.drakonkinst.worldsinger.registry.ModBlockRendering;
 import io.github.drakonkinst.worldsinger.registry.ModDimensionRenderers;
 import io.github.drakonkinst.worldsinger.registry.ModEntityRendering;
 import io.github.drakonkinst.worldsinger.registry.ModItemRendering;
-import io.github.drakonkinst.worldsinger.registry.ModModelPredicates;
 import net.fabricmc.api.ClientModInitializer;
 
 public class WorldsingerClient implements ClientModInitializer {
@@ -49,7 +48,6 @@ public class WorldsingerClient implements ClientModInitializer {
         // Register particles
         ModParticleManager.register();
 
-        ModModelPredicates.register();
         ModDimensionRenderers.initialize();
 
         ModClientEventHandlers.registerEventHandlers();

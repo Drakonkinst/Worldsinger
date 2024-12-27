@@ -21,21 +21,24 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+package io.github.drakonkinst.worldsinger.datagen;
 
-package io.github.drakonkinst.worldsinger.registry;
-
-import io.github.drakonkinst.worldsinger.Worldsinger;
-import net.minecraft.item.equipment.EquipmentModel;
+import io.github.drakonkinst.worldsinger.block.ModBlocks;
+import net.minecraft.block.Blocks;
+import net.minecraft.client.data.TextureKey;
+import net.minecraft.client.data.TextureMap;
 import net.minecraft.util.Identifier;
 
-public class ModEquipmentModels {
+public final class ModTextureMaps {
 
-    public static final Identifier STEEL = Worldsinger.id("steel");
-    // TODO: Register
-
-    public static EquipmentModel buildHumanoid(String name) {
-        return EquipmentModel.builder().addHumanoidLayers(Worldsinger.id(name)).build();
+    public static TextureMap aluminumCauldron(Identifier content) {
+        return new TextureMap().put(TextureKey.PARTICLE,
+                        TextureMap.getSubId(Blocks.CAULDRON, "_side"))
+                .put(TextureKey.SIDE, TextureMap.getSubId(ModBlocks.ALUMINUM_CAULDRON, "_side"))
+                .put(TextureKey.TOP, TextureMap.getSubId(Blocks.CAULDRON, "_top"))
+                .put(TextureKey.BOTTOM, TextureMap.getSubId(Blocks.CAULDRON, "_bottom"))
+                .put(TextureKey.INSIDE, TextureMap.getSubId(Blocks.CAULDRON, "_inner"))
+                .put(ModTextureKeys.ALUMINUM, TextureMap.getId(ModBlocks.ALUMINUM_BLOCK))
+                .put(TextureKey.CONTENT, content);
     }
-
-    private ModEquipmentModels() {}
 }

@@ -39,7 +39,7 @@ public final class ModArmorMaterials {
                 map.put(EquipmentType.HELMET, 2);
                 map.put(EquipmentType.BODY, 5);
             }), 11, ModSoundEvents.ITEM_ARMOR_EQUIP_STEEL, 1.0f, 0.0f,
-            ModConventionalItemTags.STEEL_TOOL_MATERIALS, ModEquipmentModels.STEEL);
+            ModConventionalItemTags.STEEL_TOOL_MATERIALS, ModEquipmentAssetKeys.STEEL);
 
     private ModArmorMaterials() {}
 }

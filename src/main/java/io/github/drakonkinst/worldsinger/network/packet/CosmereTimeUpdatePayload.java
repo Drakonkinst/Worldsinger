@@ -39,7 +39,7 @@ public record CosmereTimeUpdatePayload(byte cosmereWorldId, long time, long time
     public static final PacketCodec<RegistryByteBuf, CosmereTimeUpdatePayload> CODEC = PacketCodec.tuple(
             PacketCodecs.BYTE, CosmereTimeUpdatePayload::cosmereWorldId, PacketCodecs.VAR_LONG,
             CosmereTimeUpdatePayload::time, PacketCodecs.VAR_LONG,
-            CosmereTimeUpdatePayload::timeOfDay, PacketCodecs.BOOL,
+            CosmereTimeUpdatePayload::timeOfDay, PacketCodecs.BOOLEAN,
             CosmereTimeUpdatePayload::tickDayTime, CosmereTimeUpdatePayload::new);
 
     public CosmereTimeUpdatePayload(CosmerePlanet cosmerePlanet, long time, long timeOfDay,

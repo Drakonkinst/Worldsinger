@@ -34,15 +34,15 @@ import io.github.drakonkinst.worldsinger.mixin.client.world.SkyRenderingInvoker;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.ShaderProgramKeys;
 import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.BufferRenderer;
 import net.minecraft.client.render.Fog;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.SkyRendering;
-import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.VertexFormat;
-import net.minecraft.client.render.VertexFormats;
+import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.VertexConsumerProvider.Immediate;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
 import net.minecraft.util.math.Vec3d;
@@ -106,13 +106,15 @@ public class LumarSkyRendering {
         return targetDir;
     }
 
-    public void renderLumarCelestialBodies(MatrixStack matrices, Tessellator tessellator,
-            float tickDelta, float rot, float alpha, float starBrightness, Fog fog) {
+    public void renderLumarCelestialBodies(MatrixStack matrices, Immediate vertexConsumers,
+            float rot, float tickDelta, float alpha, float starBrightness, Fog fog) {
         // Render normal sky without moon
         matrices.push();
         matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-90.0F));
         matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(rot * 360.0F));
-        ((SkyRenderingInvoker) skyRendering).worldsinger$renderSun(alpha, tessellator, matrices);
+        ((SkyRenderingInvoker) skyRendering).worldsinger$renderSun(alpha, vertexConsumers,
+                matrices);
+        vertexConsumers.draw();
         if (starBrightness > 0.0F) {
             ((SkyRenderingInvoker) skyRendering).worldsinger$renderStars(fog, starBrightness,
                     matrices);
@@ -120,14 +122,13 @@ public class LumarSkyRendering {
         matrices.pop();
 
         // Render moons
-        renderMoons(tessellator, matrices, tickDelta);
+        renderMoons(vertexConsumers, matrices, tickDelta);
+        vertexConsumers.draw();
     }
 
-    public void renderMoons(Tessellator tessellator, MatrixStack matrices, float tickDelta) {
+    public void renderMoons(Immediate vertexConsumers, MatrixStack matrices, float tickDelta) {
         ClientPlayerEntity player = MinecraftClient.getInstance().player;
         assert (player != null);
-        RenderSystem.depthMask(false);
-        RenderSystem.overlayBlendFunc();
         RenderSystem.setShader(ShaderProgramKeys.POSITION_TEX);
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         RenderSystem.setShaderTexture(0, LUMAR_MOON);
@@ -143,7 +144,7 @@ public class LumarSkyRendering {
                 continue;
             }
             // Render moon
-            renderMoonAtLocation(tessellator, matrices, location, playerPos, distSq);
+            renderMoonAtLocation(vertexConsumers, matrices, location, playerPos, distSq);
         }
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         RenderSystem.disableBlend();
@@ -151,7 +152,7 @@ public class LumarSkyRendering {
         RenderSystem.depthMask(true);
     }
 
-    private void renderMoonAtLocation(Tessellator tessellator, MatrixStack matrices,
+    private void renderMoonAtLocation(Immediate vertexConsumers, MatrixStack matrices,
             LunagreeLocation lunagreeLocation, Vec3d playerPos, double distSq) {
         final int sporeId = lunagreeLocation.sporeId();
         if (sporeId < 0 || sporeId >= SPORE_ID_TO_MOON_INDEX.length) {
@@ -176,12 +177,12 @@ public class LumarSkyRendering {
         double deltaZ = lunagreeLocation.blockZ() - playerPos.getZ();
         Quaternionf rotation = solveForRotation(deltaX, deltaZ, verticalAngle);
 
-        renderMoon(tessellator, matrices, moonIndex, moonVisualDistance, rotation);
+        renderMoon(vertexConsumers, matrices, moonIndex, moonVisualDistance, rotation);
     }
 
     @SuppressWarnings("ConstantValue")
-    private void renderMoon(Tessellator tessellator, MatrixStack matrices, int moonIndex,
-            float height, Quaternionf quaternion) {
+    private void renderMoon(VertexConsumerProvider vertexConsumers, MatrixStack matrices,
+            int moonIndex, float height, Quaternionf quaternion) {
         int xIndex = moonIndex % MOON_TEXTURE_SECTIONS_X;
         int yIndex = moonIndex / MOON_TEXTURE_SECTIONS_X % MOON_TEXTURE_SECTIONS_Y;
         float x1 = (float) xIndex / MOON_TEXTURE_SECTIONS_X;
@@ -196,16 +197,14 @@ public class LumarSkyRendering {
         matrices.multiply(quaternion);
 
         // Draw moon
-        // Change coordinates to match the sun, since it should NOT be drawn on the
-        // other side of the screen.
-        BufferBuilder bufferBuilder = tessellator.begin(VertexFormat.DrawMode.QUADS,
-                VertexFormats.POSITION_TEXTURE);
+        VertexConsumer vertexConsumer = vertexConsumers.getBuffer(
+                RenderLayer.getCelestial(LUMAR_MOON));
+        int color = ColorHelper.getWhite(1.0f);
         Matrix4f moonPosition = matrices.peek().getPositionMatrix();
-        bufferBuilder.vertex(moonPosition, -radius, height, -radius).texture(x1, y1);
-        bufferBuilder.vertex(moonPosition, radius, height, -radius).texture(x2, y1);
-        bufferBuilder.vertex(moonPosition, radius, height, radius).texture(x2, y2);
-        bufferBuilder.vertex(moonPosition, -radius, height, radius).texture(x1, y2);
-        BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
+        vertexConsumer.vertex(moonPosition, -radius, height, -radius).texture(x1, y1).color(color);
+        vertexConsumer.vertex(moonPosition, radius, height, -radius).texture(x2, y1).color(color);
+        vertexConsumer.vertex(moonPosition, radius, height, radius).texture(x2, y2).color(color);
+        vertexConsumer.vertex(moonPosition, -radius, height, radius).texture(x1, y2).color(color);
         matrices.pop();
     }
 }

@@ -969,10 +969,7 @@ public class MidnightCreatureEntity extends ShapeshiftingEntity implements
                 SoundEvents.ENTITY_HOSTILE_BIG_FALL);
     }
 
-    @Override
-    public boolean shouldDropXp() {
-        return true;
-    }
+    // TODO: Validate that MidnightCreatureEntity still drops XP
 
     @Override
     protected boolean shouldDropLoot() {

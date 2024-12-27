@@ -48,7 +48,7 @@ public record CustomMapUpdatePayload(MapIdComponent mapId, byte scale, boolean l
             Worldsinger.id("custom_map_update"));
     public static final PacketCodec<RegistryByteBuf, CustomMapUpdatePayload> CODEC = PacketCodec.tuple(
             MapIdComponent.PACKET_CODEC, CustomMapUpdatePayload::mapId, PacketCodecs.BYTE,
-            CustomMapUpdatePayload::scale, PacketCodecs.BOOL, CustomMapUpdatePayload::locked,
+            CustomMapUpdatePayload::scale, PacketCodecs.BOOLEAN, CustomMapUpdatePayload::locked,
             MapDecoration.CODEC.collect(PacketCodecs.toList()).collect(PacketCodecs::optional),
             CustomMapUpdatePayload::decorations, MapState.UpdateData.CODEC,
             CustomMapUpdatePayload::updateData,

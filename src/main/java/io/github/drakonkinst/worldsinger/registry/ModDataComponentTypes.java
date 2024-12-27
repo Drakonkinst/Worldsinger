@@ -39,7 +39,7 @@ import net.minecraft.util.dynamic.Codecs;
 public final class ModDataComponentTypes {
 
     public static final ComponentType<Boolean> SALTED = register("salted",
-            builder -> builder.codec(Codec.BOOL).packetCodec(PacketCodecs.BOOL));
+            builder -> builder.codec(Codec.BOOL).packetCodec(PacketCodecs.BOOLEAN));
     public static final ComponentType<Integer> SILVER_DURABILITY = register("silver_durability",
             builder -> builder.codec(Codecs.NON_NEGATIVE_INT).packetCodec(PacketCodecs.VAR_INT));
     public static final ComponentType<CustomMapDecorationsComponent> CUSTOM_MAP_DECORATIONS = register(

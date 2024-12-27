@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2023-2024 Drakonkinst
+ * Copyright (c) 2024 Drakonkinst
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,22 +23,11 @@
  */
 package io.github.drakonkinst.worldsinger.datagen;
 
-import io.github.drakonkinst.worldsinger.block.ModBlocks;
-import net.minecraft.block.Blocks;
-import net.minecraft.data.client.TextureKey;
-import net.minecraft.data.client.TextureMap;
-import net.minecraft.util.Identifier;
+import net.minecraft.client.data.TextureKey;
 
-public final class ModTextureMaps {
+public final class ModTextureKeys {
 
-    public static TextureMap aluminumCauldron(Identifier content) {
-        return new TextureMap().put(TextureKey.PARTICLE,
-                        TextureMap.getSubId(Blocks.CAULDRON, "_side"))
-                .put(TextureKey.SIDE, TextureMap.getSubId(ModBlocks.ALUMINUM_CAULDRON, "_side"))
-                .put(TextureKey.TOP, TextureMap.getSubId(Blocks.CAULDRON, "_top"))
-                .put(TextureKey.BOTTOM, TextureMap.getSubId(Blocks.CAULDRON, "_bottom"))
-                .put(TextureKey.INSIDE, TextureMap.getSubId(Blocks.CAULDRON, "_inner"))
-                .put(ModTextureKeys.ALUMINUM, TextureMap.getId(ModBlocks.ALUMINUM_BLOCK))
-                .put(TextureKey.CONTENT, content);
-    }
+    public static final TextureKey ALUMINUM = TextureKey.of("aluminum");
+
+    private ModTextureKeys() {}
 }

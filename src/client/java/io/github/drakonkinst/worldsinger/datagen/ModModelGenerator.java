@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2023-2024 Drakonkinst
+ * Copyright (c) 2024 Drakonkinst
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,30 +26,28 @@ package io.github.drakonkinst.worldsinger.datagen;
 import com.mojang.datafixers.util.Pair;
 import io.github.drakonkinst.worldsinger.block.ModBlocks;
 import io.github.drakonkinst.worldsinger.item.ModItems;
-import io.github.drakonkinst.worldsinger.registry.ModEquipmentModels;
+import io.github.drakonkinst.worldsinger.registry.ModEquipmentAssetKeys;
 import java.util.function.Function;
+import net.fabricmc.fabric.api.client.datagen.v1.provider.FabricModelProvider;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
-import net.fabricmc.fabric.api.datagen.v1.provider.FabricModelProvider;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.LeveledCauldronBlock;
 import net.minecraft.block.MultifaceGrowthBlock;
-import net.minecraft.data.client.BlockStateModelGenerator;
-import net.minecraft.data.client.BlockStateModelGenerator.TintType;
-import net.minecraft.data.client.BlockStateVariant;
-import net.minecraft.data.client.BlockStateVariantMap;
-import net.minecraft.data.client.ItemModelGenerator;
-import net.minecraft.data.client.ModelIds;
-import net.minecraft.data.client.Models;
-import net.minecraft.data.client.MultipartBlockStateSupplier;
-import net.minecraft.data.client.TextureMap;
-import net.minecraft.data.client.VariantSettings;
-import net.minecraft.data.client.VariantsBlockStateSupplier;
-import net.minecraft.data.client.When;
-import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.client.data.BlockStateModelGenerator;
+import net.minecraft.client.data.BlockStateModelGenerator.CrossType;
+import net.minecraft.client.data.BlockStateVariant;
+import net.minecraft.client.data.BlockStateVariantMap;
+import net.minecraft.client.data.ItemModelGenerator;
+import net.minecraft.client.data.ModelIds;
+import net.minecraft.client.data.Models;
+import net.minecraft.client.data.MultipartBlockStateSupplier;
+import net.minecraft.client.data.TextureMap;
+import net.minecraft.client.data.VariantSettings;
+import net.minecraft.client.data.VariantsBlockStateSupplier;
+import net.minecraft.client.data.When;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
-import net.minecraft.item.equipment.EquipmentModel;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
@@ -65,7 +63,6 @@ public class ModModelGenerator extends FabricModelProvider {
     @Override
     public void generateBlockStateModels(BlockStateModelGenerator blockStateModelGenerator) {
         generateBlockStatesOnly(blockStateModelGenerator);
-        generateItemModelsOnly(blockStateModelGenerator);
 
         registerSimpleCubeBlocks(blockStateModelGenerator, new Block[] {
                 ModBlocks.CRIMSON_GROWTH,
@@ -142,13 +139,13 @@ public class ModModelGenerator extends FabricModelProvider {
         registerUpFacingCrossBlock(blockStateModelGenerator, ModBlocks.DEAD_VERDANT_VINE_SNARE);
 
         registerFlowerPotBlock(blockStateModelGenerator, ModBlocks.VERDANT_VINE_SNARE,
-                ModBlocks.POTTED_VERDANT_VINE_SNARE, TintType.NOT_TINTED);
+                ModBlocks.POTTED_VERDANT_VINE_SNARE, CrossType.NOT_TINTED);
         registerFlowerPotBlock(blockStateModelGenerator, ModBlocks.TWISTING_VERDANT_VINES,
-                ModBlocks.POTTED_TWISTING_VERDANT_VINES, TintType.NOT_TINTED);
+                ModBlocks.POTTED_TWISTING_VERDANT_VINES, CrossType.NOT_TINTED);
         registerFlowerPotBlock(blockStateModelGenerator, ModBlocks.DEAD_VERDANT_VINE_SNARE,
-                ModBlocks.POTTED_DEAD_VERDANT_VINE_SNARE, TintType.NOT_TINTED);
+                ModBlocks.POTTED_DEAD_VERDANT_VINE_SNARE, CrossType.NOT_TINTED);
         registerFlowerPotBlock(blockStateModelGenerator, ModBlocks.DEAD_TWISTING_VERDANT_VINES,
-                ModBlocks.POTTED_DEAD_TWISTING_VERDANT_VINES, TintType.NOT_TINTED);
+                ModBlocks.POTTED_DEAD_TWISTING_VERDANT_VINES, CrossType.NOT_TINTED);
 
         blockStateModelGenerator.registerAnvil(ModBlocks.STEEL_ANVIL);
         blockStateModelGenerator.registerAnvil(ModBlocks.CHIPPED_STEEL_ANVIL);
@@ -162,9 +159,9 @@ public class ModModelGenerator extends FabricModelProvider {
         blockStateModelGenerator.registerAmethyst(ModBlocks.SMALL_ROSEITE_BUD);
 
         blockStateModelGenerator.registerDoubleBlock(ModBlocks.TALL_CRIMSON_SPINES,
-                TintType.NOT_TINTED);
+                CrossType.NOT_TINTED);
         blockStateModelGenerator.registerDoubleBlock(ModBlocks.DEAD_TALL_CRIMSON_SPINES,
-                TintType.NOT_TINTED);
+                CrossType.NOT_TINTED);
 
         BlockStateModelGenerator.BlockTexturePool roseiteTexturePool = blockStateModelGenerator.registerCubeAllModelTexturePool(
                 ModBlocks.ROSEITE_BLOCK);
@@ -186,11 +183,6 @@ public class ModModelGenerator extends FabricModelProvider {
         blockStateModelGenerator.registerSimpleState(ModBlocks.ROSEITE_SPORE_SEA);
         blockStateModelGenerator.registerSimpleState(ModBlocks.MIDNIGHT_SPORE_SEA);
         blockStateModelGenerator.registerSimpleState(ModBlocks.SUNLIGHT);
-    }
-
-    private void generateItemModelsOnly(BlockStateModelGenerator blockStateModelGenerator) {
-        blockStateModelGenerator.registerParentedItemModel(ModItems.MIDNIGHT_CREATURE_SPAWN_EGG,
-                ModelIds.getMinecraftNamespacedItem("template_spawn_egg"));
     }
 
     private void registerSimpleCubeBlocks(BlockStateModelGenerator blockStateModelGenerator,
@@ -238,7 +230,7 @@ public class ModModelGenerator extends FabricModelProvider {
     private void registerSimpleCrossBlocks(BlockStateModelGenerator blockStateModelGenerator,
             Block[] blocks) {
         for (Block block : blocks) {
-            blockStateModelGenerator.registerTintableCross(block, TintType.NOT_TINTED);
+            blockStateModelGenerator.registerTintableCross(block, CrossType.NOT_TINTED);
         }
     }
 
@@ -254,9 +246,9 @@ public class ModModelGenerator extends FabricModelProvider {
     }
 
     private void registerFlowerPotBlock(BlockStateModelGenerator blockStateModelGenerator,
-            Block plantBlock, Block flowerPotBlock, BlockStateModelGenerator.TintType tintType) {
+            Block plantBlock, Block flowerPotBlock, BlockStateModelGenerator.CrossType crossType) {
         TextureMap textureMap = TextureMap.plant(plantBlock);
-        Identifier identifier = tintType.getFlowerPotCrossModel()
+        Identifier identifier = crossType.getFlowerPotCrossModel()
                 .upload(flowerPotBlock, textureMap, blockStateModelGenerator.modelCollector);
         blockStateModelGenerator.blockStateCollector.accept(
                 BlockStateModelGenerator.createSingletonBlockState(flowerPotBlock, identifier));
@@ -353,16 +345,19 @@ public class ModModelGenerator extends FabricModelProvider {
                 ModItems.SILVER_KNIFE
         });
 
+        itemModelGenerator.registerSpawnEgg(ModItems.MIDNIGHT_CREATURE_SPAWN_EGG, 0x000000,
+                0x111111);
+
         // Steel armor
-        EquipmentModel steelEquipmentModel = ModEquipmentModels.buildHumanoid("steel");
-        itemModelGenerator.registerArmor(ModItems.STEEL_HELMET, ModEquipmentModels.STEEL,
-                steelEquipmentModel, EquipmentSlot.HEAD);
-        itemModelGenerator.registerArmor(ModItems.STEEL_CHESTPLATE, ModEquipmentModels.STEEL,
-                steelEquipmentModel, EquipmentSlot.CHEST);
-        itemModelGenerator.registerArmor(ModItems.STEEL_LEGGINGS, ModEquipmentModels.STEEL,
-                steelEquipmentModel, EquipmentSlot.LEGS);
-        itemModelGenerator.registerArmor(ModItems.STEEL_BOOTS, ModEquipmentModels.STEEL,
-                steelEquipmentModel, EquipmentSlot.FEET);
+        itemModelGenerator.registerArmor(ModItems.STEEL_HELMET, ModEquipmentAssetKeys.STEEL,
+                "helmet", false);
+        itemModelGenerator.registerArmor(ModItems.STEEL_CHESTPLATE, ModEquipmentAssetKeys.STEEL,
+                "chestplate", false);
+        itemModelGenerator.registerArmor(ModItems.STEEL_LEGGINGS, ModEquipmentAssetKeys.STEEL,
+                "leggings", false);
+        itemModelGenerator.registerArmor(ModItems.STEEL_BOOTS, ModEquipmentAssetKeys.STEEL, "boots",
+                false);
+        // TODO: Make sure steel armor entity model is registered properly
     }
 
     private void registerGeneratedItems(ItemModelGenerator itemModelGenerator,

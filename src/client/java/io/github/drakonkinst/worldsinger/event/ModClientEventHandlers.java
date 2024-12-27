@@ -33,7 +33,6 @@ import io.github.drakonkinst.worldsinger.network.packet.PossessUpdatePayload;
 import io.github.drakonkinst.worldsinger.util.PossessionClientUtil;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
-import net.fabricmc.fabric.api.event.client.player.ClientPickBlockApplyCallback;
 import net.fabricmc.fabric.api.event.player.AttackBlockCallback;
 import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
@@ -42,7 +41,6 @@ import net.fabricmc.fabric.api.event.player.UseItemCallback;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.Entity;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.MathHelper;
 
@@ -170,14 +168,6 @@ public final class ModClientEventHandlers {
                 return ActionResult.FAIL;
             }
             return ActionResult.PASS;
-        });
-
-        ClientPickBlockApplyCallback.EVENT.register((player, result, stack) -> {
-            CameraPossessable possessedEntity = PossessionClientUtil.getPossessedEntity();
-            if (possessedEntity != null && !possessedEntity.canPickBlock()) {
-                return ItemStack.EMPTY;
-            }
-            return stack;
         });
     }
 

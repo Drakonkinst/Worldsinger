@@ -26,7 +26,7 @@ package io.github.drakonkinst.worldsinger.mixin.client.world;
 
 import net.minecraft.client.render.Fog;
 import net.minecraft.client.render.SkyRendering;
-import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.math.MatrixStack;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Invoker;
@@ -35,10 +35,11 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 public interface SkyRenderingInvoker {
 
     @Invoker("renderSun")
-    void worldsinger$renderSun(float alpha, Tessellator tesselator, MatrixStack matrices);
+    void worldsinger$renderSun(float alpha, VertexConsumerProvider vertexConsumers,
+            MatrixStack matrices);
 
     @Invoker("renderMoon")
-    void worldsinger$renderMoon(int phase, float alpha, Tessellator tesselator,
+    void worldsinger$renderMoon(int phase, float alpha, VertexConsumerProvider vertexConsumers,
             MatrixStack matrices);
 
     @Invoker("renderStars")

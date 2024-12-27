@@ -30,7 +30,6 @@ import io.github.drakonkinst.worldsinger.util.ModEnums;
 import net.minecraft.block.enums.CameraSubmersionType;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.GameRenderer;
-import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.util.ObjectAllocator;
@@ -57,8 +56,8 @@ public abstract class WorldRendererRainlineMixin {
     @Inject(method = "render", at = @At("HEAD"))
     private void trackNearbyRainlineEntities(ObjectAllocator allocator,
             RenderTickCounter tickCounter, boolean renderBlockOutline, Camera camera,
-            GameRenderer gameRenderer, LightmapTextureManager lightmapTextureManager,
-            Matrix4f positionMatrix, Matrix4f projectionMatrix, CallbackInfo ci) {
+            GameRenderer gameRenderer, Matrix4f positionMatrix, Matrix4f projectionMatrix,
+            CallbackInfo ci) {
         if (this.world == null) {
             return;
         }

@@ -41,3 +41,4 @@ replay_*.log
 *.jfr
 
 src/main/generated/
+src/main/datagen/

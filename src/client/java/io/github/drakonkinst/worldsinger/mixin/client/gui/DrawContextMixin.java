@@ -23,34 +23,14 @@
  */
 package io.github.drakonkinst.worldsinger.mixin.client.gui;
 
-import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
-import io.github.drakonkinst.worldsinger.Worldsinger;
-import io.github.drakonkinst.worldsinger.cosmere.SaltedFoodUtil;
-import io.github.drakonkinst.worldsinger.item.ModItems;
-import io.github.drakonkinst.worldsinger.item.component.CannonballComponent;
 import io.github.drakonkinst.worldsinger.item.component.CannonballComponent.CannonballContent;
-import io.github.drakonkinst.worldsinger.item.component.CannonballComponent.CannonballCore;
-import io.github.drakonkinst.worldsinger.registry.ModDataComponentTypes;
-import io.github.drakonkinst.worldsinger.registry.ModItemRendering;
-import io.github.drakonkinst.worldsinger.util.LayeredBakedModel;
-import java.util.ArrayList;
 import java.util.List;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.model.BakedModel;
-import net.minecraft.client.render.model.BakedModelManager;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.registry.Registries;
 import net.minecraft.util.Colors;
-import net.minecraft.util.Identifier;
-import net.minecraft.world.World;
-import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
-import org.spongepowered.asm.mixin.injection.At;
 
 @Mixin(DrawContext.class)
 public abstract class DrawContextMixin {
@@ -61,31 +41,32 @@ public abstract class DrawContextMixin {
     // Mixing in directly to DrawContext because we want salted overlay to ONLY appear in the
     // inventory, not in hand.
     // If we want a global overlay, a better option would be to mixin into getModel() directly
-    @ModifyExpressionValue(method = "drawItem(Lnet/minecraft/entity/LivingEntity;Lnet/minecraft/world/World;Lnet/minecraft/item/ItemStack;IIII)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/item/ItemRenderer;getModel(Lnet/minecraft/item/ItemStack;Lnet/minecraft/world/World;Lnet/minecraft/entity/LivingEntity;I)Lnet/minecraft/client/render/model/BakedModel;"))
-    private BakedModel addSaltedOverlay(BakedModel original, @Nullable LivingEntity entity,
-            @Nullable World world, ItemStack stack, int x, int y, int seed, int z) {
-        if (SaltedFoodUtil.isSalted(stack)) {
-            // Note: Should use separate caches if we implement this multiple times
-            Identifier itemId = Registries.ITEM.getId(stack.getItem());
-            BakedModel cachedModel = ModItemRendering.SALT_OVERLAY_CACHE.get(itemId);
-            if (cachedModel != null) {
-                return cachedModel;
-            } else {
-                BakedModelManager manager = MinecraftClient.getInstance().getBakedModelManager();
-                BakedModel saltOverlayModel = manager.getModel(ModItemRendering.SALT_OVERLAY);
-                if (saltOverlayModel == null || saltOverlayModel.equals(
-                        manager.getMissingModel())) {
-                    Worldsinger.LOGGER.warn("Could not locate salt overlay texture");
-                    return original;
-                }
-                LayeredBakedModel layeredModel = new LayeredBakedModel(
-                        List.of(original, saltOverlayModel));
-                ModItemRendering.SALT_OVERLAY_CACHE.add(itemId, layeredModel);
-                return layeredModel;
-            }
-        }
-        return original;
-    }
+    // TODO: RESTORE
+    // @ModifyExpressionValue(method = "drawItem(Lnet/minecraft/entity/LivingEntity;Lnet/minecraft/world/World;Lnet/minecraft/item/ItemStack;IIII)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/item/ItemRenderer;getModel(Lnet/minecraft/item/ItemStack;Lnet/minecraft/world/World;Lnet/minecraft/entity/LivingEntity;I)Lnet/minecraft/client/render/model/BakedModel;"))
+    // private BakedModel addSaltedOverlay(BakedModel original, @Nullable LivingEntity entity,
+    //         @Nullable World world, ItemStack stack, int x, int y, int seed, int z) {
+    //     if (SaltedFoodUtil.isSalted(stack)) {
+    //         // Note: Should use separate caches if we implement this multiple times
+    //         Identifier itemId = Registries.ITEM.getId(stack.getItem());
+    //         BakedModel cachedModel = ModItemRenderingel i.SALT_OVERLAY_CACHE.get(itemId);
+    //         if (cachedModel != null) {
+    //             return cachedModel;
+    //         } else {
+    //             BakedModelManager manager = MinecraftClient.getInstance().getBakedModelManager();
+    //             BakedModel saltOverlayModel = manager.getModel(ModItemRendering.SALT_OVERLAY);
+    //             if (saltOverlayModel == null || saltOverlayModel.equals(
+    //                     manager.getMissingModel())) {
+    //                 Worldsinger.LOGGER.warn("Could not locate salt overlay texture");
+    //                 return original;
+    //             }
+    //             LayeredBakedModel layeredModel = new LayeredBakedModel(
+    //                     List.of(original, saltOverlayModel));
+    //             ModItemRendering.SALT_OVERLAY_CACHE.add(itemId, layeredModel);
+    //             return layeredModel;
+    //         }
+    //     }
+    //     return original;
+    // }
 
     // TODO: RESTORE
     // @Inject(method = "drawItemInSlot(Lnet/minecraft/client/font/TextRenderer;Lnet/minecraft/item/ItemStack;IILjava/lang/String;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;isItemBarVisible()Z"))
@@ -117,52 +98,53 @@ public abstract class DrawContextMixin {
                 contents.get(index).getBarColor() | Colors.BLACK);
     }
 
-    @ModifyExpressionValue(method = "drawItem(Lnet/minecraft/entity/LivingEntity;Lnet/minecraft/world/World;Lnet/minecraft/item/ItemStack;IIII)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/item/ItemRenderer;getModel(Lnet/minecraft/item/ItemStack;Lnet/minecraft/world/World;Lnet/minecraft/entity/LivingEntity;I)Lnet/minecraft/client/render/model/BakedModel;"))
-    private BakedModel addCannonballModelOverlays(BakedModel original,
-            @Nullable LivingEntity entity, @Nullable World world, ItemStack stack, int x, int y,
-            int seed, int z) {
-        // Just supports ceramic cannonballs rn because I can't be bothered
-        if (stack.isOf(ModItems.CERAMIC_CANNONBALL)) {
-            CannonballComponent component = stack.get(ModDataComponentTypes.CANNONBALL);
-            if (component == null) {
-                return original;
-            }
-            String itemId = Registries.ITEM.getId(stack.getItem()).toString();
-            Identifier variantId = Identifier.of(itemId + '-' + component.encodeModelString());
-            BakedModel cachedModel = ModItemRendering.CERAMIC_CANNONBALL_CACHE.get(variantId);
-            if (cachedModel != null) {
-                return cachedModel;
-            } else {
-                BakedModelManager manager = MinecraftClient.getInstance().getBakedModelManager();
-                List<BakedModel> modelList = new ArrayList<>();
-                modelList.add(original);
-
-                if (component.core() == CannonballCore.ROSEITE) {
-                    ModItemRendering.attemptAddModel(modelList, manager,
-                            ModItemRendering.CANNONBALL_CORE_ROSEITE);
-                } else if (component.core() == CannonballCore.WATER) {
-                    ModItemRendering.attemptAddModel(modelList, manager,
-                            ModItemRendering.CANNONBALL_CORE_WATER);
-                }
-
-                if (component.core().canHaveFuse()) {
-                    if (component.fuse() >= 3) {
-                        ModItemRendering.attemptAddModel(modelList, manager,
-                                ModItemRendering.CANNONBALL_FUSE_3);
-                    } else if (component.fuse() == 2) {
-                        ModItemRendering.attemptAddModel(modelList, manager,
-                                ModItemRendering.CANNONBALL_FUSE_2);
-                    } else if (component.fuse() > 0) {
-                        ModItemRendering.attemptAddModel(modelList, manager,
-                                ModItemRendering.CANNONBALL_FUSE_1);
-                    }
-                }
-
-                LayeredBakedModel layeredModel = new LayeredBakedModel(modelList);
-                ModItemRendering.CERAMIC_CANNONBALL_CACHE.add(variantId, layeredModel);
-                return layeredModel;
-            }
-        }
-        return original;
-    }
+    // TODO: RESTORE
+    // @ModifyExpressionValue(method = "drawItem(Lnet/minecraft/entity/LivingEntity;Lnet/minecraft/world/World;Lnet/minecraft/item/ItemStack;IIII)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/item/ItemRenderer;getModel(Lnet/minecraft/item/ItemStack;Lnet/minecraft/world/World;Lnet/minecraft/entity/LivingEntity;I)Lnet/minecraft/client/render/model/BakedModel;"))
+    // private BakedModel addCannonballModelOverlays(BakedModel original,
+    //         @Nullable LivingEntity entity, @Nullable World world, ItemStack stack, int x, int y,
+    //         int seed, int z) {
+    //     // Just supports ceramic cannonballs rn because I can't be bothered
+    //     if (stack.isOf(ModItems.CERAMIC_CANNONBALL)) {
+    //         CannonballComponent component = stack.get(ModDataComponentTypes.CANNONBALL);
+    //         if (component == null) {
+    //             return original;
+    //         }
+    //         String itemId = Registries.ITEM.getId(stack.getItem()).toString();
+    //         Identifier variantId = Identifier.of(itemId + '-' + component.encodeModelString());
+    //         BakedModel cachedModel = ModItemRendering.CERAMIC_CANNONBALL_CACHE.get(variantId);
+    //         if (cachedModel != null) {
+    //             return cachedModel;
+    //         } else {
+    //             BakedModelManager manager = MinecraftClient.getInstance().getBakedModelManager();
+    //             List<BakedModel> modelList = new ArrayList<>();
+    //             modelList.add(original);
+    //
+    //             if (component.core() == CannonballCore.ROSEITE) {
+    //                 ModItemRendering.attemptAddModel(modelList, manager,
+    //                         ModItemRendering.CANNONBALL_CORE_ROSEITE);
+    //             } else if (component.core() == CannonballCore.WATER) {
+    //                 ModItemRendering.attemptAddModel(modelList, manager,
+    //                         ModItemRendering.CANNONBALL_CORE_WATER);
+    //             }
+    //
+    //             if (component.core().canHaveFuse()) {
+    //                 if (component.fuse() >= 3) {
+    //                     ModItemRendering.attemptAddModel(modelList, manager,
+    //                             ModItemRendering.CANNONBALL_FUSE_3);
+    //                 } else if (component.fuse() == 2) {
+    //                     ModItemRendering.attemptAddModel(modelList, manager,
+    //                             ModItemRendering.CANNONBALL_FUSE_2);
+    //                 } else if (component.fuse() > 0) {
+    //                     ModItemRendering.attemptAddModel(modelList, manager,
+    //                             ModItemRendering.CANNONBALL_FUSE_1);
+    //                 }
+    //             }
+    //
+    //             LayeredBakedModel layeredModel = new LayeredBakedModel(modelList);
+    //             ModItemRendering.CERAMIC_CANNONBALL_CACHE.add(variantId, layeredModel);
+    //             return layeredModel;
+    //         }
+    //     }
+    //     return original;
+    // }
 }

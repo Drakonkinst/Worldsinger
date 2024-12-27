@@ -26,14 +26,17 @@ package io.github.drakonkinst.worldsinger.event;
 import io.github.drakonkinst.worldsinger.api.ModAttachmentTypes;
 import io.github.drakonkinst.worldsinger.api.sync.AttachmentSync;
 import io.github.drakonkinst.worldsinger.block.LivingSporeGrowthBlock;
+import io.github.drakonkinst.worldsinger.cosmere.PossessionManager;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarManagerAccess;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.MidnightAetherBondManager;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.SporeKillingUtil;
 import io.github.drakonkinst.worldsinger.effect.ModStatusEffects;
+import io.github.drakonkinst.worldsinger.entity.CameraPossessable;
 import io.github.drakonkinst.worldsinger.item.ModItems;
 import io.github.drakonkinst.worldsinger.registry.tag.ModItemTags;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.player.AttackBlockCallback;
+import net.fabricmc.fabric.api.event.player.PlayerPickItemEvents;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.registry.FuelRegistryEvents;
 import net.minecraft.block.BlockState;
@@ -56,7 +59,7 @@ public final class ModEventHandlers {
             builder.add(ModItems.SUNLIGHT_SPORES_BOTTLE, 8 * numItemsToTicks);
             builder.add(ModItems.SUNLIGHT_SPORES_BUCKET, 100 * numItemsToTicks);
         });
-        
+
         // Add Thirst-related effects when consuming an item
         FinishConsumingItemCallback.EVENT.register((entity, stack) -> {
             if (entity instanceof PlayerEntity player) {
@@ -141,6 +144,35 @@ public final class ModEventHandlers {
 
         ServerTickEvents.END_WORLD_TICK.register(world -> {
             ((LumarManagerAccess) world).worldsinger$getLumarManager().serverTick(world);
+        });
+
+        // Prevent entity/block picking while possessing an entity
+        PlayerPickItemEvents.BLOCK.register((player, pos, state, requestIncludeData) -> {
+            PossessionManager possessionManager = player.getAttached(ModAttachmentTypes.POSSESSION);
+            if (possessionManager == null) {
+                return null;
+            }
+            CameraPossessable possessedEntity = possessionManager.getPossessionTarget();
+            if (possessedEntity != null && !possessedEntity.canPickBlock()) {
+                // Prevent picking block
+                return ItemStack.EMPTY;
+            }
+            // Use default behavior
+            return null;
+        });
+
+        PlayerPickItemEvents.ENTITY.register((player, pos, requestIncludeData) -> {
+            PossessionManager possessionManager = player.getAttached(ModAttachmentTypes.POSSESSION);
+            if (possessionManager == null) {
+                return null;
+            }
+            CameraPossessable possessedEntity = possessionManager.getPossessionTarget();
+            if (possessedEntity != null && !possessedEntity.canPickBlock()) {
+                // Prevent picking entity
+                return ItemStack.EMPTY;
+            }
+            // Use default behavior
+            return null;
         });
     }
 
