@@ -51,16 +51,6 @@ public final class ModItemRendering {
     public static final Identifier CANNONBALL_FUSE_3 = Worldsinger.id("item/cannonball/fuse_3");
 
     public static void register() {
-        // TODO: RESTORE
-        // ColorProviderRegistry.ITEM.register((stack, tintIndex) -> tintIndex > 0 ? -1
-        //                 : ColorHelper.fullAlpha(AetherSpores.getBottleColor(stack)),
-        //         ModItems.DEAD_SPORES_BOTTLE, ModItems.VERDANT_SPORES_BOTTLE,
-        //         ModItems.CRIMSON_SPORES_BOTTLE, ModItems.ZEPHYR_SPORES_BOTTLE,
-        //         ModItems.SUNLIGHT_SPORES_BOTTLE, ModItems.ROSEITE_SPORES_BOTTLE,
-        //         ModItems.MIDNIGHT_SPORES_BOTTLE, ModItems.DEAD_SPORES_SPLASH_BOTTLE,
-        //         ModItems.VERDANT_SPORES_SPLASH_BOTTLE, ModItems.CRIMSON_SPORES_SPLASH_BOTTLE,
-        //         ModItems.ZEPHYR_SPORES_SPLASH_BOTTLE, ModItems.SUNLIGHT_SPORES_SPLASH_BOTTLE,
-        //         ModItems.ROSEITE_SPORES_SPLASH_BOTTLE, ModItems.MIDNIGHT_SPORES_SPLASH_BOTTLE);
         final Identifier[] overlayModels = new Identifier[] {
                 ModItemRendering.SALT_OVERLAY,
                 ModItemRendering.SILVER_LINED_AXE_OVERLAY,

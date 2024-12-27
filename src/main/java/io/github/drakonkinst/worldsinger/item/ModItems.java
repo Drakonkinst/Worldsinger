@@ -50,6 +50,7 @@ import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.ConsumableComponents;
 import net.minecraft.fluid.FlowableFluid;
 import net.minecraft.item.ArmorItem;
 import net.minecraft.item.AxeItem;
@@ -196,16 +197,17 @@ public final class ModItems {
         // TODO: Move to components?
         return register(id, settings -> new AetherSporeBucketItem(sporeBlock, sporeFluid,
                         ModSoundEvents.BLOCK_SPORE_BLOCK_PLACE, settings),
-                new Item.Settings().recipeRemainder(Items.BUCKET).maxCount(1));
+                new Item.Settings().useRemainder(Items.BUCKET).maxCount(1));
     }
 
     private static Item registerSporeBottleItem(String id, AetherSpores sporeType) {
         // TODO: Move to components?
         return register(id, settings -> new SporeBottleItem(sporeType, settings),
-                new Item.Settings().recipeRemainder(Items.GLASS_BOTTLE)
+                new Item.Settings().useRemainder(Items.GLASS_BOTTLE)
                         .maxCount(16)
                         .component(DataComponentTypes.POTION_CONTENTS,
-                                ModPotions.SPORE_POTIONS_COMPONENT));
+                                ModPotions.SPORE_POTIONS_COMPONENT)
+                        .component(DataComponentTypes.CONSUMABLE, ConsumableComponents.DRINK));
     }
 
     private static Item registerSporeSplashBottleItem(String id, AetherSpores sporeType) {

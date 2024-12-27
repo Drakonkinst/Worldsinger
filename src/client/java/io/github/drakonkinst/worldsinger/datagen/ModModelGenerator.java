@@ -26,6 +26,7 @@ package io.github.drakonkinst.worldsinger.datagen;
 import com.mojang.datafixers.util.Pair;
 import io.github.drakonkinst.worldsinger.block.ModBlocks;
 import io.github.drakonkinst.worldsinger.item.ModItems;
+import io.github.drakonkinst.worldsinger.item.SporeBottleTintSource;
 import io.github.drakonkinst.worldsinger.registry.ModEquipmentAssetKeys;
 import java.util.function.Function;
 import net.fabricmc.fabric.api.client.datagen.v1.provider.FabricModelProvider;
@@ -39,6 +40,7 @@ import net.minecraft.client.data.BlockStateModelGenerator.CrossType;
 import net.minecraft.client.data.BlockStateVariant;
 import net.minecraft.client.data.BlockStateVariantMap;
 import net.minecraft.client.data.ItemModelGenerator;
+import net.minecraft.client.data.ItemModels;
 import net.minecraft.client.data.ModelIds;
 import net.minecraft.client.data.Models;
 import net.minecraft.client.data.MultipartBlockStateSupplier;
@@ -46,8 +48,10 @@ import net.minecraft.client.data.TextureMap;
 import net.minecraft.client.data.VariantSettings;
 import net.minecraft.client.data.VariantsBlockStateSupplier;
 import net.minecraft.client.data.When;
+import net.minecraft.client.render.item.tint.TintSource;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
+import net.minecraft.item.Items;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
@@ -55,6 +59,8 @@ import net.minecraft.util.math.Direction;
 
 // Datagen is limited and does not work for the more complex items.
 public class ModModelGenerator extends FabricModelProvider {
+
+    private static final TintSource UNTINTED = ItemModels.constantTintSource(-1);
 
     public ModModelGenerator(FabricDataOutput output) {
         super(output);
@@ -358,6 +364,30 @@ public class ModModelGenerator extends FabricModelProvider {
         itemModelGenerator.registerArmor(ModItems.STEEL_BOOTS, ModEquipmentAssetKeys.STEEL, "boots",
                 false);
         // TODO: Make sure steel armor entity model is registered properly
+
+        // Tinted
+        registerSporeBottle(itemModelGenerator, ModItems.DEAD_SPORES_BOTTLE);
+        registerSporeBottle(itemModelGenerator, ModItems.DEAD_SPORES_SPLASH_BOTTLE);
+        registerSporeBottle(itemModelGenerator, ModItems.VERDANT_SPORES_BOTTLE);
+        registerSporeBottle(itemModelGenerator, ModItems.VERDANT_SPORES_SPLASH_BOTTLE);
+        registerSporeBottle(itemModelGenerator, ModItems.CRIMSON_SPORES_BOTTLE);
+        registerSporeBottle(itemModelGenerator, ModItems.CRIMSON_SPORES_SPLASH_BOTTLE);
+        registerSporeBottle(itemModelGenerator, ModItems.SUNLIGHT_SPORES_BOTTLE);
+        registerSporeBottle(itemModelGenerator, ModItems.SUNLIGHT_SPORES_SPLASH_BOTTLE);
+        registerSporeBottle(itemModelGenerator, ModItems.ROSEITE_SPORES_BOTTLE);
+        registerSporeBottle(itemModelGenerator, ModItems.ROSEITE_SPORES_SPLASH_BOTTLE);
+        registerSporeBottle(itemModelGenerator, ModItems.ZEPHYR_SPORES_BOTTLE);
+        registerSporeBottle(itemModelGenerator, ModItems.ZEPHYR_SPORES_SPLASH_BOTTLE);
+        registerSporeBottle(itemModelGenerator, ModItems.MIDNIGHT_SPORES_BOTTLE);
+        registerSporeBottle(itemModelGenerator, ModItems.MIDNIGHT_SPORES_SPLASH_BOTTLE);
+    }
+
+    private void registerSporeBottle(ItemModelGenerator itemModelGenerator, Item item) {
+        // Copying normal potion textures at the moment
+        Identifier identifier = itemModelGenerator.uploadTwoLayers(item,
+                TextureMap.getId(Items.POTION), TextureMap.getSubId(Items.POTION, "_overlay"));
+        itemModelGenerator.output.accept(item,
+                ItemModels.tinted(identifier, UNTINTED, new SporeBottleTintSource()));
     }
 
     private void registerGeneratedItems(ItemModelGenerator itemModelGenerator,
