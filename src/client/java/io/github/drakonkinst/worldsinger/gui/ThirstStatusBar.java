@@ -28,6 +28,7 @@ import io.github.drakonkinst.worldsinger.api.ModAttachmentTypes;
 import io.github.drakonkinst.worldsinger.effect.ModStatusEffects;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Identifier;
 
@@ -72,13 +73,15 @@ public final class ThirstStatusBar {
             }
 
             int xPos = halfWidth + THIRST_BAR_OFFSET_X - i * (ICON_SIZE - 1) - ICON_SIZE;
-            // TODO: RESTORE
-            // context.drawGuiTexture(emptyTexture, xPos, yPos, ICON_SIZE, ICON_SIZE);
-            // if (i * 2 + 1 < thirstLevel) {
-            //     context.drawGuiTexture(fullTexture, xPos, yPos, ICON_SIZE, ICON_SIZE);
-            // } else if (i * 2 + 1 == thirstLevel) {
-            //     context.drawGuiTexture(halfTexture, xPos, yPos, ICON_SIZE, ICON_SIZE);
-            // }
+            context.drawGuiTexture(RenderLayer::getGuiTextured, emptyTexture, xPos, yPos, ICON_SIZE,
+                    ICON_SIZE);
+            if (i * 2 + 1 < thirstLevel) {
+                context.drawGuiTexture(RenderLayer::getGuiTextured, fullTexture, xPos, yPos,
+                        ICON_SIZE, ICON_SIZE);
+            } else if (i * 2 + 1 == thirstLevel) {
+                context.drawGuiTexture(RenderLayer::getGuiTextured, halfTexture, xPos, yPos,
+                        ICON_SIZE, ICON_SIZE);
+            }
         }
     }
 

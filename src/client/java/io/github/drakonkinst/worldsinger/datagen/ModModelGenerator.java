@@ -164,9 +164,9 @@ public class ModModelGenerator extends FabricModelProvider {
         blockStateModelGenerator.registerAmethyst(ModBlocks.MEDIUM_ROSEITE_BUD);
         blockStateModelGenerator.registerAmethyst(ModBlocks.SMALL_ROSEITE_BUD);
 
-        blockStateModelGenerator.registerDoubleBlock(ModBlocks.TALL_CRIMSON_SPINES,
+        blockStateModelGenerator.registerDoubleBlockAndItem(ModBlocks.TALL_CRIMSON_SPINES,
                 CrossType.NOT_TINTED);
-        blockStateModelGenerator.registerDoubleBlock(ModBlocks.DEAD_TALL_CRIMSON_SPINES,
+        blockStateModelGenerator.registerDoubleBlockAndItem(ModBlocks.DEAD_TALL_CRIMSON_SPINES,
                 CrossType.NOT_TINTED);
 
         BlockStateModelGenerator.BlockTexturePool roseiteTexturePool = blockStateModelGenerator.registerCubeAllModelTexturePool(
@@ -350,6 +350,17 @@ public class ModModelGenerator extends FabricModelProvider {
                 ModItems.STEEL_SWORD,
                 ModItems.SILVER_KNIFE
         });
+        registerBasicItems(itemModelGenerator, new ItemConvertible[] {
+                ModBlocks.SMALL_ROSEITE_BUD,
+                ModBlocks.MEDIUM_ROSEITE_BUD,
+                ModBlocks.LARGE_ROSEITE_BUD,
+                ModBlocks.ROSEITE_CLUSTER,
+                ModBlocks.TWISTING_VERDANT_VINES,
+                ModBlocks.DEAD_TWISTING_VERDANT_VINES,
+                ModBlocks.ALUMINUM_SHEET,
+                ModBlocks.CRIMSON_SPIKE,
+                ModBlocks.DEAD_CRIMSON_SPIKE,
+        });
 
         itemModelGenerator.registerSpawnEgg(ModItems.MIDNIGHT_CREATURE_SPAWN_EGG, 0x000000,
                 0x111111);
@@ -401,6 +412,13 @@ public class ModModelGenerator extends FabricModelProvider {
             ItemConvertible[] items) {
         for (ItemConvertible item : items) {
             itemModelGenerator.register(item.asItem(), Models.HANDHELD);
+        }
+    }
+
+    private void registerBasicItems(ItemModelGenerator itemModelGenerator,
+            ItemConvertible[] items) {
+        for (ItemConvertible item : items) {
+            itemModelGenerator.register(item.asItem());
         }
     }
 }

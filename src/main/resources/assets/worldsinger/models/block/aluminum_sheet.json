@@ -19,9 +19,9 @@
       "faces": {
         "north": {
           "uv": [
-            0,
-            0,
             16,
+            0,
+            0,
             16
           ],
           "texture": "#aluminum_sheet"

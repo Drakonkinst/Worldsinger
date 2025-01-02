@@ -24,6 +24,7 @@
 
 package io.github.drakonkinst.worldsinger.registry;
 
+import io.github.drakonkinst.worldsinger.Worldsinger;
 import net.minecraft.item.equipment.EquipmentAsset;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
@@ -37,7 +38,7 @@ public class ModEquipmentAssetKeys {
     public static final RegistryKey<EquipmentAsset> STEEL = register("steel");
 
     private static RegistryKey<EquipmentAsset> register(String name) {
-        return RegistryKey.of(REGISTRY_KEY, Identifier.ofVanilla(name));
+        return RegistryKey.of(REGISTRY_KEY, Worldsinger.id(name));
     }
 
     private ModEquipmentAssetKeys() {}

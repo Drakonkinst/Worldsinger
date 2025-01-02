@@ -26,7 +26,6 @@ package io.github.drakonkinst.worldsinger.registry;
 
 import io.github.drakonkinst.worldsinger.Worldsinger;
 import net.fabricmc.fabric.api.client.model.loading.v1.ModelLoadingPlugin;
-import net.fabricmc.fabric.api.client.model.loading.v1.ModelModifier;
 import net.minecraft.util.Identifier;
 
 public final class ModItemRendering {
@@ -66,11 +65,10 @@ public final class ModItemRendering {
         };
         ModelLoadingPlugin.register(pluginContext -> {
             pluginContext.addModels(overlayModels);
-            pluginContext.modifyModelOnLoad()
-                    .register(ModelModifier.WRAP_PHASE, (model, context) -> {
-                        Worldsinger.LOGGER.info("Found model " + context.id().toString());
-                        return model;
-                    });
+            // pluginContext.modifyModelOnLoad()
+            //         .register(ModelModifier.WRAP_PHASE, (model, context) -> {
+            //             return model;
+            //         });
         });
     }
 

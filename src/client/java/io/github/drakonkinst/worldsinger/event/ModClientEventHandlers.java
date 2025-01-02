@@ -28,10 +28,12 @@ import io.github.drakonkinst.worldsinger.cosmere.PossessionManager;
 import io.github.drakonkinst.worldsinger.entity.CameraPossessable;
 import io.github.drakonkinst.worldsinger.entity.CameraPossessable.AttackOrigin;
 import io.github.drakonkinst.worldsinger.entity.freelook.FreeLook;
+import io.github.drakonkinst.worldsinger.gui.ThirstStatusBar;
 import io.github.drakonkinst.worldsinger.network.packet.PossessAttackPayload;
 import io.github.drakonkinst.worldsinger.network.packet.PossessUpdatePayload;
 import io.github.drakonkinst.worldsinger.util.PossessionClientUtil;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
 import net.fabricmc.fabric.api.event.player.AttackBlockCallback;
 import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
@@ -43,6 +45,8 @@ import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.profiler.Profiler;
+import net.minecraft.util.profiler.Profilers;
 
 @SuppressWarnings("UnstableApiUsage")
 public final class ModClientEventHandlers {
@@ -87,6 +91,21 @@ public final class ModClientEventHandlers {
             }
         });
 
+        HudRenderCallback.EVENT.register((context, tickDelta) -> {
+            // FIXME: The thirst meter intermittently doesn't show for some reason?
+            MinecraftClient client = MinecraftClient.getInstance();
+            assert client.interactionManager != null;
+            if (client.interactionManager.hasStatusBars()) {
+                assert client.player != null;
+                if (ThirstStatusBar.shouldRenderThirstBar(client.player)) {
+                    Profiler profiler = Profilers.get();
+                    profiler.push("thirst");
+                    ThirstStatusBar.renderThirstStatusBar(client, context, client.player);
+                    profiler.pop();
+                }
+            }
+
+        });
         ModClientEventHandlers.registerPreventTargetingSelfEventHandlers();
         ModClientEventHandlers.registerPossessionEventHandlers();
 

@@ -1,0 +1,14 @@
+{
+  "layers": {
+    "humanoid": [
+      {
+        "texture": "worldsinger:steel"
+      }
+    ],
+    "humanoid_leggings": [
+      {
+        "texture": "worldsinger:steel"
+      }
+    ]
+  }
+}

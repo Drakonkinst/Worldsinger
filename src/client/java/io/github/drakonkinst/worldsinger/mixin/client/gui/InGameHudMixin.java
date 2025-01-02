@@ -23,7 +23,7 @@
  */
 package io.github.drakonkinst.worldsinger.mixin.client.gui;
 
-import com.llamalad7.mixinextras.injector.ModifyReturnValue;
+import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.drakonkinst.worldsinger.entity.CameraPossessable;
@@ -37,8 +37,6 @@ import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.profiler.Profiler;
-import net.minecraft.util.profiler.Profilers;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -62,24 +60,8 @@ public abstract class InGameHudMixin {
     @Final
     private static Identifier POWDER_SNOW_OUTLINE;
 
-    @Inject(method = "renderStatusBars", at = @At("TAIL"))
-    private void renderThirstStatusBar(DrawContext context, CallbackInfo ci) {
-        PlayerEntity player = this.getCameraPlayer();
-        if (player == null) {
-            return;
-        }
-        if (ThirstStatusBar.shouldRenderThirstBar(player)) {
-            Profiler profiler = Profilers.get();
-            profiler.push("thirst");
-            ThirstStatusBar.renderThirstStatusBar(client, context, player);
-            profiler.pop();
-        }
-    }
-
-    // Currently, this method is only used to get the number of health rows the player's mount has,
-    // so it knows where to render the air meter.
     // Add an extra row to give space for the thirst meter, if it should render.
-    @ModifyReturnValue(method = "getHeartRows", at = @At("RETURN"))
+    @ModifyExpressionValue(method = "getAirBubbleY", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/InGameHud;getHeartRows(I)I"))
     private int adjustAirStatusMeter(int original) {
         if (ThirstStatusBar.shouldRenderThirstBar(this.getCameraPlayer())) {
             return original + 1;
