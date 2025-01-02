@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2023-2024 Drakonkinst
+ * Copyright (c) 2024 Drakonkinst
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,17 +22,24 @@
  * SOFTWARE.
  */
 
-package io.github.drakonkinst.worldsinger.mixin.client.item;
+package io.github.drakonkinst.worldsinger.mixin.client.world;
 
-import net.minecraft.client.data.ItemModels;
+import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
+import net.minecraft.client.render.WeatherRendering;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
+import net.minecraft.world.biome.Biome.Precipitation;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
 
-@Mixin(ItemModels.class)
-public abstract class ItemModelsMixin {
+@Mixin(WeatherRendering.class)
+public abstract class WeatherRenderingMixin {
 
-    // TODO: RESTORE
-    // @Inject(method = "clearModels", at = @At("TAIL"))
-    // private void reloadLayeredBakedModelCache(CallbackInfo ci) {
-    //     LayeredBakedModel.clearCaches();
-    // }
+    @ModifyExpressionValue(method = "getPrecipitationAt", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/biome/Biome;getPrecipitation(Lnet/minecraft/util/math/BlockPos;I)Lnet/minecraft/world/biome/Biome$Precipitation;"))
+    private Precipitation showRainlinePrecipitation(Precipitation original, World world,
+            BlockPos pos) {
+        // TODO
+        return original;
+    }
+
 }

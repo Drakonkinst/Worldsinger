@@ -24,7 +24,6 @@
 package io.github.drakonkinst.worldsinger.mixin.client.gui;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
-import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.drakonkinst.worldsinger.entity.CameraPossessable;
 import io.github.drakonkinst.worldsinger.entity.MidnightCreatureEntity;
@@ -33,6 +32,7 @@ import io.github.drakonkinst.worldsinger.util.PossessionClientUtil;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.InGameHud;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -97,16 +97,16 @@ public abstract class InGameHudMixin {
         RenderSystem.disableDepthTest();
         RenderSystem.depthMask(false);
         RenderSystem.enableBlend();
-        RenderSystem.blendFuncSeparate(GlStateManager.SrcFactor.ZERO,
-                GlStateManager.DstFactor.ONE_MINUS_SRC_COLOR, GlStateManager.SrcFactor.ONE,
-                GlStateManager.DstFactor.ZERO);
+        // RenderSystem.blendFuncSeparate(GlStateManager.SrcFactor.ZERO,
+        //         GlStateManager.DstFactor.ONE_MINUS_SRC_COLOR, GlStateManager.SrcFactor.ONE,
+        //         GlStateManager.DstFactor.ZERO);
 
         // Use darkness = 1.0f, so no changes needed
         final int scaledWidth = context.getScaledWindowWidth();
         final int scaledHeight = context.getScaledWindowHeight();
-        // TODO: RESTORE
-        // context.drawTexture(VIGNETTE_TEXTURE, 0, 0, -90, 0.0f, 0.0f, scaledWidth, scaledHeight,
-        //         scaledWidth, scaledHeight);
+        // TODO: RESTORE - still broken
+        context.drawTexture(RenderLayer::getGuiTextured, VIGNETTE_TEXTURE, 0, 0, 0.0f, 0.0f,
+                scaledWidth, scaledHeight, scaledWidth, scaledHeight);
 
         // Reset
         RenderSystem.depthMask(true);
