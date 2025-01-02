@@ -378,27 +378,36 @@ public class ModModelGenerator extends FabricModelProvider {
 
         // Tinted
         registerSporeBottle(itemModelGenerator, ModItems.DEAD_SPORES_BOTTLE);
-        registerSporeBottle(itemModelGenerator, ModItems.DEAD_SPORES_SPLASH_BOTTLE);
+        registerSporeSplashBottle(itemModelGenerator, ModItems.DEAD_SPORES_SPLASH_BOTTLE);
         registerSporeBottle(itemModelGenerator, ModItems.VERDANT_SPORES_BOTTLE);
-        registerSporeBottle(itemModelGenerator, ModItems.VERDANT_SPORES_SPLASH_BOTTLE);
+        registerSporeSplashBottle(itemModelGenerator, ModItems.VERDANT_SPORES_SPLASH_BOTTLE);
         registerSporeBottle(itemModelGenerator, ModItems.CRIMSON_SPORES_BOTTLE);
-        registerSporeBottle(itemModelGenerator, ModItems.CRIMSON_SPORES_SPLASH_BOTTLE);
+        registerSporeSplashBottle(itemModelGenerator, ModItems.CRIMSON_SPORES_SPLASH_BOTTLE);
         registerSporeBottle(itemModelGenerator, ModItems.SUNLIGHT_SPORES_BOTTLE);
-        registerSporeBottle(itemModelGenerator, ModItems.SUNLIGHT_SPORES_SPLASH_BOTTLE);
+        registerSporeSplashBottle(itemModelGenerator, ModItems.SUNLIGHT_SPORES_SPLASH_BOTTLE);
         registerSporeBottle(itemModelGenerator, ModItems.ROSEITE_SPORES_BOTTLE);
-        registerSporeBottle(itemModelGenerator, ModItems.ROSEITE_SPORES_SPLASH_BOTTLE);
+        registerSporeSplashBottle(itemModelGenerator, ModItems.ROSEITE_SPORES_SPLASH_BOTTLE);
         registerSporeBottle(itemModelGenerator, ModItems.ZEPHYR_SPORES_BOTTLE);
-        registerSporeBottle(itemModelGenerator, ModItems.ZEPHYR_SPORES_SPLASH_BOTTLE);
+        registerSporeSplashBottle(itemModelGenerator, ModItems.ZEPHYR_SPORES_SPLASH_BOTTLE);
         registerSporeBottle(itemModelGenerator, ModItems.MIDNIGHT_SPORES_BOTTLE);
-        registerSporeBottle(itemModelGenerator, ModItems.MIDNIGHT_SPORES_SPLASH_BOTTLE);
+        registerSporeSplashBottle(itemModelGenerator, ModItems.MIDNIGHT_SPORES_SPLASH_BOTTLE);
     }
 
     private void registerSporeBottle(ItemModelGenerator itemModelGenerator, Item item) {
         // Copying normal potion textures at the moment
         Identifier identifier = itemModelGenerator.uploadTwoLayers(item,
-                TextureMap.getId(Items.POTION), TextureMap.getSubId(Items.POTION, "_overlay"));
+                TextureMap.getSubId(Items.POTION, "_overlay"), TextureMap.getId(Items.POTION));
         itemModelGenerator.output.accept(item,
-                ItemModels.tinted(identifier, UNTINTED, new SporeBottleTintSource()));
+                ItemModels.tinted(identifier, new SporeBottleTintSource()));
+    }
+
+    private void registerSporeSplashBottle(ItemModelGenerator itemModelGenerator, Item item) {
+        // Copying normal potion textures at the moment
+        Identifier identifier = itemModelGenerator.uploadTwoLayers(item,
+                TextureMap.getSubId(Items.POTION, "_overlay"),
+                TextureMap.getId(Items.SPLASH_POTION));
+        itemModelGenerator.output.accept(item,
+                ItemModels.tinted(identifier, new SporeBottleTintSource()));
     }
 
     private void registerGeneratedItems(ItemModelGenerator itemModelGenerator,

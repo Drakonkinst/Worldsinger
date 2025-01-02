@@ -32,6 +32,7 @@ import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.dynamic.Codecs;
+import net.minecraft.util.math.ColorHelper;
 import org.jetbrains.annotations.Nullable;
 
 public record SporeBottleTintSource(int defaultColor) implements TintSource {
@@ -49,9 +50,9 @@ public record SporeBottleTintSource(int defaultColor) implements TintSource {
     public int getTint(ItemStack stack, @Nullable ClientWorld world, @Nullable LivingEntity user) {
         int color = AetherSpores.getBottleColor(stack);
         if (color == -1) {
-            return defaultColor;
+            return ColorHelper.fullAlpha(defaultColor);
         }
-        return color;
+        return ColorHelper.fullAlpha(color);
     }
 
     @Override
