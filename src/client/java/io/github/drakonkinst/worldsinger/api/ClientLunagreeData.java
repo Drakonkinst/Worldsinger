@@ -31,6 +31,7 @@ import java.util.List;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 // Client-side record of the nearest lunagree locations
@@ -41,6 +42,11 @@ public class ClientLunagreeData {
     public static final int SPORE_FALL_RADIUS_CLOSE = 2;
     public static final float SPORE_FALL_PARTICLE_SIZE = 10.0f;
     public static final int MAX_KNOWN_LUNAGREE_LOCATIONS = 9;
+
+    @SuppressWarnings("UnstableApiUsage")
+    public static ClientLunagreeData get(World world) {
+        return world.getAttachedOrCreate(ModClientAttachmentTypes.LUNAGREE_DATA);
+    }
 
     // Associative arrays that have up to MAX_KNOWN_LUNAGREE_LOCATIONS values
     // The first null value marks the end of the list, if not full
@@ -65,7 +71,6 @@ public class ClientLunagreeData {
     }
 
     public void setLunagreeLocations(List<LunagreeLocation> locations) {
-        // TODO: Thinking about caching rainline values
         for (int i = 0; i < MAX_KNOWN_LUNAGREE_LOCATIONS; ++i) {
             if (i >= locations.size()) {
                 lunagreeLocations[i] = null;

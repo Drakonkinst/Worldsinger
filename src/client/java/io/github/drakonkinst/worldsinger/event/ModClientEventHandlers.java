@@ -23,8 +23,9 @@
  */
 package io.github.drakonkinst.worldsinger.event;
 
+import io.github.drakonkinst.worldsinger.api.ClientLunagreeData;
+import io.github.drakonkinst.worldsinger.api.ClientRainlineData;
 import io.github.drakonkinst.worldsinger.api.ModAttachmentTypes;
-import io.github.drakonkinst.worldsinger.api.ModClientAttachmentTypes;
 import io.github.drakonkinst.worldsinger.cosmere.PossessionManager;
 import io.github.drakonkinst.worldsinger.entity.CameraPossessable;
 import io.github.drakonkinst.worldsinger.entity.CameraPossessable.AttackOrigin;
@@ -113,8 +114,8 @@ public final class ModClientEventHandlers {
             if (player == null) {
                 return;
             }
-            world.getAttachedOrCreate(ModClientAttachmentTypes.LUNAGREE_DATA).update(world, player);
-            world.getAttachedOrCreate(ModClientAttachmentTypes.RAINLINE_DATA).update(world, player);
+            ClientLunagreeData.get(world).update(world, player);
+            ClientRainlineData.get(world).update(world, player);
         });
         ModClientEventHandlers.registerPreventTargetingSelfEventHandlers();
         ModClientEventHandlers.registerPossessionEventHandlers();

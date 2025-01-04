@@ -24,11 +24,14 @@
 
 package io.github.drakonkinst.worldsinger.mixin.client.world;
 
+import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.drakonkinst.worldsinger.cosmere.CosmerePlanet;
+import io.github.drakonkinst.worldsinger.util.ModEnums;
 import io.github.drakonkinst.worldsinger.world.LumarSkyRendering;
+import net.minecraft.block.enums.CameraSubmersionType;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.BufferBuilderStorage;
 import net.minecraft.client.render.Camera;
@@ -122,5 +125,14 @@ public abstract class WorldRendererLumarMixin {
                 this.skyRendering.renderSkyDark(matrices);
             }
         }));
+    }
+
+    @ModifyExpressionValue(method = "renderSky", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/Camera;getSubmersionType()Lnet/minecraft/block/enums/CameraSubmersionType;"))
+    private CameraSubmersionType skipRenderingSkyInSporeFluid(CameraSubmersionType original) {
+        // Treat spore sea camera like lava, so that it skips sky rendering when submerged
+        if (original == ModEnums.CameraSubmersionType.SPORE_SEA) {
+            return CameraSubmersionType.LAVA;
+        }
+        return original;
     }
 }

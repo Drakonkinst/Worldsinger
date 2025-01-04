@@ -27,7 +27,6 @@ package io.github.drakonkinst.worldsinger.world;
 import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.drakonkinst.worldsinger.Worldsinger;
 import io.github.drakonkinst.worldsinger.api.ClientLunagreeData;
-import io.github.drakonkinst.worldsinger.api.ModClientAttachmentTypes;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarLunagreeGenerator;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LunagreeLocation;
 import net.minecraft.client.MinecraftClient;
@@ -129,15 +128,13 @@ public class LumarSkyRendering {
         // vertexConsumers.draw();
     }
 
-    @SuppressWarnings("UnstableApiUsage")
     public void renderMoons(Immediate vertexConsumers, MatrixStack matrices, float tickDelta) {
         ClientPlayerEntity player = MinecraftClient.getInstance().player;
         assert (player != null);
         RenderSystem.setShader(ShaderProgramKeys.POSITION_TEX);
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         RenderSystem.setShaderTexture(0, LUMAR_MOON);
-        final ClientLunagreeData lunagreeData = player.getWorld()
-                .getAttachedOrCreate(ModClientAttachmentTypes.LUNAGREE_DATA);
+        final ClientLunagreeData lunagreeData = ClientLunagreeData.get(player.getWorld());
         final Vec3d playerPos = player.getCameraPosVec(tickDelta);
         for (LunagreeLocation location : lunagreeData.getLunagreeLocations()) {
             if (location == null) {

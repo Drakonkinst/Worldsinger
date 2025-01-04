@@ -28,7 +28,6 @@ import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import io.github.drakonkinst.worldsinger.api.ClientRainlineData;
-import io.github.drakonkinst.worldsinger.api.ModClientAttachmentTypes;
 import io.github.drakonkinst.worldsinger.cosmere.CosmerePlanet;
 import io.github.drakonkinst.worldsinger.mixin.world.WorldCosmereMixin;
 import net.minecraft.client.MinecraftClient;
@@ -62,7 +61,6 @@ public abstract class ClientWorldCosmereMixin extends WorldCosmereMixin {
         return original.call(instance);
     }
 
-    @SuppressWarnings("UnstableApiUsage")
     @ModifyExpressionValue(method = "getSkyBrightness", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/world/ClientWorld;getRainGradient(F)F"))
     private float renderRainlines1(float original) {
         Entity cameraEntity = MinecraftClient.getInstance().getCameraEntity();
@@ -87,9 +85,7 @@ public abstract class ClientWorldCosmereMixin extends WorldCosmereMixin {
     }
 
     @Unique
-    @SuppressWarnings("UnstableApiUsage")
     private ClientRainlineData getRainlineData() {
-        return ((ClientWorld) (Object) this).getAttachedOrCreate(
-                ModClientAttachmentTypes.RAINLINE_DATA);
+        return ClientRainlineData.get((ClientWorld) (Object) this);
     }
 }

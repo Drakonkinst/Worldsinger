@@ -26,7 +26,6 @@ package io.github.drakonkinst.worldsinger.mixin.client.world;
 
 import com.llamalad7.mixinextras.sugar.Local;
 import io.github.drakonkinst.worldsinger.api.ClientLunagreeData;
-import io.github.drakonkinst.worldsinger.api.ModClientAttachmentTypes;
 import io.github.drakonkinst.worldsinger.cosmere.CosmerePlanet;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.AetherSpores;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarLunagreeGenerator;
@@ -79,7 +78,6 @@ public abstract class ClientWorldLumarMixin extends WorldLumarMixin {
         }
     }
 
-    @SuppressWarnings("UnstableApiUsage")
     @Inject(method = "randomBlockDisplayTick", at = @At("TAIL"))
     private void addLumarLunagreeParticles(int centerX, int centerY, int centerZ, int radius,
             Random random, Block block, Mutable pos, CallbackInfo ci,
@@ -91,7 +89,7 @@ public abstract class ClientWorldLumarMixin extends WorldLumarMixin {
             return;
         }
 
-        ClientLunagreeData data = world.getAttachedOrCreate(ModClientAttachmentTypes.LUNAGREE_DATA);
+        ClientLunagreeData data = ClientLunagreeData.get(world);
         // We want a larger radius than the biome particles if not under lunagree
         // But keep particle spawn rates proportional
         int radiusMultiplier = data.isUnderLunagree() ? ClientLunagreeData.SPORE_FALL_RADIUS_CLOSE

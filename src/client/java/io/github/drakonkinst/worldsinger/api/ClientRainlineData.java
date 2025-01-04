@@ -31,12 +31,19 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.world.ClientWorld;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.World;
 
 public class ClientRainlineData {
 
     private static final float RAINLINE_GRADIENT_RADIUS = 32;
     private static final float RAINLINE_SKY_GRADIENT_RADIUS = 128;
+
+    @SuppressWarnings("UnstableApiUsage")
+    public static ClientRainlineData get(World world) {
+        return world.getAttachedOrCreate(ModClientAttachmentTypes.RAINLINE_DATA);
+    }
 
     private RainlineEntity nearestRainlineEntity = null;
 
@@ -51,6 +58,15 @@ public class ClientRainlineData {
 
     public boolean isRainlineNearby() {
         return nearestRainlineEntity != null;
+    }
+
+    public boolean isUnderNearestRainline(BlockPos pos) {
+        if (nearestRainlineEntity == null) {
+            return false;
+        }
+        double distSq = VectorUtil.getHorizontalDistSq(pos.toCenterPos(),
+                nearestRainlineEntity.getPos());
+        return distSq < RAINLINE_GRADIENT_RADIUS * RAINLINE_GRADIENT_RADIUS;
     }
 
     public float getRainlineGradient(boolean isSkyDarken) {

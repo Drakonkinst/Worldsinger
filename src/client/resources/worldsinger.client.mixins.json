@@ -36,7 +36,6 @@
     "world.WeatherRenderingMixin",
     "world.WorldRendererLumarMixin",
     "world.WorldRendererPossessionMixin",
-    "world.WorldRendererRainlineMixin",
     "world.WorldRendererShapeshifterMixin"
   ],
   "injectors": {
