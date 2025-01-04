@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2023-2024 Drakonkinst
+ * Copyright (c) 2024 Drakonkinst
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,11 +22,14 @@
  * SOFTWARE.
  */
 
-package io.github.drakonkinst.worldsinger.cosmere.lumar;
+package io.github.drakonkinst.worldsinger.api;
 
 import io.github.drakonkinst.worldsinger.cosmere.CosmerePlanet;
+import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarLunagreeGenerator;
+import io.github.drakonkinst.worldsinger.cosmere.lumar.LunagreeLocation;
 import java.util.List;
 import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.Nullable;
 
@@ -39,18 +42,22 @@ public class ClientLunagreeData {
     public static final float SPORE_FALL_PARTICLE_SIZE = 10.0f;
     public static final int MAX_KNOWN_LUNAGREE_LOCATIONS = 9;
 
-    private final ClientPlayerEntity player;
     // Associative arrays that have up to MAX_KNOWN_LUNAGREE_LOCATIONS values
     // The first null value marks the end of the list, if not full
     private final LunagreeLocation[] lunagreeLocations = new LunagreeLocation[MAX_KNOWN_LUNAGREE_LOCATIONS];
-    private final RainlinePath[] rainlinePaths = new RainlinePath[MAX_KNOWN_LUNAGREE_LOCATIONS];
 
     private @Nullable LunagreeLocation nearestLunagreeLocation = null;
     private boolean needsUpdate = true;
     private boolean underLunagree = false;
 
-    public ClientLunagreeData(ClientPlayerEntity player) {
-        this.player = player;
+    public void update(ClientWorld world, ClientPlayerEntity player) {
+        if (!CosmerePlanet.isLumar(world)) {
+            return;
+        }
+        if (!player.getVelocity().equals(Vec3d.ZERO) || needsUpdate) {
+            updateNearestLunagreeLocation(player.getBlockX(), player.getBlockZ());
+            needsUpdate = false;
+        }
     }
 
     public LunagreeLocation[] getLunagreeLocations() {
@@ -62,10 +69,8 @@ public class ClientLunagreeData {
         for (int i = 0; i < MAX_KNOWN_LUNAGREE_LOCATIONS; ++i) {
             if (i >= locations.size()) {
                 lunagreeLocations[i] = null;
-                rainlinePaths[i] = null;
             } else {
                 lunagreeLocations[i] = locations.get(i);
-                rainlinePaths[i] = new RainlinePath(lunagreeLocations[i].rainlineNodes());
             }
         }
     }
@@ -86,16 +91,6 @@ public class ClientLunagreeData {
         }
 
         return nearestLunagreeLocation;
-    }
-
-    public void update() {
-        if (!CosmerePlanet.isLumar(player.getWorld())) {
-            return;
-        }
-        if (!player.getVelocity().equals(Vec3d.ZERO) || needsUpdate) {
-            updateNearestLunagreeLocation(player.getBlockX(), player.getBlockZ());
-            needsUpdate = false;
-        }
     }
 
     public boolean isUnderLunagree() {

@@ -23,6 +23,7 @@
  */
 package io.github.drakonkinst.worldsinger;
 
+import io.github.drakonkinst.worldsinger.api.ModClientAttachmentTypes;
 import io.github.drakonkinst.worldsinger.event.ModClientEventHandlers;
 import io.github.drakonkinst.worldsinger.fluid.ModFluidRendering;
 import io.github.drakonkinst.worldsinger.network.ClientNetworkHandler;
@@ -40,6 +41,9 @@ public class WorldsingerClient implements ClientModInitializer {
     public void onInitializeClient() {
         Worldsinger.PROXY = new ClientProxy();
 
+        ModClientAttachmentTypes.initialize();
+        ModDimensionRenderers.initialize();
+
         ModFluidRendering.register();
         ModBlockRendering.register();
         ModEntityRendering.register();
@@ -47,8 +51,6 @@ public class WorldsingerClient implements ClientModInitializer {
 
         // Register particles
         ModParticleManager.register();
-
-        ModDimensionRenderers.initialize();
 
         ModClientEventHandlers.registerEventHandlers();
         ClientNetworkHandler.registerPacketHandlers();

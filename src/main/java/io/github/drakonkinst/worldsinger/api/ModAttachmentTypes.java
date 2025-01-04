@@ -33,7 +33,7 @@ import net.fabricmc.fabric.api.attachment.v1.AttachmentRegistry;
 import net.fabricmc.fabric.api.attachment.v1.AttachmentType;
 
 @SuppressWarnings("UnstableApiUsage")
-public class ModAttachmentTypes {
+public final class ModAttachmentTypes {
 
     public static final AttachmentType<SilverLinedBoatData> SILVER_LINED_BOAT = AttachmentRegistry.<SilverLinedBoatData>builder()
             .persistent(SilverLinedBoatData.CODEC)
@@ -48,4 +48,6 @@ public class ModAttachmentTypes {
     public static final AttachmentType<PlayerMidnightAetherBondManager> MIDNIGHT_AETHER_BOND = AttachmentRegistry.<PlayerMidnightAetherBondManager>builder()
             .initializer(PlayerMidnightAetherBondManager::new)
             .buildAndRegister(Worldsinger.id("midnight_aether_bond"));
+
+    private ModAttachmentTypes() {}
 }

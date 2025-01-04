@@ -7,7 +7,6 @@
     "accessor.WorldRendererAccessor",
     "block.FluidRendererMixin",
     "entity.ClientPlayerEntityFreeLookMixin",
-    "entity.ClientPlayerEntityLunagreeMixin",
     "entity.ClientPlayerEntityPossessionMixin",
     "entity.EntityRenderDispatcherMixin",
     "entity.render.AbstractBoatEntityRendererMixin",

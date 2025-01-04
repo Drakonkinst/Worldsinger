@@ -26,6 +26,7 @@ package io.github.drakonkinst.worldsinger.cosmere.lumar;
 
 import io.github.drakonkinst.worldsinger.entity.rainline.RainlineEntity;
 import io.github.drakonkinst.worldsinger.item.map.CustomMapDecorationsComponent.Decoration;
+import io.github.drakonkinst.worldsinger.util.VectorUtil;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -41,30 +42,9 @@ import org.jetbrains.annotations.Nullable;
 public interface RainlineManager {
 
     RainlineManager NULL = new NullRainlineManager();
-    float RAINLINE_GRADIENT_RADIUS = 32;
-    float RAINLINE_SKY_GRADIENT_RADIUS = 128;
     int RAINLINE_RADIUS = 8;
     int RAINLINE_EFFECT_RADIUS = 4;
     int NUM_RAINLINES_PER_LUNAGREE = 8;
-
-    static double getHorizontalDistSq(Vec3d a, Vec3d b) {
-        double deltaX = a.getX() - b.getX();
-        double deltaZ = a.getZ() - b.getZ();
-        return deltaX * deltaX + deltaZ * deltaZ;
-    }
-
-    static float getRainlineGradient(World world, Vec3d pos, boolean isSkyDarken) {
-        float radius = isSkyDarken ? RAINLINE_SKY_GRADIENT_RADIUS : RAINLINE_GRADIENT_RADIUS;
-        RainlineEntity rainlineEntity = getNearestRainlineEntity(world, pos, radius);
-        if (rainlineEntity == null) {
-            return 0.0f;
-        }
-        double distSq = getHorizontalDistSq(pos, rainlineEntity.getPos());
-        if (distSq > radius * radius) {
-            return 0.0f;
-        }
-        return 1.0f - (float) Math.sqrt(distSq) / radius;
-    }
 
     // Mainly used for client-side rendering since there are server bugs
     @Nullable
@@ -74,7 +54,7 @@ public interface RainlineManager {
         RainlineEntity nearestEntity = null;
 
         for (RainlineEntity entity : nearbyRainlines) {
-            double distSq = getHorizontalDistSq(entity.getPos(), pos);
+            double distSq = VectorUtil.getHorizontalDistSq(entity.getPos(), pos);
             if (distSq < minDistSq) {
                 minDistSq = distSq;
                 nearestEntity = entity;
@@ -106,7 +86,7 @@ public interface RainlineManager {
         world.collectEntitiesByType(TypeFilter.instanceOf(RainlineEntity.class),
                 EntityPredicates.VALID_ENTITY, nearbyRainlines);
         for (RainlineEntity entity : nearbyRainlines) {
-            double distSq = getHorizontalDistSq(entity.getPos(), pos);
+            double distSq = VectorUtil.getHorizontalDistSq(entity.getPos(), pos);
             if (distSq <= RAINLINE_EFFECT_RADIUS * RAINLINE_EFFECT_RADIUS) {
                 return true;
             }

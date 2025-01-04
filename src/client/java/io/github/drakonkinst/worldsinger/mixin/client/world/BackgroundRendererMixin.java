@@ -29,8 +29,9 @@ import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.llamalad7.mixinextras.sugar.ref.LocalFloatRef;
 import io.github.drakonkinst.worldsinger.Worldsinger;
+import io.github.drakonkinst.worldsinger.api.ClientRainlineData;
+import io.github.drakonkinst.worldsinger.api.ModClientAttachmentTypes;
 import io.github.drakonkinst.worldsinger.block.ModBlocks;
-import io.github.drakonkinst.worldsinger.cosmere.lumar.RainlineManager;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.SunlightSpores;
 import io.github.drakonkinst.worldsinger.fluid.AetherSporeFluid;
 import io.github.drakonkinst.worldsinger.util.ColorUtil;
@@ -121,10 +122,12 @@ public abstract class BackgroundRendererMixin {
         return original.call(start, end, shape, red, green, blue, alpha);
     }
 
+    @SuppressWarnings("UnstableApiUsage")
     @ModifyExpressionValue(method = "getFogColor", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/world/ClientWorld;getRainGradient(F)F"))
     private static float renderRainlines(float original, Camera camera, float tickDelta,
             ClientWorld world, int viewDistance, float skyDarkness) {
-        return Math.max(original,
-                RainlineManager.getRainlineGradient(world, camera.getPos(), true));
+        ClientRainlineData rainlineData = world.getAttachedOrCreate(
+                ModClientAttachmentTypes.RAINLINE_DATA);
+        return Math.max(original, rainlineData.getRainlineGradient(true));
     }
 }

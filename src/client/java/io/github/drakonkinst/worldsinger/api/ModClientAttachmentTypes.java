@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2023-2024 Drakonkinst
+ * Copyright (c) 2024 Drakonkinst
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,11 +22,21 @@
  * SOFTWARE.
  */
 
-package io.github.drakonkinst.worldsinger.entity;
+package io.github.drakonkinst.worldsinger.api;
 
-import io.github.drakonkinst.worldsinger.cosmere.lumar.ClientLunagreeData;
+import io.github.drakonkinst.worldsinger.Worldsinger;
+import net.fabricmc.fabric.api.attachment.v1.AttachmentRegistry;
+import net.fabricmc.fabric.api.attachment.v1.AttachmentType;
 
-public interface ClientLunagreeDataAccess {
+@SuppressWarnings("UnstableApiUsage")
+public final class ModClientAttachmentTypes {
 
-    ClientLunagreeData worldsinger$getLunagreeData();
+    public static final AttachmentType<ClientLunagreeData> LUNAGREE_DATA = AttachmentRegistry.createDefaulted(
+            Worldsinger.id("client_lunagree_data"), ClientLunagreeData::new);
+    public static final AttachmentType<ClientRainlineData> RAINLINE_DATA = AttachmentRegistry.createDefaulted(
+            Worldsinger.id("client_rainline_data"), ClientRainlineData::new);
+
+    public static void initialize() {
+
+    }
 }

@@ -27,8 +27,9 @@ package io.github.drakonkinst.worldsinger.mixin.client.world;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import io.github.drakonkinst.worldsinger.api.ClientRainlineData;
+import io.github.drakonkinst.worldsinger.api.ModClientAttachmentTypes;
 import io.github.drakonkinst.worldsinger.cosmere.CosmerePlanet;
-import io.github.drakonkinst.worldsinger.cosmere.lumar.RainlineManager;
 import io.github.drakonkinst.worldsinger.mixin.world.WorldCosmereMixin;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.world.ClientWorld;
@@ -37,6 +38,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 
 @Mixin(ClientWorld.class)
@@ -60,20 +62,19 @@ public abstract class ClientWorldCosmereMixin extends WorldCosmereMixin {
         return original.call(instance);
     }
 
+    @SuppressWarnings("UnstableApiUsage")
     @ModifyExpressionValue(method = "getSkyBrightness", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/world/ClientWorld;getRainGradient(F)F"))
     private float renderRainlines1(float original) {
         Entity cameraEntity = MinecraftClient.getInstance().getCameraEntity();
         if (cameraEntity == null) {
             return original;
         }
-        return Math.max(original, RainlineManager.getRainlineGradient((ClientWorld) (Object) this,
-                cameraEntity.getPos(), true));
+        return Math.max(original, this.getRainlineData().getRainlineGradient(true));
     }
 
     @ModifyExpressionValue(method = "getSkyColor", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/world/ClientWorld;getRainGradient(F)F"))
     private float renderRainlines2(float original, Vec3d cameraPos, float tickDelta) {
-        return Math.max(original,
-                RainlineManager.getRainlineGradient((ClientWorld) (Object) this, cameraPos, true));
+        return Math.max(original, this.getRainlineData().getRainlineGradient(true));
     }
 
     @ModifyExpressionValue(method = "getCloudsColor", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/world/ClientWorld;getRainGradient(F)F"))
@@ -82,7 +83,13 @@ public abstract class ClientWorldCosmereMixin extends WorldCosmereMixin {
         if (cameraEntity == null) {
             return original;
         }
-        return Math.max(original, RainlineManager.getRainlineGradient((ClientWorld) (Object) this,
-                cameraEntity.getPos(), true));
+        return Math.max(original, this.getRainlineData().getRainlineGradient(true));
+    }
+
+    @Unique
+    @SuppressWarnings("UnstableApiUsage")
+    private ClientRainlineData getRainlineData() {
+        return ((ClientWorld) (Object) this).getAttachedOrCreate(
+                ModClientAttachmentTypes.RAINLINE_DATA);
     }
 }

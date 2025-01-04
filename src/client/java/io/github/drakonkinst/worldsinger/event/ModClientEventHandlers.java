@@ -24,6 +24,7 @@
 package io.github.drakonkinst.worldsinger.event;
 
 import io.github.drakonkinst.worldsinger.api.ModAttachmentTypes;
+import io.github.drakonkinst.worldsinger.api.ModClientAttachmentTypes;
 import io.github.drakonkinst.worldsinger.cosmere.PossessionManager;
 import io.github.drakonkinst.worldsinger.entity.CameraPossessable;
 import io.github.drakonkinst.worldsinger.entity.CameraPossessable.AttackOrigin;
@@ -32,6 +33,7 @@ import io.github.drakonkinst.worldsinger.gui.ThirstStatusBar;
 import io.github.drakonkinst.worldsinger.network.packet.PossessAttackPayload;
 import io.github.drakonkinst.worldsinger.network.packet.PossessUpdatePayload;
 import io.github.drakonkinst.worldsinger.util.PossessionClientUtil;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
@@ -104,7 +106,15 @@ public final class ModClientEventHandlers {
                     profiler.pop();
                 }
             }
+        });
 
+        ClientTickEvents.END_WORLD_TICK.register(world -> {
+            ClientPlayerEntity player = MinecraftClient.getInstance().player;
+            if (player == null) {
+                return;
+            }
+            world.getAttachedOrCreate(ModClientAttachmentTypes.LUNAGREE_DATA).update(world, player);
+            world.getAttachedOrCreate(ModClientAttachmentTypes.RAINLINE_DATA).update(world, player);
         });
         ModClientEventHandlers.registerPreventTargetingSelfEventHandlers();
         ModClientEventHandlers.registerPossessionEventHandlers();

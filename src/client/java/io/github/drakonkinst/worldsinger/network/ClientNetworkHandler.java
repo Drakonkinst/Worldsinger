@@ -24,15 +24,15 @@
 package io.github.drakonkinst.worldsinger.network;
 
 import io.github.drakonkinst.worldsinger.Worldsinger;
+import io.github.drakonkinst.worldsinger.api.ClientLunagreeData;
 import io.github.drakonkinst.worldsinger.api.ModAttachmentTypes;
+import io.github.drakonkinst.worldsinger.api.ModClientAttachmentTypes;
 import io.github.drakonkinst.worldsinger.api.sync.SyncableAttachment;
 import io.github.drakonkinst.worldsinger.cosmere.CosmerePlanet;
 import io.github.drakonkinst.worldsinger.cosmere.PossessionManager;
 import io.github.drakonkinst.worldsinger.cosmere.ShapeshiftingManager;
-import io.github.drakonkinst.worldsinger.cosmere.lumar.ClientLunagreeData;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarManagerAccess;
 import io.github.drakonkinst.worldsinger.entity.CameraPossessable;
-import io.github.drakonkinst.worldsinger.entity.ClientLunagreeDataAccess;
 import io.github.drakonkinst.worldsinger.entity.Shapeshifter;
 import io.github.drakonkinst.worldsinger.entity.data.PlayerPossessionManager;
 import io.github.drakonkinst.worldsinger.item.map.CustomMapStateAccess;
@@ -142,7 +142,8 @@ public final class ClientNetworkHandler {
                         "Could not process lunagree sync packet because player is null");
                 return;
             }
-            ClientLunagreeData data = ((ClientLunagreeDataAccess) player).worldsinger$getLunagreeData();
+            ClientLunagreeData data = player.getWorld()
+                    .getAttachedOrCreate(ModClientAttachmentTypes.LUNAGREE_DATA);
             data.setLunagreeLocations(payload.locations());
         });
 

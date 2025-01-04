@@ -25,9 +25,10 @@
 package io.github.drakonkinst.worldsinger.mixin.client.world;
 
 import com.llamalad7.mixinextras.sugar.Local;
+import io.github.drakonkinst.worldsinger.api.ClientLunagreeData;
+import io.github.drakonkinst.worldsinger.api.ModClientAttachmentTypes;
 import io.github.drakonkinst.worldsinger.cosmere.CosmerePlanet;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.AetherSpores;
-import io.github.drakonkinst.worldsinger.cosmere.lumar.ClientLunagreeData;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarLunagreeGenerator;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarManager;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarSeetheManager;
@@ -35,7 +36,6 @@ import io.github.drakonkinst.worldsinger.cosmere.lumar.LunagreeGenerator;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LunagreeLocation;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.RainlineManager;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.SporeParticleManager;
-import io.github.drakonkinst.worldsinger.entity.ClientLunagreeDataAccess;
 import io.github.drakonkinst.worldsinger.mixin.world.WorldLumarMixin;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -79,17 +79,19 @@ public abstract class ClientWorldLumarMixin extends WorldLumarMixin {
         }
     }
 
+    @SuppressWarnings("UnstableApiUsage")
     @Inject(method = "randomBlockDisplayTick", at = @At("TAIL"))
     private void addLumarLunagreeParticles(int centerX, int centerY, int centerZ, int radius,
             Random random, Block block, Mutable pos, CallbackInfo ci,
             @Local BlockState blockState) {
         ClientPlayerEntity player = MinecraftClient.getInstance().player;
+        ClientWorld world = (ClientWorld) (Object) this;
         // Only occurs on Lumar
-        if (player == null || !CosmerePlanet.isLumar((ClientWorld) (Object) this)) {
+        if (player == null || !CosmerePlanet.isLumar(world)) {
             return;
         }
 
-        ClientLunagreeData data = ((ClientLunagreeDataAccess) player).worldsinger$getLunagreeData();
+        ClientLunagreeData data = world.getAttachedOrCreate(ModClientAttachmentTypes.LUNAGREE_DATA);
         // We want a larger radius than the biome particles if not under lunagree
         // But keep particle spawn rates proportional
         int radiusMultiplier = data.isUnderLunagree() ? ClientLunagreeData.SPORE_FALL_RADIUS_CLOSE
@@ -122,7 +124,7 @@ public abstract class ClientWorldLumarMixin extends WorldLumarMixin {
         double spawnX = (double) x + random.nextDouble();
         double spawnY = (double) y + 1.0 + random.nextDouble();
         double spawnZ = (double) z + random.nextDouble();
-        SporeParticleManager.addClientDisplayParticle((ClientWorld) (Object) this,
+        SporeParticleManager.addClientDisplayParticle(world,
                 AetherSpores.getAetherSporeTypeById(location.sporeId()), spawnX, spawnY, spawnZ,
                 ClientLunagreeData.SPORE_FALL_PARTICLE_SIZE, false, random);
     }
