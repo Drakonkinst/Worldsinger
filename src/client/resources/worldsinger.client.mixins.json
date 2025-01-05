@@ -4,7 +4,6 @@
   "compatibilityLevel": "JAVA_21",
   "client": [
     "accessor.EntityRendererAccessor",
-    "accessor.WorldRendererAccessor",
     "block.FluidRendererMixin",
     "entity.ClientPlayerEntityFreeLookMixin",
     "entity.ClientPlayerEntityPossessionMixin",

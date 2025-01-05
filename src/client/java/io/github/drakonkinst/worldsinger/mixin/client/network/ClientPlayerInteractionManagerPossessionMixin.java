@@ -24,7 +24,7 @@
 package io.github.drakonkinst.worldsinger.mixin.client.network;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
-import io.github.drakonkinst.worldsinger.util.PossessionClientUtil;
+import io.github.drakonkinst.worldsinger.entity.PossessionClientUtil;
 import net.minecraft.client.network.ClientPlayerInteractionManager;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;

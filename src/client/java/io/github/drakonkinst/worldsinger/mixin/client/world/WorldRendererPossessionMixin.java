@@ -25,7 +25,7 @@ package io.github.drakonkinst.worldsinger.mixin.client.world;
 
 import io.github.drakonkinst.worldsinger.entity.CameraPossessable;
 import io.github.drakonkinst.worldsinger.entity.MidnightCreatureEntity;
-import io.github.drakonkinst.worldsinger.util.PossessionClientUtil;
+import io.github.drakonkinst.worldsinger.entity.PossessionClientUtil;
 import java.util.List;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.Camera;

@@ -24,7 +24,7 @@
 package io.github.drakonkinst.worldsinger.mixin.client.network;
 
 import io.github.drakonkinst.worldsinger.entity.CameraPossessable;
-import io.github.drakonkinst.worldsinger.util.PossessionClientUtil;
+import io.github.drakonkinst.worldsinger.entity.PossessionClientUtil;
 import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.option.Perspective;
 import org.spongepowered.asm.mixin.Mixin;

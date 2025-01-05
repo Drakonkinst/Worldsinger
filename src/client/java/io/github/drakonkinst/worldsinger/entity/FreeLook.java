@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2023-2024 Drakonkinst
+ * Copyright (c) 2024 Drakonkinst
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,25 +21,20 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+package io.github.drakonkinst.worldsinger.entity;
 
-package io.github.drakonkinst.worldsinger.mixin.client.accessor;
+// Specialized free look implementation for when we want to allow clients to look around
+// (though not moving the camera's position) on client-side, while the player has a different
+// rotation server-side.
+public interface FreeLook {
 
-import net.minecraft.client.render.WorldRenderer;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.gen.Accessor;
+    void worldsinger$setFreeLookYaw(float yaw);
 
-@Mixin(WorldRenderer.class)
-public interface WorldRendererAccessor {
+    void worldsinger$setFreeLookPitch(float pitch);
 
-    // TODO: RESTORE
-    // @Invoker("buildSkyBuffer")
-    // static BuiltBuffer worldsinger$buildSkyBuffer(Tessellator tessellator, float f) {
-    //     throw new UnsupportedOperationException();
-    // }
-    //
-    // @Invoker("buildStarsBuffer")
-    // BuiltBuffer worldsinger$buildStarsBuffer(Tessellator tessellator);
+    boolean worldsinger$isFreeLookEnabled();
 
-    @Accessor("ticks")
-    int worldsinger$getTicks();
+    float worldsinger$getFreeLookYaw();
+
+    float worldsinger$getFreeLookPitch();
 }

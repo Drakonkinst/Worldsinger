@@ -26,7 +26,7 @@ package io.github.drakonkinst.worldsinger.mixin.client.world;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import io.github.drakonkinst.worldsinger.Worldsinger;
 import io.github.drakonkinst.worldsinger.entity.MidnightCreatureEntity;
-import io.github.drakonkinst.worldsinger.util.PossessionClientUtil;
+import io.github.drakonkinst.worldsinger.entity.PossessionClientUtil;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.Identifier;

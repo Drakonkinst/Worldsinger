@@ -40,15 +40,13 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockRenderView;
-import net.minecraft.world.BlockView;
 import org.jetbrains.annotations.Nullable;
 
 public class StillFluidRenderHandler implements FluidRenderHandler {
 
     private static final float Z_FIGHTING_BUFFER = 0.001f;
 
-    private static boolean isSideCovered(BlockView world, BlockPos pos, Direction direction,
-            BlockState state) {
+    private static boolean isSideCovered(Direction direction, BlockState state) {
         if (state.isOpaque()) {
             VoxelShape voxelShape = VoxelShapes.fullCube();
             VoxelShape neighborVoxelShape = state.getCullingShape();
@@ -104,12 +102,11 @@ public class StillFluidRenderHandler implements FluidRenderHandler {
         FluidState fluidStateEast = blockStateEast.getFluidState();
         boolean shouldRenderUp =
                 FluidRenderer.shouldRenderSide(fluidState, blockState, Direction.UP, fluidStateUp)
-                        && !StillFluidRenderHandler.isSideCovered(world, pos, Direction.UP,
-                        blockStateUp);
+                        && !StillFluidRenderHandler.isSideCovered(Direction.UP, blockStateUp);
         boolean shouldRenderDown =
                 FluidRenderer.shouldRenderSide(fluidState, blockState, Direction.DOWN,
-                        fluidStateDown) && !StillFluidRenderHandler.isSideCovered(world, pos,
-                        Direction.DOWN, blockStateDown);
+                        fluidStateDown) && !StillFluidRenderHandler.isSideCovered(Direction.DOWN,
+                        blockStateDown);
         boolean shouldRenderNorth = FluidRenderer.shouldRenderSide(fluidState, blockState,
                 Direction.NORTH, fluidStateNorth);
         boolean shouldRenderSouth = FluidRenderer.shouldRenderSide(fluidState, blockState,
@@ -220,7 +217,7 @@ public class StillFluidRenderHandler implements FluidRenderHandler {
                     maxZ = z + 1.0f;
                     yield shouldRenderEast;
                 }
-            }) || StillFluidRenderHandler.isSideCovered(world, pos, direction,
+            }) || StillFluidRenderHandler.isSideCovered(direction,
                     world.getBlockState(pos.offset(direction)))) {
                 continue;
             }

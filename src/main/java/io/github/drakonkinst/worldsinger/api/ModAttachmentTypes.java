@@ -35,19 +35,18 @@ import net.fabricmc.fabric.api.attachment.v1.AttachmentType;
 @SuppressWarnings("UnstableApiUsage")
 public final class ModAttachmentTypes {
 
-    public static final AttachmentType<SilverLinedBoatData> SILVER_LINED_BOAT = AttachmentRegistry.<SilverLinedBoatData>builder()
-            .persistent(SilverLinedBoatData.CODEC)
-            .initializer(() -> new SilverLinedBoatData(0))
-            .buildAndRegister(Worldsinger.id("silver_lined_boat"));
+    public static final AttachmentType<SilverLinedBoatData> SILVER_LINED_BOAT = AttachmentRegistry.create(
+            Worldsinger.id("silver_lined_boat"),
+            builder -> builder.persistent(SilverLinedBoatData.CODEC)
+                    .initializer(() -> new SilverLinedBoatData(0)));
     public static final AttachmentType<PlayerPossessionManager> POSSESSION = AttachmentRegistry.create(
             Worldsinger.id("possession"));
-    public static final AttachmentType<PlayerThirstManager> THIRST = AttachmentRegistry.<PlayerThirstManager>builder()
-            .persistent(PlayerThirstManager.CODEC)
-            .initializer(PlayerThirstManager::new)
-            .buildAndRegister(Worldsinger.id("thirst"));
-    public static final AttachmentType<PlayerMidnightAetherBondManager> MIDNIGHT_AETHER_BOND = AttachmentRegistry.<PlayerMidnightAetherBondManager>builder()
-            .initializer(PlayerMidnightAetherBondManager::new)
-            .buildAndRegister(Worldsinger.id("midnight_aether_bond"));
+    public static final AttachmentType<PlayerThirstManager> THIRST = AttachmentRegistry.create(
+            Worldsinger.id("thirst"), builder -> builder.persistent(PlayerThirstManager.CODEC)
+                    .initializer(PlayerThirstManager::new));
+    // Non-persistent
+    public static final AttachmentType<PlayerMidnightAetherBondManager> MIDNIGHT_AETHER_BOND = AttachmentRegistry.createDefaulted(
+            Worldsinger.id("midnight_aether_bond"), PlayerMidnightAetherBondManager::new);
 
     private ModAttachmentTypes() {}
 }
