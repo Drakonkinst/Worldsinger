@@ -60,8 +60,6 @@ import net.minecraft.util.math.Direction;
 // Datagen is limited and does not work for the more complex items.
 public class ModModelGenerator extends FabricModelProvider {
 
-    private static final TintSource UNTINTED = ItemModels.constantTintSource(-1);
-
     public ModModelGenerator(FabricDataOutput output) {
         super(output);
     }
