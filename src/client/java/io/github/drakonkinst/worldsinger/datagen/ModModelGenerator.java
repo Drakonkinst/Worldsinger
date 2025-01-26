@@ -391,6 +391,10 @@ public class ModModelGenerator extends FabricModelProvider {
         registerSporeSplashBottle(itemModelGenerator, ModItems.MIDNIGHT_SPORES_SPLASH_BOTTLE);
     }
 
+    private void registerCannonball(Item item) {
+
+    }
+
     private void registerSporeBottle(ItemModelGenerator itemModelGenerator, Item item) {
         // Copying normal potion textures at the moment
         Identifier identifier = itemModelGenerator.uploadTwoLayers(item,

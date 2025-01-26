@@ -33,6 +33,7 @@ import io.github.drakonkinst.worldsinger.registry.ModBlockRendering;
 import io.github.drakonkinst.worldsinger.registry.ModDimensionRenderers;
 import io.github.drakonkinst.worldsinger.registry.ModEntityRendering;
 import io.github.drakonkinst.worldsinger.registry.ModItemRendering;
+import io.github.drakonkinst.worldsinger.item.ModModelProperties;
 import net.fabricmc.api.ClientModInitializer;
 
 public class WorldsingerClient implements ClientModInitializer {
@@ -43,6 +44,7 @@ public class WorldsingerClient implements ClientModInitializer {
 
         ModClientAttachmentTypes.initialize();
         ModDimensionRenderers.initialize();
+        ModModelProperties.initialize();
 
         ModFluidRendering.register();
         ModBlockRendering.register();
