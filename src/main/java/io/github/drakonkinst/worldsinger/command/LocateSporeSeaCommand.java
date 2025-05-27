@@ -123,9 +123,9 @@ public class LocateSporeSeaCommand {
         return Texts.bracketed(
                         Text.translatable("chat.coordinates", blockPos.getX(), "~", blockPos.getZ()))
                 .styled(style -> style.withColor(Formatting.GREEN)
-                        .withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND,
+                        .withClickEvent(new ClickEvent.SuggestCommand(
                                 "/tp @s " + blockPos.getX() + " ~ " + blockPos.getZ()))
-                        .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+                        .withHoverEvent(new HoverEvent.ShowText(
                                 Text.translatable("chat.coordinates.tooltip"))));
     }
 

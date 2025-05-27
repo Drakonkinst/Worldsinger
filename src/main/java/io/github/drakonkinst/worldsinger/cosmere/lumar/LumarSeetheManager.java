@@ -33,6 +33,7 @@ import net.minecraft.util.math.intprovider.IntProvider;
 import net.minecraft.util.math.intprovider.UniformIntProvider;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.PersistentState;
+import net.minecraft.world.PersistentStateType;
 
 public class LumarSeetheManager extends PersistentState implements SeetheManager {
 
@@ -50,16 +51,16 @@ public class LumarSeetheManager extends PersistentState implements SeetheManager
     private static final IntProvider STILLING_LONG_CYCLE_PROVIDER = BiasedToBottomIntProvider.create(
             3, 5);
 
-    public static PersistentState.Type<LumarSeetheManager> getPersistentStateType() {
-        return new PersistentState.Type<>(LumarSeetheManager::new,
+    public static PersistentStateType<LumarSeetheManager> getPersistentStateType() {
+        return new PersistentStateType<>(LumarSeetheManager::new,
                 (nbt, registryLookup) -> LumarSeetheManager.fromNbt(nbt), DataFixTypes.LEVEL);
     }
 
     private static LumarSeetheManager fromNbt(NbtCompound nbt) {
         LumarSeetheManager seetheManager = new LumarSeetheManager();
-        seetheManager.isSeething = nbt.getBoolean(NBT_IS_SEETHING);
-        seetheManager.ticksRemaining = nbt.getInt(NBT_TICKS_REMAINING);
-        seetheManager.cyclesUntilLongStilling = nbt.getInt(NBT_CYCLES_UNTIL_NEXT_LONG_STILLING);
+        seetheManager.isSeething = nbt.getBoolean(NBT_IS_SEETHING, true);
+        seetheManager.ticksRemaining = nbt.getInt(NBT_TICKS_REMAINING, 0);
+        seetheManager.cyclesUntilLongStilling = nbt.getInt(NBT_CYCLES_UNTIL_NEXT_LONG_STILLING, 0);
         return seetheManager;
     }
 

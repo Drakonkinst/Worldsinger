@@ -24,9 +24,17 @@
 
 package io.github.drakonkinst.worldsinger.util.math;
 
+import com.mojang.serialization.Codec;
+import java.util.stream.IntStream;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 
 public record Int2(int x, int y) {
+
+    public static final Codec<Int2> CODEC = Codec.INT_STREAM.comapFlatMap(
+            stream -> Util.decodeFixedLengthArray(stream, 2)
+                    .map(values -> new Int2(values[0], values[1])),
+            pair -> IntStream.of(pair.x(), pair.y())).stable();
 
     public static float distance(Int2 p0, Int2 p1) {
         return MathHelper.sqrt(Int2.distanceSquared(p0, p1));

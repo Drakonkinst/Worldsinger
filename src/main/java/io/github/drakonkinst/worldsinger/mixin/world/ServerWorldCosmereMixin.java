@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2023-2024 Drakonkinst
+ * Copyright (c) 2023-2025 Drakonkinst
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -66,8 +66,7 @@ public abstract class ServerWorldCosmereMixin extends WorldCosmereMixin {
             long seed, List<SpecialSpawner> spawners, boolean shouldTickTime,
             RandomSequencesState randomSequencesState, CallbackInfo ci) {
         if (CosmerePlanet.getPlanetFromKey(worldKey) != CosmerePlanet.NONE) {
-            cosmereWorldData = this.getPersistentStateManager()
-                    .getOrCreate(CosmereWorldData.getPersistentStateType(), CosmereWorldData.NAME);
+            cosmereWorldData = this.getPersistentStateManager().getOrCreate(CosmereWorldData.TYPE);
         }
     }
 

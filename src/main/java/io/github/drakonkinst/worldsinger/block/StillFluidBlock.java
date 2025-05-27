@@ -35,8 +35,8 @@ import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.FluidDrainable;
 import net.minecraft.block.ShapeContext;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.pathing.NavigationType;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
@@ -121,7 +121,7 @@ public class StillFluidBlock extends Block implements FluidDrainable {
     }
 
     @Override
-    public ItemStack tryDrainFluid(@Nullable PlayerEntity player, WorldAccess world, BlockPos pos,
+    public ItemStack tryDrainFluid(@Nullable LivingEntity entity, WorldAccess world, BlockPos pos,
             BlockState state) {
         return ItemStack.EMPTY;
     }

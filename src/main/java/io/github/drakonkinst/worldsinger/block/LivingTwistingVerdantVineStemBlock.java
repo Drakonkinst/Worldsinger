@@ -117,9 +117,9 @@ public class LivingTwistingVerdantVineStemBlock extends TwistingVerdantVineStemB
 
     // Catalyze when waterlogged, common to all LivingSporeGrowthBlocks that implement Waterloggable
     @Override
-    public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState,
-            boolean moved) {
-        super.onStateReplaced(state, world, pos, newState, moved);
+    public void onStateReplaced(BlockState state, ServerWorld world, BlockPos pos, boolean moved) {
+        super.onStateReplaced(state, world, pos, moved);
+        BlockState newState = world.getBlockState(pos);
         if (!state.isOf(newState.getBlock())) {
             return;
         }

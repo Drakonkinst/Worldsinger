@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2023-2024 Drakonkinst
+ * Copyright (c) 2023-2025 Drakonkinst
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,12 +24,13 @@
 
 package io.github.drakonkinst.worldsinger.cosmere;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import java.util.Optional;
 import net.minecraft.datafixer.DataFixTypes;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.PersistentState;
+import net.minecraft.world.PersistentStateType;
 import org.jetbrains.annotations.Nullable;
 
 public class CosmereWorldData extends PersistentState {
@@ -39,25 +40,29 @@ public class CosmereWorldData extends PersistentState {
 
     public static final String NAME = "cosmere";
 
-    public static PersistentState.Type<CosmereWorldData> getPersistentStateType() {
-        return new PersistentState.Type<>(CosmereWorldData::new,
-                (nbt, registryLookup) -> CosmereWorldData.fromNbt(nbt), DataFixTypes.LEVEL);
-    }
+    public static PersistentStateType<CosmereWorldData> TYPE = new PersistentStateType<>(NAME,
+            CosmereWorldData::new, CosmereWorldData::codec, DataFixTypes.LEVEL);
 
-    private static CosmereWorldData fromNbt(NbtCompound nbt) {
-        CosmereWorldData cosmereWorldData = new CosmereWorldData();
-        cosmereWorldData.setTimeOfDay(nbt.getLong(KEY_TIME));
-        if (nbt.contains(KEY_SPAWN_POS, NbtElement.LONG_TYPE)) {
-            cosmereWorldData.setSpawnPos(BlockPos.fromLong(nbt.getLong(KEY_SPAWN_POS)));
-        }
-        return cosmereWorldData;
+    private static Codec<CosmereWorldData> codec(PersistentState.Context context) {
+        return RecordCodecBuilder.create(builder -> builder.group(Codec.LONG.fieldOf(KEY_TIME)
+                        .forGetter(cosmereWorldData -> cosmereWorldData.timeOfDay),
+                BlockPos.CODEC.optionalFieldOf(KEY_SPAWN_POS)
+                        .forGetter(cosmereWorldData -> cosmereWorldData.spawnPos)
+
+        ).apply(builder, CosmereWorldData::new));
     }
 
     private long timeOfDay;
-    private @Nullable BlockPos spawnPos = null;
+    // FIXME: Fix optional field
+    private Optional<BlockPos> spawnPos;
 
-    public CosmereWorldData() {
+    private CosmereWorldData(PersistentState.Context context) {
+        this(-1, Optional.empty());
+    }
 
+    public CosmereWorldData(long timeOfDay, Optional<BlockPos> spawnPos) {
+        this.timeOfDay = timeOfDay;
+        this.spawnPos = spawnPos;
     }
 
     public void setTimeOfDay(long timeOfDay) {
@@ -65,7 +70,7 @@ public class CosmereWorldData extends PersistentState {
     }
 
     public void setSpawnPos(@Nullable BlockPos pos) {
-        this.spawnPos = pos;
+        this.spawnPos = Optional.ofNullable(pos);
     }
 
     public long getTimeOfDay() {
@@ -73,15 +78,6 @@ public class CosmereWorldData extends PersistentState {
     }
 
     public @Nullable BlockPos getSpawnPos() {
-        return spawnPos;
-    }
-
-    @Override
-    public NbtCompound writeNbt(NbtCompound nbt, WrapperLookup registryLookup) {
-        nbt.putLong(KEY_TIME, timeOfDay);
-        if (spawnPos != null) {
-            nbt.putLong(KEY_SPAWN_POS, spawnPos.asLong());
-        }
-        return nbt;
+        return spawnPos.orElse(null);
     }
 }

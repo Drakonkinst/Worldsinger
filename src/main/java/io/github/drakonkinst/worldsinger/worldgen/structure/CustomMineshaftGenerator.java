@@ -42,7 +42,6 @@ import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.vehicle.ChestMinecartEntity;
 import net.minecraft.loot.LootTable;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.tag.BiomeTags;
@@ -146,8 +145,8 @@ public class CustomMineshaftGenerator {
 
         public MineshaftCrossing(StructureContext structureContext, NbtCompound nbt) {
             super(ModStructurePieceTypes.CUSTOM_MINESHAFT_CROSSING, nbt);
-            this.twoFloors = nbt.getBoolean("tf");
-            this.direction = Direction.fromHorizontalQuarterTurns(nbt.getInt("D"));
+            this.twoFloors = nbt.getBoolean("tf", false);
+            this.direction = Direction.fromHorizontalQuarterTurns(nbt.getInt("D", 0));
         }
 
         public MineshaftCrossing(int chainLength, BlockBox boundingBox,
@@ -413,10 +412,10 @@ public class CustomMineshaftGenerator {
 
         public MineshaftCorridor(StructureContext structureContext, NbtCompound nbt) {
             super(ModStructurePieceTypes.CUSTOM_MINESHAFT_CORRIDOR, nbt);
-            this.hasRails = nbt.getBoolean("hr");
-            this.hasCobwebs = nbt.getBoolean("sc");
-            this.hasSpawner = nbt.getBoolean("hps");
-            this.length = nbt.getInt("Num");
+            this.hasRails = nbt.getBoolean("hr", false);
+            this.hasCobwebs = nbt.getBoolean("sc", false);
+            this.hasSpawner = nbt.getBoolean("hps", false);
+            this.length = nbt.getInt("Num", 0);
         }
 
         public MineshaftCorridor(int chainLength, Random random, BlockBox boundingBox,
@@ -822,7 +821,7 @@ public class CustomMineshaftGenerator {
 
         public MineshaftPart(StructurePieceType structurePieceType, NbtCompound nbtCompound) {
             super(structurePieceType, nbtCompound);
-            this.mineshaftType = CustomMineshaftStructure.Type.byId(nbtCompound.getInt("MST"));
+            this.mineshaftType = CustomMineshaftStructure.Type.byId(nbtCompound.getInt("MST", 0));
         }
 
         @Override
@@ -925,10 +924,7 @@ public class CustomMineshaftGenerator {
 
         public MineshaftRoom(StructureContext structureContext, NbtCompound nbt) {
             super(ModStructurePieceTypes.CUSTOM_MINESHAFT_ROOM, nbt);
-            BlockBox.CODEC.listOf()
-                    .parse(NbtOps.INSTANCE, nbt.getList("Entrances", NbtElement.INT_ARRAY_TYPE))
-                    .resultOrPartial(Worldsinger.LOGGER::error)
-                    .ifPresent(this.entrances::addAll);
+            this.entrances.addAll(nbt.get("Entrances", BlockBox.CODEC.listOf()).orElse(List.of()));
         }
 
         @Override

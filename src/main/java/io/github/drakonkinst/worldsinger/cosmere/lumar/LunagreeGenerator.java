@@ -27,6 +27,7 @@ package io.github.drakonkinst.worldsinger.cosmere.lumar;
 import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import org.jetbrains.annotations.Nullable;
 
 // Generates and manages the access of lunagrees.
@@ -34,6 +35,8 @@ public interface LunagreeGenerator {
 
     LunagreeGenerator NULL = new NullLunagreeGenerator();
 
+    void setWorld(ServerWorld world);
+    
     // Lunagrees cover a wide area identified by a key. The rule used to generate the key
     // should be deterministic, but is otherwise hidden by implementation
     long getKeyForPos(int blockX, int blockZ);

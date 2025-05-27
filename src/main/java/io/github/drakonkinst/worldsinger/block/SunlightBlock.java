@@ -34,6 +34,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityCollisionHandler;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.server.world.ServerWorld;
@@ -124,7 +125,8 @@ public class SunlightBlock extends StillFluidBlock {
     }
 
     @Override
-    public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
+    public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity,
+            EntityCollisionHandler handler) {
         // Same damage and SFX as lava
         if (!entity.isFireImmune()) {
             entity.setOnFireFor(15);
@@ -136,7 +138,7 @@ public class SunlightBlock extends StillFluidBlock {
                     2.0f + world.getRandom().nextFloat() * 0.4f);
         }
 
-        super.onEntityCollision(state, world, pos, entity);
+        super.onEntityCollision(state, world, pos, entity, handler);
     }
 
     @Override

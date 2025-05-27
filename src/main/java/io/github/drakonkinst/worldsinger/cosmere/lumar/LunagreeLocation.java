@@ -24,19 +24,33 @@
 
 package io.github.drakonkinst.worldsinger.cosmere.lumar;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.drakonkinst.worldsinger.util.math.Int2;
+import java.util.Collections;
+import java.util.List;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtIntArray;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.util.dynamic.Codecs;
 
-public record LunagreeLocation(int blockX, int blockZ, int sporeId, Int2[] rainlineNodes) {
+public record LunagreeLocation(int blockX, int blockZ, int sporeId, List<Int2> rainlineNodes) {
 
     private static final String KEY_X = "blockX";
     private static final String KEY_Z = "blockZ";
     private static final String KEY_ID = "id";
     private static final String KEY_RAINLINE = "rainlinePath";
+    public static final MapCodec<LunagreeLocation> CODEC = RecordCodecBuilder.mapCodec(
+            instance -> instance.group(
+                            Codec.INT.fieldOf("block_x").forGetter(LunagreeLocation::blockX),
+                            Codec.INT.fieldOf("block_z").forGetter(LunagreeLocation::blockZ),
+                            Codecs.NON_NEGATIVE_INT.fieldOf("spore_id")
+                                    .forGetter(LunagreeLocation::sporeId), Int2.CODEC.listOf()
+                                    .optionalFieldOf("rainline_path", Collections.emptyList())
+                                    .forGetter(LunagreeLocation::rainlineNodes))
+                    .apply(instance, LunagreeLocation::new));
 
     public static LunagreeLocation fromPacket(PacketByteBuf buf) {
         int blockX = buf.readVarInt();
@@ -63,14 +77,14 @@ public record LunagreeLocation(int blockX, int blockZ, int sporeId, Int2[] rainl
     }
 
     public static LunagreeLocation fromNbt(NbtCompound nbt) {
-        int sporeId = nbt.getInt(KEY_ID);
-        int x = nbt.getInt(KEY_X);
-        int z = nbt.getInt(KEY_Z);
-        NbtList rainlineNodeData = nbt.getList(KEY_RAINLINE, NbtElement.INT_ARRAY_TYPE);
+        int sporeId = nbt.getInt(KEY_ID, -1);
+        int x = nbt.getInt(KEY_X, -1);
+        int z = nbt.getInt(KEY_Z, -1);
+        NbtList rainlineNodeData = nbt.getList(KEY_RAINLINE).orElse(new NbtList());
         Int2[] rainlineNodes = new Int2[RainlinePath.RAINLINE_NODE_COUNT];
         if (rainlineNodeData.size() == RainlinePath.RAINLINE_NODE_COUNT) {
             for (int i = 0; i < RainlinePath.RAINLINE_NODE_COUNT; ++i) {
-                int[] coords = rainlineNodeData.getIntArray(i);
+                int[] coords = rainlineNodeData.getIntArray(i).orElse(new int[] { -1, -1 });
                 rainlineNodes[i] = new Int2(coords[0], coords[1]);
             }
         }

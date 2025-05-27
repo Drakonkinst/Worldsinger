@@ -40,7 +40,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
 import net.minecraft.particle.BlockStateParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.tag.FluidTags;
@@ -153,14 +152,14 @@ public abstract class SporeGrowthEntity extends ServerSideEntity {
 
     @Override
     protected void readCustomDataFromNbt(NbtCompound nbt) {
-        this.waterRemaining = nbt.getInt(WATER_REMAINING_KEY);
-        this.sporesRemaining = nbt.getInt(SPORES_REMAINING_KEY);
-        this.isInitialGrowth = nbt.getBoolean(INITIAL_GROWTH_KEY);
-        this.stage = nbt.getShort(STAGE_KEY);
-        if (nbt.contains(ORIGIN_X_KEY, NbtElement.INT_TYPE)) {
-            int x = nbt.getInt(ORIGIN_X_KEY);
-            int y = nbt.getInt(ORIGIN_Y_KEY);
-            int z = nbt.getInt(ORIGIN_Z_KEY);
+        this.waterRemaining = nbt.getInt(WATER_REMAINING_KEY, 0);
+        this.sporesRemaining = nbt.getInt(SPORES_REMAINING_KEY, 0);
+        this.isInitialGrowth = nbt.getBoolean(INITIAL_GROWTH_KEY, false);
+        this.stage = nbt.getShort(STAGE_KEY, (short) 0);
+        if (nbt.contains(ORIGIN_X_KEY)) {
+            int x = nbt.getInt(ORIGIN_X_KEY, 0);
+            int y = nbt.getInt(ORIGIN_Y_KEY, 0);
+            int z = nbt.getInt(ORIGIN_Z_KEY, 0);
             this.origin = new BlockPos(x, y, z);
         }
     }

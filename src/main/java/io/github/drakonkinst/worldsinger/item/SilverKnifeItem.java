@@ -30,6 +30,7 @@ import io.github.drakonkinst.worldsinger.mixin.accessor.LivingEntityAccessor;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ToolMaterial;
 import net.minecraft.server.world.ServerWorld;
@@ -37,17 +38,17 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.world.World;
 
-public class SilverKnifeItem extends KnifeItem {
+public class SilverKnifeItem extends Item {
 
     public static final float SILVER_BONUS_DAMAGE = 6.0f;
 
     public SilverKnifeItem(ToolMaterial toolMaterial, float attackDamage, float attackSpeed,
-            Settings settings) {
-        super(toolMaterial, attackDamage, attackSpeed, settings);
+            Item.Settings settings) {
+        super(settings.sword(toolMaterial, attackDamage, attackSpeed));
     }
 
     @Override
-    public boolean postHit(ItemStack stack, LivingEntity target, LivingEntity attacker) {
+    public void postHit(ItemStack stack, LivingEntity target, LivingEntity attacker) {
         if (target instanceof SilverVulnerable
                 && target.getWorld() instanceof ServerWorld serverWorld) {
             // applyDamage() always applies the damage, versus damage() which only damages the mob
@@ -55,7 +56,7 @@ public class SilverKnifeItem extends KnifeItem {
             ((LivingEntityAccessor) target).worldsinger$applyDamage(serverWorld,
                     attacker.getDamageSources().mobAttack(attacker), SILVER_BONUS_DAMAGE);
         }
-        return super.postHit(stack, target, attacker);
+        super.postHit(stack, target, attacker);
     }
 
     // For now, we only support this using the silver knife, not any other spore-growth killing items.

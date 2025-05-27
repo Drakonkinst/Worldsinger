@@ -36,6 +36,7 @@ import net.minecraft.block.ShapeContext;
 import net.minecraft.block.Waterloggable;
 import net.minecraft.block.enums.Thickness;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityCollisionHandler;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
@@ -239,7 +240,7 @@ public class CrimsonSpikeBlock extends Block implements Waterloggable, SporeGrow
 
     @Override
     public void onLandedUpon(World world, BlockState state, BlockPos pos, Entity entity,
-            float fallDistance) {
+            double fallDistance) {
         if (state.get(Properties.FACING) == Direction.UP
                 && state.get(ModProperties.DISCRETE_THICKNESS) == Thickness.TIP) {
             entity.handleFallDamage(fallDistance + 2.0f, 2.0f,
@@ -250,7 +251,8 @@ public class CrimsonSpikeBlock extends Block implements Waterloggable, SporeGrow
     }
 
     @Override
-    public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
+    public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity,
+            EntityCollisionHandler handler) {
         if (!(world instanceof ServerWorld serverWorld)) {
             return;
         }

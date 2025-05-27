@@ -164,7 +164,7 @@ public class CannonballEntity extends ThrownItemEntity implements FlyingItemEnti
     @Override
     public void readCustomDataFromNbt(NbtCompound nbt) {
         super.readCustomDataFromNbt(nbt);
-        this.setFuse(nbt.getShort(FUSE_NBT_KEY));
+        this.setFuse(nbt.getShort(FUSE_NBT_KEY, (short) 0));
     }
 
     @Override
@@ -182,7 +182,7 @@ public class CannonballEntity extends ThrownItemEntity implements FlyingItemEnti
                 float velocityY = this.random.nextFloat() * PARTICLE_SPEED * 2.0f - PARTICLE_SPEED;
                 float velocityZ = this.random.nextFloat() * PARTICLE_SPEED * 2.0f - PARTICLE_SPEED;
                 this.getWorld()
-                        .addParticle(particleEffect, this.getX(), this.getY(), this.getZ(),
+                        .addParticleClient(particleEffect, this.getX(), this.getY(), this.getZ(),
                                 velocityX, velocityY, velocityZ);
             }
         }

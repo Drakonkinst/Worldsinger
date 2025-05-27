@@ -70,8 +70,8 @@ public class MidnightSpores extends GrowableAetherSpores<MidnightSporeGrowthEnti
         double velocityX = velocity * random.nextGaussian();
         double velocityY = velocity * random.nextGaussian();
         double velocityZ = velocity * random.nextGaussian();
-        world.addParticle(ModParticleTypes.MIDNIGHT_ESSENCE, pos.getX(), pos.getY(), pos.getZ(),
-                velocityX, velocityY, velocityZ);
+        world.addParticleClient(ModParticleTypes.MIDNIGHT_ESSENCE, pos.getX(), pos.getY(),
+                pos.getZ(), velocityX, velocityY, velocityZ);
     }
 
     // Client-side only

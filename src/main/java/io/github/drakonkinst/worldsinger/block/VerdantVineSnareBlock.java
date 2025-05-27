@@ -33,6 +33,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.block.Waterloggable;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityCollisionHandler;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemPlacementContext;
@@ -88,7 +89,8 @@ public class VerdantVineSnareBlock extends Block implements Waterloggable, Spore
     }
 
     @Override
-    public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
+    public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity,
+            EntityCollisionHandler handler) {
         entity.slowMovement(state, new Vec3d(0.5, 0.25f, 0.5));
     }
 

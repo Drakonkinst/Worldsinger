@@ -26,7 +26,7 @@ package io.github.drakonkinst.worldsinger.entity;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import io.github.drakonkinst.worldsinger.item.SilverLinedBoatItemData;
+import io.github.drakonkinst.worldsinger.cosmere.SilverLined;
 
 // Contrary to the name, the component is not limited to being used just for boats
 // However, we don't want to store type information (max durability) in the component, so
@@ -45,11 +45,11 @@ public class SilverLinedBoatData extends SilverLinedEntityData {
 
     @Override
     public int getRepairAmount() {
-        return SilverLinedBoatItemData.SILVER_REPAIR_AMOUNT;
+        return SilverLined.BOAT_MAX_DURABILITY / 4;
     }
 
     @Override
     public int getMaxSilverDurability() {
-        return SilverLinedBoatItemData.MAX_DURABILITY;
+        return SilverLined.BOAT_MAX_DURABILITY;
     }
 }

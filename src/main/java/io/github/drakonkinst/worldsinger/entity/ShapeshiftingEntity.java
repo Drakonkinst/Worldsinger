@@ -122,7 +122,7 @@ public abstract class ShapeshiftingEntity extends PathAwareEntity implements Sha
     @Override
     public void readCustomDataFromNbt(NbtCompound nbt) {
         super.readCustomDataFromNbt(nbt);
-        this.setMorphData(nbt.getCompound(MORPH_KEY));
+        nbt.getCompound(MORPH_KEY).ifPresent(this::setMorphData);
         this.setMorphFromData();
     }
 
@@ -170,9 +170,9 @@ public abstract class ShapeshiftingEntity extends PathAwareEntity implements Sha
         LimbAnimator target = morph.limbAnimator;
         LimbAnimator source = this.limbAnimator;
         target.setSpeed(source.getSpeed());
-        ((LimbAnimatorAccessor) target).worldsinger$setPrevSpeed(
-                ((LimbAnimatorAccessor) source).worldsinger$getPrevSpeed());
-        ((LimbAnimatorAccessor) target).worldsinger$setPos(source.getPos());
+        ((LimbAnimatorAccessor) target).worldsinger$setLastSpeed(
+                ((LimbAnimatorAccessor) source).worldsinger$getLastSpeed());
+        ((LimbAnimatorAccessor) target).worldsinger$setAnimationProgress(source.getPos());
 
         // Sync data
         morph.handSwinging = this.handSwinging;
@@ -180,9 +180,9 @@ public abstract class ShapeshiftingEntity extends PathAwareEntity implements Sha
         morph.lastHandSwingProgress = this.lastHandSwingProgress;
         morph.handSwingProgress = this.handSwingProgress;
         morph.bodyYaw = this.bodyYaw;
-        morph.prevBodyYaw = this.prevBodyYaw;
+        morph.lastBodyYaw = this.lastBodyYaw;
         morph.headYaw = this.headYaw;
-        morph.prevHeadYaw = this.prevHeadYaw;
+        morph.lastHeadYaw = this.lastHeadYaw;
         morph.age = this.age;
         morph.preferredHand = this.preferredHand;
         morph.deathTime = this.deathTime;
@@ -196,10 +196,10 @@ public abstract class ShapeshiftingEntity extends PathAwareEntity implements Sha
         // Pitch for Phantoms is inverted
         if (morph instanceof PhantomEntity) {
             morph.setPitch(-this.getPitch());
-            morph.prevPitch = -this.prevPitch;
+            morph.lastPitch = -this.lastPitch;
         } else {
             morph.setPitch(this.getPitch());
-            morph.prevPitch = this.prevPitch;
+            morph.lastPitch = this.lastPitch;
         }
 
         configureEquipment(morph);

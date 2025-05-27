@@ -304,7 +304,7 @@ public final class ShapeshiftingManager {
 
         // Wag tail at the same speed as on land
         float tailAngle = accessor.worldsinger$getTailAngle();
-        accessor.worldsinger$setPrevTailAngle(tailAngle);
+        accessor.worldsinger$setLastTailAngle(tailAngle);
         accessor.worldsinger$setTailAngle(tailAngle + GUARDIAN_TAIL_SPEED);
     }
 

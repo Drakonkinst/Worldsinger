@@ -28,6 +28,8 @@ import io.github.drakonkinst.worldsinger.item.map.CustomMapDecoration;
 import io.github.drakonkinst.worldsinger.item.map.CustomMapDecorationsComponent.Decoration;
 import io.github.drakonkinst.worldsinger.util.math.Int2;
 import io.github.drakonkinst.worldsinger.worldgen.lumar.LumarChunkGenerator;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import net.minecraft.item.map.MapState;
 import net.minecraft.server.world.ServerWorld;
@@ -126,15 +128,15 @@ public class RainlinePath {
     }
 
     // https://stackoverflow.com/a/22157217
-    public static Int2[] generateRainlineNodes(int lunagreeX, int lunagreeZ, Random random) {
-        Int2[] rainlineNodes = new Int2[RAINLINE_NODE_COUNT];
+    public static List<Int2> generateRainlineNodes(int lunagreeX, int lunagreeZ, Random random) {
+        List<Int2> rainlineNodes = new ArrayList<>(RAINLINE_NODE_COUNT);
         for (int i = 0; i < RAINLINE_NODE_COUNT; ++i) {
             float angle =
                     i * ANGLE_INCREMENT + random.nextFloat() * 2.0f * ANGLE_OFFSET - ANGLE_OFFSET;
             int radius = random.nextBetween(MIN_RADIUS, MAX_RADIUS);
             int x = lunagreeX + Math.round(radius * MathHelper.cos(angle));
             int y = lunagreeZ + Math.round(radius * MathHelper.sin(angle));
-            rainlineNodes[i] = new Int2(x, y);
+            rainlineNodes.set(i, new Int2(x, y));
         }
         return rainlineNodes;
     }

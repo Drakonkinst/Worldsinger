@@ -37,7 +37,7 @@ import net.minecraft.block.FallingBlock;
 import net.minecraft.block.FluidDrainable;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.FallingBlockEntity;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemPlacementContext;
@@ -121,7 +121,7 @@ public class AetherSporeBlock extends FallingBlock implements FluidDrainable, Sp
     }
 
     @Override
-    public ItemStack tryDrainFluid(@Nullable PlayerEntity player, WorldAccess world, BlockPos pos,
+    public ItemStack tryDrainFluid(@Nullable LivingEntity entity, WorldAccess world, BlockPos pos,
             BlockState state) {
         world.setBlockState(pos, Blocks.AIR.getDefaultState(),
                 Block.NOTIFY_ALL | Block.REDRAW_ON_MAIN_THREAD);
@@ -133,7 +133,7 @@ public class AetherSporeBlock extends FallingBlock implements FluidDrainable, Sp
 
     @Override
     public void onLandedUpon(World world, BlockState state, BlockPos pos, Entity entity,
-            float fallDistance) {
+            double fallDistance) {
         // Spawn splash particles on landing
         if (fallDistance > 0.25f && world instanceof ServerWorld serverWorld
                 && !(entity instanceof FallingBlockEntity)) {

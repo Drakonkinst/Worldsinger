@@ -25,7 +25,9 @@ package io.github.drakonkinst.worldsinger.cosmere;
 
 import io.github.drakonkinst.datatables.DataTable;
 import net.fabricmc.fabric.api.tag.convention.v2.ConventionalItemTags;
+import net.minecraft.component.type.AttributeModifierSlot;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -50,13 +52,16 @@ public final class MetalQueryManager {
         }
 
         if (entity instanceof LivingEntity livingEntity) {
-            for (ItemStack itemStack : livingEntity.getHandItems()) {
+
+            for (EquipmentSlot equipmentSlot : AttributeModifierSlot.HAND) {
+                ItemStack itemStack = livingEntity.getEquippedStack(equipmentSlot);
                 if (!itemStack.isEmpty() && itemStack.isIn(metal.getItemTag())) {
                     ironContent += HELD_ITEM_METAL_VALUE;
                 }
             }
 
-            for (ItemStack itemStack : livingEntity.getArmorItems()) {
+            for (EquipmentSlot equipmentSlot : AttributeModifierSlot.ARMOR) {
+                ItemStack itemStack = livingEntity.getEquippedStack(equipmentSlot);
                 if (!itemStack.isEmpty() && itemStack.isIn(metal.getItemTag())) {
                     ironContent += armorDataTable.getIntForItem(itemStack.getItem());
                 }

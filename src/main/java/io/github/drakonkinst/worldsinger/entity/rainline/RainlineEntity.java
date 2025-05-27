@@ -49,7 +49,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome.Precipitation;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.animation.AnimatableManager.ControllerRegistrar;
+import software.bernie.geckolib.animatable.manager.AnimatableManager.ControllerRegistrar;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 public class RainlineEntity extends Entity implements GeoEntity {
@@ -72,9 +72,9 @@ public class RainlineEntity extends Entity implements GeoEntity {
     @Override
     public void tick() {
         super.tick();
-        this.prevX = this.getX();
-        this.prevY = this.getY();
-        this.prevZ = this.getZ();
+        this.lastX = this.getX();
+        this.lastY = this.getY();
+        this.lastZ = this.getZ();
         if (!this.getWorld().isClient()) {
             doServerTick();
         }
@@ -140,7 +140,7 @@ public class RainlineEntity extends Entity implements GeoEntity {
         }
 
         LumarManager lumarManager = ((LumarManagerAccess) world).worldsinger$getLumarManager();
-        boolean isFollowingPath = nbt.getBoolean(KEY_FOLLOWING_PATH);
+        boolean isFollowingPath = nbt.getBoolean(KEY_FOLLOWING_PATH, false);
         if (isFollowingPath) {
             rainlineBehavior = RainlineFollowPathBehavior.readFromNbt(lumarManager, nbt);
         }

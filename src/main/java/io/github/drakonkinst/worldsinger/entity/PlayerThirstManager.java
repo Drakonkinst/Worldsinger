@@ -184,6 +184,6 @@ public class PlayerThirstManager implements ThirstManager {
 
     @Override
     public void syncFromNbt(NbtCompound nbt) {
-        thirstLevel = nbt.getInt(KEY_THIRST_LEVEL);
+        thirstLevel = nbt.getInt(KEY_THIRST_LEVEL, MAX_THIRST_LEVEL);
     }
 }

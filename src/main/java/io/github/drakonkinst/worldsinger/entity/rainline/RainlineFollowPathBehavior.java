@@ -33,7 +33,6 @@ import io.github.drakonkinst.worldsinger.worldgen.lumar.LumarChunkGenerator.Spor
 import it.unimi.dsi.fastutil.longs.LongByteImmutablePair;
 import it.unimi.dsi.fastutil.longs.LongBytePair;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.Vec2f;
 import org.jetbrains.annotations.Nullable;
@@ -45,12 +44,11 @@ public class RainlineFollowPathBehavior implements RainlineBehavior {
 
     public static @Nullable RainlineFollowPathBehavior readFromNbt(LumarManager manager,
             NbtCompound nbt) {
-        if (!nbt.contains(KEY_RAINLINE_ID, NbtElement.LONG_TYPE) || !nbt.contains(
-                KEY_RAINLINE_INDEX, NbtElement.BYTE_TYPE)) {
+        if (!nbt.contains(KEY_RAINLINE_ID) || !nbt.contains(KEY_RAINLINE_INDEX)) {
             return null;
         }
-        long rainlineId = nbt.getLong(KEY_RAINLINE_ID);
-        byte rainlineIndex = nbt.getByte(KEY_RAINLINE_INDEX);
+        long rainlineId = nbt.getLong(KEY_RAINLINE_ID, -999);
+        byte rainlineIndex = nbt.getByte(KEY_RAINLINE_INDEX, (byte) 0);
         RainlinePath rainlinePath = manager.getRainlineManager().getRainlinePathById(rainlineId);
         if (rainlinePath == null) {
             return null;

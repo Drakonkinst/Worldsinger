@@ -58,6 +58,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.PersistentState;
+import net.minecraft.world.PersistentStateType;
 import org.jetbrains.annotations.Nullable;
 
 // Rainlines on Lumar are placed around lunagrees, so it is tightly coupled to lunagree generation
@@ -77,15 +78,15 @@ public class LumarRainlineManager extends PersistentState implements RainlineMan
     public static final String NAME = "rainlines";
     private static final String KEY_SPAWN_DELAY = "spawn_delay";
 
-    public static PersistentState.Type<LumarRainlineManager> getPersistentStateType(
+    public static PersistentStateType<LumarRainlineManager> getPersistentStateType(
             LunagreeGenerator generator) {
-        return new PersistentState.Type<>(() -> new LumarRainlineManager(generator, 0),
+        return new PersistentStateType<>(() -> new LumarRainlineManager(generator, 0),
                 (nbt, registryLookup) -> LumarRainlineManager.fromNbt(generator, nbt),
                 DataFixTypes.LEVEL);
     }
 
     private static LumarRainlineManager fromNbt(LunagreeGenerator generator, NbtCompound nbt) {
-        int spawnDelay = nbt.getInt(KEY_SPAWN_DELAY);
+        int spawnDelay = nbt.getInt(KEY_SPAWN_DELAY, 0);
         return new LumarRainlineManager(generator, spawnDelay);
     }
 

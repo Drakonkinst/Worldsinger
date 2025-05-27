@@ -94,8 +94,8 @@ public abstract class ServerWorldLumarMixin extends WorldLumarMixin implements
                     .getOrCreate(LumarSeetheManager.getPersistentStateType(),
                             LumarSeetheManager.NAME);
             LunagreeGenerator lunagreeGenerator = this.getPersistentStateManager()
-                    .getOrCreate(LumarLunagreeGenerator.getPersistentStateType(
-                            (ServerWorld) (Object) (this)), LumarLunagreeGenerator.NAME);
+                    .getOrCreate(LumarLunagreeGenerator.STATE_TYPE);
+            lunagreeGenerator.setWorld((ServerWorld) (Object) this);
             RainlineManager rainlineManager = this.getPersistentStateManager()
                     .getOrCreate(LumarRainlineManager.getPersistentStateType(lunagreeGenerator),
                             LumarRainlineManager.NAME);

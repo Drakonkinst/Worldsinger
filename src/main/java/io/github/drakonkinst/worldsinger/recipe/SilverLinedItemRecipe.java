@@ -24,9 +24,7 @@
 
 package io.github.drakonkinst.worldsinger.recipe;
 
-import io.github.drakonkinst.worldsinger.api.ModApi;
 import io.github.drakonkinst.worldsinger.cosmere.SilverLined;
-import io.github.drakonkinst.worldsinger.cosmere.SilverLinedUtil;
 import io.github.drakonkinst.worldsinger.registry.tag.ModConventionalItemTags;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.RecipeSerializer;
@@ -56,7 +54,7 @@ public class SilverLinedItemRecipe extends SpecialCraftingRecipe {
             }
             if (stack.isIn(ModConventionalItemTags.SILVER_INGOTS)) {
                 numSilverIngots += 1;
-            } else if (SilverLinedUtil.canBeSilverLined(stack)) {
+            } else if (SilverLined.canBeSilverLined(stack)) {
                 if (!silverLinedItem.isEmpty()) {
                     // Cannot have more than one silver lined slot
                     return false;
@@ -81,7 +79,7 @@ public class SilverLinedItemRecipe extends SpecialCraftingRecipe {
             }
             if (stack.isIn(ModConventionalItemTags.SILVER_INGOTS)) {
                 numSilverIngots += 1;
-            } else if (SilverLinedUtil.canBeSilverLined(stack)) {
+            } else if (SilverLined.canBeSilverLined(stack)) {
                 if (!silverLinedItem.isEmpty()) {
                     // Cannot have more than one silver lined slot
                     return ItemStack.EMPTY;
@@ -93,14 +91,7 @@ public class SilverLinedItemRecipe extends SpecialCraftingRecipe {
             }
         }
 
-        ItemStack result = silverLinedItem.copy();
-        SilverLined silverData = ModApi.SILVER_LINED_ITEM.find(result, null);
-        if (silverData == null) {
-            return ItemStack.EMPTY;
-        }
-        silverData.setSilverDurability(
-                silverData.getSilverDurability() + numSilverIngots * silverData.getRepairAmount());
-        return result;
+        return SilverLined.repairSilverDurability(silverLinedItem.copy(), numSilverIngots);
     }
 
     @Override

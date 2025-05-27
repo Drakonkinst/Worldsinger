@@ -82,7 +82,7 @@ public final class SporeParticleSpawner {
     private static final int CANNONBALL_PARTICLE_COUNT = 10;
 
     public static void spawnSplashParticles(ServerWorld world, AetherSpores sporeType,
-            Entity entity, float fallDistance, boolean fluid) {
+            Entity entity, double fallDistance, boolean fluid) {
         double height = fallDistance * SPLASH_HEIGHT_PER_BLOCK;
         int particleCount = fluid ? SPLASH_PARTICLE_COUNT_FLUID : SPLASH_PARTICLE_COUNT_BLOCK;
         SporeParticleManager.createRandomSporeParticlesForEntity(world, sporeType, entity,

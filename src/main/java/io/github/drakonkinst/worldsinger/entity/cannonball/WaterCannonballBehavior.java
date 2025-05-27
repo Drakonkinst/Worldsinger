@@ -61,7 +61,7 @@ public class WaterCannonballBehavior implements CannonballBehavior {
             double offsetX = random.nextDouble() * width - radius;
             double offsetY = random.nextDouble() * width - radius;
             double offsetZ = random.nextDouble() * width - radius;
-            world.addParticle(ParticleTypes.SPLASH, entity.getX() + offsetX,
+            world.addParticleClient(ParticleTypes.SPLASH, entity.getX() + offsetX,
                     entity.getY() + offsetY, entity.getZ() + offsetZ, 0.0f, 0.0f, 0.0f);
         }
     }

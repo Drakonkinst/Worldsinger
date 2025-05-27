@@ -25,6 +25,8 @@
 package io.github.drakonkinst.worldsinger.cosmere.lumar;
 
 import com.mojang.datafixers.util.Pair;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.drakonkinst.worldsinger.Worldsinger;
 import io.github.drakonkinst.worldsinger.command.LocateSporeSeaCommand;
 import io.github.drakonkinst.worldsinger.network.packet.LunagreeSyncPayload;
@@ -35,38 +37,51 @@ import it.unimi.dsi.fastutil.ints.IntArraySet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.datafixer.DataFixTypes;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtList;
-import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.PersistentState;
+import net.minecraft.world.PersistentStateType;
 import org.jetbrains.annotations.NotNull;
 
 // Manages lunagree placement and rainlines that orbit lunagrees.
 // On Lumar, lunagrees are placed on an approximate hex grid.
 public class LumarLunagreeGenerator extends PersistentState implements LunagreeGenerator {
 
+    public static final String NAME = "lunagrees";
+    private static final Codec<Pair<Long, LunagreeLocation>> LUNAGREE_ENTRY_CODEC = Codec.mapPair(
+            Codec.LONG.fieldOf("cell"), LunagreeLocation.CODEC).codec();
+    public static final Codec<LumarLunagreeGenerator> CODEC = RecordCodecBuilder.create(
+            instance -> instance.group(LUNAGREE_ENTRY_CODEC.listOf()
+                            .optionalFieldOf("lunagrees", Collections.emptyList())
+                            .forGetter(LumarLunagreeGenerator::saveLunagreeMap))
+                    .apply(instance, LumarLunagreeGenerator::create));
+    public static final PersistentStateType<LumarLunagreeGenerator> STATE_TYPE = new PersistentStateType<>(
+            NAME, LumarLunagreeGenerator::new, CODEC, DataFixTypes.LEVEL);
+
+    private static LumarLunagreeGenerator create(List<Pair<Long, LunagreeLocation>> lunagreeList) {
+        Long2ObjectOpenHashMap<LunagreeLocation> map = new Long2ObjectOpenHashMap<>();
+        for (Pair<Long, LunagreeLocation> pair : lunagreeList) {
+            map.put(pair.getFirst().longValue(), pair.getSecond());
+        }
+        return new LumarLunagreeGenerator(map);
+    }
+
     public static final float TRAVEL_DISTANCE = 2000.0f;
     public static final float CELL_SIZE = 1800.0f; // Should always be less than TRAVEL_DISTANCE
     public static final int SEARCH_RADIUS = 1000;  // Should always be less than CELL_SIZE
     public static final int SPORE_FALL_RADIUS = 100;
     public static final int NULL_LUNAGREE_SPORE_ID = 0;
-    public static final String NAME = "lunagrees";
 
     // Offset it by a bit to increase the chance players won't spawn directly in a lunagree
     private static final int CENTER_X = 1600;
     private static final int CENTER_Z = 1600;
-    private static final String KEY_LUNAGREES = "lunagrees";
-    private static final String KEY_CELL = "cell";
-    private static final String KEY_DATA = "data";
 
     public static final int SEARCH_CHECK_INTERVAL = 64;
 
@@ -77,39 +92,6 @@ public class LumarLunagreeGenerator extends PersistentState implements LunagreeG
     private static final int[] DIRECTION_R = { +0, -1, -1, +0, +1, +1 };
     private static final float RAD_3 = MathHelper.sqrt(3);
     private static final float RAD_3_OVER_3 = RAD_3 / 3.0f;
-
-    public static PersistentState.Type<LumarLunagreeGenerator> getPersistentStateType(
-            ServerWorld world) {
-        return new PersistentState.Type<>(() -> new LumarLunagreeGenerator(world),
-                (nbt, registryLookup) -> LumarLunagreeGenerator.fromNbt(world, nbt),
-                DataFixTypes.LEVEL);
-    }
-
-    private static LumarLunagreeGenerator fromNbt(ServerWorld world, NbtCompound nbt) {
-        LumarLunagreeGenerator lunagreeManager = new LumarLunagreeGenerator(world);
-        NbtList lunagreeDataList = nbt.getList(KEY_LUNAGREES, NbtElement.COMPOUND_TYPE);
-        boolean anyInvalid = false;
-        for (NbtElement entryData : lunagreeDataList) {
-            NbtCompound entryCompound = (NbtCompound) entryData;
-            long key = entryCompound.getLong(KEY_CELL);
-            NbtCompound valueData = entryCompound.getCompound(KEY_DATA);
-            LunagreeLocation location = LunagreeLocation.fromNbt(valueData);
-            if (location.rainlineNodes()[0] == null) {
-                Worldsinger.LOGGER.warn(
-                        "Failed to parse rainline nodes for " + LumarLunagreeGenerator.keyToString(
-                                key) + ". Re-generating nodes");
-                Int2[] rainlineNodes = RainlinePath.generateRainlineNodes(location.blockX(),
-                        location.blockZ(), world.getRandom());
-                location.setRainlineNodes(rainlineNodes);
-                anyInvalid = true;
-            }
-            lunagreeManager.lunagreeMap.put(key, location);
-        }
-        if (anyInvalid) {
-            lunagreeManager.markDirty();
-        }
-        return lunagreeManager;
-    }
 
     // Key is hex coordinates packed into a long
     // https://stackoverflow.com/questions/12772939/java-storing-two-ints-in-a-long
@@ -123,12 +105,6 @@ public class LumarLunagreeGenerator extends PersistentState implements LunagreeG
 
     private static int getR(long key) {
         return (int) key;
-    }
-
-    private static String keyToString(long key) {
-        int q = LumarLunagreeGenerator.getQ(key);
-        int r = LumarLunagreeGenerator.getR(key);
-        return LumarLunagreeGenerator.cellToString(q, r);
     }
 
     private static String cellToString(int q, int r) {
@@ -168,27 +144,21 @@ public class LumarLunagreeGenerator extends PersistentState implements LunagreeG
         return LumarLunagreeGenerator.toKey(q, r);
     }
 
-    private final ServerWorld world;
-    private final Long2ObjectMap<LunagreeLocation> lunagreeMap = new Long2ObjectOpenHashMap<>();
+    private ServerWorld world;
+    private final Long2ObjectMap<LunagreeLocation> lunagreeMap;
 
-    public LumarLunagreeGenerator(ServerWorld world) {
-        this.world = world;
+    public LumarLunagreeGenerator() {
+        this.lunagreeMap = new Long2ObjectOpenHashMap<>();
     }
 
+    private LumarLunagreeGenerator(Long2ObjectOpenHashMap<LunagreeLocation> lunagreeMap) {
+        this.lunagreeMap = lunagreeMap;
+    }
+
+    // A bit hacky but it'll do
     @Override
-    public NbtCompound writeNbt(NbtCompound nbt, WrapperLookup registryLookup) {
-        NbtList lunagreeDataList = new NbtList();
-        for (Long2ObjectMap.Entry<LunagreeLocation> entry : lunagreeMap.long2ObjectEntrySet()) {
-            NbtCompound valueData = new NbtCompound();
-            LunagreeLocation value = entry.getValue();
-            value.writeNbt(valueData);
-            NbtCompound entryData = new NbtCompound();
-            entryData.putLong(KEY_CELL, entry.getLongKey());
-            entryData.put(KEY_DATA, valueData);
-            lunagreeDataList.add(entryData);
-        }
-        nbt.put(KEY_LUNAGREES, lunagreeDataList);
-        return nbt;
+    public void setWorld(ServerWorld world) {
+        this.world = world;
     }
 
     @Override
@@ -278,12 +248,20 @@ public class LumarLunagreeGenerator extends PersistentState implements LunagreeG
         }
 
         // Generate the result
-        Int2[] rainlineNodes = RainlinePath.generateRainlineNodes(lunagreeX, lunagreeZ,
+        List<Int2> rainlineNodes = RainlinePath.generateRainlineNodes(lunagreeX, lunagreeZ,
                 world.getRandom());
         LunagreeLocation entry = new LunagreeLocation(lunagreeX, lunagreeZ, sporeId, rainlineNodes);
-        Worldsinger.LOGGER.info("Generated lunagree of spore ID " + sporeId + " for "
-                + LumarLunagreeGenerator.cellToString(q, r) + " with rainline nodes: "
-                + Arrays.toString(entry.rainlineNodes()));
+        Worldsinger.LOGGER.info("Generated lunagree of spore ID {} for {} with rainline nodes: {}",
+                sporeId, LumarLunagreeGenerator.cellToString(q, r),
+                entry.rainlineNodes().toString());
         return entry;
+    }
+
+    private List<Pair<Long, LunagreeLocation>> saveLunagreeMap() {
+        List<Pair<Long, LunagreeLocation>> data = new ArrayList<>(lunagreeMap.size());
+        for (Long2ObjectMap.Entry<LunagreeLocation> entry : lunagreeMap.long2ObjectEntrySet()) {
+            data.add(Pair.of(entry.getLongKey(), entry.getValue()));
+        }
+        return data;
     }
 }

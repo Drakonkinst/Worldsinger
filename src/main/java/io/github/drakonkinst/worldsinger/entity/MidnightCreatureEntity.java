@@ -661,7 +661,8 @@ public class MidnightCreatureEntity extends ShapeshiftingEntity implements
             MidnightSpores.addMidnightParticles(this.getWorld(), this, random, 0.2,
                     NUM_TRANSFORM_PARTICLES);
             this.getWorld()
-                    .playSoundFromEntity(this, ModSoundEvents.ENTITY_MIDNIGHT_CREATURE_TRANSFORM,
+                    .playSoundFromEntityClient(this,
+                            ModSoundEvents.ENTITY_MIDNIGHT_CREATURE_TRANSFORM,
                             this.getSoundCategory(), 2.0f, 1.0f);
         }
 

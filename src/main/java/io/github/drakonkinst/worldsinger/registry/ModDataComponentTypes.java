@@ -42,6 +42,12 @@ public final class ModDataComponentTypes {
             builder -> builder.codec(Codec.BOOL).packetCodec(PacketCodecs.BOOLEAN));
     public static final ComponentType<Integer> SILVER_DURABILITY = register("silver_durability",
             builder -> builder.codec(Codecs.NON_NEGATIVE_INT).packetCodec(PacketCodecs.VAR_INT));
+    public static final ComponentType<Integer> MAX_SILVER_DURABILITY = register(
+            "max_silver_durability",
+            builder -> builder.codec(Codecs.POSITIVE_INT).packetCodec(PacketCodecs.VAR_INT));
+    public static final ComponentType<Float> SILVER_DURABILITY_DISPLAY_FACTOR = register(
+            "silver_durability_display_factor",
+            builder -> builder.codec(Codecs.POSITIVE_FLOAT).packetCodec(PacketCodecs.FLOAT));
     public static final ComponentType<CustomMapDecorationsComponent> CUSTOM_MAP_DECORATIONS = register(
             "custom_map_decorations",
             builder -> builder.codec(CustomMapDecorationsComponent.CODEC));

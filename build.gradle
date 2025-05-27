@@ -1,5 +1,5 @@
 plugins {
-    id 'fabric-loom' version '1.9-SNAPSHOT'
+    id 'fabric-loom' version '1.10-SNAPSHOT'
     id 'maven-publish'
     id "me.fallenbreath.yamlang" version "1.4.0"
 }
@@ -81,7 +81,7 @@ dependencies {
     }
 
     // GeckoLib
-    modImplementation "software.bernie.geckolib:geckolib-fabric-${minecraft_version}:${project.geckolib_version}"
+    modImplementation "software.bernie.geckolib:geckolib-fabric-${project.geckolib_version}"
 }
 
 processResources {

@@ -52,7 +52,6 @@ import net.minecraft.block.Blocks;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.ConsumableComponents;
 import net.minecraft.fluid.FlowableFluid;
-import net.minecraft.item.ArmorItem;
 import net.minecraft.item.AxeItem;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.FlintAndSteelItem;
@@ -64,10 +63,8 @@ import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemGroups;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.item.PickaxeItem;
 import net.minecraft.item.ShovelItem;
 import net.minecraft.item.SpawnEggItem;
-import net.minecraft.item.SwordItem;
 import net.minecraft.item.equipment.EquipmentType;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
@@ -145,17 +142,17 @@ public final class ModItems {
     public static final Item STEEL_INGOT = register("steel_ingot");
     public static final Item STEEL_NUGGET = register("steel_nugget");
     public static final Item STEEL_HELMET = register("steel_helmet",
-            settings -> new ArmorItem(ModArmorMaterials.STEEL, EquipmentType.HELMET, settings));
+            new Item.Settings().armor(ModArmorMaterials.STEEL, EquipmentType.HELMET));
     public static final Item STEEL_CHESTPLATE = register("steel_chestplate",
-            settings -> new ArmorItem(ModArmorMaterials.STEEL, EquipmentType.CHESTPLATE, settings));
+            new Item.Settings().armor(ModArmorMaterials.STEEL, EquipmentType.CHESTPLATE));
     public static final Item STEEL_LEGGINGS = register("steel_leggings",
-            settings -> new ArmorItem(ModArmorMaterials.STEEL, EquipmentType.LEGGINGS, settings));
+            new Item.Settings().armor(ModArmorMaterials.STEEL, EquipmentType.LEGGINGS));
     public static final Item STEEL_BOOTS = register("steel_boots",
-            settings -> new ArmorItem(ModArmorMaterials.STEEL, EquipmentType.BOOTS, settings));
+            new Item.Settings().armor(ModArmorMaterials.STEEL, EquipmentType.BOOTS));
     public static final Item STEEL_SWORD = register("steel_sword",
-            settings -> new SwordItem(ModToolMaterials.STEEL, 3.0f, -2.4f, settings));
+            new Item.Settings().sword(ModToolMaterials.STEEL, 3.0f, -2.4f));
     public static final Item STEEL_PICKAXE = register("steel_pickaxe",
-            settings -> new PickaxeItem(ModToolMaterials.STEEL, 1.0f, -2.8f, settings));
+            new Item.Settings().pickaxe(ModToolMaterials.STEEL, 1.0f, -2.8f));
     public static final Item STEEL_AXE = register("steel_axe",
             settings -> new AxeItem(ModToolMaterials.STEEL, 6.0f, -3.1f, settings));
     public static final Item STEEL_SHOVEL = register("steel_shovel",

@@ -38,6 +38,7 @@ import net.minecraft.block.Waterloggable;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.enums.DoubleBlockHalf;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityCollisionHandler;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -132,7 +133,8 @@ public class TallCrimsonSpinesBlock extends Block implements Waterloggable, Spor
     }
 
     @Override
-    public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
+    public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity,
+            EntityCollisionHandler handler) {
         if (!(world instanceof ServerWorld serverWorld)) {
             return;
         }
@@ -234,7 +236,7 @@ public class TallCrimsonSpinesBlock extends Block implements Waterloggable, Spor
 
     @Override
     public void onLandedUpon(World world, BlockState state, BlockPos pos, Entity entity,
-            float fallDistance) {
+            double fallDistance) {
         if (state.get(Properties.DOUBLE_BLOCK_HALF) == DoubleBlockHalf.UPPER) {
             entity.handleFallDamage(fallDistance + 1.0f, 1.5f,
                     ModDamageTypes.createSource(world, ModDamageTypes.SPIKE_FALL));

@@ -133,6 +133,6 @@ public class PlayerMidnightAetherBondManager implements MidnightAetherBondManage
 
     @Override
     public void syncFromNbt(NbtCompound nbt) {
-        this.bondCount = nbt.getInt(KEY_BOND_COUNT);
+        this.bondCount = nbt.getInt(KEY_BOND_COUNT, 0);
     }
 }

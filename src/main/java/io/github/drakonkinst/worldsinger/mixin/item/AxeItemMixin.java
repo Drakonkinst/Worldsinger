@@ -26,60 +26,54 @@ package io.github.drakonkinst.worldsinger.mixin.item;
 
 import io.github.drakonkinst.worldsinger.api.ModApi;
 import io.github.drakonkinst.worldsinger.cosmere.SilverLined;
-import io.github.drakonkinst.worldsinger.cosmere.SilverLinedUtil;
 import io.github.drakonkinst.worldsinger.entity.SilverVulnerable;
 import io.github.drakonkinst.worldsinger.item.SilverKnifeItem;
 import io.github.drakonkinst.worldsinger.mixin.accessor.LivingEntityAccessor;
-import io.github.drakonkinst.worldsinger.registry.tag.ModItemTags;
 import io.github.drakonkinst.worldsinger.util.EntityUtil;
-import java.util.List;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
+import java.util.Optional;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.TooltipDisplayComponent;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.AxeItem;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.MiningToolItem;
-import net.minecraft.item.ToolMaterial;
-import net.minecraft.item.tooltip.TooltipType;
-import net.minecraft.registry.tag.TagKey;
+import net.minecraft.item.tooltip.BundleTooltipData;
+import net.minecraft.item.tooltip.TooltipData;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.text.Text;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 
 @Mixin(AxeItem.class)
-public abstract class AxeItemMixin extends MiningToolItem {
+public abstract class AxeItemMixin extends Item {
 
-    public AxeItemMixin(ToolMaterial material, TagKey<Block> effectiveBlocks, float attackDamage,
-            float attackSpeed, Settings settings) {
-        super(material, effectiveBlocks, attackDamage, attackSpeed, settings);
+    public AxeItemMixin(Settings settings) {
+        super(settings);
     }
 
     @Override
     public boolean isItemBarVisible(ItemStack stack) {
-        return super.isItemBarVisible(stack) || SilverLinedUtil.isSilverLined(stack);
+        return super.isItemBarVisible(stack) || SilverLined.isSilverLined(stack);
     }
 
     @Override
     public int getItemBarColor(ItemStack stack) {
-        if (SilverLinedUtil.isSilverLined(stack)) {
-            return SilverLinedUtil.SILVER_METER_COLOR;
+        if (SilverLined.isSilverLined(stack)) {
+            return SilverLined.SILVER_METER_COLOR;
         }
         return super.getItemBarColor(stack);
     }
 
     @Override
-    public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip,
-            TooltipType type) {
-        super.appendTooltip(stack, context, tooltip, type);
-        if (!stack.isIn(ModItemTags.EXCLUDE_SILVER_LINED)) {
-            SilverLinedUtil.appendSilverDurabilityTooltip(stack, context, tooltip, type, 1.0f);
-        }
+    public Optional<TooltipData> getTooltipData(ItemStack stack) {
+        TooltipDisplayComponent tooltipDisplayComponent = stack.getOrDefault(
+                DataComponentTypes.TOOLTIP_DISPLAY, TooltipDisplayComponent.DEFAULT);
+        return !tooltipDisplayComponent.shouldDisplay(DataComponentTypes.BUNDLE_CONTENTS)
+                ? Optional.empty()
+                : Optional.ofNullable(stack.get(DataComponentTypes.BUNDLE_CONTENTS))
+                        .map(BundleTooltipData::new);
     }
 
     @Override
-    public boolean postHit(ItemStack stack, LivingEntity target, LivingEntity attacker) {
+    public void postHit(ItemStack stack, LivingEntity target, LivingEntity attacker) {
         SilverLined silverData = ModApi.SILVER_LINED_ITEM.find(stack, null);
         if (silverData != null && silverData.getSilverDurability() > 0) {
             boolean isNotCreativePlayer = EntityUtil.isNotCreativePlayer(attacker);
@@ -97,23 +91,24 @@ public abstract class AxeItemMixin extends MiningToolItem {
             }
             if (isNotCreativePlayer) {
                 if (!silverData.decrementDurability()) {
-                    SilverLinedUtil.onSilverLinedItemBreak(attacker.getWorld(), attacker);
+                    SilverLined.onSilverLinedItemBreak(attacker.getWorld(), attacker);
                 }
             }
         }
-        return super.postHit(stack, target, attacker);
+        super.postHit(stack, target, attacker);
     }
 
-    @Override
-    public boolean postMine(ItemStack stack, World world, BlockState state, BlockPos pos,
-            LivingEntity miner) {
-        SilverLined silverData = ModApi.SILVER_LINED_ITEM.find(stack, null);
-        if (silverData != null && silverData.getSilverDurability() > 0
-                && EntityUtil.isNotCreativePlayer(miner)) {
-            if (!silverData.decrementDurability()) {
-                SilverLinedUtil.onSilverLinedItemBreak(world, miner);
-            }
-        }
-        return super.postMine(stack, world, state, pos, miner);
-    }
+    // FIXME
+    // @Override
+    // public boolean postMine(ItemStack stack, World world, BlockState state, BlockPos pos,
+    //         LivingEntity miner) {
+    //     SilverLined silverData = ModApi.SILVER_LINED_ITEM.find(stack, null);
+    //     if (silverData != null && silverData.getSilverDurability() > 0
+    //             && EntityUtil.isNotCreativePlayer(miner)) {
+    //         if (!silverData.decrementDurability()) {
+    //             SilverLined.onSilverLinedItemBreak(world, miner);
+    //         }
+    //     }
+    //     return super.postMine(stack, world, state, pos, miner);
+    // }
 }

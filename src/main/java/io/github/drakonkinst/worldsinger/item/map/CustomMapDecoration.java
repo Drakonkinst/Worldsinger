@@ -49,7 +49,7 @@ public record CustomMapDecoration(CustomMapDecoration.Type type, byte x, byte z,
     public enum Type implements StringIdentifiable {
         RAINLINE(631, "rainline");
 
-        public static final IntFunction<CustomMapDecoration.Type> INDEX_TO_TYPE = ValueListsInvoker.createIdToValueFunction(
+        public static final IntFunction<CustomMapDecoration.Type> INDEX_TO_TYPE = ValueListsInvoker.createIndexToValueFunction(
                 CustomMapDecoration.Type::getIndex, Type.values());
         public static final Codec<CustomMapDecoration.Type> CODEC = StringIdentifiable.createCodec(
                 CustomMapDecoration.Type::values);

@@ -25,20 +25,17 @@ package io.github.drakonkinst.worldsinger.cosmere.lumar;
 
 import io.github.drakonkinst.datatables.DataTable;
 import io.github.drakonkinst.datatables.DataTableRegistry;
-import io.github.drakonkinst.worldsinger.api.ModApi;
 import io.github.drakonkinst.worldsinger.api.ModAttachmentTypes;
 import io.github.drakonkinst.worldsinger.api.sync.AttachmentSync;
 import io.github.drakonkinst.worldsinger.block.LivingSporeGrowthBlock;
 import io.github.drakonkinst.worldsinger.block.SporeKillable;
 import io.github.drakonkinst.worldsinger.cosmere.SilverLined;
-import io.github.drakonkinst.worldsinger.cosmere.SilverLinedUtil;
 import io.github.drakonkinst.worldsinger.entity.SilverLinedEntityData;
 import io.github.drakonkinst.worldsinger.fluid.Fluidlogged;
 import io.github.drakonkinst.worldsinger.fluid.ModFluidTags;
 import io.github.drakonkinst.worldsinger.fluid.ModFluids;
 import io.github.drakonkinst.worldsinger.registry.ModDataTables;
 import io.github.drakonkinst.worldsinger.registry.tag.ModBlockTags;
-import io.github.drakonkinst.worldsinger.registry.tag.ModItemTags;
 import io.github.drakonkinst.worldsinger.util.BlockPosUtil;
 import io.github.drakonkinst.worldsinger.util.ModProperties;
 import java.util.List;
@@ -68,29 +65,22 @@ public final class SporeKillingUtil {
             BlockState state, BlockPos pos, PlayerEntity player, Hand hand) {
         // Always mine with mainhand, so check if is the right item
         ItemStack stack = player.getStackInHand(hand);
-        if (stack.isIn(ModItemTags.KILLS_SPORE_GROWTHS)) {
-            // Damage the tool
-            SilverLined silverLinedData = ModApi.SILVER_LINED_ITEM.find(stack, null);
-            if (silverLinedData != null) {
-                if (silverLinedData.getSilverDurability() <= 0) {
-                    return false;
-                }
-                if (!player.isCreative()) {
-                    // It is silver-lined, so decrement the silver durability
-                    if (!silverLinedData.decrementDurability()) {
-                        SilverLinedUtil.onSilverLinedItemBreak(world, player);
-                    }
-                }
-            } else if (!player.isCreative()) {
-                // Assume it is a tool and damage its durability
-                stack.damage(1, player,
-                        hand == Hand.MAIN_HAND ? EquipmentSlot.MAINHAND : EquipmentSlot.OFFHAND);
-            }
-            // Kill the block
-            world.setBlockState(pos, SporeKillingUtil.convertToDeadVariant(sporeGrowth, state));
-            return true;
+        int silverDurability = SilverLined.getSilverDurability(stack);
+        if (silverDurability <= 0) {
+            return false;
         }
-        return false;
+        if (!player.isCreative()) {
+            // It is silver-lined, so decrement the silver durability
+            if (!SilverLined.damageSilverDurability(stack, 1)) {
+                SilverLined.onSilverLinedItemBreak(world, player);
+            }
+            // Assume it is a tool and damage its durability
+            stack.damage(1, player,
+                    hand == Hand.MAIN_HAND ? EquipmentSlot.MAINHAND : EquipmentSlot.OFFHAND);
+        }
+        // Kill the block
+        world.setBlockState(pos, SporeKillingUtil.convertToDeadVariant(sporeGrowth, state));
+        return true;
     }
 
     public static int killNearbySpores(World world, BlockPos pos, int radius,

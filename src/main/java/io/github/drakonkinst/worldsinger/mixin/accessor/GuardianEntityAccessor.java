@@ -37,8 +37,8 @@ public interface GuardianEntityAccessor {
     @Accessor("spikesExtension")
     void worldsinger$setSpikesExtension(float value);
 
-    @Accessor("prevSpikesExtension")
-    void worldsinger$setPrevSpikesExtension(float value);
+    @Accessor("lastSpikesExtension")
+    void worldsinger$setLastSpikesExtension(float value);
 
     // The method provided in the GuardianEntity class interpolates this value
     @Accessor("tailAngle")
@@ -47,6 +47,6 @@ public interface GuardianEntityAccessor {
     @Accessor("tailAngle")
     void worldsinger$setTailAngle(float value);
 
-    @Accessor("prevTailAngle")
-    void worldsinger$setPrevTailAngle(float value);
+    @Accessor("lastTailAngle")
+    void worldsinger$setLastTailAngle(float value);
 }

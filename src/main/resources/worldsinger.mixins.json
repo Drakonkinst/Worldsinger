@@ -49,7 +49,6 @@
     "entity.ChickenEntityMixin",
     "entity.EntityMixin",
     "entity.FallingBlockEntityMixin",
-    "entity.FlyingEntityCustomFluidMovementMixin",
     "entity.ItemEntityCustomFluidMovementMixin",
     "entity.LivingEntityCustomFluidMovementMixin",
     "entity.LivingEntityDeathParticlesMixin",

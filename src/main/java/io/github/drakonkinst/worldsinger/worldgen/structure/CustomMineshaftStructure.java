@@ -113,7 +113,7 @@ public class CustomMineshaftStructure extends Structure {
 
         static {
             CODEC = StringIdentifiable.createCodec(Type::values);
-            BY_ID = ValueLists.createIdToValueFunction((ToIntFunction<Type>) Enum::ordinal,
+            BY_ID = ValueLists.createIndexToValueFunction((ToIntFunction<Type>) Enum::ordinal,
                     Type.values(), ValueLists.OutOfBoundsHandling.ZERO);
         }
 

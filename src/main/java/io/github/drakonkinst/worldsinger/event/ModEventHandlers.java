@@ -27,24 +27,31 @@ import io.github.drakonkinst.worldsinger.api.ModAttachmentTypes;
 import io.github.drakonkinst.worldsinger.api.sync.AttachmentSync;
 import io.github.drakonkinst.worldsinger.block.LivingSporeGrowthBlock;
 import io.github.drakonkinst.worldsinger.cosmere.PossessionManager;
+import io.github.drakonkinst.worldsinger.cosmere.SilverLined;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarManagerAccess;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.MidnightAetherBondManager;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.SporeKillingUtil;
 import io.github.drakonkinst.worldsinger.effect.ModStatusEffects;
 import io.github.drakonkinst.worldsinger.entity.CameraPossessable;
 import io.github.drakonkinst.worldsinger.item.ModItems;
+import io.github.drakonkinst.worldsinger.registry.ModDataComponentTypes;
 import io.github.drakonkinst.worldsinger.registry.tag.ModItemTags;
+import java.util.List;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.player.AttackBlockCallback;
 import net.fabricmc.fabric.api.event.player.PlayerPickItemEvents;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
+import net.fabricmc.fabric.api.item.v1.DefaultItemComponentEvents;
 import net.fabricmc.fabric.api.registry.FuelRegistryEvents;
 import net.minecraft.block.BlockState;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
 
@@ -173,6 +180,34 @@ public final class ModEventHandlers {
             }
             // Use default behavior
             return null;
+        });
+
+        // Modify default item components
+        DefaultItemComponentEvents.MODIFY.register(context -> {
+            // TODO: I'd like to make this properly data-driven one day, but tags are not supported here
+            List<Item> boats = List.of(Items.ACACIA_BOAT, Items.BIRCH_BOAT, Items.CHERRY_BOAT,
+                    Items.DARK_OAK_BOAT, Items.JUNGLE_BOAT, Items.MANGROVE_BOAT, Items.OAK_BOAT,
+                    Items.SPRUCE_BOAT, Items.BAMBOO_RAFT, Items.ACACIA_CHEST_BOAT,
+                    Items.BIRCH_CHEST_BOAT, Items.CHERRY_CHEST_BOAT, Items.DARK_OAK_CHEST_BOAT,
+                    Items.JUNGLE_CHEST_BOAT, Items.MANGROVE_CHEST_BOAT, Items.OAK_CHEST_BOAT,
+                    Items.SPRUCE_CHEST_BOAT, Items.BAMBOO_CHEST_RAFT);
+            List<Item> axes = List.of(Items.WOODEN_AXE, Items.GOLDEN_AXE, Items.STONE_AXE,
+                    Items.IRON_AXE, ModItems.STEEL_AXE, Items.DIAMOND_AXE, Items.NETHERITE_AXE);
+
+            // Add silver-lined to boats
+            context.modify(boats, (builder, item) -> {
+                builder.add(ModDataComponentTypes.MAX_SILVER_DURABILITY,
+                        SilverLined.BOAT_MAX_DURABILITY);
+                builder.add(ModDataComponentTypes.SILVER_DURABILITY_DISPLAY_FACTOR,
+                        SilverLined.BOAT_VISUAL_SCALE_FACTOR);
+            });
+
+            // Add silver-lined to axes
+            context.modify(axes, ((builder, item) -> {
+                int maxDurability = builder.getOrDefault(DataComponentTypes.MAX_DAMAGE, 1);
+                builder.add(ModDataComponentTypes.MAX_SILVER_DURABILITY, maxDurability);
+            }));
+
         });
     }
 

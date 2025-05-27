@@ -33,6 +33,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.block.Waterloggable;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityCollisionHandler;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
@@ -69,7 +70,8 @@ public class CrimsonSpinesBlock extends Block implements Waterloggable, SporeGro
     }
 
     @Override
-    public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
+    public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity,
+            EntityCollisionHandler handler) {
         // Spikes do not destroy items
         if (entity instanceof ItemEntity) {
             return;
@@ -101,7 +103,7 @@ public class CrimsonSpinesBlock extends Block implements Waterloggable, SporeGro
 
     @Override
     public void onLandedUpon(World world, BlockState state, BlockPos pos, Entity entity,
-            float fallDistance) {
+            double fallDistance) {
         entity.handleFallDamage(fallDistance, 1.5f,
                 ModDamageTypes.createSource(world, ModDamageTypes.SPIKE_FALL));
     }

@@ -148,7 +148,7 @@ public abstract class AetherSporeFluid extends FlowableFluid implements SporeEmi
                         spawnZ, 1.0f, true, random);
             }
             if (random.nextInt(200) == 0) {
-                world.playSound(pos.getX(), pos.getY(), pos.getZ(),
+                world.playSoundClient(pos.getX(), pos.getY(), pos.getZ(),
                         ModSoundEvents.BLOCK_SPORE_SEA_AMBIENT, SoundCategory.BLOCKS,
                         0.2f + random.nextFloat() * 0.2f, 0.9f + random.nextFloat() * 0.15f, false);
             }

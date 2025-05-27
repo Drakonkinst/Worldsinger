@@ -32,6 +32,7 @@ import net.minecraft.block.LeveledCauldronBlock;
 import net.minecraft.block.cauldron.CauldronBehavior;
 import net.minecraft.block.cauldron.CauldronBehavior.CauldronBehaviorMap;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityCollisionHandler;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -59,7 +60,8 @@ public class SporeCauldronBlock extends LeveledCauldronBlock implements SporeEmi
     }
 
     @Override
-    public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
+    public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity,
+            EntityCollisionHandler handler) {
         if (!world.isClient() && this.isEntityTouchingFluid(state, pos, entity)) {
             if (entity.isOnFire()) {
                 entity.extinguish();
@@ -69,7 +71,7 @@ public class SporeCauldronBlock extends LeveledCauldronBlock implements SporeEmi
 
     @Override
     public void onLandedUpon(World world, BlockState state, BlockPos pos, Entity entity,
-            float fallDistance) {
+            double fallDistance) {
         super.onLandedUpon(world, state, pos, entity, fallDistance);
         if (!world.isClient() && this.isEntityTouchingFluid(state, pos, entity)) {
             if (world instanceof ServerWorld serverWorld) {

@@ -191,6 +191,31 @@ public abstract class LivingEntityCustomFluidMovementMixin extends Entity {
         }
     }
 
+    @Inject(method = "travelFlying", at = @At("HEAD"), cancellable = true)
+    private void injectCustomFluidPhysicsFlying(Vec3d movementInput, CallbackInfo ci) {
+        if (!this.isLogicalSideForUpdatingMovement()) {
+            return;
+        }
+
+        // Won't get too fancy here since most of these things will be dead anyways.
+        if (EntityUtil.isTouchingSporeSea(this)) {
+            this.updateVelocity(0.02f, movementInput);
+            this.move(MovementType.SELF, this.getVelocity());
+            this.setVelocity(this.getVelocity()
+                    .multiply(AetherSporeFluid.HORIZONTAL_DRAG_MULTIPLIER,
+                            AetherSporeFluid.VERTICAL_DRAG_MULTIPLIER,
+                            AetherSporeFluid.HORIZONTAL_DRAG_MULTIPLIER));
+            this.updateLimbs(false);
+            ci.cancel();
+        } else if (EntityUtil.isTouchingFluid(this, ModFluidTags.SUNLIGHT)) {
+            this.updateVelocity(0.02f, movementInput);
+            this.move(MovementType.SELF, this.getVelocity());
+            this.setVelocity(this.getVelocity().multiply(SunlightFluid.HORIZONTAL_DRAG_MULTIPLIER));
+            this.updateLimbs(false);
+            ci.cancel();
+        }
+    }
+
     @Unique
     private void applyFluidPhysics(Vec3d movementInput, float horizontalMovementMultiplier,
             float verticalMovementMultiplier, double gravity, boolean isFalling) {

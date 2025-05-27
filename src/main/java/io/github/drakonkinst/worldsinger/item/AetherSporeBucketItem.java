@@ -32,6 +32,7 @@ import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.FluidFillable;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FlowableFluid;
 import net.minecraft.fluid.FluidState;
@@ -85,7 +86,7 @@ public class AetherSporeBucketItem extends BlockItem implements FluidModificatio
         BlockPos blockPos = blockHitResult.getBlockPos();
         Direction direction = blockHitResult.getSide();
         BlockPos adjacentBlock = blockPos.offset(direction);
-        if (!world.canPlayerModifyAt(user, blockPos) || !user.canPlaceOn(adjacentBlock, direction,
+        if (!world.canEntityModifyAt(user, blockPos) || !user.canPlaceOn(adjacentBlock, direction,
                 handStack)) {
             return ActionResult.FAIL;
         }
@@ -149,7 +150,7 @@ public class AetherSporeBucketItem extends BlockItem implements FluidModificatio
     }
 
     @Override
-    public boolean placeFluid(@Nullable PlayerEntity player, World world, BlockPos pos,
+    public boolean placeFluid(@Nullable LivingEntity entity, World world, BlockPos pos,
             @Nullable BlockHitResult hitResult) {
         if (!world.isInBuildLimit(pos)) {
             return false;
@@ -162,7 +163,7 @@ public class AetherSporeBucketItem extends BlockItem implements FluidModificatio
             if (!world.isClient()) {
                 world.setBlockState(pos, blockToPlace.getDefaultState(), Block.NOTIFY_ALL);
             }
-            playEmptyingSound(world, player, pos);
+            playEmptyingSound(world, entity, pos);
             return true;
         } else if (fluidized && currentState.getBlock() instanceof FluidFillable fluidFillable) {
             FluidState state = fluid.getStill(false);
@@ -171,14 +172,14 @@ public class AetherSporeBucketItem extends BlockItem implements FluidModificatio
                 state = ModFluids.DEAD_SPORES.getStill(false);
             }
             fluidFillable.tryFillWithFluid(world, pos, currentState, state);
-            playEmptyingSound(world, player, pos);
+            playEmptyingSound(world, entity, pos);
             return true;
         }
         return false;
     }
 
-    private void playEmptyingSound(World world, PlayerEntity player, BlockPos pos) {
-        world.playSound(player, pos, this.placeSound, SoundCategory.BLOCKS, 1.0f, 1.0f);
-        world.emitGameEvent(player, GameEvent.FLUID_PLACE, pos);
+    private void playEmptyingSound(World world, LivingEntity entity, BlockPos pos) {
+        world.playSound(entity, pos, this.placeSound, SoundCategory.BLOCKS, 1.0f, 1.0f);
+        world.emitGameEvent(entity, GameEvent.FLUID_PLACE, pos);
     }
 }
