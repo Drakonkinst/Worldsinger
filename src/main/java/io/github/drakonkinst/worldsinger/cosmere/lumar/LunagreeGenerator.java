@@ -35,8 +35,6 @@ public interface LunagreeGenerator {
 
     LunagreeGenerator NULL = new NullLunagreeGenerator();
 
-    void setWorld(ServerWorld world);
-    
     // Lunagrees cover a wide area identified by a key. The rule used to generate the key
     // should be deterministic, but is otherwise hidden by implementation
     long getKeyForPos(int blockX, int blockZ);
@@ -46,26 +44,26 @@ public interface LunagreeGenerator {
 
     // Each lunagree contains a LunagreeLocation entry for a key, or null if it cannot be
     // created or does not exist.
-    LunagreeLocation getLunagreeForKey(long key, boolean shouldCreate);
+    LunagreeLocation getLunagreeForKey(ServerWorld world, long key, boolean shouldCreate);
 
     // Called when a player's key changes
     void updateLunagreeDataForPlayer(ServerPlayerEntity player);
 
     // Helper method to grab the list of lunagrees at and/or around a key.
-    default List<LunagreeLocation> getNeighboringLunagrees(long centerKey, boolean includeCenter,
-            boolean shouldCreate) {
+    default List<LunagreeLocation> getNeighboringLunagrees(ServerWorld world, long centerKey,
+            boolean includeCenter, boolean shouldCreate) {
         long[] neighborKeys = getNeighborKeys(centerKey);
         List<LunagreeLocation> results = new ArrayList<>(
                 neighborKeys.length + (includeCenter ? 1 : 0));
         if (includeCenter) {
-            LunagreeLocation centerLocation = getLunagreeForKey(centerKey, shouldCreate);
+            LunagreeLocation centerLocation = getLunagreeForKey(world, centerKey, shouldCreate);
             if (centerLocation != null) {
                 results.add(centerLocation);
             }
         }
         for (int i = 0; i < neighborKeys.length; ++i) {
             long neighborKey = neighborKeys[i];
-            LunagreeLocation neighborLocation = getLunagreeForKey(neighborKey, shouldCreate);
+            LunagreeLocation neighborLocation = getLunagreeForKey(world, neighborKey, shouldCreate);
             if (neighborLocation != null) {
                 results.add(neighborLocation);
             }
@@ -74,16 +72,17 @@ public interface LunagreeGenerator {
     }
 
     // Helper method to get all lunagrees near a position without generating any.
-    default List<LunagreeLocation> getLunagreesNearPos(int blockX, int blockZ) {
+    default List<LunagreeLocation> getLunagreesNearPos(ServerWorld world, int blockX, int blockZ) {
         long key = getKeyForPos(blockX, blockZ);
-        return getNeighboringLunagrees(key, true, false);
+        return getNeighboringLunagrees(world, key, true, false);
     }
 
     // Helper method to get the nearest lunagree, or null if it does not exist.
     // This will typically be the same lunagree as the current position, but not necessarily.
     @Nullable
-    default LunagreeLocation getNearestLunagree(int blockX, int blockZ, int maxDistance) {
-        List<LunagreeLocation> candidates = getLunagreesNearPos(blockX, blockZ);
+    default LunagreeLocation getNearestLunagree(ServerWorld world, int blockX, int blockZ,
+            int maxDistance) {
+        List<LunagreeLocation> candidates = getLunagreesNearPos(world, blockX, blockZ);
         LunagreeLocation nearestLocation = null;
         int minDistSq = Integer.MAX_VALUE;
         for (LunagreeLocation location : candidates) {

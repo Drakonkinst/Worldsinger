@@ -30,18 +30,11 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.drakonkinst.worldsinger.util.math.Int2;
 import java.util.Collections;
 import java.util.List;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtIntArray;
-import net.minecraft.nbt.NbtList;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.dynamic.Codecs;
 
 public record LunagreeLocation(int blockX, int blockZ, int sporeId, List<Int2> rainlineNodes) {
 
-    private static final String KEY_X = "blockX";
-    private static final String KEY_Z = "blockZ";
-    private static final String KEY_ID = "id";
-    private static final String KEY_RAINLINE = "rainlinePath";
     public static final MapCodec<LunagreeLocation> CODEC = RecordCodecBuilder.mapCodec(
             instance -> instance.group(
                             Codec.INT.fieldOf("block_x").forGetter(LunagreeLocation::blockX),
@@ -51,6 +44,7 @@ public record LunagreeLocation(int blockX, int blockZ, int sporeId, List<Int2> r
                                     .optionalFieldOf("rainline_path", Collections.emptyList())
                                     .forGetter(LunagreeLocation::rainlineNodes))
                     .apply(instance, LunagreeLocation::new));
+    // TODO: Packet codec which only saves lunagree position, not path data?
 
     public static LunagreeLocation fromPacket(PacketByteBuf buf) {
         int blockX = buf.readVarInt();
@@ -73,39 +67,6 @@ public record LunagreeLocation(int blockX, int blockZ, int sporeId, List<Int2> r
             Int2 rainlineNode = location.rainlineNodes[i];
             buf.writeVarInt(rainlineNode.x());
             buf.writeVarInt(rainlineNode.y());
-        }
-    }
-
-    public static LunagreeLocation fromNbt(NbtCompound nbt) {
-        int sporeId = nbt.getInt(KEY_ID, -1);
-        int x = nbt.getInt(KEY_X, -1);
-        int z = nbt.getInt(KEY_Z, -1);
-        NbtList rainlineNodeData = nbt.getList(KEY_RAINLINE).orElse(new NbtList());
-        Int2[] rainlineNodes = new Int2[RainlinePath.RAINLINE_NODE_COUNT];
-        if (rainlineNodeData.size() == RainlinePath.RAINLINE_NODE_COUNT) {
-            for (int i = 0; i < RainlinePath.RAINLINE_NODE_COUNT; ++i) {
-                int[] coords = rainlineNodeData.getIntArray(i).orElse(new int[] { -1, -1 });
-                rainlineNodes[i] = new Int2(coords[0], coords[1]);
-            }
-        }
-        return new LunagreeLocation(x, z, sporeId, rainlineNodes);
-    }
-
-    public void writeNbt(NbtCompound nbt) {
-        nbt.putInt(KEY_ID, sporeId);
-        nbt.putInt(KEY_X, blockX);
-        nbt.putInt(KEY_Z, blockZ);
-        NbtList rainlineNodeData = new NbtList();
-        for (int i = 0; i < RainlinePath.RAINLINE_NODE_COUNT; ++i) {
-            rainlineNodeData.add(
-                    new NbtIntArray(new int[] { rainlineNodes[i].x(), rainlineNodes[i].y() }));
-        }
-        nbt.put(KEY_RAINLINE, rainlineNodeData);
-    }
-
-    public void setRainlineNodes(Int2[] rainlineNodes) {
-        for (int i = 0; i < RainlinePath.RAINLINE_NODE_COUNT; ++i) {
-            this.rainlineNodes[i] = rainlineNodes[i];
         }
     }
 
