@@ -30,9 +30,6 @@ import net.minecraft.server.world.ServerWorld;
 public class NullLunagreeGenerator implements LunagreeGenerator {
 
     @Override
-    public void setWorld(ServerWorld world) {}
-
-    @Override
     public long getKeyForPos(int blockX, int blockZ) {
         return -1;
     }
@@ -43,7 +40,7 @@ public class NullLunagreeGenerator implements LunagreeGenerator {
     }
 
     @Override
-    public LunagreeLocation getLunagreeForKey(long key, boolean shouldCreate) {
+    public LunagreeLocation getLunagreeForKey(ServerWorld world, long key, boolean shouldCreate) {
         return null;
     }
 

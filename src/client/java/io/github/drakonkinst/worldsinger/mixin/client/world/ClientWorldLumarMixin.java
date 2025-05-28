@@ -33,7 +33,7 @@ import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarManager;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarSeetheManager;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LunagreeGenerator;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LunagreeLocation;
-import io.github.drakonkinst.worldsinger.cosmere.lumar.RainlineManager;
+import io.github.drakonkinst.worldsinger.cosmere.lumar.RainlineSpawner;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.SporeParticleManager;
 import io.github.drakonkinst.worldsinger.mixin.world.WorldLumarMixin;
 import net.minecraft.block.Block;
@@ -74,7 +74,7 @@ public abstract class ClientWorldLumarMixin extends WorldLumarMixin {
             boolean debugWorld, long seed, int seaLevel, CallbackInfo ci) {
         if (CosmerePlanet.getPlanetFromKey(registryRef).equals(CosmerePlanet.LUMAR)) {
             lumarManager = new LumarManager(new LumarSeetheManager(), LunagreeGenerator.NULL,
-                    RainlineManager.NULL);
+                    RainlineSpawner.NULL);
         }
     }
 

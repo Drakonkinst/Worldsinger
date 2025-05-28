@@ -282,8 +282,8 @@ public final class ShapeshiftingManager {
     // Why is getting the squid to work so much work? I have no idea
     // Simulates squid movement for the client
     private static void tickSquidMorphClient(SquidEntity squidEntity, Random random) {
-        squidEntity.prevTiltAngle = squidEntity.tiltAngle;
-        squidEntity.prevTentacleAngle = squidEntity.tentacleAngle;
+        squidEntity.lastTiltAngle = squidEntity.tiltAngle;
+        squidEntity.lastTentacleAngle = squidEntity.tentacleAngle;
         squidEntity.thrustTimer += 1.0f / (random.nextFloat() + 1.0f) * SQUID_THRUST_SPEED;
         if (squidEntity.thrustTimer > 2.0f * MathHelper.PI) {
             squidEntity.thrustTimer = 0.0f;
@@ -298,7 +298,7 @@ public final class ShapeshiftingManager {
         // Always extend spikes
         GuardianEntityAccessor accessor = (GuardianEntityAccessor) guardianEntity;
         float spikesExtension = accessor.worldsinger$getSpikesExtension();
-        accessor.worldsinger$setPrevSpikesExtension(spikesExtension);
+        accessor.worldsinger$setLastSpikesExtension(spikesExtension);
         accessor.worldsinger$setSpikesExtension(
                 spikesExtension + (1.0f - spikesExtension) * GUARDIAN_SPIKE_SPEED);
 

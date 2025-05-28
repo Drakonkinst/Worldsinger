@@ -30,7 +30,7 @@ import net.minecraft.item.map.MapState;
 import net.minecraft.server.world.ServerWorld;
 import org.jetbrains.annotations.Nullable;
 
-public class NullRainlineManager implements RainlineManager {
+public class NullRainlineSpawner implements RainlineSpawner {
 
     @Override
     public void serverTick(ServerWorld world) {

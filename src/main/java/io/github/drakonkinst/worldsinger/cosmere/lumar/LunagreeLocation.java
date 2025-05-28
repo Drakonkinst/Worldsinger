@@ -25,17 +25,18 @@
 package io.github.drakonkinst.worldsinger.cosmere.lumar;
 
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.drakonkinst.worldsinger.util.math.Int2;
 import java.util.Collections;
 import java.util.List;
-import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.RegistryByteBuf;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.util.dynamic.Codecs;
 
 public record LunagreeLocation(int blockX, int blockZ, int sporeId, List<Int2> rainlineNodes) {
 
-    public static final MapCodec<LunagreeLocation> CODEC = RecordCodecBuilder.mapCodec(
+    public static final Codec<LunagreeLocation> CODEC = RecordCodecBuilder.create(
             instance -> instance.group(
                             Codec.INT.fieldOf("block_x").forGetter(LunagreeLocation::blockX),
                             Codec.INT.fieldOf("block_z").forGetter(LunagreeLocation::blockZ),
@@ -44,31 +45,12 @@ public record LunagreeLocation(int blockX, int blockZ, int sporeId, List<Int2> r
                                     .optionalFieldOf("rainline_path", Collections.emptyList())
                                     .forGetter(LunagreeLocation::rainlineNodes))
                     .apply(instance, LunagreeLocation::new));
-    // TODO: Packet codec which only saves lunagree position, not path data?
-
-    public static LunagreeLocation fromPacket(PacketByteBuf buf) {
-        int blockX = buf.readVarInt();
-        int blockZ = buf.readVarInt();
-        byte sporeId = buf.readByte();
-        Int2[] rainlineNodes = new Int2[RainlinePath.RAINLINE_NODE_COUNT];
-        for (int i = 0; i < RainlinePath.RAINLINE_NODE_COUNT; ++i) {
-            int x = buf.readVarInt();
-            int y = buf.readVarInt();
-            rainlineNodes[i] = new Int2(x, y);
-        }
-        return new LunagreeLocation(blockX, blockZ, sporeId, rainlineNodes);
-    }
-
-    public static void writePacket(LunagreeLocation location, PacketByteBuf buf) {
-        buf.writeVarInt(location.blockX);
-        buf.writeVarInt(location.blockZ);
-        buf.writeByte(location.sporeId);
-        for (int i = 0; i < RainlinePath.RAINLINE_NODE_COUNT; ++i) {
-            Int2 rainlineNode = location.rainlineNodes[i];
-            buf.writeVarInt(rainlineNode.x());
-            buf.writeVarInt(rainlineNode.y());
-        }
-    }
+    // Never send the rainline node data to the client
+    public static final PacketCodec<RegistryByteBuf, LunagreeLocation> PACKET_CODEC = PacketCodec.tuple(
+            PacketCodecs.VAR_INT, LunagreeLocation::blockX, PacketCodecs.VAR_INT,
+            LunagreeLocation::blockZ, PacketCodecs.VAR_INT, LunagreeLocation::sporeId,
+            PacketCodec.unit(Collections.emptyList()), LunagreeLocation::rainlineNodes,
+            LunagreeLocation::new);
 
     public double distSqTo(double x, double z) {
         final double deltaX = blockX - x;

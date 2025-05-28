@@ -28,7 +28,7 @@ import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.llamalad7.mixinextras.sugar.Local;
 import io.github.drakonkinst.worldsinger.cosmere.CosmerePlanet;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarManagerAccess;
-import io.github.drakonkinst.worldsinger.cosmere.lumar.RainlineManager;
+import io.github.drakonkinst.worldsinger.cosmere.lumar.RainlineSpawner;
 import io.github.drakonkinst.worldsinger.item.map.CustomMapDecorationsComponent;
 import io.github.drakonkinst.worldsinger.registry.ModDataComponentTypes;
 import java.util.HashMap;
@@ -62,9 +62,9 @@ public abstract class FilledMapItemMixin extends Item {
                 CustomMapDecorationsComponent.DEFAULT);
         Map<String, CustomMapDecorationsComponent.Decoration> updatedDecorations = new HashMap<>(
                 customMapDecorations.decorations());
-        RainlineManager rainlineManager = ((LumarManagerAccess) world).worldsinger$getLumarManager()
+        RainlineSpawner rainlineSpawner = ((LumarManagerAccess) world).worldsinger$getLumarManager()
                 .getRainlineManager();
-        rainlineManager.applyMapDecorations(serverWorld, updatedDecorations,
+        rainlineSpawner.applyMapDecorations(serverWorld, updatedDecorations,
                 world.getMapState(mapIdComponent));
 
         if (updatedDecorations.size() > customMapDecorations.decorations().size()) {

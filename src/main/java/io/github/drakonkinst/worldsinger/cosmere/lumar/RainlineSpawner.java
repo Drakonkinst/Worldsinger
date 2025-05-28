@@ -39,9 +39,9 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
-public interface RainlineManager {
+public interface RainlineSpawner {
 
-    RainlineManager NULL = new NullRainlineManager();
+    RainlineSpawner NULL = new NullRainlineSpawner();
     int RAINLINE_RADIUS = 8;
     int RAINLINE_EFFECT_RADIUS = 4;
     int NUM_RAINLINES_PER_LUNAGREE = 8;

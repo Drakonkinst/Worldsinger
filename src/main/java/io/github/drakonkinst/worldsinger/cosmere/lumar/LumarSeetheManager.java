@@ -24,10 +24,10 @@
 
 package io.github.drakonkinst.worldsinger.cosmere.lumar;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.drakonkinst.worldsinger.util.ModConstants;
 import net.minecraft.datafixer.DataFixTypes;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.util.math.intprovider.BiasedToBottomIntProvider;
 import net.minecraft.util.math.intprovider.IntProvider;
 import net.minecraft.util.math.intprovider.UniformIntProvider;
@@ -37,10 +37,17 @@ import net.minecraft.world.PersistentStateType;
 
 public class LumarSeetheManager extends PersistentState implements SeetheManager {
 
-    public static final String NAME = "seethe";
-    private static final String NBT_TICKS_REMAINING = "ticks_remaining";
-    private static final String NBT_CYCLES_UNTIL_NEXT_LONG_STILLING = "cycles_until_next_long_stilling";
-    private static final String NBT_IS_SEETHING = "is_seething";
+    private static final String NAME = "seethe";
+    public static final Codec<LumarSeetheManager> CODEC = RecordCodecBuilder.create(
+            instance -> instance.group(Codec.BOOL.optionalFieldOf("is_seething", true)
+                                    .forGetter(LumarSeetheManager::isSeething),
+                            Codec.INT.optionalFieldOf("ticks_remaining", 0)
+                                    .forGetter(LumarSeetheManager::getTicksUntilNextCycle),
+                            Codec.INT.optionalFieldOf("cycles_until_next_long_stilling", 0)
+                                    .forGetter(LumarSeetheManager::getCyclesUntilLongStilling))
+                    .apply(instance, LumarSeetheManager::new));
+    public static final PersistentStateType<LumarSeetheManager> STATE_TYPE = new PersistentStateType<>(
+            NAME, LumarSeetheManager::new, CODEC, DataFixTypes.LEVEL);
 
     private static final IntProvider SEETHE_DURATION_PROVIDER = UniformIntProvider.create(
             5 * ModConstants.MINUTES_TO_TICKS, 2 * ModConstants.GAME_DAYS_TO_TICKS);
@@ -51,36 +58,21 @@ public class LumarSeetheManager extends PersistentState implements SeetheManager
     private static final IntProvider STILLING_LONG_CYCLE_PROVIDER = BiasedToBottomIntProvider.create(
             3, 5);
 
-    public static PersistentStateType<LumarSeetheManager> getPersistentStateType() {
-        return new PersistentStateType<>(LumarSeetheManager::new,
-                (nbt, registryLookup) -> LumarSeetheManager.fromNbt(nbt), DataFixTypes.LEVEL);
-    }
-
-    private static LumarSeetheManager fromNbt(NbtCompound nbt) {
-        LumarSeetheManager seetheManager = new LumarSeetheManager();
-        seetheManager.isSeething = nbt.getBoolean(NBT_IS_SEETHING, true);
-        seetheManager.ticksRemaining = nbt.getInt(NBT_TICKS_REMAINING, 0);
-        seetheManager.cyclesUntilLongStilling = nbt.getInt(NBT_CYCLES_UNTIL_NEXT_LONG_STILLING, 0);
-        return seetheManager;
-    }
-
     private final Random random = Random.create();
     private boolean isSeething;
     private int ticksRemaining;
     private int cyclesUntilLongStilling;
 
+    public LumarSeetheManager(boolean isSeething, int ticksRemaining, int cyclesUntilLongStilling) {
+        this.isSeething = isSeething;
+        this.ticksRemaining = ticksRemaining;
+        this.cyclesUntilLongStilling = cyclesUntilLongStilling;
+    }
+
     public LumarSeetheManager() {
         // Default values, can be overridden by saved data
         this.startSeetheForRandomDuration();
         this.cyclesUntilLongStilling = STILLING_LONG_CYCLE_PROVIDER.get(this.random);
-    }
-
-    @Override
-    public NbtCompound writeNbt(NbtCompound nbt, WrapperLookup registryLookup) {
-        nbt.putBoolean(NBT_IS_SEETHING, isSeething);
-        nbt.putInt(NBT_TICKS_REMAINING, ticksRemaining);
-        nbt.putInt(NBT_CYCLES_UNTIL_NEXT_LONG_STILLING, cyclesUntilLongStilling);
-        return nbt;
     }
 
     @Override
@@ -138,5 +130,9 @@ public class LumarSeetheManager extends PersistentState implements SeetheManager
     @Override
     public int getTicksUntilNextCycle() {
         return ticksRemaining;
+    }
+
+    public int getCyclesUntilLongStilling() {
+        return cyclesUntilLongStilling;
     }
 }

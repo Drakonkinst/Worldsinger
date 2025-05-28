@@ -24,6 +24,8 @@
 
 package io.github.drakonkinst.worldsinger.cosmere.lumar;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.drakonkinst.worldsinger.Worldsinger;
 import io.github.drakonkinst.worldsinger.cosmere.CosmerePlanet;
 import io.github.drakonkinst.worldsinger.entity.ModEntityTypes;
@@ -48,9 +50,7 @@ import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.map.MapState;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.predicate.entity.EntityPredicates;
-import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.TypeFilter;
@@ -62,7 +62,7 @@ import net.minecraft.world.PersistentStateType;
 import org.jetbrains.annotations.Nullable;
 
 // Rainlines on Lumar are placed around lunagrees, so it is tightly coupled to lunagree generation
-public class LumarRainlineManager extends PersistentState implements RainlineManager {
+public class LumarRainlineSpawner extends PersistentState implements RainlineSpawner {
 
     private static final int RAINLINE_UPDATE_INTERVAL = 5 * ModConstants.SECONDS_TO_TICKS;
 
@@ -75,27 +75,23 @@ public class LumarRainlineManager extends PersistentState implements RainlineMan
     private static final int WANDERING_RAINLINE_MAX_SPAWN_DISTANCE = 80;
     private static final float MIN_RAINLINE_SPAWN_SEPARATION = 64.0f;
 
-    public static final String NAME = "rainlines";
-    private static final String KEY_SPAWN_DELAY = "spawn_delay";
+    private static final String NAME = "rainlines";
+    public static final Codec<LumarRainlineSpawner> CODEC = RecordCodecBuilder.create(
+            instance -> instance.group(Codec.INT.optionalFieldOf("spawn_delay", 0)
+                            .forGetter(LumarRainlineSpawner::getSpawnDelay))
+                    .apply(instance, LumarRainlineSpawner::new));
+    public static final PersistentStateType<LumarRainlineSpawner> STATE_TYPE = new PersistentStateType<>(
+            NAME, LumarRainlineSpawner::new, CODEC, DataFixTypes.LEVEL);
 
-    public static PersistentStateType<LumarRainlineManager> getPersistentStateType(
-            LunagreeGenerator generator) {
-        return new PersistentStateType<>(() -> new LumarRainlineManager(generator, 0),
-                (nbt, registryLookup) -> LumarRainlineManager.fromNbt(generator, nbt),
-                DataFixTypes.LEVEL);
-    }
-
-    private static LumarRainlineManager fromNbt(LunagreeGenerator generator, NbtCompound nbt) {
-        int spawnDelay = nbt.getInt(KEY_SPAWN_DELAY, 0);
-        return new LumarRainlineManager(generator, spawnDelay);
-    }
-
+    // This value does not need to be saved
     private final Long2ObjectMap<RainlinePath> rainlinePaths = new Long2ObjectOpenHashMap<>();
-    private final LunagreeGenerator generator;
-    private int spawnDelay;
+    private int spawnDelay = 0;
 
-    public LumarRainlineManager(LunagreeGenerator generator, int spawnDelay) {
-        this.generator = generator;
+    public LumarRainlineSpawner() {
+        markDirty();
+    }
+
+    public LumarRainlineSpawner(int spawnDelay) {
         this.spawnDelay = spawnDelay;
     }
 
@@ -108,15 +104,17 @@ public class LumarRainlineManager extends PersistentState implements RainlineMan
     @Override
     public int applyMapDecorations(ServerWorld world, Map<String, Decoration> decorations,
             MapState mapState) {
+        LunagreeGenerator generator = ((LumarManagerAccess) world).worldsinger$getLumarManager()
+                .getLunagreeGenerator();
         long key = generator.getKeyForPos(mapState.centerX, mapState.centerZ);
         long[] neighborKeys = generator.getNeighborKeys(key);
 
         int totalNumAdded = 0;
-        RainlinePath centerPath = getOrCreateRainlineData(key);
+        RainlinePath centerPath = getOrCreateRainlineData(world, key);
         totalNumAdded += centerPath.applyMapDecorations(world, decorations, mapState, 1);
         for (int i = 0; i < neighborKeys.length; ++i) {
             long neighborKey = neighborKeys[i];
-            RainlinePath neighborPath = getOrCreateRainlineData(neighborKey);
+            RainlinePath neighborPath = getOrCreateRainlineData(world, neighborKey);
             int numAdded = neighborPath.applyMapDecorations(world, decorations, mapState, i + 2);
             totalNumAdded += numAdded;
         }
@@ -129,7 +127,7 @@ public class LumarRainlineManager extends PersistentState implements RainlineMan
         return rainlinePaths.get(id);
     }
 
-    private void doRainlineTick(ServerWorld world) {
+    public void doRainlineTick(ServerWorld world) {
         List<RainlineEntity> rainlineEntities = new ArrayList<>();
         world.collectEntitiesByType(TypeFilter.instanceOf(RainlineEntity.class),
                 EntityPredicates.VALID_ENTITY, rainlineEntities);
@@ -149,7 +147,9 @@ public class LumarRainlineManager extends PersistentState implements RainlineMan
 
     private void spawnRainlinesForLocation(ServerWorld world, LunagreeLocation location,
             Set<LongBytePair> existingPathIds) {
-        long locationId = generator.getKeyForPos(location.blockX(), location.blockZ());
+        long locationId = ((LumarManagerAccess) world).worldsinger$getLumarManager()
+                .getLunagreeGenerator()
+                .getKeyForPos(location.blockX(), location.blockZ());
         RainlinePath path = rainlinePaths.get(locationId);
         if (path == null) {
             return;
@@ -290,26 +290,27 @@ public class LumarRainlineManager extends PersistentState implements RainlineMan
     private Set<LunagreeLocation> getLunagreeLocationsToUpdate(ServerWorld world) {
         Set<LunagreeLocation> lunagreeLocations = new HashSet<>();
         for (ServerPlayerEntity player : world.getPlayers()) {
-            List<LunagreeLocation> locationsNearPlayer = generator.getLunagreesNearPos(
-                    player.getBlockX(), player.getBlockZ());
+            List<LunagreeLocation> locationsNearPlayer = ((LumarManagerAccess) world).worldsinger$getLumarManager()
+                    .getLunagreeGenerator()
+                    .getLunagreesNearPos(world, player.getBlockX(), player.getBlockZ());
             lunagreeLocations.addAll(locationsNearPlayer);
         }
         return lunagreeLocations;
     }
 
-    private RainlinePath getOrCreateRainlineData(long key) {
+    private RainlinePath getOrCreateRainlineData(ServerWorld world, long key) {
         RainlinePath entry = rainlinePaths.get(key);
         if (entry == null) {
-            LunagreeLocation lunagreeLocation = generator.getLunagreeForKey(key, true);
+            LunagreeLocation lunagreeLocation = ((LumarManagerAccess) world).worldsinger$getLumarManager()
+                    .getLunagreeGenerator()
+                    .getLunagreeForKey(world, key, true);
             entry = new RainlinePath(lunagreeLocation.rainlineNodes());
             rainlinePaths.put(key, entry);
         }
         return entry;
     }
 
-    @Override
-    public NbtCompound writeNbt(NbtCompound nbt, WrapperLookup registryLookup) {
-        nbt.putInt(KEY_SPAWN_DELAY, spawnDelay);
-        return nbt;
+    public int getSpawnDelay() {
+        return spawnDelay;
     }
 }

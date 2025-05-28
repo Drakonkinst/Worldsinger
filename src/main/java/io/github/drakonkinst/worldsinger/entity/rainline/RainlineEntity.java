@@ -27,7 +27,7 @@ package io.github.drakonkinst.worldsinger.entity.rainline;
 import io.github.drakonkinst.worldsinger.block.WaterReactiveBlock;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarManager;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarManagerAccess;
-import io.github.drakonkinst.worldsinger.cosmere.lumar.RainlineManager;
+import io.github.drakonkinst.worldsinger.cosmere.lumar.RainlineSpawner;
 import io.github.drakonkinst.worldsinger.fluid.WaterReactiveFluid;
 import io.github.drakonkinst.worldsinger.registry.tag.ModBlockTags;
 import net.minecraft.block.Block;
@@ -97,10 +97,10 @@ public class RainlineEntity extends Entity implements GeoEntity {
     private void doWaterReactiveTick(ServerWorld world) {
         // Note: This is a square radius rather than the circular radius used for rendering,
         // which will be slightly larger
-        int x = this.getBlockX() - RainlineManager.RAINLINE_EFFECT_RADIUS + this.random.nextInt(
-                RainlineManager.RAINLINE_EFFECT_RADIUS * 2);
-        int z = this.getBlockZ() - RainlineManager.RAINLINE_EFFECT_RADIUS + this.random.nextInt(
-                RainlineManager.RAINLINE_EFFECT_RADIUS * 2);
+        int x = this.getBlockX() - RainlineSpawner.RAINLINE_EFFECT_RADIUS + this.random.nextInt(
+                RainlineSpawner.RAINLINE_EFFECT_RADIUS * 2);
+        int z = this.getBlockZ() - RainlineSpawner.RAINLINE_EFFECT_RADIUS + this.random.nextInt(
+                RainlineSpawner.RAINLINE_EFFECT_RADIUS * 2);
         int y = world.getTopY(Type.MOTION_BLOCKING, x, z) - 1;
         if (y > RainlineEntity.getTargetHeight(world)) {
             return;

@@ -24,7 +24,7 @@
 
 package io.github.drakonkinst.worldsinger.api;
 
-import io.github.drakonkinst.worldsinger.cosmere.lumar.RainlineManager;
+import io.github.drakonkinst.worldsinger.cosmere.lumar.RainlineSpawner;
 import io.github.drakonkinst.worldsinger.entity.rainline.RainlineEntity;
 import io.github.drakonkinst.worldsinger.util.VectorUtil;
 import net.minecraft.client.MinecraftClient;
@@ -48,7 +48,7 @@ public class ClientRainlineData {
     private RainlineEntity nearestRainlineEntity = null;
 
     public void update(ClientWorld world, ClientPlayerEntity player) {
-        nearestRainlineEntity = RainlineManager.getNearestRainlineEntity(world, getCameraPos(),
+        nearestRainlineEntity = RainlineSpawner.getNearestRainlineEntity(world, getCameraPos(),
                 RAINLINE_SKY_GRADIENT_RADIUS);
     }
 

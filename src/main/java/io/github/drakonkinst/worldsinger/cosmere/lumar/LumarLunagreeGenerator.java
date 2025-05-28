@@ -54,9 +54,9 @@ import org.jetbrains.annotations.NotNull;
 // On Lumar, lunagrees are placed on an approximate hex grid.
 public class LumarLunagreeGenerator extends PersistentState implements LunagreeGenerator {
 
-    public static final String NAME = "lunagrees";
+    private static final String NAME = "lunagrees";
     private static final Codec<Pair<Long, LunagreeLocation>> LUNAGREE_ENTRY_CODEC = Codec.mapPair(
-            Codec.LONG.fieldOf("cell"), LunagreeLocation.CODEC).codec();
+            Codec.LONG.fieldOf("cell"), LunagreeLocation.CODEC.fieldOf("data")).codec();
     public static final Codec<LumarLunagreeGenerator> CODEC = RecordCodecBuilder.create(
             instance -> instance.group(LUNAGREE_ENTRY_CODEC.listOf()
                             .optionalFieldOf("lunagrees", Collections.emptyList())
