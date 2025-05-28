@@ -24,7 +24,6 @@
 
 package io.github.drakonkinst.worldsinger.mixin.item;
 
-import io.github.drakonkinst.worldsinger.api.ModApi;
 import io.github.drakonkinst.worldsinger.cosmere.SilverLined;
 import io.github.drakonkinst.worldsinger.entity.SilverVulnerable;
 import io.github.drakonkinst.worldsinger.item.SilverKnifeItem;
@@ -74,8 +73,8 @@ public abstract class AxeItemMixin extends Item {
 
     @Override
     public void postHit(ItemStack stack, LivingEntity target, LivingEntity attacker) {
-        SilverLined silverData = ModApi.SILVER_LINED_ITEM.find(stack, null);
-        if (silverData != null && silverData.getSilverDurability() > 0) {
+        if (SilverLined.isSilverLined(stack)) {
+            int silverDamage = 0;
             boolean isNotCreativePlayer = EntityUtil.isNotCreativePlayer(attacker);
             if (target instanceof SilverVulnerable) {
                 // applyDamage() always applies the damage, versus damage() which only damages the mob
@@ -86,11 +85,15 @@ public abstract class AxeItemMixin extends Item {
                             SilverKnifeItem.SILVER_BONUS_DAMAGE);
                 }
                 if (isNotCreativePlayer) {
-                    silverData.decrementDurability();
+                    silverDamage += 1;
                 }
             }
             if (isNotCreativePlayer) {
-                if (!silverData.decrementDurability()) {
+                silverDamage += 1;
+
+            }
+            if (silverDamage > 0) {
+                if (!SilverLined.damageSilverDurability(stack, silverDamage)) {
                     SilverLined.onSilverLinedItemBreak(attacker.getWorld(), attacker);
                 }
             }

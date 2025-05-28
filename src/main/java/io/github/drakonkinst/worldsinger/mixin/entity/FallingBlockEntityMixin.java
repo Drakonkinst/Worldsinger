@@ -36,7 +36,6 @@ import net.minecraft.entity.FallingBlockEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -70,43 +69,43 @@ public abstract class FallingBlockEntityMixin extends Entity {
     @Shadow
     private boolean destroyedOnLanding;
     @Shadow
-    private BlockState block;
-    @Shadow
     private int fallHurtMax;
     @Shadow
     private float fallHurtAmount;
+    @Shadow
+    private BlockState blockState;
+
+    @Shadow
+    public abstract BlockState getBlockState();
 
     public FallingBlockEntityMixin(EntityType<?> type, World world) {
         super(type, world);
     }
 
-    @Shadow
-    public abstract BlockState getBlockState();
-
     @Inject(method = "handleFallDamage", at = @At("HEAD"))
-    private void destroyAetherSporeBlockOnLanding(float fallDistance, float damageMultiplier,
+    private void destroyAetherSporeBlockOnLanding(double fallDistance, float damagePerDistance,
             DamageSource damageSource, CallbackInfoReturnable<Boolean> cir) {
-        if (this.block.isIn(ModBlockTags.AETHER_SPORE_BLOCKS)
+        if (this.blockState.isIn(ModBlockTags.AETHER_SPORE_BLOCKS)
                 && fallDistance >= BREAKING_FALL_DISTANCE) {
             this.destroyedOnLanding = true;
         }
     }
 
     @Inject(method = "handleFallDamage", at = @At("TAIL"))
-    private void addSteelAnvilDurabilityDamage(float fallDistance, float damageMultiplier,
+    private void addSteelAnvilDurabilityDamage(double fallDistance, float damagePerDistance,
             DamageSource damageSource, CallbackInfoReturnable<Boolean> cir) {
         int extraFallDistance = MathHelper.ceil(fallDistance - 1.0f);
-        boolean isSteelDamage = this.block.isIn(ModBlockTags.STEEL_ANVIL);
+        boolean isSteelDamage = this.blockState.isIn(ModBlockTags.STEEL_ANVIL);
         float fallDamage = Math.min(MathHelper.floor(extraFallDistance * this.fallHurtAmount),
                 this.fallHurtMax);
         // Half chance to take damage compared to regular anvil
         float chanceToTakeDamage = (0.05f + (float) extraFallDistance * 0.05f) * 0.5f;
         if (isSteelDamage && fallDamage > 0.0f && this.random.nextFloat() < chanceToTakeDamage) {
-            BlockState blockState = SteelAnvilBlock.getLandingState(this.block);
+            BlockState blockState = SteelAnvilBlock.getLandingState(this.blockState);
             if (blockState == null) {
                 this.destroyedOnLanding = true;
             } else {
-                this.block = blockState;
+                this.blockState = blockState;
             }
         }
     }
@@ -132,17 +131,17 @@ public abstract class FallingBlockEntityMixin extends Entity {
                 && fluidState.isStill()) {
             this.discard();
             if (this.dropItem) {
-                this.dropItem(world, this.block.getBlock());
+                this.dropItem(world, this.blockState.getBlock());
             }
         }
     }
 
     @Inject(method = "readCustomDataFromNbt", at = @At("TAIL"))
     private void addSteelAnvilHurtsEntities(NbtCompound nbt, CallbackInfo ci) {
-        if (nbt.contains("HurtEntities", NbtElement.NUMBER_TYPE)) {
+        if (nbt.contains("HurtEntities")) {
             return;
         }
-        if (this.block.isIn(ModBlockTags.STEEL_ANVIL)) {
+        if (this.blockState.isIn(ModBlockTags.STEEL_ANVIL)) {
             this.hurtEntities = true;
         }
     }

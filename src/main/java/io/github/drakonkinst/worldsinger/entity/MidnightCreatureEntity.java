@@ -64,6 +64,7 @@ import java.util.UUID;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.LazyEntityReference;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
@@ -99,6 +100,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Util;
+import net.minecraft.util.Uuids;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
@@ -145,8 +147,8 @@ public class MidnightCreatureEntity extends ShapeshiftingEntity implements
     public static final float DAMAGE_FROM_SILVER = 4.0f;
 
     // Tracked Data
-    private static final TrackedData<Optional<UUID>> CONTROLLER_UUID = DataTracker.registerData(
-            MidnightCreatureEntity.class, TrackedDataHandlerRegistry.OPTIONAL_UUID);
+    private static final TrackedData<Optional<LazyEntityReference<LivingEntity>>> CONTROLLER_UUID = DataTracker.registerData(
+            MidnightCreatureEntity.class, TrackedDataHandlerRegistry.LAZY_ENTITY_REFERENCE);
     private static final String MORPHED_NAME_TRANSLATION_KEY = Util.createTranslationKey("entity",
             Worldsinger.id("midnight_creature.morphed"));
 
@@ -215,6 +217,10 @@ public class MidnightCreatureEntity extends ShapeshiftingEntity implements
         builder.add(CONTROLLER_UUID, Optional.empty());
     }
 
+    public LazyEntityReference<LivingEntity> getControllerReference() {
+        return this.dataTracker.get(CONTROLLER_UUID).orElse(null);
+    }
+
     @Override
     public void setControllerUuid(UUID uuid) {
         if (this.getWorld().isClient()) {
@@ -227,7 +233,7 @@ public class MidnightCreatureEntity extends ShapeshiftingEntity implements
             if (!Objects.equals(getControllerUuid(), uuid)) {
                 onStartControlling();
             }
-            this.dataTracker.set(CONTROLLER_UUID, Optional.of(uuid));
+            this.dataTracker.set(CONTROLLER_UUID, Optional.of(new LazyEntityReference<>(uuid)));
         }
     }
 
@@ -250,7 +256,11 @@ public class MidnightCreatureEntity extends ShapeshiftingEntity implements
     @Override
     @Nullable
     public UUID getControllerUuid() {
-        return this.dataTracker.get(CONTROLLER_UUID).orElse(null);
+        LazyEntityReference<LivingEntity> reference = getControllerReference();
+        if (reference == null) {
+            return null;
+        }
+        return reference.getUuid();
     }
 
     // AI
@@ -504,8 +514,8 @@ public class MidnightCreatureEntity extends ShapeshiftingEntity implements
         double delta = (double) offset / NUM_TRAIL_PARTICLES;
         Vec3d pos = start.lerp(destination, delta);
         this.getWorld()
-                .addParticle(ModParticleTypes.MIDNIGHT_TRAIL, pos.getX(), pos.getY(), pos.getZ(),
-                        direction.getX() * TRAIL_PARTICLE_SPEED,
+                .addParticleClient(ModParticleTypes.MIDNIGHT_TRAIL, pos.getX(), pos.getY(),
+                        pos.getZ(), direction.getX() * TRAIL_PARTICLE_SPEED,
                         direction.getY() * TRAIL_PARTICLE_SPEED,
                         direction.getZ() * TRAIL_PARTICLE_SPEED);
     }
@@ -748,13 +758,13 @@ public class MidnightCreatureEntity extends ShapeshiftingEntity implements
         }
         UUID controllerUuid = getControllerUuid();
         if (controllerUuid != null) {
-            nbt.putUuid(CONTROLLER_KEY, controllerUuid);
+            nbt.put(CONTROLLER_KEY, Uuids.INT_STREAM_CODEC, controllerUuid);
         }
         if (!waterBribes.isEmpty()) {
             NbtList waterBribesList = new NbtList();
             waterBribes.object2IntEntrySet().forEach(uuidEntry -> {
                 NbtCompound nbtEntry = new NbtCompound();
-                nbtEntry.putUuid(UUID_KEY, uuidEntry.getKey());
+                nbtEntry.put(UUID_KEY, Uuids.INT_STREAM_CODEC, uuidEntry.getKey());
                 nbtEntry.putInt(BRIBE_KEY, uuidEntry.getIntValue());
                 waterBribesList.add(nbtEntry);
             });
@@ -766,27 +776,25 @@ public class MidnightCreatureEntity extends ShapeshiftingEntity implements
     public void readCustomDataFromNbt(NbtCompound nbt) {
         super.readCustomDataFromNbt(nbt);
         if (this.getMorph() == null) {
-            this.midnightEssenceAmount = nbt.getInt(MIDNIGHT_ESSENCE_AMOUNT_KEY);
+            this.midnightEssenceAmount = nbt.getInt(MIDNIGHT_ESSENCE_AMOUNT_KEY, 0);
         }
-        if (nbt.contains(CONTROLLER_KEY, NbtElement.INT_ARRAY_TYPE)) {
-            UUID controllerUuid = nbt.getUuid(CONTROLLER_KEY);
-            setControllerUuid(controllerUuid);
-            PlayerEntity player = getController();
-            if (player != null) {
-                setController(player);
-            }
-        } else {
-            setControllerUuid(null);
+
+        UUID controllerUuid = nbt.get(CONTROLLER_KEY, Uuids.INT_STREAM_CODEC).orElse(null);
+        setControllerUuid(controllerUuid);
+        PlayerEntity player = getController();
+        if (player != null) {
+            setController(player);
         }
 
         waterBribes.clear();
-        if (nbt.contains(BRIBES_KEY, NbtElement.LIST_TYPE)) {
-            NbtList list = nbt.getList(BRIBES_KEY, NbtElement.COMPOUND_TYPE);
+        nbt.getList(BRIBES_KEY).ifPresent(list -> {
             for (NbtElement item : list) {
                 NbtCompound entry = (NbtCompound) item;
-                waterBribes.put(entry.getUuid(UUID_KEY), entry.getInt(BRIBE_KEY));
+                entry.get(UUID_KEY, Uuids.INT_STREAM_CODEC).ifPresent(uuid -> {
+                    waterBribes.put(uuid, entry.getInt(BRIBE_KEY).orElse(0).intValue());
+                });
             }
-        }
+        });
     }
 
     public void setMidnightEssenceAmount(int midnightEssenceAmount) {

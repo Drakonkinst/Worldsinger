@@ -19,6 +19,7 @@
     "accessor.PlayerEntityInvoker",
     "accessor.RavagerEntityAccessor",
     "accessor.ShulkerEntityAccessor",
+    "accessor.TropicalFishEntityInvoker",
     "accessor.ValueListsInvoker",
     "accessor.WindChargeEntityAccessor",
     "block.AbstractBlockSettingsMixin",

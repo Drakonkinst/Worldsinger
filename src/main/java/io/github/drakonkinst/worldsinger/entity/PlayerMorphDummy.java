@@ -24,7 +24,6 @@
 package io.github.drakonkinst.worldsinger.entity;
 
 import io.github.drakonkinst.worldsinger.cosmere.ShapeshiftingManager;
-import java.util.Collections;
 import java.util.UUID;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
@@ -33,6 +32,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.text.Text;
 import net.minecraft.util.Arm;
+import net.minecraft.util.Uuids;
 import net.minecraft.world.World;
 
 public class PlayerMorphDummy extends LivingEntity {
@@ -51,14 +51,14 @@ public class PlayerMorphDummy extends LivingEntity {
     @Override
     public void readNbt(NbtCompound nbt) {
         super.readNbt(nbt);
-        playerUUID = nbt.getUuid(KEY_PLAYER);
-        playerName = nbt.getString(KEY_PLAYER_NAME);
+        playerUUID = nbt.get(KEY_PLAYER, Uuids.INT_STREAM_CODEC).orElse(null);
+        playerName = nbt.getString(KEY_PLAYER_NAME, null);
     }
 
     @Override
     public NbtCompound writeNbt(NbtCompound nbt) {
         super.writeNbt(nbt);
-        nbt.putUuid(KEY_PLAYER, playerUUID);
+        nbt.put(KEY_PLAYER, Uuids.INT_STREAM_CODEC, playerUUID);
         nbt.putString(KEY_PLAYER_NAME, playerName);
         return nbt;
     }
@@ -73,11 +73,6 @@ public class PlayerMorphDummy extends LivingEntity {
     @Override
     protected Text getDefaultName() {
         return Text.literal(playerName);
-    }
-
-    @Override
-    public Iterable<ItemStack> getArmorItems() {
-        return Collections.emptyList();
     }
 
     @Override

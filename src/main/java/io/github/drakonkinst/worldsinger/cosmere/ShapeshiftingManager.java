@@ -33,6 +33,7 @@ import io.github.drakonkinst.worldsinger.mixin.accessor.IronGolemEntityAccessor;
 import io.github.drakonkinst.worldsinger.mixin.accessor.LivingEntityAccessor;
 import io.github.drakonkinst.worldsinger.mixin.accessor.RavagerEntityAccessor;
 import io.github.drakonkinst.worldsinger.mixin.accessor.ShulkerEntityAccessor;
+import io.github.drakonkinst.worldsinger.mixin.accessor.TropicalFishEntityInvoker;
 import io.github.drakonkinst.worldsinger.network.packet.ShapeshiftAttackPayload;
 import io.github.drakonkinst.worldsinger.network.packet.ShapeshiftSyncPayload;
 import java.util.Optional;
@@ -61,6 +62,7 @@ import net.minecraft.network.packet.Packet;
 import net.minecraft.registry.Registries;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.Uuids;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
@@ -127,8 +129,10 @@ public final class ShapeshiftingManager {
         if (morph == null || !type.equals(morph.getType())) {
             World world = shapeshifter.toEntity().getWorld();
             if (type.equals(EntityType.PLAYER)) {
-                UUID playerUuid = morphNbt.getUuid(PlayerMorphDummy.KEY_PLAYER);
-                String playerName = morphNbt.getString(PlayerMorphDummy.KEY_PLAYER_NAME);
+                UUID playerUuid = morphNbt.get(PlayerMorphDummy.KEY_PLAYER, Uuids.INT_STREAM_CODEC)
+                        .orElse(null);
+                String playerName = morphNbt.getString(PlayerMorphDummy.KEY_PLAYER_NAME)
+                        .orElse(null);
                 morph = Worldsinger.PROXY.createPlayerMorph(world, playerUuid, playerName);
             } else {
                 morph = (LivingEntity) type.create(world, SpawnReason.LOAD);
@@ -199,7 +203,8 @@ public final class ShapeshiftingManager {
         // Tropical Fish
         if (morph instanceof TropicalFishEntity tropicalFishMorph
                 && toCopy instanceof TropicalFishEntity tropicalFishToCopy) {
-            tropicalFishMorph.setVariant(tropicalFishToCopy.getVariant());
+            ((TropicalFishEntityInvoker) tropicalFishMorph).worldsinger$setTropicalFishVariant(
+                    ((TropicalFishEntityInvoker) tropicalFishToCopy).worldsinger$getTropicalFishVariant());
         }
 
         // TODO: Other entity variants (Villager, Parrot, Cat, Axolotl)

@@ -172,7 +172,8 @@ public abstract class ShapeshiftingEntity extends PathAwareEntity implements Sha
         target.setSpeed(source.getSpeed());
         ((LimbAnimatorAccessor) target).worldsinger$setLastSpeed(
                 ((LimbAnimatorAccessor) source).worldsinger$getLastSpeed());
-        ((LimbAnimatorAccessor) target).worldsinger$setAnimationProgress(source.getPos());
+        ((LimbAnimatorAccessor) target).worldsinger$setAnimationProgress(
+                source.getAnimationProgress());
 
         // Sync data
         morph.handSwinging = this.handSwinging;

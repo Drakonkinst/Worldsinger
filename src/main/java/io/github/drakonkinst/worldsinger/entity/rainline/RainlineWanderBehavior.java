@@ -34,7 +34,6 @@ import io.github.drakonkinst.worldsinger.worldgen.lumar.LumarChunkGenerator;
 import io.github.drakonkinst.worldsinger.worldgen.lumar.LumarChunkGenerator.SporeSeaEntry;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -61,11 +60,11 @@ public class RainlineWanderBehavior implements RainlineBehavior {
     private static final String KEY_DESPAWN_TIMER = "despawn_timer";
 
     public static RainlineWanderBehavior readFromNbt(NbtCompound nbt, Random random) {
-        if (!nbt.contains(KEY_WANDER_ANGLE, NbtElement.FLOAT_TYPE)) {
+        if (!nbt.contains(KEY_WANDER_ANGLE)) {
             return new RainlineWanderBehavior(random);
         }
-        float wanderAngle = nbt.getFloat(KEY_WANDER_ANGLE);
-        int despawnTimer = nbt.getInt(KEY_DESPAWN_TIMER);
+        float wanderAngle = nbt.getFloat(KEY_WANDER_ANGLE, 0);
+        int despawnTimer = nbt.getInt(KEY_DESPAWN_TIMER, 0);
         return new RainlineWanderBehavior(wanderAngle, despawnTimer);
     }
 
@@ -125,7 +124,7 @@ public class RainlineWanderBehavior implements RainlineBehavior {
 
         // Avoid lunagrees
         LunagreeLocation nearbyLunagree = lumarManager.getLunagreeGenerator()
-                .getNearestLunagree(pos.getX(), pos.getZ(),
+                .getNearestLunagree(world, pos.getX(), pos.getZ(),
                         LumarLunagreeGenerator.SPORE_FALL_RADIUS * 2);
         if (nearbyLunagree != null) {
             Vector2d avoidForce = new Vector2d(pos.getX() - nearbyLunagree.blockX(),

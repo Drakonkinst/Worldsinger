@@ -25,20 +25,15 @@
 package io.github.drakonkinst.worldsinger.item;
 
 import io.github.drakonkinst.worldsinger.entity.CannonballEntity;
-import io.github.drakonkinst.worldsinger.item.component.CannonballComponent;
-import io.github.drakonkinst.worldsinger.registry.ModDataComponentTypes;
 import io.github.drakonkinst.worldsinger.registry.ModSoundEvents;
-import java.util.List;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ProjectileItem;
-import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.stat.Stats;
-import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.Direction;
@@ -74,14 +69,5 @@ public class CannonballItem extends Item implements ProjectileItem {
                 pos.getZ(), stack);
         cannonballEntity.setItem(stack);
         return cannonballEntity;
-    }
-
-    @Override
-    public void appendTooltip(ItemStack stack, Item.TooltipContext context, List<Text> tooltip,
-            TooltipType type) {
-        CannonballComponent cannonballComponent = stack.get(ModDataComponentTypes.CANNONBALL);
-        if (cannonballComponent != null) {
-            cannonballComponent.appendTooltip(context, tooltip::add, type);
-        }
     }
 }

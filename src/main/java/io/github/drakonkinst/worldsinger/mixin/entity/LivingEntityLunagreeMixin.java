@@ -59,7 +59,7 @@ public abstract class LivingEntityLunagreeMixin extends Entity implements Attack
     private void addLunagreeSporefallEffect(CallbackInfo ci) {
         World world = this.getWorld();
         LivingEntity entity = (LivingEntity) (Object) this;
-        if (world.isClient || !(world instanceof ServerWorld)) {
+        if (world.isClient || !(world instanceof ServerWorld serverWorld)) {
             return;
         }
 
@@ -79,7 +79,7 @@ public abstract class LivingEntityLunagreeMixin extends Entity implements Attack
 
         LunagreeGenerator manager = ((LumarManagerAccess) world).worldsinger$getLumarManager()
                 .getLunagreeGenerator();
-        LunagreeLocation underLocation = manager.getNearestLunagree(entity.getBlockX(),
+        LunagreeLocation underLocation = manager.getNearestLunagree(serverWorld, entity.getBlockX(),
                 entity.getBlockZ(), LumarLunagreeGenerator.SPORE_FALL_RADIUS);
         if (underLocation == null) {
             return;

@@ -110,7 +110,8 @@ public abstract class ServerWorldLumarMixin extends WorldLumarMixin implements
     @Inject(method = "tickIceAndSnow", at = @At("RETURN"))
     private void rainSporeBlocksUnderSporeFall(BlockPos xzPos, CallbackInfo ci,
             @Local(ordinal = 1) BlockPos pos, @Local(ordinal = 2) BlockPos belowPos) {
-        if (!CosmerePlanet.isLumar((ServerWorld) (Object) this)) {
+        ServerWorld world = (ServerWorld) (Object) this;
+        if (!CosmerePlanet.isLumar(world)) {
             return;
         }
         int x = pos.getX();
@@ -119,7 +120,7 @@ public abstract class ServerWorldLumarMixin extends WorldLumarMixin implements
             return;
         }
         LunagreeLocation nearestLocation = lumarManager.getLunagreeGenerator()
-                .getNearestLunagree(x, z, LumarLunagreeGenerator.SPORE_FALL_RADIUS);
+                .getNearestLunagree(world, x, z, LumarLunagreeGenerator.SPORE_FALL_RADIUS);
         if (nearestLocation == null) {
             return;
         }

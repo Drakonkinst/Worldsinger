@@ -66,8 +66,13 @@ public abstract class ServerWorldCosmereMixin extends WorldCosmereMixin {
             long seed, List<SpecialSpawner> spawners, boolean shouldTickTime,
             RandomSequencesState randomSequencesState, CallbackInfo ci) {
         if (CosmerePlanet.getPlanetFromKey(worldKey) != CosmerePlanet.NONE) {
-            cosmereWorldData = this.getPersistentStateManager().getOrCreate(CosmereWorldData.TYPE);
+
         }
+    }
+
+    @Override
+    protected CosmereWorldData initCosmereWorldData() {
+        return this.getPersistentStateManager().getOrCreate(CosmereWorldData.STATE_TYPE);
     }
 
     @ModifyConstant(method = "tick", constant = @Constant(longValue = 24000L), slice = @Slice(from = @At(value = "INVOKE", target = "Lnet/minecraft/server/world/SleepManager;canSkipNight(I)Z"), to = @At(value = "INVOKE", target = "Lnet/minecraft/server/world/ServerWorld;calculateAmbientDarkness()V")))

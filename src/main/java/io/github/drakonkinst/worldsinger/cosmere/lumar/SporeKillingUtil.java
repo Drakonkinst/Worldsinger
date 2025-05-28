@@ -71,7 +71,7 @@ public final class SporeKillingUtil {
         }
         if (!player.isCreative()) {
             // It is silver-lined, so decrement the silver durability
-            if (!SilverLined.damageSilverDurability(stack, 1)) {
+            if (!SilverLined.damageSilverDurability(stack)) {
                 SilverLined.onSilverLinedItemBreak(world, player);
             }
             // Assume it is a tool and damage its durability

@@ -40,23 +40,20 @@ public class CosmereWorldData extends PersistentState {
 
     public static final String NAME = "cosmere";
 
-    public static PersistentStateType<CosmereWorldData> TYPE = new PersistentStateType<>(NAME,
-            CosmereWorldData::new, CosmereWorldData::codec, DataFixTypes.LEVEL);
-
-    private static Codec<CosmereWorldData> codec(PersistentState.Context context) {
-        return RecordCodecBuilder.create(builder -> builder.group(Codec.LONG.fieldOf(KEY_TIME)
-                        .forGetter(cosmereWorldData -> cosmereWorldData.timeOfDay),
-                BlockPos.CODEC.optionalFieldOf(KEY_SPAWN_POS)
-                        .forGetter(cosmereWorldData -> cosmereWorldData.spawnPos)
-
-        ).apply(builder, CosmereWorldData::new));
-    }
+    private final static Codec<CosmereWorldData> CODEC = RecordCodecBuilder.create(
+            builder -> builder.group(Codec.LONG.fieldOf(KEY_TIME)
+                                    .forGetter(cosmereWorldData -> cosmereWorldData.timeOfDay),
+                            BlockPos.CODEC.optionalFieldOf(KEY_SPAWN_POS)
+                                    .forGetter(cosmereWorldData -> cosmereWorldData.spawnPos))
+                    .apply(builder, CosmereWorldData::new));
+    public static PersistentStateType<CosmereWorldData> STATE_TYPE = new PersistentStateType<>(NAME,
+            CosmereWorldData::new, CODEC, DataFixTypes.LEVEL);
 
     private long timeOfDay;
     // FIXME: Fix optional field
     private Optional<BlockPos> spawnPos;
 
-    private CosmereWorldData(PersistentState.Context context) {
+    public CosmereWorldData() {
         this(-1, Optional.empty());
     }
 

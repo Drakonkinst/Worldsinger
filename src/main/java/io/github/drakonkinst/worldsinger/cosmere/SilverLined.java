@@ -96,6 +96,11 @@ public interface SilverLined {
         return stack;
     }
 
+    static boolean damageSilverDurability(ItemStack stack) {
+        return damageSilverDurability(stack, 1);
+    }
+
+    // Return true if it's broken
     static boolean damageSilverDurability(ItemStack stack, int amount) {
         int silverDurability = stack.getOrDefault(ModDataComponentTypes.SILVER_DURABILITY, 0);
         return SilverLined.setSilverDurability(stack, silverDurability - amount) == 0;
