@@ -26,10 +26,12 @@ package io.github.drakonkinst.worldsinger.entity.render;
 
 import io.github.drakonkinst.worldsinger.entity.model.RainlineEntityModel;
 import io.github.drakonkinst.worldsinger.entity.rainline.RainlineEntity;
+import io.github.drakonkinst.worldsinger.entity.state.RainlineEntityRenderState;
 import net.minecraft.client.render.entity.EntityRendererFactory;
 import software.bernie.geckolib.renderer.GeoEntityRenderer;
 
-public class RainlineEntityRenderer extends GeoEntityRenderer<RainlineEntity> {
+public class RainlineEntityRenderer extends
+        GeoEntityRenderer<RainlineEntity, RainlineEntityRenderState> {
 
     public RainlineEntityRenderer(EntityRendererFactory.Context ctx) {
         super(ctx, new RainlineEntityModel());

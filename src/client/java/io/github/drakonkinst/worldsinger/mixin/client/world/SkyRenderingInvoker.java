@@ -24,7 +24,6 @@
 
 package io.github.drakonkinst.worldsinger.mixin.client.world;
 
-import net.minecraft.client.render.Fog;
 import net.minecraft.client.render.SkyRendering;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.math.MatrixStack;
@@ -43,5 +42,5 @@ public interface SkyRenderingInvoker {
             MatrixStack matrices);
 
     @Invoker("renderStars")
-    void worldsinger$renderStars(Fog fog, float color, MatrixStack matrices);
+    void worldsinger$renderStars(float color, MatrixStack matrices);
 }

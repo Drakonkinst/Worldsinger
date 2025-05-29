@@ -30,9 +30,7 @@ import io.github.drakonkinst.worldsinger.api.ClientLunagreeData;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarLunagreeGenerator;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LunagreeLocation;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gl.ShaderProgramKeys;
 import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.client.render.Fog;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.SkyRendering;
 import net.minecraft.client.render.VertexConsumer;
@@ -105,9 +103,9 @@ public class LumarSkyRendering {
     }
 
     public void renderLumarCelestialBodies(MatrixStack matrices, Immediate vertexConsumers,
-            float skyAngle, float tickDelta, float skyAlpha, float starBrightness, Fog fog) {
+            float skyAngle, float tickDelta, float skyAlpha, float starBrightness) {
         skyRendering.renderCelestialBodies(matrices, vertexConsumers, skyAngle, 0, skyAlpha,
-                starBrightness, fog);
+                starBrightness);
 
         // TODO: Restore
         // Render normal sky without moon
@@ -118,7 +116,7 @@ public class LumarSkyRendering {
         //         matrices);
         // vertexConsumers.draw();
         // if (starBrightness > 0.0F) {
-        //     ((SkyRenderingInvoker) skyRendering).worldsinger$renderStars(fog, starBrightness,
+        //     ((SkyRenderingInvoker) skyRendering).worldsinger$renderStars(starBrightness,
         //             matrices);
         // }
         // matrices.pop();
@@ -131,8 +129,8 @@ public class LumarSkyRendering {
     public void renderMoons(Immediate vertexConsumers, MatrixStack matrices, float tickDelta) {
         ClientPlayerEntity player = MinecraftClient.getInstance().player;
         assert (player != null);
-        RenderSystem.setShader(ShaderProgramKeys.POSITION_TEX);
-        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+        // RenderSystem.setShader(ShaderProgramKeys.POSITION_TEX);
+        // RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         RenderSystem.setShaderTexture(0, LUMAR_MOON);
         final ClientLunagreeData lunagreeData = ClientLunagreeData.get(player.getWorld());
         final Vec3d playerPos = player.getCameraPosVec(tickDelta);

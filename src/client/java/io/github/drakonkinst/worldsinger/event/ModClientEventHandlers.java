@@ -23,16 +23,20 @@
  */
 package io.github.drakonkinst.worldsinger.event;
 
+import io.github.drakonkinst.worldsinger.Worldsinger;
 import io.github.drakonkinst.worldsinger.api.ClientLunagreeData;
 import io.github.drakonkinst.worldsinger.api.ClientRainlineData;
 import io.github.drakonkinst.worldsinger.entity.PossessionClientUtil;
 import io.github.drakonkinst.worldsinger.gui.ThirstStatusBar;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
+import net.fabricmc.fabric.api.client.rendering.v1.HudLayerRegistrationCallback;
+import net.fabricmc.fabric.api.client.rendering.v1.IdentifiedLayer;
 import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
 import net.fabricmc.fabric.api.event.player.UseEntityCallback;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.profiler.Profilers;
@@ -47,20 +51,30 @@ public final class ModClientEventHandlers {
     }
 
     private static void registerHudEvents() {
-        HudRenderCallback.EVENT.register((context, tickDelta) -> {
-            // FIXME: The thirst meter intermittently doesn't show for some reason?
-            MinecraftClient client = MinecraftClient.getInstance();
-            assert client.interactionManager != null;
-            if (client.interactionManager.hasStatusBars()) {
-                assert client.player != null;
-                if (ThirstStatusBar.shouldRenderThirstBar(client.player)) {
-                    Profiler profiler = Profilers.get();
-                    profiler.push("thirst");
-                    ThirstStatusBar.renderThirstStatusBar(client, context, client.player);
-                    profiler.pop();
-                }
-            }
+        HudLayerRegistrationCallback.EVENT.register((layeredDrawer) -> {
+            layeredDrawer.attachLayerAfter(IdentifiedLayer.HOTBAR_AND_BARS,
+                    IdentifiedLayer.of(Worldsinger.id("thirst"),
+                            ModClientEventHandlers::renderThirstBar));
         });
+    }
+
+    // TODO: Extract to separate class?
+    private static void renderThirstBar(DrawContext context, RenderTickCounter tickCounter) {
+        if (!MinecraftClient.isHudEnabled()) {
+            return;
+        }
+        // FIXME: The thirst meter intermittently doesn't show for some reason?
+        MinecraftClient client = MinecraftClient.getInstance();
+        assert client.interactionManager != null;
+        if (client.interactionManager.hasStatusBars()) {
+            assert client.player != null;
+            if (ThirstStatusBar.shouldRenderThirstBar(client.player)) {
+                Profiler profiler = Profilers.get();
+                profiler.push("thirst");
+                ThirstStatusBar.renderThirstStatusBar(client, context, client.player);
+                profiler.pop();
+            }
+        }
     }
 
     private static void registerWorldTickEvents() {

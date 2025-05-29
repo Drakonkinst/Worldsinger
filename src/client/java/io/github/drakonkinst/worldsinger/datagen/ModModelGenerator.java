@@ -23,39 +23,31 @@
  */
 package io.github.drakonkinst.worldsinger.datagen;
 
-import com.mojang.datafixers.util.Pair;
 import io.github.drakonkinst.worldsinger.block.ModBlocks;
 import io.github.drakonkinst.worldsinger.item.ModItems;
 import io.github.drakonkinst.worldsinger.item.SporeBottleTintSource;
+import io.github.drakonkinst.worldsinger.mixin.client.accessor.BlockStateModelGeneratorAccessor;
 import io.github.drakonkinst.worldsinger.registry.ModEquipmentAssetKeys;
-import java.util.function.Function;
 import net.fabricmc.fabric.api.client.datagen.v1.provider.FabricModelProvider;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.LeveledCauldronBlock;
-import net.minecraft.block.MultifaceGrowthBlock;
 import net.minecraft.client.data.BlockStateModelGenerator;
 import net.minecraft.client.data.BlockStateModelGenerator.CrossType;
-import net.minecraft.client.data.BlockStateVariant;
 import net.minecraft.client.data.BlockStateVariantMap;
 import net.minecraft.client.data.ItemModelGenerator;
 import net.minecraft.client.data.ItemModels;
+import net.minecraft.client.data.Model;
 import net.minecraft.client.data.ModelIds;
 import net.minecraft.client.data.Models;
-import net.minecraft.client.data.MultipartBlockStateSupplier;
 import net.minecraft.client.data.TextureMap;
-import net.minecraft.client.data.VariantSettings;
-import net.minecraft.client.data.VariantsBlockStateSupplier;
-import net.minecraft.client.data.When;
-import net.minecraft.client.render.item.tint.TintSource;
+import net.minecraft.client.data.VariantsBlockModelDefinitionCreator;
+import net.minecraft.client.render.model.json.WeightedVariant;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.Items;
-import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.Util;
-import net.minecraft.util.math.Direction;
 
 // Datagen is limited and does not work for the more complex items.
 public class ModModelGenerator extends FabricModelProvider {
@@ -95,60 +87,20 @@ public class ModModelGenerator extends FabricModelProvider {
                 ModBlocks.CRIMSON_SNARE, ModBlocks.DEAD_CRIMSON_SNARE
         });
 
-        registerLeveledCauldron(blockStateModelGenerator, ModBlocks.DEAD_SPORE_CAULDRON,
-                ModBlocks.DEAD_SPORE_BLOCK);
-        registerLeveledCauldron(blockStateModelGenerator, ModBlocks.VERDANT_SPORE_CAULDRON,
-                ModBlocks.VERDANT_SPORE_BLOCK);
-        registerLeveledCauldron(blockStateModelGenerator, ModBlocks.CRIMSON_SPORE_CAULDRON,
-                ModBlocks.CRIMSON_SPORE_BLOCK);
-        registerLeveledCauldron(blockStateModelGenerator, ModBlocks.ZEPHYR_SPORE_CAULDRON,
-                ModBlocks.ZEPHYR_SPORE_BLOCK);
-        registerLeveledCauldron(blockStateModelGenerator, ModBlocks.SUNLIGHT_SPORE_CAULDRON,
-                ModBlocks.SUNLIGHT_SPORE_BLOCK);
-        registerLeveledCauldron(blockStateModelGenerator, ModBlocks.ROSEITE_SPORE_CAULDRON,
-                ModBlocks.ROSEITE_SPORE_BLOCK);
-        registerLeveledCauldron(blockStateModelGenerator, ModBlocks.MIDNIGHT_SPORE_CAULDRON,
-                ModBlocks.MIDNIGHT_SPORE_BLOCK);
-
-        blockStateModelGenerator.registerItemModel(ModBlocks.ALUMINUM_CAULDRON.asItem());
-        blockStateModelGenerator.registerSimpleState(ModBlocks.ALUMINUM_CAULDRON);
-        blockStateModelGenerator.blockStateCollector.accept(
-                BlockStateModelGenerator.createSingletonBlockState(ModBlocks.ALUMINUM_LAVA_CAULDRON,
-                        ModModels.TEMPLATE_ALUMINUM_CAULDRON_FULL.upload(
-                                ModBlocks.ALUMINUM_LAVA_CAULDRON, ModTextureMaps.aluminumCauldron(
-                                        TextureMap.getSubId(Blocks.LAVA, "_still")),
-                                blockStateModelGenerator.modelCollector)));
-        registerAluminumLeveledCauldron(blockStateModelGenerator, ModBlocks.ALUMINUM_WATER_CAULDRON,
-                Blocks.WATER, "_still");
-        registerAluminumLeveledCauldron(blockStateModelGenerator,
-                ModBlocks.ALUMINUM_POWDER_SNOW_CAULDRON, Blocks.POWDER_SNOW);
-        registerAluminumLeveledCauldron(blockStateModelGenerator,
-                ModBlocks.ALUMINUM_DEAD_SPORE_CAULDRON, ModBlocks.DEAD_SPORE_BLOCK);
-        registerAluminumLeveledCauldron(blockStateModelGenerator,
-                ModBlocks.ALUMINUM_VERDANT_SPORE_CAULDRON, ModBlocks.VERDANT_SPORE_BLOCK);
-        registerAluminumLeveledCauldron(blockStateModelGenerator,
-                ModBlocks.ALUMINUM_CRIMSON_SPORE_CAULDRON, ModBlocks.CRIMSON_SPORE_BLOCK);
-        registerAluminumLeveledCauldron(blockStateModelGenerator,
-                ModBlocks.ALUMINUM_ZEPHYR_SPORE_CAULDRON, ModBlocks.ZEPHYR_SPORE_BLOCK);
-        registerAluminumLeveledCauldron(blockStateModelGenerator,
-                ModBlocks.ALUMINUM_SUNLIGHT_SPORE_CAULDRON, ModBlocks.SUNLIGHT_SPORE_BLOCK);
-        registerAluminumLeveledCauldron(blockStateModelGenerator,
-                ModBlocks.ALUMINUM_ROSEITE_SPORE_CAULDRON, ModBlocks.ROSEITE_SPORE_BLOCK);
-        registerAluminumLeveledCauldron(blockStateModelGenerator,
-                ModBlocks.ALUMINUM_MIDNIGHT_SPORE_CAULDRON, ModBlocks.MIDNIGHT_SPORE_BLOCK);
-
         registerUpFacingCrossBlock(blockStateModelGenerator, ModBlocks.CRIMSON_SPINES);
         registerUpFacingCrossBlock(blockStateModelGenerator, ModBlocks.DEAD_CRIMSON_SPINES);
         registerUpFacingCrossBlock(blockStateModelGenerator, ModBlocks.VERDANT_VINE_SNARE);
         registerUpFacingCrossBlock(blockStateModelGenerator, ModBlocks.DEAD_VERDANT_VINE_SNARE);
 
-        registerFlowerPotBlock(blockStateModelGenerator, ModBlocks.VERDANT_VINE_SNARE,
+        registerCauldrons(blockStateModelGenerator);
+
+        blockStateModelGenerator.registerFlowerPotPlant(ModBlocks.VERDANT_VINE_SNARE,
                 ModBlocks.POTTED_VERDANT_VINE_SNARE, CrossType.NOT_TINTED);
-        registerFlowerPotBlock(blockStateModelGenerator, ModBlocks.TWISTING_VERDANT_VINES,
+        blockStateModelGenerator.registerFlowerPotPlant(ModBlocks.TWISTING_VERDANT_VINES,
                 ModBlocks.POTTED_TWISTING_VERDANT_VINES, CrossType.NOT_TINTED);
-        registerFlowerPotBlock(blockStateModelGenerator, ModBlocks.DEAD_VERDANT_VINE_SNARE,
+        blockStateModelGenerator.registerFlowerPotPlant(ModBlocks.DEAD_VERDANT_VINE_SNARE,
                 ModBlocks.POTTED_DEAD_VERDANT_VINE_SNARE, CrossType.NOT_TINTED);
-        registerFlowerPotBlock(blockStateModelGenerator, ModBlocks.DEAD_TWISTING_VERDANT_VINES,
+        blockStateModelGenerator.registerFlowerPotPlant(ModBlocks.DEAD_TWISTING_VERDANT_VINES,
                 ModBlocks.POTTED_DEAD_TWISTING_VERDANT_VINES, CrossType.NOT_TINTED);
 
         blockStateModelGenerator.registerAnvil(ModBlocks.STEEL_ANVIL);
@@ -174,7 +126,7 @@ public class ModModelGenerator extends FabricModelProvider {
 
         registerAliasedModel(blockStateModelGenerator, ModBlocks.ALUMINUM_SHEET,
                 ModBlocks.ALUMINUM_BLOCK);
-        registerWallPlantWithoutItem(blockStateModelGenerator, ModBlocks.ALUMINUM_SHEET);
+        blockStateModelGenerator.registerMultifaceBlockModel(ModBlocks.ALUMINUM_SHEET);
     }
 
     private void generateBlockStatesOnly(BlockStateModelGenerator blockStateModelGenerator) {
@@ -203,32 +155,50 @@ public class ModModelGenerator extends FabricModelProvider {
                 blockStateModelGenerator.modelCollector);
     }
 
-    private void registerWallPlantWithoutItem(BlockStateModelGenerator blockStateModelGenerator,
-            Block block) {
-        Identifier identifier = ModelIds.getBlockModelId(block);
-        MultipartBlockStateSupplier multipartBlockStateSupplier = MultipartBlockStateSupplier.create(
-                block);
-        When.PropertyCondition propertyCondition = Util.make(When.create(),
-                propertyConditionx -> BlockStateModelGenerator.CONNECTION_VARIANT_FUNCTIONS.stream()
-                        .map(Pair::getFirst)
-                        .map(MultifaceGrowthBlock::getProperty)
-                        .forEach(property -> {
-                            if (block.getDefaultState().contains(property)) {
-                                propertyConditionx.set(property, false);
-                            }
-                        }));
+    private void registerCauldrons(BlockStateModelGenerator blockStateModelGenerator) {
+        blockStateModelGenerator.registerItemModel(ModBlocks.ALUMINUM_CAULDRON.asItem());
+        blockStateModelGenerator.registerSimpleState(ModBlocks.ALUMINUM_CAULDRON);
+        blockStateModelGenerator.blockStateCollector.accept(
+                BlockStateModelGenerator.createSingletonBlockState(ModBlocks.ALUMINUM_LAVA_CAULDRON,
+                        BlockStateModelGenerator.createWeightedVariant(
+                                ModModels.TEMPLATE_ALUMINUM_CAULDRON_FULL.upload(
+                                        ModBlocks.ALUMINUM_LAVA_CAULDRON,
+                                        ModTextureMaps.aluminumCauldron(
+                                                TextureMap.getSubId(Blocks.LAVA, "_still")),
+                                        blockStateModelGenerator.modelCollector))));
+        registerAluminumLeveledCauldron(blockStateModelGenerator, ModBlocks.ALUMINUM_WATER_CAULDRON,
+                Blocks.WATER, "_still");
+        registerAluminumLeveledCauldron(blockStateModelGenerator,
+                ModBlocks.ALUMINUM_POWDER_SNOW_CAULDRON, Blocks.POWDER_SNOW);
+        registerAluminumLeveledCauldron(blockStateModelGenerator,
+                ModBlocks.ALUMINUM_DEAD_SPORE_CAULDRON, ModBlocks.DEAD_SPORE_BLOCK);
+        registerAluminumLeveledCauldron(blockStateModelGenerator,
+                ModBlocks.ALUMINUM_VERDANT_SPORE_CAULDRON, ModBlocks.VERDANT_SPORE_BLOCK);
+        registerAluminumLeveledCauldron(blockStateModelGenerator,
+                ModBlocks.ALUMINUM_CRIMSON_SPORE_CAULDRON, ModBlocks.CRIMSON_SPORE_BLOCK);
+        registerAluminumLeveledCauldron(blockStateModelGenerator,
+                ModBlocks.ALUMINUM_ZEPHYR_SPORE_CAULDRON, ModBlocks.ZEPHYR_SPORE_BLOCK);
+        registerAluminumLeveledCauldron(blockStateModelGenerator,
+                ModBlocks.ALUMINUM_SUNLIGHT_SPORE_CAULDRON, ModBlocks.SUNLIGHT_SPORE_BLOCK);
+        registerAluminumLeveledCauldron(blockStateModelGenerator,
+                ModBlocks.ALUMINUM_ROSEITE_SPORE_CAULDRON, ModBlocks.ROSEITE_SPORE_BLOCK);
+        registerAluminumLeveledCauldron(blockStateModelGenerator,
+                ModBlocks.ALUMINUM_MIDNIGHT_SPORE_CAULDRON, ModBlocks.MIDNIGHT_SPORE_BLOCK);
 
-        for (Pair<Direction, Function<Identifier, BlockStateVariant>> pair : BlockStateModelGenerator.CONNECTION_VARIANT_FUNCTIONS) {
-            BooleanProperty booleanProperty = MultifaceGrowthBlock.getProperty(pair.getFirst());
-            Function<Identifier, BlockStateVariant> function = pair.getSecond();
-            if (block.getDefaultState().contains(booleanProperty)) {
-                multipartBlockStateSupplier.with(When.create().set(booleanProperty, true),
-                        function.apply(identifier));
-                multipartBlockStateSupplier.with(propertyCondition, function.apply(identifier));
-            }
-        }
-
-        blockStateModelGenerator.blockStateCollector.accept(multipartBlockStateSupplier);
+        registerLeveledCauldron(blockStateModelGenerator, ModBlocks.DEAD_SPORE_CAULDRON,
+                ModBlocks.DEAD_SPORE_BLOCK);
+        registerLeveledCauldron(blockStateModelGenerator, ModBlocks.VERDANT_SPORE_CAULDRON,
+                ModBlocks.VERDANT_SPORE_BLOCK);
+        registerLeveledCauldron(blockStateModelGenerator, ModBlocks.CRIMSON_SPORE_CAULDRON,
+                ModBlocks.CRIMSON_SPORE_BLOCK);
+        registerLeveledCauldron(blockStateModelGenerator, ModBlocks.ZEPHYR_SPORE_CAULDRON,
+                ModBlocks.ZEPHYR_SPORE_BLOCK);
+        registerLeveledCauldron(blockStateModelGenerator, ModBlocks.SUNLIGHT_SPORE_CAULDRON,
+                ModBlocks.SUNLIGHT_SPORE_BLOCK);
+        registerLeveledCauldron(blockStateModelGenerator, ModBlocks.ROSEITE_SPORE_CAULDRON,
+                ModBlocks.ROSEITE_SPORE_BLOCK);
+        registerLeveledCauldron(blockStateModelGenerator, ModBlocks.MIDNIGHT_SPORE_CAULDRON,
+                ModBlocks.MIDNIGHT_SPORE_BLOCK);
     }
 
     private void registerSimpleCrossBlocks(BlockStateModelGenerator blockStateModelGenerator,
@@ -241,46 +211,39 @@ public class ModModelGenerator extends FabricModelProvider {
     private void registerUpFacingCrossBlock(BlockStateModelGenerator blockStateModelGenerator,
             Block block) {
         blockStateModelGenerator.registerItemModel(block);
-        blockStateModelGenerator.blockStateCollector.accept(VariantsBlockStateSupplier.create(block,
-                        BlockStateVariant.create()
-                                .put(VariantSettings.MODEL,
-                                        Models.CROSS.upload(block, TextureMap.cross(block),
-                                                blockStateModelGenerator.modelCollector)))
-                .coordinate(blockStateModelGenerator.createUpDefaultFacingVariantMap()));
+        WeightedVariant weightedVariant = BlockStateModelGenerator.createWeightedVariant(
+                Models.CROSS.upload(block, TextureMap.cross(block),
+                        blockStateModelGenerator.modelCollector));
+        blockStateModelGenerator.blockStateCollector.accept(
+                VariantsBlockModelDefinitionCreator.of(block, weightedVariant)
+                        .coordinate(
+                                BlockStateModelGeneratorAccessor.worldsinger$getUpDefaultFacingVariantMap()));
     }
 
-    private void registerFlowerPotBlock(BlockStateModelGenerator blockStateModelGenerator,
-            Block plantBlock, Block flowerPotBlock, BlockStateModelGenerator.CrossType crossType) {
-        TextureMap textureMap = TextureMap.plant(plantBlock);
-        Identifier identifier = crossType.getFlowerPotCrossModel()
-                .upload(flowerPotBlock, textureMap, blockStateModelGenerator.modelCollector);
+    private void registerGenericLeveledCauldron(BlockStateModelGenerator blockStateModelGenerator,
+            Block cauldronBlock, TextureMap textureMap, Model level1Model, Model level2Model,
+            Model level3Model) {
         blockStateModelGenerator.blockStateCollector.accept(
-                BlockStateModelGenerator.createSingletonBlockState(flowerPotBlock, identifier));
+                VariantsBlockModelDefinitionCreator.of(cauldronBlock)
+                        .with(BlockStateVariantMap.models(LeveledCauldronBlock.LEVEL)
+                                .register(1, BlockStateModelGenerator.createWeightedVariant(
+                                        level1Model.upload(cauldronBlock, "_level1", textureMap,
+                                                blockStateModelGenerator.modelCollector)))
+                                .register(2, BlockStateModelGenerator.createWeightedVariant(
+                                        level2Model.upload(cauldronBlock, "_level2", textureMap,
+                                                blockStateModelGenerator.modelCollector)))
+                                .register(3, BlockStateModelGenerator.createWeightedVariant(
+                                        level3Model.upload(cauldronBlock, "_full", textureMap,
+                                                blockStateModelGenerator.modelCollector)))));
     }
 
     private void registerLeveledCauldron(BlockStateModelGenerator blockStateModelGenerator,
             Block cauldronBlock, Block contentBlock) {
 
         TextureMap textureMap = TextureMap.cauldron(TextureMap.getId(contentBlock));
-
-        blockStateModelGenerator.blockStateCollector.accept(
-                VariantsBlockStateSupplier.create(cauldronBlock)
-                        .coordinate(BlockStateVariantMap.create(LeveledCauldronBlock.LEVEL)
-                                .register(1, BlockStateVariant.create()
-                                        .put(VariantSettings.MODEL,
-                                                Models.TEMPLATE_CAULDRON_LEVEL1.upload(
-                                                        cauldronBlock, "_level1", textureMap,
-                                                        blockStateModelGenerator.modelCollector)))
-                                .register(2, BlockStateVariant.create()
-                                        .put(VariantSettings.MODEL,
-                                                Models.TEMPLATE_CAULDRON_LEVEL2.upload(
-                                                        cauldronBlock, "_level2", textureMap,
-                                                        blockStateModelGenerator.modelCollector)))
-                                .register(3, BlockStateVariant.create()
-                                        .put(VariantSettings.MODEL,
-                                                Models.TEMPLATE_CAULDRON_FULL.upload(cauldronBlock,
-                                                        "_full", textureMap,
-                                                        blockStateModelGenerator.modelCollector)))));
+        registerGenericLeveledCauldron(blockStateModelGenerator, cauldronBlock, textureMap,
+                Models.TEMPLATE_CAULDRON_LEVEL1, Models.TEMPLATE_CAULDRON_LEVEL2,
+                Models.TEMPLATE_CAULDRON_FULL);
     }
 
     private void registerAluminumLeveledCauldron(BlockStateModelGenerator blockStateModelGenerator,
@@ -292,24 +255,10 @@ public class ModModelGenerator extends FabricModelProvider {
             Block cauldronBlock, Block contentBlock, String suffix) {
         TextureMap textureMap = ModTextureMaps.aluminumCauldron(
                 TextureMap.getSubId(contentBlock, suffix));
-        blockStateModelGenerator.blockStateCollector.accept(
-                VariantsBlockStateSupplier.create(cauldronBlock)
-                        .coordinate(BlockStateVariantMap.create(LeveledCauldronBlock.LEVEL)
-                                .register(1, BlockStateVariant.create()
-                                        .put(VariantSettings.MODEL,
-                                                ModModels.TEMPLATE_ALUMINUM_CAULDRON_LEVEL1.upload(
-                                                        cauldronBlock, "_level1", textureMap,
-                                                        blockStateModelGenerator.modelCollector)))
-                                .register(2, BlockStateVariant.create()
-                                        .put(VariantSettings.MODEL,
-                                                ModModels.TEMPLATE_ALUMINUM_CAULDRON_LEVEL2.upload(
-                                                        cauldronBlock, "_level2", textureMap,
-                                                        blockStateModelGenerator.modelCollector)))
-                                .register(3, BlockStateVariant.create()
-                                        .put(VariantSettings.MODEL,
-                                                ModModels.TEMPLATE_ALUMINUM_CAULDRON_FULL.upload(
-                                                        cauldronBlock, "_full", textureMap,
-                                                        blockStateModelGenerator.modelCollector)))));
+        registerGenericLeveledCauldron(blockStateModelGenerator, cauldronBlock, textureMap,
+                ModModels.TEMPLATE_ALUMINUM_CAULDRON_LEVEL1,
+                ModModels.TEMPLATE_ALUMINUM_CAULDRON_LEVEL2,
+                ModModels.TEMPLATE_ALUMINUM_CAULDRON_FULL);
     }
 
     @Override
@@ -338,6 +287,7 @@ public class ModModelGenerator extends FabricModelProvider {
                 ModItems.ROSEITE_CRYSTAL,
                 ModItems.ROSEITE_CORE,
                 ModItems.CERAMIC_CANNONBALL,
+                ModItems.MIDNIGHT_CREATURE_SPAWN_EGG
         });
         registerHandheldItems(itemModelGenerator, new ItemConvertible[] {
                 ModItems.CRIMSON_SPINE,
@@ -360,18 +310,15 @@ public class ModModelGenerator extends FabricModelProvider {
                 ModBlocks.DEAD_CRIMSON_SPIKE,
         });
 
-        itemModelGenerator.registerSpawnEgg(ModItems.MIDNIGHT_CREATURE_SPAWN_EGG, 0x000000,
-                0x111111);
-
         // Steel armor
         itemModelGenerator.registerArmor(ModItems.STEEL_HELMET, ModEquipmentAssetKeys.STEEL,
-                "helmet", false);
+                ItemModelGenerator.HELMET_TRIM_ID_PREFIX, false);
         itemModelGenerator.registerArmor(ModItems.STEEL_CHESTPLATE, ModEquipmentAssetKeys.STEEL,
-                "chestplate", false);
+                ItemModelGenerator.CHESTPLATE_TRIM_ID_PREFIX, false);
         itemModelGenerator.registerArmor(ModItems.STEEL_LEGGINGS, ModEquipmentAssetKeys.STEEL,
-                "leggings", false);
-        itemModelGenerator.registerArmor(ModItems.STEEL_BOOTS, ModEquipmentAssetKeys.STEEL, "boots",
-                false);
+                ItemModelGenerator.LEGGINGS_TRIM_ID_PREFIX, false);
+        itemModelGenerator.registerArmor(ModItems.STEEL_BOOTS, ModEquipmentAssetKeys.STEEL,
+                ItemModelGenerator.BOOTS_TRIM_ID_PREFIX, false);
         // TODO: Make sure steel armor entity model is registered properly
 
         // Tinted

@@ -3,6 +3,7 @@
   "package": "io.github.drakonkinst.worldsinger.mixin.client",
   "compatibilityLevel": "JAVA_21",
   "client": [
+    "accessor.BlockStateModelGeneratorAccessor",
     "accessor.EntityRendererAccessor",
     "block.FluidRendererMixin",
     "entity.ClientPlayerEntityFreeLookMixin",

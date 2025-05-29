@@ -26,11 +26,9 @@ package io.github.drakonkinst.worldsinger.entity.model;
 
 import io.github.drakonkinst.worldsinger.Worldsinger;
 import io.github.drakonkinst.worldsinger.entity.rainline.RainlineEntity;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.util.Identifier;
-import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.model.GeoModel;
-import software.bernie.geckolib.renderer.GeoRenderer;
+import software.bernie.geckolib.renderer.base.GeoRenderState;
 
 public class RainlineEntityModel extends GeoModel<RainlineEntity> {
 
@@ -39,14 +37,12 @@ public class RainlineEntityModel extends GeoModel<RainlineEntity> {
             "textures/entity/rainline/rainline.png");
 
     @Override
-    public Identifier getModelResource(RainlineEntity entity,
-            @Nullable GeoRenderer<RainlineEntity> geoRenderer) {
+    public Identifier getModelResource(GeoRenderState geoRenderState) {
         return MODEL_PATH;
     }
 
     @Override
-    public Identifier getTextureResource(RainlineEntity entity,
-            @Nullable GeoRenderer<RainlineEntity> geoRenderer) {
+    public Identifier getTextureResource(GeoRenderState geoRenderState) {
         return TEXTURE_PATH;
     }
 
@@ -54,10 +50,5 @@ public class RainlineEntityModel extends GeoModel<RainlineEntity> {
     public Identifier getAnimationResource(RainlineEntity animatable) {
         // No animation
         return null;
-    }
-
-    @Override
-    public @Nullable RenderLayer getRenderType(RainlineEntity animatable, Identifier texture) {
-        return RenderLayer.getEntityTranslucent(texture);
     }
 }
