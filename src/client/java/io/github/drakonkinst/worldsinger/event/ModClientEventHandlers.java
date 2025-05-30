@@ -23,14 +23,12 @@
  */
 package io.github.drakonkinst.worldsinger.event;
 
-import io.github.drakonkinst.worldsinger.Worldsinger;
 import io.github.drakonkinst.worldsinger.api.ClientLunagreeData;
 import io.github.drakonkinst.worldsinger.api.ClientRainlineData;
 import io.github.drakonkinst.worldsinger.entity.PossessionClientUtil;
 import io.github.drakonkinst.worldsinger.gui.ThirstStatusBar;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.HudLayerRegistrationCallback;
-import net.fabricmc.fabric.api.client.rendering.v1.IdentifiedLayer;
 import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
 import net.fabricmc.fabric.api.event.player.UseEntityCallback;
 import net.minecraft.client.MinecraftClient;
@@ -52,9 +50,10 @@ public final class ModClientEventHandlers {
 
     private static void registerHudEvents() {
         HudLayerRegistrationCallback.EVENT.register((layeredDrawer) -> {
-            layeredDrawer.attachLayerAfter(IdentifiedLayer.HOTBAR_AND_BARS,
-                    IdentifiedLayer.of(Worldsinger.id("thirst"),
-                            ModClientEventHandlers::renderThirstBar));
+            // TODO: Restore
+            // layeredDrawer.attachLayerAfter(IdentifiedLayer.HOTBAR_AND_BARS,
+            //         IdentifiedLayer.of(Worldsinger.id("thirst"),
+            //                 ModClientEventHandlers::renderThirstBar));
         });
     }
 

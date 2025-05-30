@@ -79,6 +79,7 @@ public class StillFluidRenderHandler implements FluidRenderHandler {
     }
 
     @Override
+    // Based on FluidRenderer
     // Since these fluids only have one sprite and are always full blocks, we can skip a lot of rendering logic
     public void renderFluid(BlockPos pos, BlockRenderView world, VertexConsumer vertexConsumer,
             BlockState blockState, FluidState fluidState) {
@@ -140,7 +141,7 @@ public class StillFluidRenderHandler implements FluidRenderHandler {
             float v4 = v3;
             float midV = (v1 + v3) / 2.0f;
 
-            float frameDelta = sprite.getAnimationFrameDelta();
+            float frameDelta = sprite.getUvScaleDelta();
             u1 = MathHelper.lerp(frameDelta, u1, midU);
             u2 = MathHelper.lerp(frameDelta, u2, midU);
             u3 = MathHelper.lerp(frameDelta, u3, midU);

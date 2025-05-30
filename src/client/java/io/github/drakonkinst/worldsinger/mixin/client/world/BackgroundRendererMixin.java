@@ -36,12 +36,11 @@ import io.github.drakonkinst.worldsinger.fluid.AetherSporeFluid;
 import io.github.drakonkinst.worldsinger.util.ColorUtil;
 import io.github.drakonkinst.worldsinger.util.ModEnums;
 import io.github.drakonkinst.worldsinger.world.CameraPosAccess;
+import java.nio.ByteBuffer;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.enums.CameraSubmersionType;
 import net.minecraft.client.render.BackgroundRenderer;
-import net.minecraft.client.render.BackgroundRenderer.FogType;
 import net.minecraft.client.render.Camera;
-import net.minecraft.client.render.Fog;
 import net.minecraft.client.render.FogShape;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
@@ -99,11 +98,11 @@ public abstract class BackgroundRendererMixin {
         }
     }
 
-    @WrapOperation(method = "applyFog", at = @At(value = "NEW", target = "(FFLnet/minecraft/client/render/FogShape;FFFF)Lnet/minecraft/client/render/Fog;"))
-    private static Fog injectCustomFluidFogSettings(float start, float end, FogShape shape,
-            float red, float green, float blue, float alpha, Operation<Fog> original, Camera camera,
-            FogType fogType, Vector4f color, float viewDistance, boolean thickenFog,
-            float tickDelta) {
+    @WrapOperation(method = "applyFog(Lnet/minecraft/client/render/Camera;Lorg/joml/Vector4f;FZF)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/BackgroundRenderer;applyFog(Ljava/nio/ByteBuffer;ILorg/joml/Vector4f;Lnet/minecraft/client/render/FogShape;FFFF)V"))
+    private static void injectCustomFluidFogSettings(BackgroundRenderer instance, ByteBuffer buffer,
+            int i, Vector4f fogColor, FogShape fogShape, float fogStart, float fogEnd, float skyEnd,
+            float cloudEnd, Operation<Void> original, Camera camera, Vector4f fogColor2,
+            float viewDistance, boolean thickenFog, float tickProgress) {
         if (camera.getSubmersionType() == ModEnums.CameraSubmersionType.SPORE_SEA) {
             float newFogStart;
             float newFogEnd;
@@ -116,9 +115,11 @@ public abstract class BackgroundRendererMixin {
                 newFogStart = AetherSporeFluid.FOG_START;
                 newFogEnd = AetherSporeFluid.FOG_END;
             }
-            return original.call(newFogStart, newFogEnd, shape, red, green, blue, alpha);
+            original.call(instance, buffer, i, fogColor, fogShape, newFogStart, newFogEnd, skyEnd,
+                    cloudEnd);
+            return;
         }
-        return original.call(start, end, shape, red, green, blue, alpha);
+        original.call(instance, buffer, i, fogColor, fogShape, fogStart, fogEnd, skyEnd, cloudEnd);
     }
 
     @ModifyExpressionValue(method = "getFogColor", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/world/ClientWorld;getRainGradient(F)F"))

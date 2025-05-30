@@ -24,15 +24,14 @@
 package io.github.drakonkinst.worldsinger.mixin.client.gui;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
-import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.drakonkinst.worldsinger.entity.CameraPossessable;
 import io.github.drakonkinst.worldsinger.entity.MidnightCreatureEntity;
 import io.github.drakonkinst.worldsinger.entity.PossessionClientUtil;
 import io.github.drakonkinst.worldsinger.gui.ThirstStatusBar;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.InGameHud;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -94,9 +93,9 @@ public abstract class InGameHudMixin {
     @Unique
     private void renderMidnightEssencePossessionVignette(DrawContext context) {
         // Prepare
-        RenderSystem.disableDepthTest();
-        RenderSystem.depthMask(false);
-        RenderSystem.enableBlend();
+        // RenderSystem.disableDepthTest();
+        // RenderSystem.depthMask(false);
+        // RenderSystem.enableBlend();
         // RenderSystem.blendFuncSeparate(GlStateManager.SrcFactor.ZERO,
         //         GlStateManager.DstFactor.ONE_MINUS_SRC_COLOR, GlStateManager.SrcFactor.ONE,
         //         GlStateManager.DstFactor.ZERO);
@@ -105,14 +104,14 @@ public abstract class InGameHudMixin {
         final int scaledWidth = context.getScaledWindowWidth();
         final int scaledHeight = context.getScaledWindowHeight();
         // TODO: RESTORE - still broken
-        context.drawTexture(RenderLayer::getGuiTextured, VIGNETTE_TEXTURE, 0, 0, 0.0f, 0.0f,
+        context.drawTexture(RenderPipelines.GUI_TEXTURED, VIGNETTE_TEXTURE, 0, 0, 0.0f, 0.0f,
                 scaledWidth, scaledHeight, scaledWidth, scaledHeight);
 
         // Reset
-        RenderSystem.depthMask(true);
-        RenderSystem.enableDepthTest();
-        RenderSystem.defaultBlendFunc();
-        RenderSystem.disableBlend();
+        // RenderSystem.depthMask(true);
+        // RenderSystem.enableDepthTest();
+        // RenderSystem.defaultBlendFunc();
+        // RenderSystem.disableBlend();
     }
 
     @Shadow

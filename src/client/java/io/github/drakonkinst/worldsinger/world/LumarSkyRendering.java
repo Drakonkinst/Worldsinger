@@ -24,7 +24,6 @@
 
 package io.github.drakonkinst.worldsinger.world;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.drakonkinst.worldsinger.Worldsinger;
 import io.github.drakonkinst.worldsinger.api.ClientLunagreeData;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarLunagreeGenerator;
@@ -48,7 +47,7 @@ import org.joml.Vector3d;
 
 public class LumarSkyRendering {
 
-    private static final Identifier LUMAR_MOON = Worldsinger.id(
+    private static final Identifier LUMAR_MOON_TEXTURE = Worldsinger.id(
             "textures/environment/lumar_moon.png");
     private static final int MOON_TEXTURE_SECTIONS_Y = 1;
     private static final int MOON_TEXTURE_SECTIONS_X = 6;
@@ -131,7 +130,8 @@ public class LumarSkyRendering {
         assert (player != null);
         // RenderSystem.setShader(ShaderProgramKeys.POSITION_TEX);
         // RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-        RenderSystem.setShaderTexture(0, LUMAR_MOON);
+        // VertexConsumer vertexConsumer = vertexConsumers.getBuffer(RenderLayer.getCelestial(SUN_TEXTURE));
+        // RenderSystem.setShaderTexture(0, LUMAR_MOON_TEXTURE);
         final ClientLunagreeData lunagreeData = ClientLunagreeData.get(player.getWorld());
         final Vec3d playerPos = player.getCameraPosVec(tickDelta);
         for (LunagreeLocation location : lunagreeData.getLunagreeLocations()) {
@@ -146,10 +146,10 @@ public class LumarSkyRendering {
             // Render moon
             renderMoonAtLocation(vertexConsumers, matrices, location, playerPos, distSq);
         }
-        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-        RenderSystem.disableBlend();
-        RenderSystem.defaultBlendFunc();
-        RenderSystem.depthMask(true);
+        // RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+        // RenderSystem.disableBlend();
+        // RenderSystem.defaultBlendFunc();
+        // RenderSystem.depthMask(true);
     }
 
     private void renderMoonAtLocation(Immediate vertexConsumers, MatrixStack matrices,
@@ -198,7 +198,7 @@ public class LumarSkyRendering {
 
         // Draw moon
         VertexConsumer vertexConsumer = vertexConsumers.getBuffer(
-                RenderLayer.getCelestial(LUMAR_MOON));
+                RenderLayer.getCelestial(LUMAR_MOON_TEXTURE));
         int color = ColorHelper.getWhite(1.0f);
         Matrix4f moonPosition = matrices.peek().getPositionMatrix();
         vertexConsumer.vertex(moonPosition, -radius, height, -radius).texture(x1, y1).color(color);

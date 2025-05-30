@@ -27,6 +27,7 @@ package io.github.drakonkinst.worldsinger.mixin.client.world;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import com.mojang.blaze3d.buffers.GpuBufferSlice;
 import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.drakonkinst.worldsinger.cosmere.CosmerePlanet;
 import io.github.drakonkinst.worldsinger.util.ModEnums;
@@ -36,9 +37,8 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.BufferBuilderStorage;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.DimensionEffects;
-import net.minecraft.client.render.Fog;
 import net.minecraft.client.render.FrameGraphBuilder;
-import net.minecraft.client.render.RenderPass;
+import net.minecraft.client.render.FramePass;
 import net.minecraft.client.render.SkyRendering;
 import net.minecraft.client.render.VertexConsumerProvider.Immediate;
 import net.minecraft.client.render.WorldRenderer;
@@ -85,10 +85,10 @@ public abstract class WorldRendererLumarMixin {
         this.lumarSkyRendering = new LumarSkyRendering(skyRendering);
     }
 
-    @WrapOperation(method = "renderSky", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/RenderPass;setRenderer(Ljava/lang/Runnable;)V"))
-    private void renderLumarCustomSky(RenderPass instance, Runnable runnable,
+    @WrapOperation(method = "renderSky", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/FramePass;setRenderer(Ljava/lang/Runnable;)V"))
+    private void renderLumarCustomSky(FramePass instance, Runnable runnable,
             Operation<Void> original, FrameGraphBuilder frameGraphBuilder, Camera camera,
-            float tickDelta, Fog fog) {
+            float tickProgress, GpuBufferSlice fog) {
         if (this.world == null || !CosmerePlanet.isLumar(this.world)) {
             original.call(instance, runnable);
             return;
@@ -98,17 +98,17 @@ public abstract class WorldRendererLumarMixin {
 
             MatrixStack matrices = new MatrixStack();
             DimensionEffects dimensionEffects = this.world.getDimensionEffects();
-            float skyAngleRadians = this.world.getSkyAngleRadians(tickDelta);
-            float skyAngle = this.world.getSkyAngle(tickDelta);
-            float skyAlpha = 1.0F - this.world.getRainGradient(tickDelta);
-            float starBrightness = this.world.getStarBrightness(tickDelta) * skyAlpha;
+            float skyAngleRadians = this.world.getSkyAngleRadians(tickProgress);
+            float skyAngle = this.world.getSkyAngle(tickProgress);
+            float skyAlpha = 1.0F - this.world.getRainGradient(tickProgress);
+            float starBrightness = this.world.getStarBrightness(tickProgress) * skyAlpha;
             int dimensionSkyColor = dimensionEffects.getSkyColor(skyAngle);
             int skyColor = this.world.getSkyColor(this.client.gameRenderer.getCamera().getPos(),
-                    tickDelta);
+                    tickProgress);
             float r = ColorHelper.getRedFloat(skyColor);
             float g = ColorHelper.getGreenFloat(skyColor);
             float b = ColorHelper.getBlueFloat(skyColor);
-            this.skyRendering.renderSky(r, g, b);
+            this.skyRendering.renderTopSky(r, g, b);
             Immediate vertexConsumers = this.bufferBuilders.getEntityVertexConsumers();
             if (dimensionEffects.isSunRisingOrSetting(skyAngle)) {
                 this.skyRendering.renderGlowingSky(matrices, vertexConsumers, skyAngleRadians,
@@ -119,10 +119,10 @@ public abstract class WorldRendererLumarMixin {
             // lumarSkyRendering.renderLumarCelestialBodies(matrices, vertexConsumers, tickDelta,
             // skyAngle, skyAlpha, starBrightness, fog);
             skyRendering.renderCelestialBodies(matrices, vertexConsumers, skyAngle, 0, skyAlpha,
-                    starBrightness, fog);
+                    starBrightness);
             vertexConsumers.draw();
-            if (this.isSkyDark(tickDelta)) {
-                this.skyRendering.renderSkyDark(matrices);
+            if (this.isSkyDark(tickProgress)) {
+                this.skyRendering.renderSkyDark();
             }
         }));
     }

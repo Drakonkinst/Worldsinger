@@ -64,7 +64,8 @@ public final class ModItemRendering {
                 ModItemRendering.CANNONBALL_FUSE_3,
         };
         ModelLoadingPlugin.register(pluginContext -> {
-            pluginContext.addModels(overlayModels);
+            // TODO: Restore
+            // pluginContext.addModels(overlayModels);
             // pluginContext.modifyModelOnLoad()
             //         .register(ModelModifier.WRAP_PHASE, (model, context) -> {
             //             return model;

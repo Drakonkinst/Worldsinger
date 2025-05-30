@@ -26,7 +26,6 @@ package io.github.drakonkinst.worldsinger.mixin.client.gui;
 import io.github.drakonkinst.worldsinger.item.component.CannonballComponent.CannonballContent;
 import java.util.List;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.util.Colors;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -34,9 +33,6 @@ import org.spongepowered.asm.mixin.Unique;
 
 @Mixin(DrawContext.class)
 public abstract class DrawContextMixin {
-
-    @Shadow
-    public abstract void fill(RenderLayer layer, int x1, int y1, int x2, int y2, int color);
 
     // Mixing in directly to DrawContext because we want salted overlay to ONLY appear in the
     // inventory, not in hand.
@@ -86,6 +82,9 @@ public abstract class DrawContextMixin {
     //     drawCannonballContentBar(contents, 2, x, y, 10, 14);
     // }
 
+    @Shadow
+    public abstract void fill(int x1, int y1, int x2, int y2, int color);
+
     @Unique
     private void drawCannonballContentBar(List<CannonballContent> contents, int index, int x, int y,
             int from, int to) {
@@ -94,8 +93,7 @@ public abstract class DrawContextMixin {
         }
         int startY = y + 16 - to;
         int endY = y + 16 - from;
-        this.fill(RenderLayer.getGuiOverlay(), x, startY, x + 1, endY,
-                contents.get(index).getBarColor() | Colors.BLACK);
+        this.fill(x, startY, x + 1, endY, contents.get(index).getBarColor() | Colors.BLACK);
     }
 
     // TODO: RESTORE

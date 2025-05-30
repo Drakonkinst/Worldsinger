@@ -76,8 +76,8 @@ public final class PossessionClientUtil {
                     yaw = player.getHeadYaw();
                     pitch = player.getPitch();
                 }
-                final float forwardSpeed = player.input.movementForward;
-                final float sidewaysSpeed = player.input.movementSideways;
+                final float forwardSpeed = player.input.getMovementInput().y;
+                final float sidewaysSpeed = player.input.getMovementInput().x;
                 final boolean jumping = player.input.playerInput.jump();
                 final boolean sprinting = MinecraftClient.getInstance().options.sprintKey.isPressed();
                 cameraPossessable.commandMovement(yaw, pitch, forwardSpeed, sidewaysSpeed, jumping,
@@ -167,7 +167,7 @@ public final class PossessionClientUtil {
             return ActionResult.PASS;
         });
     }
-    
+
     // Don't need to check camera entity directly since we can trust possessionData to hold the
     // right value, if the camera entity is set due to possession.
     public static CameraPossessable getPossessedEntity() {

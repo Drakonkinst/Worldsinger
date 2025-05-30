@@ -76,7 +76,7 @@ public class ModBlockTagGenerator extends BlockTagProvider {
         getOrCreateTagBuilder(BlockTags.CLIMBABLE).add(ModBlocks.TWISTING_VERDANT_VINES,
                 ModBlocks.DEAD_TWISTING_VERDANT_VINES, ModBlocks.TWISTING_VERDANT_VINES_PLANT,
                 ModBlocks.DEAD_TWISTING_VERDANT_VINES_PLANT);
-        getOrCreateTagBuilder(BlockTags.DEAD_BUSH_MAY_PLACE_ON).add(ModBlocks.SALTSTONE)
+        getOrCreateTagBuilder(BlockTags.DRY_VEGETATION_MAY_PLACE_ON).add(ModBlocks.SALTSTONE)
                 .add(ModBlocks.SALTSTONE_SALT_ORE);
         getOrCreateTagBuilder(BlockTags.FLOWER_POTS).add(ModBlocks.POTTED_VERDANT_VINE_SNARE)
                 .add(ModBlocks.POTTED_TWISTING_VERDANT_VINES)
