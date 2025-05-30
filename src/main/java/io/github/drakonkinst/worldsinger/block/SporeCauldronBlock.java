@@ -32,7 +32,7 @@ import net.minecraft.block.LeveledCauldronBlock;
 import net.minecraft.block.cauldron.CauldronBehavior;
 import net.minecraft.block.cauldron.CauldronBehavior.CauldronBehaviorMap;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityCollisionHandler;
+import net.minecraft.fluid.Fluid;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -60,13 +60,13 @@ public class SporeCauldronBlock extends LeveledCauldronBlock implements SporeEmi
     }
 
     @Override
-    public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity,
-            EntityCollisionHandler handler) {
-        if (!world.isClient() && this.isEntityTouchingFluid(state, pos, entity)) {
-            if (entity.isOnFire()) {
-                entity.extinguish();
-            }
-        }
+    protected boolean canBeFilledByDripstone(Fluid fluid) {
+        return false;
+    }
+
+    protected boolean isEntityTouchingFluid(BlockState state, BlockPos pos, Entity entity) {
+        return entity.getY() < (double) pos.getY() + this.getFluidHeight(state)
+                && entity.getBoundingBox().maxY > (double) pos.getY() + 0.25D;
     }
 
     @Override

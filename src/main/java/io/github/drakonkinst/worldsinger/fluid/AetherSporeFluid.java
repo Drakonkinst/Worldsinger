@@ -107,16 +107,8 @@ public abstract class AetherSporeFluid extends FlowableFluid implements SporeEmi
         return 5;
     }
 
-    public float getFogRed() {
-        return fogRed;
-    }
-
-    public float getFogGreen() {
-        return fogGreen;
-    }
-
-    public float getFogBlue() {
-        return fogBlue;
+    public int getFogColor() {
+        return sporeType.getColor();
     }
 
     public AetherSpores getSporeType() {
