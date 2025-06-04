@@ -73,7 +73,7 @@ dependencies {
     }
 
     // Mod Menu Integration (Optional)
-    modApi("com.terraformersmc:modmenu:${project.modmenu_version}") {
+    modCompileOnly("com.terraformersmc:modmenu:${project.modmenu_version}") {
         exclude(group: "net.fabricmc.fabric-api")
     }
 

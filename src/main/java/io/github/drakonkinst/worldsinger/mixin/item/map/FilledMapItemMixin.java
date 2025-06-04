@@ -38,7 +38,6 @@ import net.minecraft.item.FilledMapItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
@@ -50,10 +49,10 @@ public abstract class FilledMapItemMixin extends Item {
     }
 
     @ModifyReturnValue(method = "createMap", at = @At("RETURN"))
-    private static ItemStack addRainlineIcons(ItemStack original, World world, int x, int z,
+    private static ItemStack addRainlineIcons(ItemStack original, ServerWorld world, int x, int z,
             byte scale, boolean showIcons, boolean unlimitedTracking,
             @Local MapIdComponent mapIdComponent) {
-        if (!CosmerePlanet.isLumar(world) || !(world instanceof ServerWorld serverWorld)) {
+        if (!CosmerePlanet.isLumar(world)) {
             return original;
         }
 
@@ -64,7 +63,7 @@ public abstract class FilledMapItemMixin extends Item {
                 customMapDecorations.decorations());
         RainlineSpawner rainlineSpawner = ((LumarManagerAccess) world).worldsinger$getLumarManager()
                 .getRainlineManager();
-        rainlineSpawner.applyMapDecorations(serverWorld, updatedDecorations,
+        rainlineSpawner.applyMapDecorations(world, updatedDecorations,
                 world.getMapState(mapIdComponent));
 
         if (updatedDecorations.size() > customMapDecorations.decorations().size()) {

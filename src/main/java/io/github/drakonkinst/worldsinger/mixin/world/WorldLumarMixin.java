@@ -52,26 +52,15 @@ public abstract class WorldLumarMixin implements WorldAccess, AutoCloseable, Lum
         lumarManager = LumarManager.NULL;
     }
 
-    @ModifyExpressionValue(method = "hasRain", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/World;isRaining()Z"))
-    private boolean considerRainlinesAsRaining(boolean original, BlockPos pos) {
-        if (original) {
+    @ModifyExpressionValue(method = "getPrecipitation", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/biome/Biome;getPrecipitation(Lnet/minecraft/util/math/BlockPos;I)Lnet/minecraft/world/biome/Biome$Precipitation;"))
+    private Precipitation considerRainlinesAsRaining(Precipitation original, BlockPos pos) {
+        if (original != Precipitation.NONE) {
             return original;
         }
         if ((Object) this instanceof ServerWorld serverWorld) {
-            return RainlineSpawner.shouldRainlineAffectBlocks(serverWorld, pos.toCenterPos());
-        }
-        return false;
-    }
-
-    // This approach isn't perfect, but is minimally invasive
-    // Rainlines won't work in biomes without precipitation outside Lumar
-    // Another approach would be to inject at HEAD, but this would require re-doing checks
-    // and be less compatible
-    // Another approach would be some kind of captured local, but trying to avoid this
-    @ModifyExpressionValue(method = "hasRain", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/biome/Biome;getPrecipitation(Lnet/minecraft/util/math/BlockPos;I)Lnet/minecraft/world/biome/Biome$Precipitation;"))
-    private Precipitation makeLumarAlwaysRaining(Precipitation original) {
-        if (CosmerePlanet.isLumar((World) (Object) this)) {
-            return Precipitation.RAIN;
+            if (RainlineSpawner.shouldRainlineAffectBlocks(serverWorld, pos.toCenterPos())) {
+                return Precipitation.RAIN;
+            }
         }
         return original;
     }

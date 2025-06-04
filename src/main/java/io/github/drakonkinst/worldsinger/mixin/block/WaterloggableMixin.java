@@ -31,7 +31,7 @@ import java.util.Optional;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Waterloggable;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
@@ -51,7 +51,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public interface WaterloggableMixin {
 
     @ModifyReturnValue(method = "canFillWithFluid", at = @At("RETURN"))
-    private boolean canFillWithAnyFluid(boolean original, @Nullable PlayerEntity player,
+    private boolean canFillWithAnyFluid(boolean original, @Nullable LivingEntity filler,
             BlockView world, BlockPos pos, BlockState state, Fluid fluid) {
         return original || Fluidlogged.getFluidIndex(fluid) > 0;
     }
@@ -91,7 +91,7 @@ public interface WaterloggableMixin {
     }
 
     @Inject(method = "tryDrainFluid", at = @At("HEAD"), cancellable = true)
-    private void tryDrainAnyFluid(@Nullable PlayerEntity player, WorldAccess world, BlockPos pos,
+    private void tryDrainAnyFluid(@Nullable LivingEntity drainer, WorldAccess world, BlockPos pos,
             BlockState state, CallbackInfoReturnable<ItemStack> cir) {
         if (state.get(Properties.WATERLOGGED) || (state.contains(ModProperties.FLUIDLOGGED)
                 && state.get(ModProperties.FLUIDLOGGED) > 0)) {

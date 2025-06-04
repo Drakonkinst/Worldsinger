@@ -44,7 +44,6 @@ import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.client.world.ClientWorld.Properties;
-import net.minecraft.particle.ParticleEffect;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.math.BlockPos;
@@ -54,7 +53,6 @@ import net.minecraft.world.Heightmap.Type;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -62,10 +60,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ClientWorld.class)
 public abstract class ClientWorldLumarMixin extends WorldLumarMixin {
-
-    @Shadow
-    public abstract void addParticle(ParticleEffect parameters, double x, double y, double z,
-            double velocityX, double velocityY, double velocityZ);
 
     @Inject(method = "<init>", at = @At("TAIL"))
     private void initialize(ClientPlayNetworkHandler networkHandler, Properties properties,

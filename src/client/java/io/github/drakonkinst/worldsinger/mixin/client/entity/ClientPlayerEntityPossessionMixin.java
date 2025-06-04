@@ -58,7 +58,7 @@ public abstract class ClientPlayerEntityPossessionMixin extends AbstractClientPl
     // Player drifts on the client side when they start possessing, since in vanilla cases if
     // the camera entity is not the player, the player doesn't exist in the world
     // But since it does for our purposes, we need to stop their movement.
-    @Inject(method = "tickNewAi", at = @At("TAIL"))
+    @Inject(method = "tickMovementInput", at = @At("TAIL"))
     private void stopMovementInputWhenStartPossessing(CallbackInfo ci) {
         // This is a better check than isCamera() because it doesn't interfere with other
         // uses of camera, and also if this is true then the camera should be set properly anyway
