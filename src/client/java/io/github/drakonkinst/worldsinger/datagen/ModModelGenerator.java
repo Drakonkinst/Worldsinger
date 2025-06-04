@@ -94,14 +94,15 @@ public class ModModelGenerator extends FabricModelProvider {
 
         registerCauldrons(blockStateModelGenerator);
 
-        blockStateModelGenerator.registerFlowerPotPlant(ModBlocks.VERDANT_VINE_SNARE,
+        this.registerFlowerPotNoPlant(blockStateModelGenerator, ModBlocks.VERDANT_VINE_SNARE,
                 ModBlocks.POTTED_VERDANT_VINE_SNARE, CrossType.NOT_TINTED);
-        blockStateModelGenerator.registerFlowerPotPlant(ModBlocks.TWISTING_VERDANT_VINES,
+        this.registerFlowerPotNoPlant(blockStateModelGenerator, ModBlocks.TWISTING_VERDANT_VINES,
                 ModBlocks.POTTED_TWISTING_VERDANT_VINES, CrossType.NOT_TINTED);
-        blockStateModelGenerator.registerFlowerPotPlant(ModBlocks.DEAD_VERDANT_VINE_SNARE,
+        this.registerFlowerPotNoPlant(blockStateModelGenerator, ModBlocks.DEAD_VERDANT_VINE_SNARE,
                 ModBlocks.POTTED_DEAD_VERDANT_VINE_SNARE, CrossType.NOT_TINTED);
-        blockStateModelGenerator.registerFlowerPotPlant(ModBlocks.DEAD_TWISTING_VERDANT_VINES,
-                ModBlocks.POTTED_DEAD_TWISTING_VERDANT_VINES, CrossType.NOT_TINTED);
+        this.registerFlowerPotNoPlant(blockStateModelGenerator,
+                ModBlocks.DEAD_TWISTING_VERDANT_VINES, ModBlocks.POTTED_DEAD_TWISTING_VERDANT_VINES,
+                CrossType.NOT_TINTED);
 
         blockStateModelGenerator.registerAnvil(ModBlocks.STEEL_ANVIL);
         blockStateModelGenerator.registerAnvil(ModBlocks.CHIPPED_STEEL_ANVIL);
@@ -153,6 +154,19 @@ public class ModModelGenerator extends FabricModelProvider {
         Item item = target.asItem();
         Models.GENERATED.upload(ModelIds.getItemModelId(item), TextureMap.layer0(texture),
                 blockStateModelGenerator.modelCollector);
+    }
+
+    // Same as vanilla method, but don't register the plant block
+    private void registerFlowerPotNoPlant(BlockStateModelGenerator blockStateModelGenerator,
+            Block plantBlock, Block flowerPotBlock, BlockStateModelGenerator.CrossType tintType) {
+        TextureMap textureMap = tintType.getFlowerPotTextureMap(plantBlock);
+        WeightedVariant weightedVariant = BlockStateModelGenerator.createWeightedVariant(
+                tintType.getFlowerPotCrossModel()
+                        .upload(flowerPotBlock, textureMap,
+                                blockStateModelGenerator.modelCollector));
+        blockStateModelGenerator.blockStateCollector.accept(
+                BlockStateModelGenerator.createSingletonBlockState(flowerPotBlock,
+                        weightedVariant));
     }
 
     private void registerCauldrons(BlockStateModelGenerator blockStateModelGenerator) {

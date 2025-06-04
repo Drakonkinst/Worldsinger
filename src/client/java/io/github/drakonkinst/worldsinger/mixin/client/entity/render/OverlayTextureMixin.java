@@ -23,11 +23,13 @@
  */
 package io.github.drakonkinst.worldsinger.mixin.client.entity.render;
 
-import com.llamalad7.mixinextras.sugar.Local;
 import io.github.drakonkinst.worldsinger.entity.render.MidnightCreatureEntityRenderer;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.texture.NativeImage;
+import net.minecraft.client.texture.NativeImageBackedTexture;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -48,9 +50,13 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(OverlayTexture.class)
 public abstract class OverlayTextureMixin {
 
-    @SuppressWarnings("UnresolvedLocalCapture")
-    @Inject(method = "<init>", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/systems/RenderSystem;activeTexture(I)V", ordinal = 0))
-    private void populateUnusedRows(CallbackInfo ci, @Local NativeImage nativeImage) {
+    @Shadow
+    @Final
+    private NativeImageBackedTexture texture;
+
+    @Inject(method = "<init>", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/texture/NativeImageBackedTexture;setClamp(Z)V"))
+    private void populateUnusedRows(CallbackInfo ci) {
+        NativeImage nativeImage = this.texture.getImage();
         this.setRowColor(nativeImage, 0, MidnightCreatureEntityRenderer.MIDNIGHT_OVERLAY_COLOR);
         this.setRowColor(nativeImage, 1,
                 MidnightCreatureEntityRenderer.MIDNIGHT_OVERLAY_HURT_COLOR);

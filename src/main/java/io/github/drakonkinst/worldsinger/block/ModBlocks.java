@@ -46,6 +46,7 @@ import net.minecraft.block.FlowerPotBlock;
 import net.minecraft.block.LavaCauldronBlock;
 import net.minecraft.block.LeveledCauldronBlock;
 import net.minecraft.block.MapColor;
+import net.minecraft.block.MultifaceBlock;
 import net.minecraft.block.cauldron.CauldronBehavior;
 import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.registry.Registries;
@@ -514,7 +515,7 @@ public final class ModBlocks {
             AbstractBlock.Settings.create().requiresTool()
                     // Same strength as Gold Block
                     .strength(3.0f, 6.0f).sounds(BlockSoundGroup.METAL), true);
-    public static final Block ALUMINUM_SHEET = register("aluminum_sheet", AluminumSheetBlock::new,
+    public static final Block ALUMINUM_SHEET = register("aluminum_sheet", MultifaceBlock::new,
             AbstractBlock.Settings.create()
                     .requiresTool()
                     // Same strength as Aluminum Block

@@ -48,7 +48,7 @@ public abstract class BrushItemMixin extends Item {
         super(settings);
     }
 
-    @Inject(method = "usageTick", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/World;playSound(Lnet/minecraft/entity/player/PlayerEntity;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/sound/SoundEvent;Lnet/minecraft/sound/SoundCategory;)V"))
+    @Inject(method = "usageTick", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/World;playSound(Lnet/minecraft/entity/Entity;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/sound/SoundEvent;Lnet/minecraft/sound/SoundCategory;)V"))
     private void spawnParticlesWhenBrushingSporeBlock(World world, LivingEntity user,
             ItemStack stack, int remainingUseTicks, CallbackInfo ci, @Local BlockPos blockPos) {
         if (!world.isClient() && world instanceof ServerWorld serverWorld) {
