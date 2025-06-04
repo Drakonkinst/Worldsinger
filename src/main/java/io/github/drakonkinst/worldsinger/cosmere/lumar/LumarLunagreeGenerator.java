@@ -124,8 +124,8 @@ public class LumarLunagreeGenerator extends PersistentState implements LunagreeG
     @Override
     public void updateLunagreeDataForPlayer(ServerPlayerEntity player) {
         long key = getKeyForPos(player.getBlockX(), player.getBlockZ());
-        List<LunagreeLocation> locations = getNeighboringLunagrees(player.getServerWorld(), key,
-                true, true);
+        List<LunagreeLocation> locations = getNeighboringLunagrees(player.getWorld(), key, true,
+                true);
         ServerPlayNetworking.send(player, new LunagreeSyncPayload(locations));
     }
 

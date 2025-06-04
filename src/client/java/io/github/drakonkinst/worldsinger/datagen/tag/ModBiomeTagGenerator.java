@@ -44,34 +44,39 @@ public class ModBiomeTagGenerator extends FabricTagProvider<Biome> {
     @Override
     protected void configure(WrapperLookup wrapperLookup) {
         // Vanilla tags
-        getOrCreateTagBuilder(BiomeTags.VILLAGE_PLAINS_HAS_STRUCTURE).addOptional(
-                ModBiomes.LUMAR_FOREST).addOptional(ModBiomes.LUMAR_GRASSLANDS);
-        getOrCreateTagBuilder(BiomeTags.VILLAGE_TAIGA_HAS_STRUCTURE).addOptional(
-                ModBiomes.LUMAR_ROCKS).addOptional(ModBiomes.LUMAR_PEAKS);
-        getOrCreateTagBuilder(BiomeTags.PILLAGER_OUTPOST_HAS_STRUCTURE).addOptional(
-                        ModBiomes.LUMAR_PEAKS)
+        this.builder(BiomeTags.VILLAGE_PLAINS_HAS_STRUCTURE)
+                .addOptional(ModBiomes.LUMAR_FOREST)
+                .addOptional(ModBiomes.LUMAR_GRASSLANDS);
+        this.builder(BiomeTags.VILLAGE_TAIGA_HAS_STRUCTURE)
+                .addOptional(ModBiomes.LUMAR_ROCKS)
+                .addOptional(ModBiomes.LUMAR_PEAKS);
+        this.builder(BiomeTags.PILLAGER_OUTPOST_HAS_STRUCTURE)
+                .addOptional(ModBiomes.LUMAR_PEAKS)
                 .addOptional(ModBiomes.LUMAR_FOREST)
                 .addOptional(ModBiomes.LUMAR_GRASSLANDS)
                 .addOptional(ModBiomes.LUMAR_ROCKS);
 
         // Mod tags
-        getOrCreateTagBuilder(ModBiomeTags.IS_LUMAR_BEACH).addOptional(ModBiomes.SALTSTONE_ISLAND)
+        this.builder(ModBiomeTags.IS_LUMAR_BEACH)
+                .addOptional(ModBiomes.SALTSTONE_ISLAND)
                 .addOptional(ModBiomes.LUMAR_ROCKS);
-        getOrCreateTagBuilder(ModBiomeTags.IS_LUMAR_OCEAN).addOptional(ModBiomes.SPORE_SEA)
+        this.builder(ModBiomeTags.IS_LUMAR_OCEAN)
+                .addOptional(ModBiomes.SPORE_SEA)
                 .addOptional(ModBiomes.DEEP_SPORE_SEA);
-        getOrCreateTagBuilder(ModBiomeTags.SEAGULLS_CAN_SPAWN).addOptional(
-                        ModBiomes.SALTSTONE_ISLAND)
+        this.builder(ModBiomeTags.SEAGULLS_CAN_SPAWN)
+                .addOptional(ModBiomes.SALTSTONE_ISLAND)
                 .addOptional(ModBiomes.LUMAR_ROCKS)
                 .addOptional(ModBiomes.LUMAR_PEAKS)
                 .addOptional(ModBiomes.DEEP_SPORE_SEA)
                 .addOptional(ModBiomes.SPORE_SEA);
 
         // Mod structure tags
-        getOrCreateTagBuilder(ModBiomeTags.LUMAR_MINESHAFT_HAS_STRUCTURE).addOptional(
-                ModBiomes.SALTSTONE_ISLAND);
-        getOrCreateTagBuilder(ModBiomeTags.LUMAR_SALTSTONE_WELL_HAS_STRUCTURE).addOptional(
-                ModBiomes.SALTSTONE_ISLAND);
-        getOrCreateTagBuilder(ModBiomeTags.LUMAR_SHIPWRECK_HAS_STRUCTURE).addOptionalTag(
-                ModBiomeTags.IS_LUMAR_OCEAN).addOptionalTag(ModBiomeTags.IS_LUMAR_BEACH);
+        this.builder(ModBiomeTags.LUMAR_MINESHAFT_HAS_STRUCTURE)
+                .addOptional(ModBiomes.SALTSTONE_ISLAND);
+        this.builder(ModBiomeTags.LUMAR_SALTSTONE_WELL_HAS_STRUCTURE)
+                .addOptional(ModBiomes.SALTSTONE_ISLAND);
+        this.builder(ModBiomeTags.LUMAR_SHIPWRECK_HAS_STRUCTURE)
+                .addOptionalTag(ModBiomeTags.IS_LUMAR_OCEAN)
+                .addOptionalTag(ModBiomeTags.IS_LUMAR_BEACH);
     }
 }

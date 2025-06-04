@@ -23,11 +23,14 @@
  */
 package io.github.drakonkinst.worldsinger.mixin.entity;
 
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import io.github.drakonkinst.worldsinger.block.LivingAetherSporeBlock;
 import io.github.drakonkinst.worldsinger.block.SteelAnvilBlock;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.SeetheManager;
 import io.github.drakonkinst.worldsinger.fluid.ModFluidTags;
 import io.github.drakonkinst.worldsinger.registry.tag.ModBlockTags;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ConcretePowderBlock;
 import net.minecraft.entity.Entity;
@@ -35,7 +38,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.FallingBlockEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.fluid.FluidState;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -64,8 +67,6 @@ public abstract class FallingBlockEntityMixin extends Entity {
 
     @Shadow
     public boolean dropItem;
-    @Shadow
-    private boolean hurtEntities;
     @Shadow
     private boolean destroyedOnLanding;
     @Shadow
@@ -136,13 +137,9 @@ public abstract class FallingBlockEntityMixin extends Entity {
         }
     }
 
-    @Inject(method = "readCustomDataFromNbt", at = @At("TAIL"))
-    private void addSteelAnvilHurtsEntities(NbtCompound nbt, CallbackInfo ci) {
-        if (nbt.contains("HurtEntities")) {
-            return;
-        }
-        if (this.blockState.isIn(ModBlockTags.STEEL_ANVIL)) {
-            this.hurtEntities = true;
-        }
+    @WrapOperation(method = "readCustomData", at = @At(value = "INVOKE", target = "Lnet/minecraft/block/BlockState;isIn(Lnet/minecraft/registry/tag/TagKey;)Z"))
+    private boolean addSteelAnvilHurtsEntities(BlockState instance, TagKey<Block> tagKey,
+            Operation<Boolean> original) {
+        return original.call(instance, tagKey) || instance.isIn(ModBlockTags.STEEL_ANVIL);
     }
 }

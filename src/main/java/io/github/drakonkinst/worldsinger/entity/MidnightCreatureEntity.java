@@ -88,14 +88,13 @@ import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsage;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtList;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.storage.ReadView;
+import net.minecraft.storage.WriteView;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
@@ -246,8 +245,7 @@ public class MidnightCreatureEntity extends ShapeshiftingEntity implements
         if (controller != null && controller.isRemoved()) {
             controller = null;
         }
-        if (controller != null && (controllerUUID == null || !controller.getUuid()
-                .equals(controllerUUID))) {
+        if (controller != null && (!controller.getUuid().equals(controllerUUID))) {
             controller = null;
         }
         return controller;
@@ -381,7 +379,7 @@ public class MidnightCreatureEntity extends ShapeshiftingEntity implements
                             // Not an ally if already targeting
                             Entity lastHurtBy = BrainUtil.getMemory(ally,
                                     MemoryModuleType.HURT_BY_ENTITY);
-                            return lastHurtBy == null || !ally.isTeammate(lastHurtBy);
+                            return !ally.isTeammate(lastHurtBy);
                         }),
                         // Attack NEAREST_ATTACKABLE if uncontrolled
                         new SetAttackTarget<MidnightCreatureEntity>().attackPredicate(
@@ -751,35 +749,36 @@ public class MidnightCreatureEntity extends ShapeshiftingEntity implements
     }
 
     @Override
-    public void writeCustomDataToNbt(NbtCompound nbt) {
-        super.writeCustomDataToNbt(nbt);
+    public void writeCustomData(WriteView view) {
+        super.writeCustomData(view);
         if (this.getMorph() == null) {
-            nbt.putInt(MIDNIGHT_ESSENCE_AMOUNT_KEY, midnightEssenceAmount);
+            view.putInt(MIDNIGHT_ESSENCE_AMOUNT_KEY, midnightEssenceAmount);
         }
+
         UUID controllerUuid = getControllerUuid();
         if (controllerUuid != null) {
-            nbt.put(CONTROLLER_KEY, Uuids.INT_STREAM_CODEC, controllerUuid);
+            view.put(CONTROLLER_KEY, Uuids.INT_STREAM_CODEC, controllerUuid);
         }
-        if (!waterBribes.isEmpty()) {
-            NbtList waterBribesList = new NbtList();
-            waterBribes.object2IntEntrySet().forEach(uuidEntry -> {
-                NbtCompound nbtEntry = new NbtCompound();
-                nbtEntry.put(UUID_KEY, Uuids.INT_STREAM_CODEC, uuidEntry.getKey());
-                nbtEntry.putInt(BRIBE_KEY, uuidEntry.getIntValue());
-                waterBribesList.add(nbtEntry);
-            });
-            nbt.put(BRIBES_KEY, waterBribesList);
+
+        WriteView.ListView listView = view.getList(BRIBES_KEY);
+        waterBribes.object2IntEntrySet().forEach(uuidEntry -> {
+            WriteView itemView = listView.add();
+            itemView.put(UUID_KEY, Uuids.INT_STREAM_CODEC, uuidEntry.getKey());
+            itemView.putInt(BRIBE_KEY, uuidEntry.getIntValue());
+        });
+        if (listView.isEmpty()) {
+            view.remove(BRIBES_KEY);
         }
     }
 
     @Override
-    public void readCustomDataFromNbt(NbtCompound nbt) {
-        super.readCustomDataFromNbt(nbt);
+    public void readCustomData(ReadView view) {
+        super.readCustomData(view);
         if (this.getMorph() == null) {
-            this.midnightEssenceAmount = nbt.getInt(MIDNIGHT_ESSENCE_AMOUNT_KEY, 0);
+            this.midnightEssenceAmount = view.getInt(MIDNIGHT_ESSENCE_AMOUNT_KEY, 0);
         }
 
-        UUID controllerUuid = nbt.get(CONTROLLER_KEY, Uuids.INT_STREAM_CODEC).orElse(null);
+        UUID controllerUuid = view.read(CONTROLLER_KEY, Uuids.INT_STREAM_CODEC).orElse(null);
         setControllerUuid(controllerUuid);
         PlayerEntity player = getController();
         if (player != null) {
@@ -787,13 +786,13 @@ public class MidnightCreatureEntity extends ShapeshiftingEntity implements
         }
 
         waterBribes.clear();
-        nbt.getList(BRIBES_KEY).ifPresent(list -> {
-            for (NbtElement item : list) {
-                NbtCompound entry = (NbtCompound) item;
-                entry.get(UUID_KEY, Uuids.INT_STREAM_CODEC).ifPresent(uuid -> {
-                    waterBribes.put(uuid, entry.getInt(BRIBE_KEY).orElse(0).intValue());
+        // TODO: Make this typed?
+        view.getOptionalListReadView(BRIBES_KEY).ifPresent(list -> {
+            list.forEach(item -> {
+                item.read(UUID_KEY, Uuids.INT_STREAM_CODEC).ifPresent(uuid -> {
+                    waterBribes.put(uuid, item.getInt(BRIBE_KEY, 0));
                 });
-            }
+            });
         });
     }
 

@@ -53,31 +53,29 @@ public class ModItemTagGenerator extends ItemTagProvider {
     @Override
     protected void configure(WrapperLookup lookup) {
         // Add modded items to vanilla tags
-        getOrCreateTagBuilder(ItemTags.AXES).add(ModItems.STEEL_AXE);
-        getOrCreateTagBuilder(ItemTags.PICKAXES).add(ModItems.STEEL_PICKAXE);
-        getOrCreateTagBuilder(ItemTags.SHOVELS).add(ModItems.STEEL_SHOVEL);
-        getOrCreateTagBuilder(ItemTags.HOES).add(ModItems.STEEL_HOE);
-        getOrCreateTagBuilder(ItemTags.SWORDS).add(ModItems.STEEL_SWORD);
-        getOrCreateTagBuilder(ItemTags.HEAD_ARMOR).add(ModItems.STEEL_HELMET);
-        getOrCreateTagBuilder(ItemTags.CHEST_ARMOR).add(ModItems.STEEL_CHESTPLATE);
-        getOrCreateTagBuilder(ItemTags.LEG_ARMOR).add(ModItems.STEEL_LEGGINGS);
-        getOrCreateTagBuilder(ItemTags.FOOT_ARMOR).add(ModItems.STEEL_BOOTS);
-        getOrCreateTagBuilder(ItemTags.WEAPON_ENCHANTABLE).add(ModItems.SILVER_KNIFE);
-        getOrCreateTagBuilder(ItemTags.CREEPER_IGNITERS).add(ModItems.FLINT_AND_IRON)
+        valueLookupBuilder(ItemTags.AXES).add(ModItems.STEEL_AXE);
+        valueLookupBuilder(ItemTags.PICKAXES).add(ModItems.STEEL_PICKAXE);
+        valueLookupBuilder(ItemTags.SHOVELS).add(ModItems.STEEL_SHOVEL);
+        valueLookupBuilder(ItemTags.HOES).add(ModItems.STEEL_HOE);
+        valueLookupBuilder(ItemTags.SWORDS).add(ModItems.STEEL_SWORD);
+        valueLookupBuilder(ItemTags.HEAD_ARMOR).add(ModItems.STEEL_HELMET);
+        valueLookupBuilder(ItemTags.CHEST_ARMOR).add(ModItems.STEEL_CHESTPLATE);
+        valueLookupBuilder(ItemTags.LEG_ARMOR).add(ModItems.STEEL_LEGGINGS);
+        valueLookupBuilder(ItemTags.FOOT_ARMOR).add(ModItems.STEEL_BOOTS);
+        valueLookupBuilder(ItemTags.WEAPON_ENCHANTABLE).add(ModItems.SILVER_KNIFE);
+        valueLookupBuilder(ItemTags.CREEPER_IGNITERS).add(ModItems.FLINT_AND_IRON)
                 .add(ModItems.QUARTZ_AND_IRON)
                 .add(ModItems.QUARTZ_AND_STEEL);
 
         // Add mod conventional tags
-        getOrCreateTagBuilder(ModConventionalItemTags.STEEL_INGOTS).add(ModItems.STEEL_INGOT);
-        getOrCreateTagBuilder(ModConventionalItemTags.SILVER_INGOTS).add(ModItems.SILVER_INGOT);
-        getOrCreateTagBuilder(ModConventionalItemTags.ALUMINUM_INGOTS).add(ModItems.ALUMINUM_INGOT);
-        getOrCreateTagBuilder(ModConventionalItemTags.STEEL_NUGGETS).add(ModItems.STEEL_NUGGET);
-        getOrCreateTagBuilder(ModConventionalItemTags.SILVER_NUGGETS).add(ModItems.SILVER_NUGGET);
-        getOrCreateTagBuilder(ModConventionalItemTags.ALUMINUM_NUGGETS).add(
-                ModItems.ALUMINUM_NUGGET);
-        getOrCreateTagBuilder(ModConventionalItemTags.SILVER_RAW_MATERIALS).add(
-                ModItems.RAW_SILVER);
-        getOrCreateTagBuilder(ModConventionalItemTags.SALT).add(ModItems.SALT);
+        valueLookupBuilder(ModConventionalItemTags.STEEL_INGOTS).add(ModItems.STEEL_INGOT);
+        valueLookupBuilder(ModConventionalItemTags.SILVER_INGOTS).add(ModItems.SILVER_INGOT);
+        valueLookupBuilder(ModConventionalItemTags.ALUMINUM_INGOTS).add(ModItems.ALUMINUM_INGOT);
+        valueLookupBuilder(ModConventionalItemTags.STEEL_NUGGETS).add(ModItems.STEEL_NUGGET);
+        valueLookupBuilder(ModConventionalItemTags.SILVER_NUGGETS).add(ModItems.SILVER_NUGGET);
+        valueLookupBuilder(ModConventionalItemTags.ALUMINUM_NUGGETS).add(ModItems.ALUMINUM_NUGGET);
+        valueLookupBuilder(ModConventionalItemTags.SILVER_RAW_MATERIALS).add(ModItems.RAW_SILVER);
+        valueLookupBuilder(ModConventionalItemTags.SALT).add(ModItems.SALT);
         copy(ModConventionalBlockTags.SILVER_ORES, ModConventionalItemTags.SILVER_ORES);
         copy(ModConventionalBlockTags.SALT_ORES, ModConventionalItemTags.SALT_ORES);
         copy(ModConventionalBlockTags.STORAGE_BLOCKS_STEEL,
@@ -90,40 +88,40 @@ public class ModItemTagGenerator extends ItemTagProvider {
                 ModConventionalItemTags.STORAGE_BLOCKS_SALT);
         copy(ModConventionalBlockTags.STORAGE_BLOCKS_RAW_SILVER,
                 ModConventionalItemTags.STORAGE_BLOCKS_RAW_SILVER);
-        getOrCreateTagBuilder(ModConventionalItemTags.STEEL_TOOL_MATERIALS).addOptionalTag(
+        valueLookupBuilder(ModConventionalItemTags.STEEL_TOOL_MATERIALS).addOptionalTag(
                 ModConventionalItemTags.STEEL_INGOTS);
-        getOrCreateTagBuilder(ModConventionalItemTags.SILVER_TOOL_MATERIALS).addOptionalTag(
+        valueLookupBuilder(ModConventionalItemTags.SILVER_TOOL_MATERIALS).addOptionalTag(
                 ModConventionalItemTags.SILVER_INGOTS);
 
         // Merge fabric and mod conventional tags
-        getOrCreateTagBuilder(ConventionalItemTags.INGOTS).addOptionalTag(
+        valueLookupBuilder(ConventionalItemTags.INGOTS).addOptionalTag(
                         ModConventionalItemTags.STEEL_INGOTS)
                 .addOptionalTag(ModConventionalItemTags.SILVER_INGOTS)
                 .addOptionalTag(ModConventionalItemTags.ALUMINUM_INGOTS);
-        getOrCreateTagBuilder(ConventionalItemTags.NUGGETS).addOptionalTag(
+        valueLookupBuilder(ConventionalItemTags.NUGGETS).addOptionalTag(
                         ModConventionalItemTags.STEEL_NUGGETS)
                 .addOptionalTag(ModConventionalItemTags.SILVER_NUGGETS)
                 .addOptionalTag(ModConventionalItemTags.ALUMINUM_NUGGETS);
-        getOrCreateTagBuilder(ConventionalItemTags.RAW_MATERIALS).addOptionalTag(
+        valueLookupBuilder(ConventionalItemTags.RAW_MATERIALS).addOptionalTag(
                 ModConventionalItemTags.SILVER_RAW_MATERIALS);
         copy(ConventionalBlockTags.ORES, ConventionalItemTags.ORES);
         copy(ConventionalBlockTags.STORAGE_BLOCKS, ConventionalItemTags.STORAGE_BLOCKS);
         copy(ConventionalBlockTags.STORAGE_BLOCKS_RAW_COPPER, ConventionalItemTags.STORAGE_BLOCKS);
 
         // Add mod tags
-        getOrCreateTagBuilder(ModItemTags.ALL_COOKED_MEAT).addOptionalTag(
+        valueLookupBuilder(ModItemTags.ALL_COOKED_MEAT).addOptionalTag(
                         ConventionalItemTags.COOKED_MEAT_FOODS)
                 .addOptionalTag(ConventionalItemTags.COOKED_FISH_FOODS);
-        getOrCreateTagBuilder(ModItemTags.ALL_RAW_MEAT).addOptionalTag(
+        valueLookupBuilder(ModItemTags.ALL_RAW_MEAT).addOptionalTag(
                         ConventionalItemTags.RAW_MEAT_FOODS)
                 .addOptionalTag(ConventionalItemTags.RAW_FISH_FOODS);
-        getOrCreateTagBuilder(ModItemTags.ALL_CAULDRONS).add(Items.CAULDRON,
+        valueLookupBuilder(ModItemTags.ALL_CAULDRONS).add(Items.CAULDRON,
                 ModBlocks.ALUMINUM_CAULDRON.asItem());
-        getOrCreateTagBuilder(ModItemTags.ALWAYS_GIVE_THIRST).add(Items.SPIDER_EYE)
+        valueLookupBuilder(ModItemTags.ALWAYS_GIVE_THIRST).add(Items.SPIDER_EYE)
                 .add(Items.PUFFERFISH);
-        getOrCreateTagBuilder(ModItemTags.BREWING_STAND_FUELS).add(Items.GUNPOWDER)
+        valueLookupBuilder(ModItemTags.BREWING_STAND_FUELS).add(Items.GUNPOWDER)
                 .add(ModItems.SUNLIGHT_SPORES_BOTTLE);
-        getOrCreateTagBuilder(ModItemTags.CAN_BE_SALTED).addOptionalTag(ModItemTags.ALL_COOKED_MEAT)
+        valueLookupBuilder(ModItemTags.CAN_BE_SALTED).addOptionalTag(ModItemTags.ALL_COOKED_MEAT)
                 .addOptionalTag(ModItemTags.ALL_RAW_MEAT)
                 .add(Items.ROTTEN_FLESH)
                 .add(Items.CARROT)
@@ -137,23 +135,23 @@ public class ModItemTagGenerator extends ItemTagProvider {
                 .add(Items.MUSHROOM_STEW)
                 .add(Items.RABBIT_STEW)
                 .add(ModItems.VERDANT_VINE);
-        getOrCreateTagBuilder(ModItemTags.CHANCE_TO_GIVE_THIRST).add(Items.POISONOUS_POTATO)
+        valueLookupBuilder(ModItemTags.CHANCE_TO_GIVE_THIRST).add(Items.POISONOUS_POTATO)
                 .add(Items.ROTTEN_FLESH);
         // Empty by default, can be modified to change functionality
-        getOrCreateTagBuilder(ModItemTags.EXCLUDE_SILVER_LINED);
-        getOrCreateTagBuilder(ModItemTags.FLINT_AND_STEEL_VARIANTS).add(Items.FLINT_AND_STEEL)
+        valueLookupBuilder(ModItemTags.EXCLUDE_SILVER_LINED);
+        valueLookupBuilder(ModItemTags.FLINT_AND_STEEL_VARIANTS).add(Items.FLINT_AND_STEEL)
                 .add(ModItems.FLINT_AND_IRON)
                 .add(ModItems.QUARTZ_AND_STEEL)
                 .add(ModItems.QUARTZ_AND_IRON);
-        getOrCreateTagBuilder(ModItemTags.KILLS_SPORE_GROWTHS).add(ModItems.SILVER_KNIFE)
+        valueLookupBuilder(ModItemTags.KILLS_SPORE_GROWTHS).add(ModItems.SILVER_KNIFE)
                 .addOptionalTag(ItemTags.AXES);
-        getOrCreateTagBuilder(ModItemTags.TEMPTS_MIDNIGHT_CREATURES).add(Items.POTION)
+        valueLookupBuilder(ModItemTags.TEMPTS_MIDNIGHT_CREATURES).add(Items.POTION)
                 .addOptionalTag(ConventionalItemTags.WATER_BUCKETS);
-        getOrCreateTagBuilder(ModItemTags.REPLACES_QUARTZ_IN_REDSTONE).add(Items.QUARTZ,
+        valueLookupBuilder(ModItemTags.REPLACES_QUARTZ_IN_REDSTONE).add(Items.QUARTZ,
                 ModItems.ROSEITE_CRYSTAL);
 
         copy(ModBlockTags.HAS_IRON, ModItemTags.HAS_IRON);
-        getOrCreateTagBuilder(ModItemTags.HAS_IRON).add(Items.IRON_SHOVEL)
+        valueLookupBuilder(ModItemTags.HAS_IRON).add(Items.IRON_SHOVEL)
                 .add(Items.IRON_PICKAXE)
                 .add(Items.IRON_AXE)
                 .add(Items.IRON_HOE)
@@ -179,7 +177,7 @@ public class ModItemTagGenerator extends ItemTagProvider {
                 .addOptionalTag(ConventionalItemTags.SHEAR_TOOLS)
                 .add(Items.SHIELD);
         copy(ModBlockTags.HAS_STEEL, ModItemTags.HAS_STEEL);
-        getOrCreateTagBuilder(ModItemTags.HAS_STEEL).add(Items.FLINT_AND_STEEL)
+        valueLookupBuilder(ModItemTags.HAS_STEEL).add(Items.FLINT_AND_STEEL)
                 .add(ModItems.QUARTZ_AND_STEEL)
                 .addOptionalTag(ModConventionalItemTags.STEEL_INGOTS)
                 .addOptionalTag(ModConventionalItemTags.STEEL_NUGGETS)

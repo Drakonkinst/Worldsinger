@@ -32,8 +32,10 @@ import io.github.drakonkinst.worldsinger.worldgen.lumar.LumarChunkGenerator;
 import io.github.drakonkinst.worldsinger.worldgen.lumar.LumarChunkGenerator.SporeSeaEntry;
 import it.unimi.dsi.fastutil.longs.LongByteImmutablePair;
 import it.unimi.dsi.fastutil.longs.LongBytePair;
-import net.minecraft.nbt.NbtCompound;
+import java.util.Optional;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.storage.ReadView;
+import net.minecraft.storage.WriteView;
 import net.minecraft.util.math.Vec2f;
 import org.jetbrains.annotations.Nullable;
 
@@ -42,18 +44,19 @@ public class RainlineFollowPathBehavior implements RainlineBehavior {
     private static final String KEY_RAINLINE_ID = "rainline_id";
     private static final String KEY_RAINLINE_INDEX = "rainline_index";
 
-    public static @Nullable RainlineFollowPathBehavior readFromNbt(LumarManager manager,
-            NbtCompound nbt) {
-        if (!nbt.contains(KEY_RAINLINE_ID) || !nbt.contains(KEY_RAINLINE_INDEX)) {
+    public static @Nullable RainlineFollowPathBehavior readCustomData(LumarManager manager,
+            ReadView view) {
+        Optional<Long> rainlineId = view.getOptionalLong(KEY_RAINLINE_ID);
+        if (rainlineId.isEmpty()) {
             return null;
         }
-        long rainlineId = nbt.getLong(KEY_RAINLINE_ID, -999);
-        byte rainlineIndex = nbt.getByte(KEY_RAINLINE_INDEX, (byte) 0);
-        RainlinePath rainlinePath = manager.getRainlineManager().getRainlinePathById(rainlineId);
+        byte rainlineIndex = view.getByte(KEY_RAINLINE_INDEX, (byte) 0);
+        RainlinePath rainlinePath = manager.getRainlineManager()
+                .getRainlinePathById(rainlineId.get());
         if (rainlinePath == null) {
             return null;
         }
-        return new RainlineFollowPathBehavior(rainlinePath, rainlineId, rainlineIndex);
+        return new RainlineFollowPathBehavior(rainlinePath, rainlineId.get(), rainlineIndex);
     }
 
     private final RainlinePath rainlinePath;
@@ -87,9 +90,9 @@ public class RainlineFollowPathBehavior implements RainlineBehavior {
     }
 
     @Override
-    public void writeCustomDataToNbt(NbtCompound nbt) {
-        nbt.putLong(KEY_RAINLINE_ID, pathId.firstLong());
-        nbt.putByte(KEY_RAINLINE_INDEX, pathId.secondByte());
+    public void writeCustomData(WriteView view) {
+        view.putLong(KEY_RAINLINE_ID, pathId.firstLong());
+        view.putByte(KEY_RAINLINE_INDEX, pathId.secondByte());
     }
 
     public LongBytePair getPathId() {

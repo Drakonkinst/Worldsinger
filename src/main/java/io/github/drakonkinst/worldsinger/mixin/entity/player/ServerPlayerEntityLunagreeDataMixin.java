@@ -31,7 +31,6 @@ import io.github.drakonkinst.worldsinger.world.LunagreeDataReceiver;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
@@ -55,9 +54,8 @@ public abstract class ServerPlayerEntityLunagreeDataMixin extends PlayerEntity i
     @Unique
     private long currentCellKey = Long.MAX_VALUE;
 
-    public ServerPlayerEntityLunagreeDataMixin(World world, BlockPos pos, float yaw,
-            GameProfile gameProfile) {
-        super(world, pos, yaw, gameProfile);
+    public ServerPlayerEntityLunagreeDataMixin(World world, GameProfile gameProfile) {
+        super(world, gameProfile);
     }
 
     @Inject(method = "playerTick", at = @At(value = "FIELD", opcode = Opcodes.GETFIELD, target = "Lnet/minecraft/server/network/ServerPlayerEntity;age:I"))

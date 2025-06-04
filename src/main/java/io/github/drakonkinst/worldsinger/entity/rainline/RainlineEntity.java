@@ -38,8 +38,9 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker.Builder;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.storage.ReadView;
+import net.minecraft.storage.WriteView;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockPos.Mutable;
 import net.minecraft.util.profiler.Profiler;
@@ -134,25 +135,25 @@ public class RainlineEntity extends Entity implements GeoEntity {
     }
 
     @Override
-    protected void readCustomDataFromNbt(NbtCompound nbt) {
+    protected void readCustomData(ReadView view) {
         if (!(this.getWorld() instanceof ServerWorld world)) {
             return;
         }
 
         LumarManager lumarManager = ((LumarManagerAccess) world).worldsinger$getLumarManager();
-        boolean isFollowingPath = nbt.getBoolean(KEY_FOLLOWING_PATH, false);
+        boolean isFollowingPath = view.getBoolean(KEY_FOLLOWING_PATH, false);
         if (isFollowingPath) {
-            rainlineBehavior = RainlineFollowPathBehavior.readFromNbt(lumarManager, nbt);
+            rainlineBehavior = RainlineFollowPathBehavior.readCustomData(lumarManager, view);
         }
         if (rainlineBehavior == null) {
-            rainlineBehavior = RainlineWanderBehavior.readFromNbt(nbt, this.getRandom());
+            rainlineBehavior = RainlineWanderBehavior.readCustomData(view, this.getRandom());
         }
     }
 
     @Override
-    protected void writeCustomDataToNbt(NbtCompound nbt) {
-        nbt.putBoolean(KEY_FOLLOWING_PATH, rainlineBehavior.isFollowingPath());
-        rainlineBehavior.writeCustomDataToNbt(nbt);
+    protected void writeCustomData(WriteView view) {
+        view.putBoolean(KEY_FOLLOWING_PATH, rainlineBehavior.isFollowingPath());
+        rainlineBehavior.writeCustomData(view);
     }
 
     public RainlineBehavior getRainlineBehavior() {

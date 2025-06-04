@@ -24,6 +24,7 @@
 
 package io.github.drakonkinst.worldsinger.entity.rainline;
 
+import com.mojang.serialization.Codec;
 import io.github.drakonkinst.worldsinger.Worldsinger;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.AetherSpores;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarLunagreeGenerator;
@@ -32,9 +33,11 @@ import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarManagerAccess;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LunagreeLocation;
 import io.github.drakonkinst.worldsinger.worldgen.lumar.LumarChunkGenerator;
 import io.github.drakonkinst.worldsinger.worldgen.lumar.LumarChunkGenerator.SporeSeaEntry;
+import java.util.Optional;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.storage.ReadView;
+import net.minecraft.storage.WriteView;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -59,13 +62,13 @@ public class RainlineWanderBehavior implements RainlineBehavior {
     private static final String KEY_WANDER_ANGLE = "wander_angle";
     private static final String KEY_DESPAWN_TIMER = "despawn_timer";
 
-    public static RainlineWanderBehavior readFromNbt(NbtCompound nbt, Random random) {
-        if (!nbt.contains(KEY_WANDER_ANGLE)) {
-            return new RainlineWanderBehavior(random);
+    public static RainlineWanderBehavior readCustomData(ReadView view, Random random) {
+        Optional<Float> wanderAngle = view.read(KEY_WANDER_ANGLE, Codec.FLOAT);
+        if (wanderAngle.isPresent()) {
+            int despawnTimer = view.getInt(KEY_DESPAWN_TIMER, 0);
+            return new RainlineWanderBehavior(wanderAngle.get(), despawnTimer);
         }
-        float wanderAngle = nbt.getFloat(KEY_WANDER_ANGLE, 0);
-        int despawnTimer = nbt.getInt(KEY_DESPAWN_TIMER, 0);
-        return new RainlineWanderBehavior(wanderAngle, despawnTimer);
+        return new RainlineWanderBehavior(random);
     }
 
     private final Vector2d steeringForce = new Vector2d();
@@ -180,8 +183,8 @@ public class RainlineWanderBehavior implements RainlineBehavior {
     }
 
     @Override
-    public void writeCustomDataToNbt(NbtCompound nbt) {
-        nbt.putFloat(KEY_WANDER_ANGLE, wanderAngle);
-        nbt.putInt(KEY_DESPAWN_TIMER, despawnTimer);
+    public void writeCustomData(WriteView view) {
+        view.putFloat(KEY_WANDER_ANGLE, wanderAngle);
+        view.putInt(KEY_DESPAWN_TIMER, despawnTimer);
     }
 }

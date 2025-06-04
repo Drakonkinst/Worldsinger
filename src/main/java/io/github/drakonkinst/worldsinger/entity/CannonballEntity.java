@@ -54,12 +54,13 @@ import net.minecraft.entity.projectile.thrown.ThrownItemEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ItemStackParticleEffect;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
+import net.minecraft.storage.ReadView;
+import net.minecraft.storage.WriteView;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.Vec3d;
@@ -156,15 +157,15 @@ public class CannonballEntity extends ThrownItemEntity implements FlyingItemEnti
     }
 
     @Override
-    public void writeCustomDataToNbt(NbtCompound nbt) {
-        super.writeCustomDataToNbt(nbt);
-        nbt.putShort(FUSE_NBT_KEY, (short) this.getFuse());
+    public void writeCustomData(WriteView view) {
+        super.writeCustomData(view);
+        view.putShort(FUSE_NBT_KEY, (short) this.getFuse());
     }
 
     @Override
-    public void readCustomDataFromNbt(NbtCompound nbt) {
-        super.readCustomDataFromNbt(nbt);
-        this.setFuse(nbt.getShort(FUSE_NBT_KEY, (short) 0));
+    public void readCustomData(ReadView view) {
+        super.readCustomData(view);
+        this.setFuse(view.getShort(FUSE_NBT_KEY, (short) 0));
     }
 
     @Override

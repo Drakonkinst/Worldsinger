@@ -43,6 +43,10 @@ import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.entity.mob.PhantomEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.storage.NbtWriteView;
+import net.minecraft.storage.ReadView;
+import net.minecraft.storage.WriteView;
+import net.minecraft.util.ErrorReporter;
 import net.minecraft.util.Hand;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
@@ -108,21 +112,15 @@ public abstract class ShapeshiftingEntity extends PathAwareEntity implements Sha
     }
 
     @Override
-    protected void initDataTracker(DataTracker.Builder builder) {
-        super.initDataTracker(builder);
-        builder.add(MORPH, new NbtCompound());
+    public void writeCustomData(WriteView view) {
+        super.writeCustomData(view);
+        view.put(MORPH_KEY, NbtCompound.CODEC, this.getMorphData());
     }
 
     @Override
-    public void writeCustomDataToNbt(NbtCompound nbt) {
-        super.writeCustomDataToNbt(nbt);
-        nbt.put(MORPH_KEY, this.getMorphData());
-    }
-
-    @Override
-    public void readCustomDataFromNbt(NbtCompound nbt) {
-        super.readCustomDataFromNbt(nbt);
-        nbt.getCompound(MORPH_KEY).ifPresent(this::setMorphData);
+    public void readCustomData(ReadView view) {
+        super.readCustomData(view);
+        view.read(MORPH_KEY, NbtCompound.CODEC).ifPresent(this::setMorphData);
         this.setMorphFromData();
     }
 
@@ -131,14 +129,18 @@ public abstract class ShapeshiftingEntity extends PathAwareEntity implements Sha
     }
 
     private void setMorphDataFromEntity(LivingEntity morph) {
-        NbtCompound nbtCompound = new NbtCompound();
-        if (morph != null) {
-            boolean saved = morph.saveSelfNbt(nbtCompound);
-            if (!saved) {
-                Worldsinger.LOGGER.warn("Unable to save data for morph");
-            }
+        if (morph == null) {
+            this.setMorphData(new NbtCompound());
+            return;
         }
-        this.setMorphData(nbtCompound);
+        try (ErrorReporter.Logging logging = new ErrorReporter.Logging(
+                this.getErrorReporterContext(), Worldsinger.LOGGER)) {
+            NbtWriteView nbtWriteView = NbtWriteView.create(logging, this.getRegistryManager());
+            morph.writeData(nbtWriteView);
+            // See if we need this
+            // nbtWriteView.putString("id", this.getSavedEntityId());
+            this.setMorphData(nbtWriteView.getNbt());
+        }
     }
 
     private void setMorphFromData() {

@@ -30,7 +30,6 @@ import io.github.drakonkinst.worldsinger.api.sync.AttachmentSync;
 import io.github.drakonkinst.worldsinger.entity.PlayerThirstManager;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
@@ -46,9 +45,8 @@ public abstract class ServerPlayerEntityThirstMixin extends PlayerEntity {
     @Unique
     private int syncedThirstLevel = -999999;
 
-    public ServerPlayerEntityThirstMixin(World world, BlockPos pos, float yaw,
-            GameProfile gameProfile) {
-        super(world, pos, yaw, gameProfile);
+    public ServerPlayerEntityThirstMixin(World world, GameProfile gameProfile) {
+        super(world, gameProfile);
     }
 
     @Inject(method = "playerTick", at = @At(value = "FIELD", opcode = Opcodes.GETFIELD, target = "Lnet/minecraft/server/network/ServerPlayerEntity;age:I"))

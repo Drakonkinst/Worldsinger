@@ -28,50 +28,48 @@ import io.github.drakonkinst.worldsinger.fluid.ModFluidTags;
 import io.github.drakonkinst.worldsinger.fluid.ModFluids;
 import java.util.concurrent.CompletableFuture;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
-import net.fabricmc.fabric.api.datagen.v1.provider.FabricTagProvider;
-import net.minecraft.fluid.Fluid;
-import net.minecraft.registry.RegistryKeys;
+import net.fabricmc.fabric.api.datagen.v1.provider.FabricTagProvider.FluidTagProvider;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 
-public class ModFluidTagGenerator extends FabricTagProvider<Fluid> {
+public class ModFluidTagGenerator extends FluidTagProvider {
 
     public ModFluidTagGenerator(FabricDataOutput output,
             CompletableFuture<WrapperLookup> registriesFuture) {
-        super(output, RegistryKeys.FLUID, registriesFuture);
+        super(output, registriesFuture);
     }
 
     @Override
     protected void configure(WrapperLookup wrapperLookup) {
-        getOrCreateTagBuilder(ModFluidTags.SUNLIGHT).add(ModFluids.SUNLIGHT);
-        getOrCreateTagBuilder(ModFluidTags.DEAD_SPORES).add(ModFluids.DEAD_SPORES)
+        valueLookupBuilder(ModFluidTags.SUNLIGHT).add(ModFluids.SUNLIGHT);
+        valueLookupBuilder(ModFluidTags.DEAD_SPORES).add(ModFluids.DEAD_SPORES)
                 .add(ModFluids.FLOWING_DEAD_SPORES);
-        getOrCreateTagBuilder(ModFluidTags.VERDANT_SPORES).add(ModFluids.VERDANT_SPORES)
+        valueLookupBuilder(ModFluidTags.VERDANT_SPORES).add(ModFluids.VERDANT_SPORES)
                 .add(ModFluids.FLOWING_VERDANT_SPORES);
-        getOrCreateTagBuilder(ModFluidTags.CRIMSON_SPORES).add(ModFluids.CRIMSON_SPORES)
+        valueLookupBuilder(ModFluidTags.CRIMSON_SPORES).add(ModFluids.CRIMSON_SPORES)
                 .add(ModFluids.FLOWING_CRIMSON_SPORES);
-        getOrCreateTagBuilder(ModFluidTags.ZEPHYR_SPORES).add(ModFluids.ZEPHYR_SPORES)
+        valueLookupBuilder(ModFluidTags.ZEPHYR_SPORES).add(ModFluids.ZEPHYR_SPORES)
                 .add(ModFluids.FLOWING_ZEPHYR_SPORES);
-        getOrCreateTagBuilder(ModFluidTags.SUNLIGHT_SPORES).add(ModFluids.SUNLIGHT_SPORES)
+        valueLookupBuilder(ModFluidTags.SUNLIGHT_SPORES).add(ModFluids.SUNLIGHT_SPORES)
                 .add(ModFluids.FLOWING_SUNLIGHT_SPORES);
-        getOrCreateTagBuilder(ModFluidTags.ROSEITE_SPORES).add(ModFluids.ROSEITE_SPORES)
+        valueLookupBuilder(ModFluidTags.ROSEITE_SPORES).add(ModFluids.ROSEITE_SPORES)
                 .add(ModFluids.FLOWING_ROSEITE_SPORES);
-        getOrCreateTagBuilder(ModFluidTags.MIDNIGHT_SPORES).add(ModFluids.MIDNIGHT_SPORES)
+        valueLookupBuilder(ModFluidTags.MIDNIGHT_SPORES).add(ModFluids.MIDNIGHT_SPORES)
                 .add(ModFluids.FLOWING_MIDNIGHT_SPORES);
-        getOrCreateTagBuilder(ModFluidTags.STILL_AETHER_SPORES).add(ModFluids.DEAD_SPORES)
+        valueLookupBuilder(ModFluidTags.STILL_AETHER_SPORES).add(ModFluids.DEAD_SPORES)
                 .add(ModFluids.VERDANT_SPORES)
                 .add(ModFluids.CRIMSON_SPORES)
                 .add(ModFluids.ZEPHYR_SPORES)
                 .add(ModFluids.SUNLIGHT_SPORES)
                 .add(ModFluids.ROSEITE_SPORES)
                 .add(ModFluids.MIDNIGHT_SPORES);
-        getOrCreateTagBuilder(ModFluidTags.AETHER_SPORES).addOptionalTag(ModFluidTags.DEAD_SPORES)
+        valueLookupBuilder(ModFluidTags.AETHER_SPORES).addOptionalTag(ModFluidTags.DEAD_SPORES)
                 .addOptionalTag(ModFluidTags.VERDANT_SPORES)
                 .addOptionalTag(ModFluidTags.CRIMSON_SPORES)
                 .addOptionalTag(ModFluidTags.ZEPHYR_SPORES)
                 .addOptionalTag(ModFluidTags.SUNLIGHT_SPORES)
                 .addOptionalTag(ModFluidTags.ROSEITE_SPORES)
                 .addOptionalTag(ModFluidTags.MIDNIGHT_SPORES);
-        getOrCreateTagBuilder(ModFluidTags.AETHER_SPORES_OR_SUNLIGHT).addOptionalTag(
+        valueLookupBuilder(ModFluidTags.AETHER_SPORES_OR_SUNLIGHT).addOptionalTag(
                 ModFluidTags.AETHER_SPORES).addOptionalTag(ModFluidTags.SUNLIGHT);
     }
 }

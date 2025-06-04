@@ -25,7 +25,6 @@
 package io.github.drakonkinst.worldsinger.registry;
 
 import io.github.drakonkinst.worldsinger.Worldsinger;
-import net.fabricmc.fabric.api.client.model.loading.v1.ModelLoadingPlugin;
 import net.minecraft.util.Identifier;
 
 public final class ModItemRendering {
@@ -63,14 +62,15 @@ public final class ModItemRendering {
                 ModItemRendering.CANNONBALL_FUSE_2,
                 ModItemRendering.CANNONBALL_FUSE_3,
         };
-        ModelLoadingPlugin.register(pluginContext -> {
-            // TODO: Restore
-            // pluginContext.addModels(overlayModels);
-            // pluginContext.modifyModelOnLoad()
-            //         .register(ModelModifier.WRAP_PHASE, (model, context) -> {
-            //             return model;
-            //         });
-        });
+
+        // TODO: Restore
+        // ModelLoadingPlugin.register(pluginContext -> {
+        // pluginContext.addModels(overlayModels);
+        // pluginContext.modifyModelOnLoad()
+        //         .register(ModelModifier.WRAP_PHASE, (model, context) -> {
+        //             return model;
+        //         });
+        // });
     }
 
     private ModItemRendering() {}
