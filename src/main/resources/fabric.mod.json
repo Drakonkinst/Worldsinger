@@ -33,6 +33,9 @@
     ],
     "modmenu": [
       "io.github.drakonkinst.worldsinger.compat.modmenu.ModMenuIntegration"
+    ],
+    "mixinsquared-adjuster": [
+      "io.github.drakonkinst.worldsinger.compat.WorldsingerMixinAnnotationAdjuster"
     ]
   },
   "mixins": [

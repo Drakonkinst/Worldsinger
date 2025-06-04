@@ -49,7 +49,6 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
-import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -57,7 +56,6 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
-import org.spongepowered.asm.mixin.injection.Slice;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
@@ -78,8 +76,6 @@ public abstract class BoatEntityMovementMixin extends VehicleEntity {
     private AetherSporeFluid lastAetherSporeFluid = null;
     @Shadow
     private double waterLevel;
-    @Shadow
-    private float velocityDecay;
     @Shadow
     private Location location;
     @Shadow
@@ -262,12 +258,13 @@ public abstract class BoatEntityMovementMixin extends VehicleEntity {
         return inSporeSea;
     }
 
-    @Inject(method = "updateVelocity", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/vehicle/AbstractBoatEntity;setVelocity(DDD)V"), slice = @Slice(to = @At(value = "FIELD", opcode = Opcodes.PUTFIELD, target = "Lnet/minecraft/entity/vehicle/AbstractBoatEntity;yawVelocity:F")))
-    private void addSporeSeaVelocityLogic(CallbackInfo ci) {
-        if (this.inSporeSea && !SeetheManager.areSporesFluidized(this.getWorld())) {
-            this.velocityDecay = 0.0f;
-        }
-    }
+    // FIXME: Restore
+    // @Inject(method = "updateVelocity", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/vehicle/AbstractBoatEntity;setVelocity(DDD)V"), slice = @Slice(to = @At(value = "FIELD", opcode = Opcodes.PUTFIELD, target = "Lnet/minecraft/entity/vehicle/AbstractBoatEntity;yawVelocity:F")))
+    // private void addSporeSeaVelocityLogic(CallbackInfo ci) {
+    //     if (this.inSporeSea && !SeetheManager.areSporesFluidized(this.getWorld())) {
+    //         this.velocityDecay = 0.0f;
+    //     }
+    // }
 
     @WrapOperation(method = "updatePaddles", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/vehicle/AbstractBoatEntity;setVelocity(Lnet/minecraft/util/math/Vec3d;)V"))
     private void restrictMovementInSporeSea(AbstractBoatEntity instance, Vec3d velocity,

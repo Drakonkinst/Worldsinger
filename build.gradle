@@ -35,6 +35,7 @@ repositories {
             includeGroup("software.bernie.geckolib")
         }
     }
+    maven { url = "https://maven.bawnorton.com/releases" }
 }
 
 loom {
@@ -62,6 +63,7 @@ dependencies {
     modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
     include(implementation("com.github.Chocohead:Fabric-ASM:${project.fabric_asm_version}"))
+    include(implementation(annotationProcessor("com.github.bawnorton.mixinsquared:mixinsquared-fabric:${project.mixinsquared_version}")))
     include(modImplementation("com.github.Drakonkinst:DataTables:${project.data_tables_version}")) {
         exclude(group: "net.fabricmc.fabric-api")
     }

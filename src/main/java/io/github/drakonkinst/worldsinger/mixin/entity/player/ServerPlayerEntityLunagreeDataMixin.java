@@ -44,6 +44,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class ServerPlayerEntityLunagreeDataMixin extends PlayerEntity implements
         LunagreeDataReceiver {
 
+    @Shadow
+    public abstract ServerWorld getWorld();
+
     @Unique
     private static final int UPDATE_DELAY = 20;
 
@@ -60,7 +63,7 @@ public abstract class ServerPlayerEntityLunagreeDataMixin extends PlayerEntity i
 
     @Inject(method = "playerTick", at = @At(value = "FIELD", opcode = Opcodes.GETFIELD, target = "Lnet/minecraft/server/network/ServerPlayerEntity;age:I"))
     private void checkUpdateLunagreeData(CallbackInfo ci) {
-        ServerWorld world = this.getServerWorld();
+        ServerWorld world = this.getWorld();
         if (!CosmerePlanet.isLumar(world)) {
             return;
         }
@@ -83,7 +86,4 @@ public abstract class ServerPlayerEntityLunagreeDataMixin extends PlayerEntity i
     public void worldsinger$setShouldCheckPosition() {
         shouldCheckPosition = true;
     }
-
-    @Shadow
-    public abstract ServerWorld getServerWorld();
 }
