@@ -36,6 +36,7 @@ import io.github.drakonkinst.worldsinger.item.SporeBottleItem;
 import io.github.drakonkinst.worldsinger.registry.ModDamageTypes;
 import io.github.drakonkinst.worldsinger.registry.tag.ModBlockTags;
 import io.github.drakonkinst.worldsinger.util.BlockPosUtil;
+import io.github.drakonkinst.worldsinger.util.EntityUtil;
 import io.netty.buffer.ByteBuf;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 import java.util.Map;
@@ -165,6 +166,16 @@ public abstract class AetherSpores implements StringIdentifiable, Comparable<Aet
                 && steppingBlock.getBlock() instanceof SporeEmitting sporeEmittingBlock) {
             SporeParticleSpawner.spawnFootstepParticles(serverWorld,
                     sporeEmittingBlock.getSporeType(), entity);
+        }
+    }
+
+    public static void checkApplySporeSeaEffectsOnTick(LivingEntity entity) {
+        if (EntityUtil.isSubmergedInSporeSea(entity)) {
+            if (entity instanceof PlayerEntity playerEntity && (playerEntity.isCreative()
+                    || playerEntity.isSpectator())) {
+                return;
+            }
+            AetherSpores.applySporeSeaEffects(entity);
         }
     }
 

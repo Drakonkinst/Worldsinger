@@ -37,7 +37,6 @@ import net.minecraft.entity.MovementType;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.registry.entry.RegistryEntry;
@@ -68,7 +67,7 @@ public abstract class LivingEntityCustomFluidMovementMixin extends Entity {
     public abstract boolean damage(ServerWorld world, DamageSource source, float amount);
 
     @Shadow
-    protected abstract boolean shouldSwimInFluids();
+    public abstract boolean shouldSwimInFluids();
 
     @Shadow
     protected abstract void swimUpward(TagKey<Fluid> fluid);
@@ -101,18 +100,7 @@ public abstract class LivingEntityCustomFluidMovementMixin extends Entity {
 
     @Inject(method = "tick", at = @At("TAIL"))
     private void onTick(CallbackInfo ci) {
-        checkSporeSeaEffects();
-    }
-
-    @Unique
-    private void checkSporeSeaEffects() {
-        if (EntityUtil.isSubmergedInSporeSea(this)) {
-            if ((LivingEntity) (Object) this instanceof PlayerEntity playerEntity && (
-                    playerEntity.isCreative() || playerEntity.isSpectator())) {
-                return;
-            }
-            AetherSpores.applySporeSeaEffects((LivingEntity) (Object) this);
-        }
+        AetherSpores.checkApplySporeSeaEffectsOnTick((LivingEntity) (Object) this);
     }
 
     @Inject(method = "tickMovement", at = @At("RETURN"))
@@ -191,13 +179,14 @@ public abstract class LivingEntityCustomFluidMovementMixin extends Entity {
         }
     }
 
-    @Inject(method = "travelFlying", at = @At("HEAD"), cancellable = true)
-    private void injectCustomFluidPhysicsFlying(Vec3d movementInput, CallbackInfo ci) {
+    @Inject(method = "travelFlying(Lnet/minecraft/util/math/Vec3d;FFF)V", at = @At("HEAD"), cancellable = true)
+    private void injectCustomFluidPhysicsFlying(Vec3d movementInput, float inWaterSpeed,
+            float inLavaSpeed, float regularSpeed, CallbackInfo ci) {
         if (!this.isLogicalSideForUpdatingMovement()) {
             return;
         }
 
-        // Won't get too fancy here since most of these things will be dead anyways.
+        // Won't get too fancy here since most of these things will be dead anyway.
         if (EntityUtil.isTouchingSporeSea(this)) {
             this.updateVelocity(0.02f, movementInput);
             this.move(MovementType.SELF, this.getVelocity());
