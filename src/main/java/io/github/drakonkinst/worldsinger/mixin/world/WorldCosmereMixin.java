@@ -68,14 +68,14 @@ public abstract class WorldCosmereMixin implements WorldAccess, AutoCloseable, C
             long seed, int maxChainedNeighborUpdates, CallbackInfo ci) {
         planet = CosmerePlanet.getPlanetFromKey(registryRef);
         if (planet != CosmerePlanet.NONE) {
-            cosmereWorldData = initCosmereWorldData();
+            initCosmereWorldData();
         }
     }
 
     @Unique
-    protected CosmereWorldData initCosmereWorldData() {
+    protected void initCosmereWorldData() {
         // This is client-side so no persistent data here.
-        return new CosmereWorldData();
+        this.cosmereWorldData = new CosmereWorldData();
     }
 
     @Override

@@ -59,20 +59,14 @@ public abstract class ServerWorldCosmereMixin extends WorldCosmereMixin {
     public abstract GameRules getGameRules();
 
     @Inject(method = "<init>", at = @At("TAIL"))
-    private void initializeCosmereData(MinecraftServer server, Executor workerExecutor,
+    private void initCosmereWorldData(MinecraftServer server, Executor workerExecutor,
             Session session, ServerWorldProperties properties, RegistryKey<World> worldKey,
             DimensionOptions dimensionOptions,
             WorldGenerationProgressListener worldGenerationProgressListener, boolean debugWorld,
             long seed, List<SpecialSpawner> spawners, boolean shouldTickTime,
             RandomSequencesState randomSequencesState, CallbackInfo ci) {
-        if (CosmerePlanet.getPlanetFromKey(worldKey) != CosmerePlanet.NONE) {
-
-        }
-    }
-
-    @Override
-    protected CosmereWorldData initCosmereWorldData() {
-        return this.getPersistentStateManager().getOrCreate(CosmereWorldData.STATE_TYPE);
+        this.cosmereWorldData = this.getPersistentStateManager()
+                .getOrCreate(CosmereWorldData.STATE_TYPE);
     }
 
     @ModifyConstant(method = "tick", constant = @Constant(longValue = 24000L), slice = @Slice(from = @At(value = "INVOKE", target = "Lnet/minecraft/server/world/SleepManager;canSkipNight(I)Z"), to = @At(value = "INVOKE", target = "Lnet/minecraft/server/world/ServerWorld;calculateAmbientDarkness()V")))

@@ -29,6 +29,7 @@ import io.github.drakonkinst.worldsinger.item.map.CustomMapDecorationsComponent.
 import io.github.drakonkinst.worldsinger.util.math.Int2;
 import io.github.drakonkinst.worldsinger.worldgen.lumar.LumarChunkGenerator;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import net.minecraft.item.map.MapState;
@@ -129,7 +130,7 @@ public class RainlinePath {
 
     // https://stackoverflow.com/a/22157217
     public static List<Int2> generateRainlineNodes(int lunagreeX, int lunagreeZ, Random random) {
-        List<Int2> rainlineNodes = new ArrayList<>(RAINLINE_NODE_COUNT);
+        List<Int2> rainlineNodes = new ArrayList<>(Collections.nCopies(RAINLINE_NODE_COUNT, null));
         for (int i = 0; i < RAINLINE_NODE_COUNT; ++i) {
             float angle =
                     i * ANGLE_INCREMENT + random.nextFloat() * 2.0f * ANGLE_OFFSET - ANGLE_OFFSET;

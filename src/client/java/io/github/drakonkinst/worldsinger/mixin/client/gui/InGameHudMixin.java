@@ -28,7 +28,6 @@ import io.github.drakonkinst.worldsinger.entity.CameraPossessable;
 import io.github.drakonkinst.worldsinger.entity.MidnightCreatureEntity;
 import io.github.drakonkinst.worldsinger.entity.PossessionClientUtil;
 import io.github.drakonkinst.worldsinger.gui.ThirstStatusBar;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.InGameHud;
@@ -36,11 +35,11 @@ import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.ColorHelper;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -69,7 +68,7 @@ public abstract class InGameHudMixin {
     }
 
     // Occurs after the vignette based on graphics mode
-    @Inject(method = "renderMiscOverlays", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/RenderTickCounter;getLastFrameDuration()F"), cancellable = true)
+    @Inject(method = "renderMiscOverlays", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/RenderTickCounter;getDynamicDeltaTicks()F"), cancellable = true)
     private void renderPossessionOverlays(DrawContext context, RenderTickCounter tickCounter,
             CallbackInfo ci) {
         CameraPossessable possessionTarget = PossessionClientUtil.getPossessedEntity();
@@ -79,10 +78,14 @@ public abstract class InGameHudMixin {
         LivingEntity possessedEntity = possessionTarget.toEntity();
 
         if (possessedEntity instanceof MidnightCreatureEntity) {
-            renderMidnightEssencePossessionVignette(context);
+            context.drawTexture(RenderPipelines.VIGNETTE, VIGNETTE_TEXTURE, 0, 0, 0.0F, 0.0F,
+                    context.getScaledWindowWidth(), context.getScaledWindowHeight(),
+                    context.getScaledWindowWidth(), context.getScaledWindowHeight(),
+                    ColorHelper.fromFloats(1.0f, 1.0f, 1.0f, 1.0f));
         }
 
         // Don't render anything except the frozen overlay, from the possessed entity's perspective
+        // TODO: Probably a better way to do this
         if (possessedEntity.getFrozenTicks() > 0) {
             this.renderOverlay(context, POWDER_SNOW_OUTLINE, possessedEntity.getFreezingScale());
         }
@@ -90,35 +93,7 @@ public abstract class InGameHudMixin {
         ci.cancel();
     }
 
-    @Unique
-    private void renderMidnightEssencePossessionVignette(DrawContext context) {
-        // Prepare
-        // RenderSystem.disableDepthTest();
-        // RenderSystem.depthMask(false);
-        // RenderSystem.enableBlend();
-        // RenderSystem.blendFuncSeparate(GlStateManager.SrcFactor.ZERO,
-        //         GlStateManager.DstFactor.ONE_MINUS_SRC_COLOR, GlStateManager.SrcFactor.ONE,
-        //         GlStateManager.DstFactor.ZERO);
-
-        // Use darkness = 1.0f, so no changes needed
-        final int scaledWidth = context.getScaledWindowWidth();
-        final int scaledHeight = context.getScaledWindowHeight();
-        // TODO: RESTORE - still broken
-        context.drawTexture(RenderPipelines.GUI_TEXTURED, VIGNETTE_TEXTURE, 0, 0, 0.0f, 0.0f,
-                scaledWidth, scaledHeight, scaledWidth, scaledHeight);
-
-        // Reset
-        // RenderSystem.depthMask(true);
-        // RenderSystem.enableDepthTest();
-        // RenderSystem.defaultBlendFunc();
-        // RenderSystem.disableBlend();
-    }
-
     @Shadow
     @Nullable
     protected abstract PlayerEntity getCameraPlayer();
-
-    @Shadow
-    @Final
-    private MinecraftClient client;
 }
