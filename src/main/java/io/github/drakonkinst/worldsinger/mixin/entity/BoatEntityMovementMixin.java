@@ -89,6 +89,9 @@ public abstract class BoatEntityMovementMixin extends VehicleEntity {
     @Shadow
     public abstract boolean isPaddleMoving(int paddle);
 
+    @Shadow
+    private float yawVelocity;
+
     @Inject(method = "tick", at = @At("TAIL"))
     private void injectTick(CallbackInfo ci) {
         addParticlesToRowing();
@@ -258,13 +261,13 @@ public abstract class BoatEntityMovementMixin extends VehicleEntity {
         return inSporeSea;
     }
 
-    // FIXME: Restore
-    // @Inject(method = "updateVelocity", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/vehicle/AbstractBoatEntity;setVelocity(DDD)V"), slice = @Slice(to = @At(value = "FIELD", opcode = Opcodes.PUTFIELD, target = "Lnet/minecraft/entity/vehicle/AbstractBoatEntity;yawVelocity:F")))
-    // private void addSporeSeaVelocityLogic(CallbackInfo ci) {
-    //     if (this.inSporeSea && !SeetheManager.areSporesFluidized(this.getWorld())) {
-    //         this.velocityDecay = 0.0f;
-    //     }
-    // }
+    @Inject(method = "updateVelocity", at = @At(value = "TAIL"))
+    private void freezeBoatDuringStilling(CallbackInfo ci) {
+        if (this.inSporeSea && !SeetheManager.areSporesFluidized(this.getWorld())) {
+            this.yawVelocity = 0.0f;
+            this.setVelocity(Vec3d.ZERO);
+        }
+    }
 
     @WrapOperation(method = "updatePaddles", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/vehicle/AbstractBoatEntity;setVelocity(Lnet/minecraft/util/math/Vec3d;)V"))
     private void restrictMovementInSporeSea(AbstractBoatEntity instance, Vec3d velocity,

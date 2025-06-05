@@ -24,6 +24,7 @@
 
 package io.github.drakonkinst.worldsinger.recipe;
 
+import io.github.drakonkinst.worldsinger.item.component.SilverLinedComponent;
 import io.github.drakonkinst.worldsinger.registry.ModDataComponentTypes;
 import java.util.HashMap;
 import java.util.Map;
@@ -95,7 +96,7 @@ public class SilverLinedChestBoatRecipe extends SpecialCraftingRecipe {
     @Override
     public ItemStack craft(CraftingRecipeInput input, WrapperLookup lookup) {
         Item boatItem = null;
-        int silverDurability = -1;
+        SilverLinedComponent silverLinedComponent = null;
         for (int i = 0; i < input.size(); ++i) {
             ItemStack stack = input.getStackInSlot(i);
             if (stack.isEmpty()) {
@@ -104,14 +105,14 @@ public class SilverLinedChestBoatRecipe extends SpecialCraftingRecipe {
             if (ITEM_TO_RESULT.containsKey(stack.getItem()) && stack.contains(
                     ModDataComponentTypes.SILVER_DURABILITY)) {
                 boatItem = stack.getItem();
-                silverDurability = stack.getOrDefault(ModDataComponentTypes.SILVER_DURABILITY, -1);
+                silverLinedComponent = stack.get(ModDataComponentTypes.SILVER_DURABILITY);
             }
         }
-        if (boatItem == null || silverDurability < 0) {
+        if (boatItem == null || silverLinedComponent == null) {
             return ItemStack.EMPTY;
         }
         ItemStack result = ITEM_TO_RESULT.get(boatItem).getDefaultStack();
-        result.set(ModDataComponentTypes.SILVER_DURABILITY, silverDurability);
+        result.set(ModDataComponentTypes.SILVER_DURABILITY, silverLinedComponent);
         return result;
     }
 

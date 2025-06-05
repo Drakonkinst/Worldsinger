@@ -45,7 +45,6 @@ public record LunagreeLocation(int blockX, int blockZ, int sporeId, List<Int2> r
                                     .optionalFieldOf("rainline_path", Collections.emptyList())
                                     .forGetter(LunagreeLocation::rainlineNodes))
                     .apply(instance, LunagreeLocation::new));
-    // Never send the rainline node data to the client
     public static final PacketCodec<RegistryByteBuf, LunagreeLocation> PACKET_CODEC = PacketCodec.tuple(
             PacketCodecs.VAR_INT, LunagreeLocation::blockX, PacketCodecs.VAR_INT,
             LunagreeLocation::blockZ, PacketCodecs.VAR_INT, LunagreeLocation::sporeId,

@@ -3,6 +3,7 @@ package io.github.drakonkinst.worldsinger.item.component;
 import com.mojang.serialization.Codec;
 import io.github.drakonkinst.worldsinger.cosmere.SilverLined;
 import io.github.drakonkinst.worldsinger.registry.ModDataComponentTypes;
+import io.netty.buffer.ByteBuf;
 import java.util.function.Consumer;
 import net.minecraft.component.ComponentType;
 import net.minecraft.component.ComponentsAccess;
@@ -18,7 +19,12 @@ import net.minecraft.text.TextColor;
 import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.MathHelper;
 
-public record SilverLinedComponent() implements TooltipAppender, ComponentType<Integer> {
+public record SilverLinedComponent(int value) implements TooltipAppender, ComponentType<Integer> {
+
+    public static final Codec<SilverLinedComponent> CODEC = Codecs.NON_NEGATIVE_INT.xmap(
+            SilverLinedComponent::new, SilverLinedComponent::value);
+    public static final PacketCodec<ByteBuf, SilverLinedComponent> PACKET_CODEC = PacketCodecs.VAR_INT.xmap(
+            SilverLinedComponent::new, SilverLinedComponent::value);
 
     private static final Style SILVER_TEXT_STYLE = Style.EMPTY.withColor(
             TextColor.fromRgb(SilverLined.SILVER_TEXT_COLOR));

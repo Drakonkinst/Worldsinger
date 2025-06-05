@@ -100,18 +100,4 @@ public abstract class AxeItemMixin extends Item {
         }
         super.postHit(stack, target, attacker);
     }
-
-    // FIXME
-    // @Override
-    // public boolean postMine(ItemStack stack, World world, BlockState state, BlockPos pos,
-    //         LivingEntity miner) {
-    //     SilverLined silverData = ModApi.SILVER_LINED_ITEM.find(stack, null);
-    //     if (silverData != null && silverData.getSilverDurability() > 0
-    //             && EntityUtil.isNotCreativePlayer(miner)) {
-    //         if (!silverData.decrementDurability()) {
-    //             SilverLined.onSilverLinedItemBreak(world, miner);
-    //         }
-    //     }
-    //     return super.postMine(stack, world, state, pos, miner);
-    // }
 }

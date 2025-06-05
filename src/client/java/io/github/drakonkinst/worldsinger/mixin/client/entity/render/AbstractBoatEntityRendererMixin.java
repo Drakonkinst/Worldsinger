@@ -44,7 +44,7 @@ public abstract class AbstractBoatEntityRendererMixin extends
         super(context);
     }
 
-    // TODO: RESTORE
+    // FIXME: RESTORE
     // @Inject(method = "<init>", at = @At("TAIL"))
     // private void addSilverLiningFeature(Context context, CallbackInfo ci) {
     //     silverLiningFeatureRenderer = new BoatSilverLiningFeatureRenderer(this, texturesAndModels);

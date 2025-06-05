@@ -36,7 +36,7 @@ import org.spongepowered.asm.mixin.Unique;
 @Mixin(ItemRenderer.class)
 public abstract class ItemRendererMixin {
 
-    // TODO: RESTORE
+    // FIXME: RESTORE
     // @ModifyReturnValue(method = "getModel", at = @At("RETURN"))
     // private BakedModel addSilverLinedModelOverlays(BakedModel original, ItemStack stack,
     //         @Nullable World world, @Nullable LivingEntity entity, int seed) {

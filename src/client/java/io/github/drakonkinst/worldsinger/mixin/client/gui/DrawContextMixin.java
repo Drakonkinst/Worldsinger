@@ -37,7 +37,7 @@ public abstract class DrawContextMixin {
     // Mixing in directly to DrawContext because we want salted overlay to ONLY appear in the
     // inventory, not in hand.
     // If we want a global overlay, a better option would be to mixin into getModel() directly
-    // TODO: RESTORE
+    // FIXME: RESTORE
     // @ModifyExpressionValue(method = "drawItem(Lnet/minecraft/entity/LivingEntity;Lnet/minecraft/world/World;Lnet/minecraft/item/ItemStack;IIII)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/item/ItemRenderer;getModel(Lnet/minecraft/item/ItemStack;Lnet/minecraft/world/World;Lnet/minecraft/entity/LivingEntity;I)Lnet/minecraft/client/render/model/BakedModel;"))
     // private BakedModel addSaltedOverlay(BakedModel original, @Nullable LivingEntity entity,
     //         @Nullable World world, ItemStack stack, int x, int y, int seed, int z) {
@@ -64,7 +64,7 @@ public abstract class DrawContextMixin {
     //     return original;
     // }
 
-    // TODO: RESTORE
+    // FIXME: RESTORE
     // @Inject(method = "drawItemInSlot(Lnet/minecraft/client/font/TextRenderer;Lnet/minecraft/item/ItemStack;IILjava/lang/String;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;isItemBarVisible()Z"))
     // private void renderCannonballContentBar(TextRenderer textRenderer, ItemStack stack, int x,
     //         int y, String countOverride, CallbackInfo ci) {
@@ -96,7 +96,7 @@ public abstract class DrawContextMixin {
         this.fill(x, startY, x + 1, endY, contents.get(index).getBarColor() | Colors.BLACK);
     }
 
-    // TODO: RESTORE
+    // FIXME: RESTORE
     // @ModifyExpressionValue(method = "drawItem(Lnet/minecraft/entity/LivingEntity;Lnet/minecraft/world/World;Lnet/minecraft/item/ItemStack;IIII)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/item/ItemRenderer;getModel(Lnet/minecraft/item/ItemStack;Lnet/minecraft/world/World;Lnet/minecraft/entity/LivingEntity;I)Lnet/minecraft/client/render/model/BakedModel;"))
     // private BakedModel addCannonballModelOverlays(BakedModel original,
     //         @Nullable LivingEntity entity, @Nullable World world, ItemStack stack, int x, int y,

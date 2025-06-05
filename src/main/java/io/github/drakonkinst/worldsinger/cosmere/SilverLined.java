@@ -24,6 +24,7 @@
 package io.github.drakonkinst.worldsinger.cosmere;
 
 import io.github.drakonkinst.worldsinger.api.ModAttachmentTypes;
+import io.github.drakonkinst.worldsinger.item.component.SilverLinedComponent;
 import io.github.drakonkinst.worldsinger.registry.ModDataComponentTypes;
 import io.github.drakonkinst.worldsinger.registry.tag.ModItemTags;
 import net.minecraft.component.ComponentsAccess;
@@ -72,7 +73,12 @@ public interface SilverLined {
     }
 
     static int getSilverDurability(ComponentsAccess stack) {
-        return stack.getOrDefault(ModDataComponentTypes.SILVER_DURABILITY, 0);
+        SilverLinedComponent silverLinedComponent = stack.get(
+                ModDataComponentTypes.SILVER_DURABILITY);
+        if (silverLinedComponent != null) {
+            return silverLinedComponent.value();
+        }
+        return 0;
     }
 
     static int setSilverDurability(ItemStack stack, int value) {
@@ -81,7 +87,7 @@ public interface SilverLined {
             return 0;
         }
         int newValue = Math.clamp(value, 0, maxDurability);
-        stack.set(ModDataComponentTypes.SILVER_DURABILITY, newValue);
+        stack.set(ModDataComponentTypes.SILVER_DURABILITY, new SilverLinedComponent(newValue));
         return newValue;
     }
 
@@ -102,7 +108,12 @@ public interface SilverLined {
 
     // Return true if it's broken
     static boolean damageSilverDurability(ItemStack stack, int amount) {
-        int silverDurability = stack.getOrDefault(ModDataComponentTypes.SILVER_DURABILITY, 0);
+        SilverLinedComponent silverLinedComponent = stack.get(
+                ModDataComponentTypes.SILVER_DURABILITY);
+        if (silverLinedComponent == null) {
+            return true;
+        }
+        int silverDurability = silverLinedComponent.value();
         return SilverLined.setSilverDurability(stack, silverDurability - amount) == 0;
     }
 

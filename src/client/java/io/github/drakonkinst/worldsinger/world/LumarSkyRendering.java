@@ -61,7 +61,7 @@ public class LumarSkyRendering {
     private static final float MOON_VISUAL_HEIGHT_START = 100.0f;
     private static final float MOON_VISUAL_HEIGHT_END = 300.0f;
 
-    // TODO: Temp
+    // FIXME: Temp
     public final SkyRendering skyRendering;
 
     public LumarSkyRendering(SkyRendering skyRendering) {
@@ -106,7 +106,7 @@ public class LumarSkyRendering {
         skyRendering.renderCelestialBodies(matrices, vertexConsumers, skyAngle, 0, skyAlpha,
                 starBrightness);
 
-        // TODO: Restore
+        // FIXME: Restore
         // Render normal sky without moon
         // matrices.push();
         // matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-90.0F));

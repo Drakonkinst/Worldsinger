@@ -25,12 +25,20 @@ package io.github.drakonkinst.worldsinger.mixin.item;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import io.github.drakonkinst.worldsinger.cosmere.SaltedFoodUtil;
+import io.github.drakonkinst.worldsinger.cosmere.SilverLined;
+import io.github.drakonkinst.worldsinger.util.EntityUtil;
+import net.minecraft.block.BlockState;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(Item.class)
 public abstract class ItemMixin {
@@ -44,5 +52,15 @@ public abstract class ItemMixin {
             return Text.translatable(SALTED_FOOD_NAME_KEY, original);
         }
         return original;
+    }
+
+    @Inject(method = "postMine", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;damage(ILnet/minecraft/entity/LivingEntity;Lnet/minecraft/entity/EquipmentSlot;)V"))
+    private void damageSilverDurability(ItemStack stack, World world, BlockState state,
+            BlockPos pos, LivingEntity miner, CallbackInfoReturnable<Boolean> cir) {
+        int silverDurability = SilverLined.getSilverDurability(stack);
+        // TODO: There are some edge cases here where silver durability can fall out of sync
+        if (silverDurability > 0 && EntityUtil.isNotCreativePlayer(miner)) {
+            SilverLined.damageSilverDurability(stack);
+        }
     }
 }

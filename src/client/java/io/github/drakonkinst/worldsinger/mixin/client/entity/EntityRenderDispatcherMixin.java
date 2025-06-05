@@ -29,7 +29,7 @@ import org.spongepowered.asm.mixin.Mixin;
 @Mixin(EntityRenderDispatcher.class)
 public abstract class EntityRenderDispatcherMixin {
 
-    // TODO: RESTORE
+    // FIXME: RESTORE
     // @WrapOperation(method = "render(Lnet/minecraft/entity/Entity;DDDFLnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;ILnet/minecraft/client/render/entity/EntityRenderer;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/entity/EntityRenderer;getShadowRadius(Lnet/minecraft/client/render/entity/state/EntityRenderState;)F"))
     // private void adjustShadowSizeForShapeshifters(MatrixStack matrices,
     //         VertexConsumerProvider vertexConsumers, EntityRenderState renderState, float opacity,

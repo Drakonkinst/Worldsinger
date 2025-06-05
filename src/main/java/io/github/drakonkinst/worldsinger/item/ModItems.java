@@ -497,7 +497,7 @@ public final class ModItems {
             // Tools
             itemGroup.add(ModItems.SILVER_KNIFE);
             itemGroup.add(
-                    ModItems.CERAMIC_CANNONBALL); // FIXME: Should add this to normal tabs + pre-made variations
+                    ModItems.CERAMIC_CANNONBALL); // TODO: Should add this to normal tabs + pre-made variations
 
             // Ingredients
             itemGroup.add(ModItems.VERDANT_VINE);

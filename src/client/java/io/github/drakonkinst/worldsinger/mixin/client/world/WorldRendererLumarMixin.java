@@ -115,7 +115,7 @@ public abstract class WorldRendererLumarMixin {
                         dimensionSkyColor);
             }
 
-            // TODO: Restore
+            // FIXME: Restore
             // lumarSkyRendering.renderLumarCelestialBodies(matrices, vertexConsumers, tickDelta,
             // skyAngle, skyAlpha, starBrightness, fog);
             skyRendering.renderCelestialBodies(matrices, vertexConsumers, skyAngle, 0, skyAlpha,

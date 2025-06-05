@@ -27,9 +27,12 @@ package io.github.drakonkinst.worldsinger.registry;
 import com.mojang.serialization.Codec;
 import io.github.drakonkinst.worldsinger.Worldsinger;
 import io.github.drakonkinst.worldsinger.item.component.CannonballComponent;
+import io.github.drakonkinst.worldsinger.item.component.SilverLinedComponent;
 import io.github.drakonkinst.worldsinger.item.map.CustomMapDecorationsComponent;
 import java.util.function.UnaryOperator;
+import net.fabricmc.fabric.api.item.v1.ComponentTooltipAppenderRegistry;
 import net.minecraft.component.ComponentType;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
@@ -40,8 +43,9 @@ public final class ModDataComponentTypes {
 
     public static final ComponentType<Boolean> SALTED = register("salted",
             builder -> builder.codec(Codec.BOOL).packetCodec(PacketCodecs.BOOLEAN));
-    public static final ComponentType<Integer> SILVER_DURABILITY = register("silver_durability",
-            builder -> builder.codec(Codecs.NON_NEGATIVE_INT).packetCodec(PacketCodecs.VAR_INT));
+    public static final ComponentType<SilverLinedComponent> SILVER_DURABILITY = register(
+            "silver_durability", builder -> builder.codec(SilverLinedComponent.CODEC)
+                    .packetCodec(SilverLinedComponent.PACKET_CODEC));
     public static final ComponentType<Integer> MAX_SILVER_DURABILITY = register(
             "max_silver_durability",
             builder -> builder.codec(Codecs.POSITIVE_INT).packetCodec(PacketCodecs.VAR_INT));
@@ -56,7 +60,10 @@ public final class ModDataComponentTypes {
                     .packetCodec(CannonballComponent.PACKET_CODEC)
                     .cache());
 
-    public static void initialize() {}
+    public static void initialize() {
+        ComponentTooltipAppenderRegistry.addAfter(DataComponentTypes.LORE, SILVER_DURABILITY);
+        ComponentTooltipAppenderRegistry.addAfter(DataComponentTypes.LORE, CANNONBALL);
+    }
 
     private static <T> ComponentType<T> register(String id,
             UnaryOperator<ComponentType.Builder<T>> builderOperator) {

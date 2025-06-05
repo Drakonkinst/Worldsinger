@@ -29,7 +29,7 @@ import net.minecraft.util.math.Vec3d;
 
 public class LumarDimensionEffects extends DimensionEffects {
 
-    // TODO: Restore
+    // FIXME: Restore
     // private static final float CLOUD_HEIGHT = 384.0f;
 
     public LumarDimensionEffects() {

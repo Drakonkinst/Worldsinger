@@ -63,7 +63,7 @@ public final class ModItemRendering {
                 ModItemRendering.CANNONBALL_FUSE_3,
         };
 
-        // TODO: Restore
+        // FIXME: Restore
         // ModelLoadingPlugin.register(pluginContext -> {
         // pluginContext.addModels(overlayModels);
         // pluginContext.modifyModelOnLoad()
