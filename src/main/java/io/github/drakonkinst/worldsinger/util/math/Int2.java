@@ -25,9 +25,13 @@
 package io.github.drakonkinst.worldsinger.util.math;
 
 import com.mojang.serialization.Codec;
+import io.netty.buffer.ByteBuf;
 import java.util.stream.IntStream;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.util.Util;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
+import org.jetbrains.annotations.NotNull;
 
 public record Int2(int x, int y) {
 
@@ -35,6 +39,25 @@ public record Int2(int x, int y) {
             stream -> Util.decodeFixedLengthArray(stream, 2)
                     .map(values -> new Int2(values[0], values[1])),
             pair -> IntStream.of(pair.x(), pair.y())).stable();
+    public static final PacketCodec<ByteBuf, Int2> PACKET_CODEC = new PacketCodec<>() {
+        public Int2 decode(ByteBuf byteBuf) {
+            return Int2.fromLong(byteBuf.readLong());
+        }
+
+        public void encode(ByteBuf byteBuf, Int2 blockPos) {
+            byteBuf.writeLong(blockPos.toLong());
+        }
+    };
+
+    public static long toLong(Int2 value) {
+        return ChunkPos.toLong(value.x, value.y);
+    }
+
+    public static Int2 fromLong(long value) {
+        int x = ChunkPos.getPackedX(value);
+        int y = ChunkPos.getPackedZ(value);
+        return new Int2(x, y);
+    }
 
     public static float distance(Int2 p0, Int2 p1) {
         return MathHelper.sqrt(Int2.distanceSquared(p0, p1));
@@ -46,8 +69,12 @@ public record Int2(int x, int y) {
         return deltaX * deltaX + deltaY * deltaY;
     }
 
+    public long toLong() {
+        return Int2.toLong(this);
+    }
+
     @Override
-    public String toString() {
+    public @NotNull String toString() {
         return "(" + x + ", " + y + ")";
     }
 }

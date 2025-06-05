@@ -49,7 +49,7 @@ public record LunagreeLocation(int blockX, int blockZ, int sporeId, List<Int2> r
     public static final PacketCodec<RegistryByteBuf, LunagreeLocation> PACKET_CODEC = PacketCodec.tuple(
             PacketCodecs.VAR_INT, LunagreeLocation::blockX, PacketCodecs.VAR_INT,
             LunagreeLocation::blockZ, PacketCodecs.VAR_INT, LunagreeLocation::sporeId,
-            PacketCodec.unit(Collections.emptyList()), LunagreeLocation::rainlineNodes,
+            Int2.PACKET_CODEC.collect(PacketCodecs.toList()), LunagreeLocation::rainlineNodes,
             LunagreeLocation::new);
 
     public double distSqTo(double x, double z) {
