@@ -37,7 +37,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(EntityRenderer.class)
-public class EntityRendererMixin<T extends Entity, S extends EntityRenderState> {
+public abstract class EntityRendererMixin<T extends Entity, S extends EntityRenderState> {
 
     @Inject(method = "updateRenderState", at = @At("TAIL"))
     private void addLivingEntityRenderState(T entity, S state, float tickDelta, CallbackInfo ci) {

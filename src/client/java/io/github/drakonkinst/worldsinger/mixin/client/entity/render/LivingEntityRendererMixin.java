@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.github.drakonkinst.worldsinger.mixin.client.entity.render.state;
+package io.github.drakonkinst.worldsinger.mixin.client.entity.render;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import io.github.drakonkinst.worldsinger.entity.render.MidnightCreatureEntityRenderer;

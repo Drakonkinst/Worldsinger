@@ -32,7 +32,7 @@ import software.bernie.geckolib.renderer.base.GeoRenderState;
 
 public class RainlineEntityModel extends GeoModel<RainlineEntity> {
 
-    private static final Identifier MODEL_PATH = Worldsinger.id("geo/rainline.geo.json");
+    private static final Identifier MODEL_PATH = Worldsinger.id("rainline");
     private static final Identifier TEXTURE_PATH = Worldsinger.id(
             "textures/entity/rainline/rainline.png");
 

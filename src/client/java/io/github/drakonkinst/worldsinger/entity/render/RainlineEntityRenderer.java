@@ -36,20 +36,4 @@ public class RainlineEntityRenderer extends
     public RainlineEntityRenderer(EntityRendererFactory.Context ctx) {
         super(ctx, new RainlineEntityModel());
     }
-
-    // TODO: RESTORE
-    // @Override
-    // public void render(EntityRenderState entityRenderState, MatrixStack poseStack, VertexConsumerProvider bufferSource, int packedLight) {
-    //     // My feeble attempt to make interpolation work has gone horribly wrong
-    //     double deltaX = entityRenderState.getX() - entityRenderState.prevX;
-    //     double deltaZ = entityRenderState.getZ() - entityRenderState.prevZ;
-    //     double adjustY = RainlineEntity.getTargetHeight(entity.getWorld()) - entity.getY();
-    //     poseStack.push();
-    //     double t = partialTick - 1;
-    //     double adjustX = t * deltaX;
-    //     double adjustZ = t * deltaZ;
-    //     poseStack.translate(adjustX, adjustY, adjustZ);
-    //     super.render(entity, entityYaw, partialTick, poseStack, bufferSource, packedLight);
-    //     poseStack.pop();
-    // }
 }
