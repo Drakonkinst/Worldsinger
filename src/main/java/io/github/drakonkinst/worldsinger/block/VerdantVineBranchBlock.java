@@ -49,7 +49,7 @@ import net.minecraft.world.tick.ScheduledTickView;
 public class VerdantVineBranchBlock extends ConnectingBlock implements Waterloggable,
         SporeGrowthBlock {
 
-    private static final float RADIUS = 0.25f;
+    private static final float RADIUS = 8.0f;
     public static final MapCodec<VerdantVineBranchBlock> CODEC = AbstractBlock.createCodec(
             VerdantVineBranchBlock::new);
     private static final BooleanProperty[] DIRECTION_PROPERTIES = {

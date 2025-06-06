@@ -41,16 +41,24 @@ import net.minecraft.client.data.ItemModels;
 import net.minecraft.client.data.Model;
 import net.minecraft.client.data.ModelIds;
 import net.minecraft.client.data.Models;
+import net.minecraft.client.data.MultipartBlockModelDefinitionCreator;
 import net.minecraft.client.data.TextureMap;
+import net.minecraft.client.data.TexturedModel;
 import net.minecraft.client.data.VariantsBlockModelDefinitionCreator;
 import net.minecraft.client.render.model.json.WeightedVariant;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.Items;
+import net.minecraft.state.property.Properties;
 import net.minecraft.util.Identifier;
 
 // Datagen is limited and does not work for the more complex items.
 public class ModModelGenerator extends FabricModelProvider {
+
+    public static final TexturedModel.Factory ALL_CUBE_COLUMN = TexturedModel.makeFactory(
+            TextureMap::all, Models.CUBE_COLUMN);
+    public static final TexturedModel.Factory ALL_CUBE_COLUMN_HORIZONTAL = TexturedModel.makeFactory(
+            TextureMap::all, Models.CUBE_COLUMN_HORIZONTAL);
 
     public ModModelGenerator(FabricDataOutput output) {
         super(output);
@@ -80,7 +88,7 @@ public class ModModelGenerator extends FabricModelProvider {
                 ModBlocks.SUNLIGHT_SPORE_BLOCK,
                 ModBlocks.VERDANT_SPORE_BLOCK,
                 ModBlocks.ZEPHYR_SPORE_BLOCK,
-                ModBlocks.MIDNIGHT_ESSENCE
+                ModBlocks.MIDNIGHT_ESSENCE,
         });
 
         registerSimpleCrossBlocks(blockStateModelGenerator, new Block[] {
@@ -91,6 +99,8 @@ public class ModModelGenerator extends FabricModelProvider {
         registerUpFacingCrossBlock(blockStateModelGenerator, ModBlocks.DEAD_CRIMSON_SPINES);
         registerUpFacingCrossBlock(blockStateModelGenerator, ModBlocks.VERDANT_VINE_SNARE);
         registerUpFacingCrossBlock(blockStateModelGenerator, ModBlocks.DEAD_VERDANT_VINE_SNARE);
+        registerBark(blockStateModelGenerator, ModBlocks.VERDANT_VINE_BLOCK);
+        registerBark(blockStateModelGenerator, ModBlocks.DEAD_VERDANT_VINE_BLOCK);
 
         registerCauldrons(blockStateModelGenerator);
 
@@ -128,6 +138,9 @@ public class ModModelGenerator extends FabricModelProvider {
         registerAliasedModel(blockStateModelGenerator, ModBlocks.ALUMINUM_SHEET,
                 ModBlocks.ALUMINUM_BLOCK);
         blockStateModelGenerator.registerMultifaceBlockModel(ModBlocks.ALUMINUM_SHEET);
+
+        registerBranch(blockStateModelGenerator, ModBlocks.VERDANT_VINE_BRANCH);
+        registerBranch(blockStateModelGenerator, ModBlocks.DEAD_VERDANT_VINE_BRANCH);
     }
 
     private void generateBlockStatesOnly(BlockStateModelGenerator blockStateModelGenerator) {
@@ -167,6 +180,71 @@ public class ModModelGenerator extends FabricModelProvider {
         blockStateModelGenerator.blockStateCollector.accept(
                 BlockStateModelGenerator.createSingletonBlockState(flowerPotBlock,
                         weightedVariant));
+    }
+
+    // Block that uses same texture for all sides, but is sided
+    private void registerBark(BlockStateModelGenerator blockStateModelGenerator, Block block) {
+        WeightedVariant verticalVariant = BlockStateModelGenerator.createWeightedVariant(
+                ALL_CUBE_COLUMN.upload(block, blockStateModelGenerator.modelCollector));
+        WeightedVariant horizontalVariant = BlockStateModelGenerator.createWeightedVariant(
+                ALL_CUBE_COLUMN_HORIZONTAL.upload(block, blockStateModelGenerator.modelCollector));
+        blockStateModelGenerator.blockStateCollector.accept(
+                BlockStateModelGenerator.createAxisRotatedBlockState(block, verticalVariant,
+                        horizontalVariant));
+    }
+
+    // Pattered after chorus plant
+    private void registerBranch(BlockStateModelGenerator blockStateModelGenerator, Block block) {
+        WeightedVariant sidedVariant = BlockStateModelGenerator.createWeightedVariant(
+                ModelIds.getBlockSubModelId(block, "_side"));
+        WeightedVariant nonSidedVariant = BlockStateModelGenerator.createWeightedVariant(
+                ModelIds.getBlockSubModelId(block, "_noside"));
+        blockStateModelGenerator.blockStateCollector.accept(
+                MultipartBlockModelDefinitionCreator.create(block)
+                        .with(BlockStateModelGenerator.createMultipartConditionBuilder()
+                                .put(Properties.NORTH, true), sidedVariant)
+                        .with(BlockStateModelGenerator.createMultipartConditionBuilder()
+                                        .put(Properties.EAST, true),
+                                sidedVariant.apply(BlockStateModelGenerator.ROTATE_Y_90)
+                                        .apply(BlockStateModelGenerator.UV_LOCK))
+                        .with(BlockStateModelGenerator.createMultipartConditionBuilder()
+                                        .put(Properties.SOUTH, true),
+                                sidedVariant.apply(BlockStateModelGenerator.ROTATE_Y_180)
+                                        .apply(BlockStateModelGenerator.UV_LOCK))
+                        .with(BlockStateModelGenerator.createMultipartConditionBuilder()
+                                        .put(Properties.WEST, true),
+                                sidedVariant.apply(BlockStateModelGenerator.ROTATE_Y_270)
+                                        .apply(BlockStateModelGenerator.UV_LOCK))
+                        .with(BlockStateModelGenerator.createMultipartConditionBuilder()
+                                        .put(Properties.UP, true),
+                                sidedVariant.apply(BlockStateModelGenerator.ROTATE_X_270)
+                                        .apply(BlockStateModelGenerator.UV_LOCK))
+                        .with(BlockStateModelGenerator.createMultipartConditionBuilder()
+                                        .put(Properties.DOWN, true),
+                                sidedVariant.apply(BlockStateModelGenerator.ROTATE_X_90)
+                                        .apply(BlockStateModelGenerator.UV_LOCK))
+                        .with(BlockStateModelGenerator.createMultipartConditionBuilder()
+                                .put(Properties.NORTH, false), nonSidedVariant)
+                        .with(BlockStateModelGenerator.createMultipartConditionBuilder()
+                                        .put(Properties.EAST, false),
+                                nonSidedVariant.apply(BlockStateModelGenerator.ROTATE_Y_90)
+                                        .apply(BlockStateModelGenerator.UV_LOCK))
+                        .with(BlockStateModelGenerator.createMultipartConditionBuilder()
+                                        .put(Properties.SOUTH, false),
+                                nonSidedVariant.apply(BlockStateModelGenerator.ROTATE_Y_180)
+                                        .apply(BlockStateModelGenerator.UV_LOCK))
+                        .with(BlockStateModelGenerator.createMultipartConditionBuilder()
+                                        .put(Properties.WEST, false),
+                                nonSidedVariant.apply(BlockStateModelGenerator.ROTATE_Y_270)
+                                        .apply(BlockStateModelGenerator.UV_LOCK))
+                        .with(BlockStateModelGenerator.createMultipartConditionBuilder()
+                                        .put(Properties.UP, false),
+                                nonSidedVariant.apply(BlockStateModelGenerator.ROTATE_X_270)
+                                        .apply(BlockStateModelGenerator.UV_LOCK))
+                        .with(BlockStateModelGenerator.createMultipartConditionBuilder()
+                                        .put(Properties.DOWN, false),
+                                nonSidedVariant.apply(BlockStateModelGenerator.ROTATE_X_90)
+                                        .apply(BlockStateModelGenerator.UV_LOCK)));
     }
 
     private void registerCauldrons(BlockStateModelGenerator blockStateModelGenerator) {

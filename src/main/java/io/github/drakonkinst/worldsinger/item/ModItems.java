@@ -42,6 +42,7 @@ import io.github.drakonkinst.worldsinger.registry.ModFoodComponents;
 import io.github.drakonkinst.worldsinger.registry.ModPotions;
 import io.github.drakonkinst.worldsinger.registry.ModSoundEvents;
 import io.github.drakonkinst.worldsinger.registry.ModToolMaterials;
+import it.unimi.dsi.fastutil.objects.ReferenceSortedSets;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
@@ -51,6 +52,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.ConsumableComponents;
+import net.minecraft.component.type.TooltipDisplayComponent;
 import net.minecraft.fluid.FlowableFluid;
 import net.minecraft.item.AxeItem;
 import net.minecraft.item.BlockItem;
@@ -204,7 +206,10 @@ public final class ModItems {
                         .maxCount(16)
                         .component(DataComponentTypes.POTION_CONTENTS,
                                 ModPotions.SPORE_POTIONS_COMPONENT)
-                        .component(DataComponentTypes.CONSUMABLE, ConsumableComponents.DRINK));
+                        .component(DataComponentTypes.CONSUMABLE, ConsumableComponents.DRINK)
+                        .component(DataComponentTypes.TOOLTIP_DISPLAY,
+                                new TooltipDisplayComponent(false, ReferenceSortedSets.singleton(
+                                        DataComponentTypes.POTION_CONTENTS))));
     }
 
     private static Item registerSporeSplashBottleItem(String id, AetherSpores sporeType) {
@@ -212,7 +217,10 @@ public final class ModItems {
         return register(id, settings -> new SplashSporeBottleItem(sporeType, settings),
                 new Item.Settings().maxCount(1)
                         .component(DataComponentTypes.POTION_CONTENTS,
-                                ModPotions.SPORE_POTIONS_COMPONENT));
+                                ModPotions.SPORE_POTIONS_COMPONENT)
+                        .component(DataComponentTypes.TOOLTIP_DISPLAY,
+                                new TooltipDisplayComponent(false, ReferenceSortedSets.singleton(
+                                        DataComponentTypes.POTION_CONTENTS))));
     }
 
     private static RegistryKey<Item> keyOf(String id) {
