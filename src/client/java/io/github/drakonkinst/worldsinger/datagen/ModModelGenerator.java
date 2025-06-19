@@ -24,6 +24,8 @@
 package io.github.drakonkinst.worldsinger.datagen;
 
 import io.github.drakonkinst.worldsinger.block.ModBlocks;
+import io.github.drakonkinst.worldsinger.item.CannonballCoreProperty;
+import io.github.drakonkinst.worldsinger.item.CannonballFuseProperty;
 import io.github.drakonkinst.worldsinger.item.ModItems;
 import io.github.drakonkinst.worldsinger.item.SporeBottleTintSource;
 import io.github.drakonkinst.worldsinger.item.component.CannonballComponent;
@@ -49,10 +51,14 @@ import net.minecraft.client.data.MultipartBlockModelDefinitionCreator;
 import net.minecraft.client.data.TextureMap;
 import net.minecraft.client.data.TexturedModel;
 import net.minecraft.client.data.VariantsBlockModelDefinitionCreator;
+import net.minecraft.client.render.item.model.ItemModel.Unbaked;
+import net.minecraft.client.render.item.model.RangeDispatchItemModel;
 import net.minecraft.client.render.item.model.SelectItemModel.SwitchCase;
+import net.minecraft.client.render.item.property.select.DisplayContextProperty;
 import net.minecraft.client.render.model.json.WeightedVariant;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
+import net.minecraft.item.ItemDisplayContext;
 import net.minecraft.item.Items;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.Identifier;
@@ -124,7 +130,7 @@ public class ModModelGenerator extends FabricModelProvider {
         blockStateModelGenerator.registerAnvil(ModBlocks.DAMAGED_STEEL_ANVIL);
 
         // Currently uses the same blockstates and models as Amethyst, just with different textures.
-        // Item model must be written by hand
+        // Item coreModel must be written by hand
         blockStateModelGenerator.registerAmethyst(ModBlocks.ROSEITE_CLUSTER);
         blockStateModelGenerator.registerAmethyst(ModBlocks.LARGE_ROSEITE_BUD);
         blockStateModelGenerator.registerAmethyst(ModBlocks.MEDIUM_ROSEITE_BUD);
@@ -415,7 +421,7 @@ public class ModModelGenerator extends FabricModelProvider {
                 ItemModelGenerator.LEGGINGS_TRIM_ID_PREFIX, false);
         itemModelGenerator.registerArmor(ModItems.STEEL_BOOTS, ModEquipmentAssetKeys.STEEL,
                 ItemModelGenerator.BOOTS_TRIM_ID_PREFIX, false);
-        // TODO: Make sure steel armor entity model is registered properly
+        // TODO: Make sure steel armor entity coreModel is registered properly
 
         // Tinted
         registerSporeBottle(itemModelGenerator, ModItems.DEAD_SPORES_BOTTLE);
@@ -438,28 +444,53 @@ public class ModModelGenerator extends FabricModelProvider {
 
     private void registerCannonball(ItemModelGenerator itemModelGenerator, Item item) {
         Identifier baseModelId = ModelIds.getItemModelId(item);
-        Identifier textureId = TextureMap.getId(item);
         CannonballCore[] possibleCores = CannonballCore.values();
-        List<SwitchCase<CannonballCore>> entries = new ArrayList<>(possibleCores.length);
+        List<SwitchCase<CannonballCore>> coreEntries = new ArrayList<>(possibleCores.length);
         for (CannonballCore core : possibleCores) {
+            Unbaked coreModel;
+            Identifier modelIdWithCore = baseModelId.withSuffixedPath("_core_" + core.asString());
             if (core.canHaveFuse()) {
-                // Generate fuse definitions
+                List<RangeDispatchItemModel.Entry> fuseEntries = new ArrayList<>(
+                        CannonballComponent.MAX_FUSE);
+                // Generate models with core and fuse
                 for (int j = 1; j <= CannonballComponent.MAX_FUSE; ++j) {
-                    Identifier modelId = baseModelId.withSuffixedPath("_fuse_" + j);
-
+                    Identifier modelIdWithCoreAndFuse = modelIdWithCore.withSuffixedPath(
+                            "_fuse_" + j);
+                    ModModels.TEMPLATE_CANNONBALL.upload(modelIdWithCoreAndFuse,
+                            ModTextureMaps.cannonball(item, core, j),
+                            itemModelGenerator.modelCollector);
+                    Unbaked model = ItemModels.basic(modelIdWithCoreAndFuse);
+                    fuseEntries.add(ItemModels.rangeDispatchEntry(model, j));
                 }
-                // Also generate the fallback
-                // TODO: Generate fallback model with no fuse
+                // Generate models with core and no fuse
+                ModModels.TEMPLATE_CANNONBALL.upload(modelIdWithCore,
+                        ModTextureMaps.cannonball(item, core, 0),
+                        itemModelGenerator.modelCollector);
+                Unbaked model = ItemModels.basic(baseModelId);
+                // Add everything to coreEntries
+                coreModel = ItemModels.rangeDispatch(new CannonballFuseProperty(), model,
+                        fuseEntries);
             } else {
-                // Just generate one model
+                // Generate coreModel with core
+                ModModels.TEMPLATE_CANNONBALL.upload(modelIdWithCore,
+                        ModTextureMaps.cannonball(item, core, 0),
+                        itemModelGenerator.modelCollector);
+                coreModel = ItemModels.basic(modelIdWithCore);
             }
+            coreEntries.add(ItemModels.switchCase(core, coreModel));
+
         }
-        // TODO: Generate fallback model
-        // itemModelGenerator.output.accept(item,
-        //         ItemModels.select(new DisplayContextProperty(), fallback,
-        //                 ItemModels.switchCase(ItemDisplayContext.GUI,
-        //                         ItemModels.select(new CannonballCoreProperty(), fallback,
-        //                                 entries))));
+        // Generate fallback model
+        ModModels.TEMPLATE_CANNONBALL.upload(baseModelId,
+                ModTextureMaps.cannonball(item, CannonballCore.HOLLOW, 0),
+                itemModelGenerator.modelCollector);
+        Unbaked baseModel = ItemModels.basic(baseModelId);
+        // Put it all together!
+        itemModelGenerator.output.accept(item,
+                ItemModels.select(new DisplayContextProperty(), baseModel,
+                        ItemModels.switchCase(ItemDisplayContext.GUI,
+                                ItemModels.select(new CannonballCoreProperty(), baseModel,
+                                        coreEntries))));
     }
 
     private void registerSporeBottle(ItemModelGenerator itemModelGenerator, Item item) {

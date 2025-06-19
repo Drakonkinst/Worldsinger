@@ -25,6 +25,7 @@ package io.github.drakonkinst.worldsinger.datagen;
 
 import io.github.drakonkinst.worldsinger.block.ModBlocks;
 import io.github.drakonkinst.worldsinger.item.component.CannonballComponent.CannonballCore;
+import io.github.drakonkinst.worldsinger.registry.ModItemRendering;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.data.TextureKey;
 import net.minecraft.client.data.TextureMap;
@@ -46,16 +47,33 @@ public final class ModTextureMaps {
 
     public static TextureMap cannonball(Item baseItem, CannonballCore core, int fuse) {
         // TODO: Map core and fuse to the proper textures in ModItemRendering
+        // TODO: Maybe set Contents texture based on number of items?
         TextureMap map = new TextureMap().put(TextureKey.LAYER0, TextureMap.getId(baseItem))
-                .put(ModTextureKeys.CORE, null)
-                .put(ModTextureKeys.FUSE, null)
-                .put(ModTextureKeys.CONTENTS_1, null)
-                .put(ModTextureKeys.CONTENTS_2, null)
-                .put(ModTextureKeys.CONTENTS_3, null);
-        if (core != null) {
-            return map;
+                .put(ModTextureKeys.CONTENTS_1, ModItemRendering.CANNONBALL_CONTENTS_1)
+                .put(ModTextureKeys.CONTENTS_2, ModItemRendering.CANNONBALL_CONTENTS_2)
+                .put(ModTextureKeys.CONTENTS_3, ModItemRendering.CANNONBALL_CONTENTS_3);
+
+        Identifier coreTexture = ModItemRendering.BLANK;
+        // Rendering is mostly hardcoded for now, but we may want to make it more dynamic if more options are added
+        if (core == CannonballCore.ROSEITE) {
+            coreTexture = ModItemRendering.CANNONBALL_CORE_ROSEITE;
+        } else if (core == CannonballCore.WATER) {
+            coreTexture = ModItemRendering.CANNONBALL_CORE_WATER;
+        } else if (core == CannonballCore.HOLLOW) {
+
         }
-        // TODO: Fix
+        map.put(ModTextureKeys.CORE, coreTexture);
+
+        Identifier fuseTexture = ModItemRendering.BLANK;
+        if (fuse >= 3) {
+            fuseTexture = ModItemRendering.CANNONBALL_FUSE_3;
+        } else if (fuse == 2) {
+            fuseTexture = ModItemRendering.CANNONBALL_FUSE_2;
+        } else if (fuse == 1) {
+            fuseTexture = ModItemRendering.CANNONBALL_FUSE_1;
+        }
+        map.put(ModTextureKeys.FUSE, fuseTexture);
+
         return map;
     }
 }

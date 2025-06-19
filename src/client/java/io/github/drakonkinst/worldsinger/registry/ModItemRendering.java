@@ -47,6 +47,13 @@ public final class ModItemRendering {
     public static final Identifier CANNONBALL_FUSE_1 = Worldsinger.id("item/cannonball/fuse_1");
     public static final Identifier CANNONBALL_FUSE_2 = Worldsinger.id("item/cannonball/fuse_2");
     public static final Identifier CANNONBALL_FUSE_3 = Worldsinger.id("item/cannonball/fuse_3");
+    public static final Identifier CANNONBALL_CONTENTS_1 = Worldsinger.id(
+            "item/cannonball/contents_1");
+    public static final Identifier CANNONBALL_CONTENTS_2 = Worldsinger.id(
+            "item/cannonball/contents_2");
+    public static final Identifier CANNONBALL_CONTENTS_3 = Worldsinger.id(
+            "item/cannonball/contents_3");
+    public static final Identifier BLANK = Worldsinger.id("item/blank");
 
     public static void register() {
         final Identifier[] overlayModels = new Identifier[] {
