@@ -36,25 +36,23 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TextCodecs;
 import net.minecraft.util.StringIdentifiable;
 
-public record CustomMapDecoration(CustomMapDecoration.Type type, byte x, byte z, byte rotation,
-                                  Optional<Text> name) {
+public record CustomMapDecoration(Type type, byte x, byte z, byte rotation, Optional<Text> name) {
 
     public static final float MAP_LIMITS = 63.0f;
     public static final PacketCodec<RegistryByteBuf, CustomMapDecoration> CODEC = PacketCodec.tuple(
-            CustomMapDecoration.Type.PACKET_CODEC, CustomMapDecoration::type, PacketCodecs.BYTE,
-            CustomMapDecoration::x, PacketCodecs.BYTE, CustomMapDecoration::z, PacketCodecs.BYTE,
+            Type.PACKET_CODEC, CustomMapDecoration::type, PacketCodecs.BYTE, CustomMapDecoration::x,
+            PacketCodecs.BYTE, CustomMapDecoration::z, PacketCodecs.BYTE,
             CustomMapDecoration::rotation, TextCodecs.OPTIONAL_PACKET_CODEC,
             CustomMapDecoration::name, CustomMapDecoration::new);
 
     public enum Type implements StringIdentifiable {
         RAINLINE(631, "rainline");
 
-        public static final IntFunction<CustomMapDecoration.Type> INDEX_TO_TYPE = ValueListsInvoker.createIndexToValueFunction(
-                CustomMapDecoration.Type::getIndex, Type.values());
-        public static final Codec<CustomMapDecoration.Type> CODEC = StringIdentifiable.createCodec(
-                CustomMapDecoration.Type::values);
-        public static final PacketCodec<ByteBuf, CustomMapDecoration.Type> PACKET_CODEC = PacketCodecs.indexed(
-                INDEX_TO_TYPE, CustomMapDecoration.Type::getIndex);
+        public static final IntFunction<Type> INDEX_TO_TYPE = ValueListsInvoker.createIndexToValueFunction(
+                Type::getIndex, Type.values());
+        public static final Codec<Type> CODEC = StringIdentifiable.createCodec(Type::values);
+        public static final PacketCodec<ByteBuf, Type> PACKET_CODEC = PacketCodecs.indexed(
+                INDEX_TO_TYPE, Type::getIndex);
 
         private final int index;
         private final String name;

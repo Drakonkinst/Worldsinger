@@ -57,23 +57,23 @@ public class CustomMineshaftStructure extends Structure {
                     .apply(instance, CustomMineshaftStructure::new));
     private final Type type;
 
-    public CustomMineshaftStructure(Structure.Config config, Type type) {
+    public CustomMineshaftStructure(Config config, Type type) {
         super(config);
         this.type = type;
     }
 
     @Override
-    public Optional<Structure.StructurePosition> getStructurePosition(Structure.Context context) {
+    public Optional<StructurePosition> getStructurePosition(Context context) {
         context.random().nextDouble();
         ChunkPos chunkPos = context.chunkPos();
         BlockPos blockPos = new BlockPos(chunkPos.getCenterX(), 50, chunkPos.getStartZ());
         StructurePiecesCollector structurePiecesCollector = new StructurePiecesCollector();
         int i = this.addPieces(structurePiecesCollector, context);
-        return Optional.of(new Structure.StructurePosition(blockPos.add(0, i, 0),
+        return Optional.of(new StructurePosition(blockPos.add(0, i, 0),
                 Either.right(structurePiecesCollector)));
     }
 
-    private int addPieces(StructurePiecesCollector collector, Structure.Context context) {
+    private int addPieces(StructurePiecesCollector collector, Context context) {
         ChunkPos chunkPos = context.chunkPos();
         ChunkRandom chunkRandom = context.random();
         ChunkGenerator chunkGenerator = context.chunkGenerator();

@@ -66,12 +66,11 @@ public final class ModBlocks {
             settings -> new AetherSporeFluidBlock(DeadSpores.getInstance(), settings),
             createSporeFluidSettings(false, MapColor.GRAY), false);
     public static final Block DEAD_SPORE_BLOCK = register("dead_spore_block",
-            settings -> new AetherSporeBlock(DeadSpores.getInstance(), settings),
-            AbstractBlock.Settings.create()
+            settings -> new AetherSporeBlock(DeadSpores.getInstance(), settings), Settings.create()
                     // Same as sand
                     .strength(0.5f).mapColor(MapColor.GRAY).sounds(ModSoundGroups.SPORES), false);
     public static final Block DEAD_VERDANT_VINE_BLOCK = register("dead_verdant_vine_block",
-            VerdantVineBlock::new, AbstractBlock.Settings.create()
+            VerdantVineBlock::new, Settings.create()
                     // 0.5x strength of living version
                     .strength(1.0f)
                     .requiresTool()
@@ -80,7 +79,7 @@ public final class ModBlocks {
                     .mapColor(MapColor.LIGHT_GRAY)
                     .sounds(ModSoundGroups.VERDANT_VINE_BRANCH), true);
     public static final Block DEAD_VERDANT_VINE_BRANCH = register("dead_verdant_vine_branch",
-            VerdantVineBranchBlock::new, AbstractBlock.Settings.create()
+            VerdantVineBranchBlock::new, Settings.create()
                     // 0.5x strength of living version
                     .strength(0.4f)
                     .solid()
@@ -90,8 +89,7 @@ public final class ModBlocks {
                     .mapColor(MapColor.LIGHT_GRAY)
                     .sounds(ModSoundGroups.VERDANT_VINE_BRANCH), true);
     public static final Block DEAD_VERDANT_VINE_SNARE = register("dead_verdant_vine_snare",
-            VerdantVineSnareBlock::new,
-            AbstractBlock.Settings.create()
+            VerdantVineSnareBlock::new, Settings.create()
                     .solid()
                     .noCollision()
                     .requiresTool()
@@ -102,7 +100,7 @@ public final class ModBlocks {
                     .sounds(ModSoundGroups.VERDANT_VINE_SNARE)
                     .pistonBehavior(PistonBehavior.DESTROY), true);
     public static final Block DEAD_TWISTING_VERDANT_VINES = register("dead_twisting_verdant_vines",
-            TwistingVerdantVineBlock::new, AbstractBlock.Settings.create()
+            TwistingVerdantVineBlock::new, Settings.create()
                     // 0.5x strength of living version
                     .strength(0.2f)
                     .noCollision()
@@ -112,7 +110,7 @@ public final class ModBlocks {
                     .pistonBehavior(PistonBehavior.DESTROY), true);
     public static final Block DEAD_TWISTING_VERDANT_VINES_PLANT = register(
             "dead_twisting_verdant_vines_plant", TwistingVerdantVineStemBlock::new,
-            AbstractBlock.Settings.create()
+            Settings.create()
                     // 0.5x strength of living version
                     .strength(0.2f)
                     .noCollision()
@@ -121,7 +119,7 @@ public final class ModBlocks {
                     .sounds(ModSoundGroups.TWISTING_VERDANT_VINES)
                     .pistonBehavior(PistonBehavior.DESTROY), false);
     public static final Block DEAD_CRIMSON_GROWTH = register("dead_crimson_growth",
-            CrimsonGrowthBlock::new, AbstractBlock.Settings.create()
+            CrimsonGrowthBlock::new, Settings.create()
                     // Same strength as Coral Block, same blast resistance as Pointed Dripstone
                     .strength(1.5f, 3.0f)
                     .requiresTool()
@@ -143,7 +141,7 @@ public final class ModBlocks {
                     .sounds(ModSoundGroups.CRIMSON_SPINE)
                     .pistonBehavior(PistonBehavior.DESTROY), true);
     public static final Block DEAD_CRIMSON_SNARE = register("dead_crimson_snare",
-            CrimsonSnareBlock::new, AbstractBlock.Settings.create()
+            CrimsonSnareBlock::new, Settings.create()
                     // Same as Amethyst Bud
                     .strength(1.5f)
                     .solid()
@@ -152,7 +150,7 @@ public final class ModBlocks {
                     .sounds(ModSoundGroups.CRIMSON_SPINE)
                     .pistonBehavior(PistonBehavior.DESTROY), true);
     public static final Block DEAD_TALL_CRIMSON_SPINES = register("dead_tall_crimson_spines",
-            TallCrimsonSpinesBlock::new, AbstractBlock.Settings.create()
+            TallCrimsonSpinesBlock::new, Settings.create()
                     // Same as Amethyst Bud
                     .strength(1.5f)
                     .solid()
@@ -163,7 +161,7 @@ public final class ModBlocks {
                     .sounds(ModSoundGroups.CRIMSON_SPINE)
                     .pistonBehavior(PistonBehavior.DESTROY), true);
     public static final Block DEAD_CRIMSON_SPINES = register("dead_crimson_spines",
-            CrimsonSpinesBlock::new, AbstractBlock.Settings.create()
+            CrimsonSpinesBlock::new, Settings.create()
                     // Same as Amethyst Bud
                     .strength(1.5f)
                     .solid()
@@ -181,30 +179,27 @@ public final class ModBlocks {
     public static final Block VERDANT_SPORE_BLOCK = register("verdant_spore_block",
             settings -> new LivingAetherSporeBlock(VerdantSpores.getInstance(),
                     ModBlocks.VERDANT_SPORE_SEA, settings),
-            AbstractBlock.Settings.copy(ModBlocks.DEAD_SPORE_BLOCK)
-                    .ticksRandomly()
-                    .mapColor(MapColor.DARK_GREEN), false);
+            Settings.copy(ModBlocks.DEAD_SPORE_BLOCK).ticksRandomly().mapColor(MapColor.DARK_GREEN),
+            false);
     public static final Block VERDANT_VINE_BLOCK = register("verdant_vine_block",
-            LivingVerdantVineBlock::new,
-            AbstractBlock.Settings.copy(ModBlocks.DEAD_VERDANT_VINE_BLOCK)
+            LivingVerdantVineBlock::new, Settings.copy(ModBlocks.DEAD_VERDANT_VINE_BLOCK)
                     // Same strength as log
                     .strength(2.0f).mapColor(MapColor.GREEN), true);
     public static final Block VERDANT_VINE_BRANCH = register("verdant_vine_branch",
-            LivingVerdantVineBranchBlock::new, AbstractBlock.Settings.copy(DEAD_VERDANT_VINE_BRANCH)
+            LivingVerdantVineBranchBlock::new, Settings.copy(DEAD_VERDANT_VINE_BRANCH)
                     // 2x the strength of Chorus Plant
                     .strength(0.8f).mapColor(MapColor.GREEN), true);
     public static final Block VERDANT_VINE_SNARE = register("verdant_vine_snare",
-            LivingVerdantVineSnareBlock::new, AbstractBlock.Settings.copy(DEAD_VERDANT_VINE_SNARE)
+            LivingVerdantVineSnareBlock::new, Settings.copy(DEAD_VERDANT_VINE_SNARE)
                     // Same strength as branch
                     .strength(0.8f).mapColor(MapColor.GREEN), true);
     public static final Block TWISTING_VERDANT_VINES = register("twisting_verdant_vines",
-            LivingTwistingVerdantVineBlock::new,
-            AbstractBlock.Settings.copy(DEAD_TWISTING_VERDANT_VINES)
+            LivingTwistingVerdantVineBlock::new, Settings.copy(DEAD_TWISTING_VERDANT_VINES)
                     // Same strength as Ladder
                     .strength(0.4f).mapColor(MapColor.GREEN), true);
     public static final Block TWISTING_VERDANT_VINES_PLANT = register(
             "twisting_verdant_vines_plant", LivingTwistingVerdantVineStemBlock::new,
-            AbstractBlock.Settings.copy(ModBlocks.DEAD_TWISTING_VERDANT_VINES_PLANT)
+            Settings.copy(ModBlocks.DEAD_TWISTING_VERDANT_VINES_PLANT)
                     // Same strength as Twisting Verdant Vines
                     .strength(0.4f).mapColor(MapColor.GREEN), false);
 
@@ -216,30 +211,26 @@ public final class ModBlocks {
     public static final Block CRIMSON_SPORE_BLOCK = register("crimson_spore_block",
             settings -> new LivingAetherSporeBlock(CrimsonSpores.getInstance(),
                     ModBlocks.CRIMSON_SPORE_SEA, settings),
-            AbstractBlock.Settings.copy(ModBlocks.DEAD_SPORE_BLOCK)
-                    .ticksRandomly()
-                    .mapColor(MapColor.DARK_RED), false);
+            Settings.copy(ModBlocks.DEAD_SPORE_BLOCK).ticksRandomly().mapColor(MapColor.DARK_RED),
+            false);
     public static final Block CRIMSON_GROWTH = register("crimson_growth",
-            LivingCrimsonGrowthBlock::new,
-            AbstractBlock.Settings.copy(ModBlocks.DEAD_CRIMSON_GROWTH)
+            LivingCrimsonGrowthBlock::new, Settings.copy(ModBlocks.DEAD_CRIMSON_GROWTH)
                     // Double hardness, same resistance as dead version
                     .strength(3.0f, 3.0f).mapColor(MapColor.RED), true);
     public static final Block CRIMSON_SPIKE = register("crimson_spike",
-            LivingCrimsonSpikeBlock::new, AbstractBlock.Settings.copy(ModBlocks.DEAD_CRIMSON_SPIKE)
+            LivingCrimsonSpikeBlock::new, Settings.copy(ModBlocks.DEAD_CRIMSON_SPIKE)
                     // Double hardness, same resistance as dead version
                     .strength(3.0f, 3.0f).mapColor(MapColor.RED), true);
     public static final Block CRIMSON_SNARE = register("crimson_snare",
-            LivingCrimsonSnareBlock::new, AbstractBlock.Settings.copy(ModBlocks.DEAD_CRIMSON_SNARE)
+            LivingCrimsonSnareBlock::new, Settings.copy(ModBlocks.DEAD_CRIMSON_SNARE)
                     // Slightly stronger than dead version
                     .strength(2.0f).mapColor(MapColor.RED), true);
     public static final Block TALL_CRIMSON_SPINES = register("tall_crimson_spines",
-            LivingTallCrimsonSpinesBlock::new,
-            AbstractBlock.Settings.copy(ModBlocks.DEAD_TALL_CRIMSON_SPINES)
+            LivingTallCrimsonSpinesBlock::new, Settings.copy(ModBlocks.DEAD_TALL_CRIMSON_SPINES)
                     // Slightly stronger than dead version
                     .strength(2.0f).mapColor(MapColor.RED), true);
     public static final Block CRIMSON_SPINES = register("crimson_spines",
-            LivingCrimsonSpinesBlock::new,
-            AbstractBlock.Settings.copy(ModBlocks.DEAD_CRIMSON_SPINES)
+            LivingCrimsonSpinesBlock::new, Settings.copy(ModBlocks.DEAD_CRIMSON_SPINES)
                     // Slightly stronger than dead version
                     .strength(2.0f).mapColor(MapColor.RED), true);
 
@@ -251,9 +242,8 @@ public final class ModBlocks {
     public static final Block ZEPHYR_SPORE_BLOCK = register("zephyr_spore_block",
             settings -> new LivingAetherSporeBlock(ZephyrSpores.getInstance(),
                     ModBlocks.ZEPHYR_SPORE_SEA, settings),
-            AbstractBlock.Settings.copy(ModBlocks.DEAD_SPORE_BLOCK)
-                    .ticksRandomly()
-                    .mapColor(MapColor.LIGHT_BLUE), false);
+            Settings.copy(ModBlocks.DEAD_SPORE_BLOCK).ticksRandomly().mapColor(MapColor.LIGHT_BLUE),
+            false);
 
     // Sunlight Spores
     public static final Block SUNLIGHT_SPORE_SEA = register("sunlight_spore_sea",
@@ -263,20 +253,19 @@ public final class ModBlocks {
     public static final Block SUNLIGHT_SPORE_BLOCK = register("sunlight_spore_block",
             settings -> new LivingAetherSporeBlock(SunlightSpores.getInstance(),
                     ModBlocks.SUNLIGHT_SPORE_SEA, settings),
-            AbstractBlock.Settings.copy(ModBlocks.DEAD_SPORE_BLOCK)
+            Settings.copy(ModBlocks.DEAD_SPORE_BLOCK)
                     .ticksRandomly()
                     .mapColor(MapColor.TERRACOTTA_YELLOW), false);
-    public static final Block SUNLIGHT = register("sunlight", SunlightBlock::new,
-            AbstractBlock.Settings.create()
-                    .strength(100.0f)
-                    .noCollision()
-                    .dropsNothing()
-                    .liquid()
-                    .replaceable()
-                    .ticksRandomly()
-                    .luminance(SunlightBlock.STATE_TO_LUMINANCE)
-                    .mapColor(MapColor.YELLOW)
-                    .pistonBehavior(PistonBehavior.DESTROY), false);
+    public static final Block SUNLIGHT = register("sunlight", SunlightBlock::new, Settings.create()
+            .strength(100.0f)
+            .noCollision()
+            .dropsNothing()
+            .liquid()
+            .replaceable()
+            .ticksRandomly()
+            .luminance(SunlightBlock.STATE_TO_LUMINANCE)
+            .mapColor(MapColor.YELLOW)
+            .pistonBehavior(PistonBehavior.DESTROY), false);
 
     // Roseite Spores
     public static final Block ROSEITE_SPORE_SEA = register("roseite_spore_sea",
@@ -286,11 +275,10 @@ public final class ModBlocks {
     public static final Block ROSEITE_SPORE_BLOCK = register("roseite_spore_block",
             settings -> new LivingAetherSporeBlock(RoseiteSpores.getInstance(),
                     ModBlocks.ROSEITE_SPORE_SEA, settings),
-            AbstractBlock.Settings.copy(ModBlocks.DEAD_SPORE_BLOCK)
-                    .ticksRandomly()
-                    .mapColor(MapColor.PINK), false);
+            Settings.copy(ModBlocks.DEAD_SPORE_BLOCK).ticksRandomly().mapColor(MapColor.PINK),
+            false);
     public static final Block ROSEITE_BLOCK = register("roseite_block", RoseiteBlock::new,
-            AbstractBlock.Settings.create()
+            Settings.create()
                     .nonOpaque()
                     // Double strength, same blast resistance as Stone
                     .strength(3.0F, 6.0F)
@@ -300,12 +288,11 @@ public final class ModBlocks {
                     .sounds(ModSoundGroups.ROSEITE), true);
     public static final Block ROSEITE_STAIRS = register("roseite_stairs",
             settings -> new RoseiteStairsBlock(ROSEITE_BLOCK.getDefaultState(), settings),
-            AbstractBlock.Settings.copy(ROSEITE_BLOCK), true);
+            Settings.copy(ROSEITE_BLOCK), true);
     public static final Block ROSEITE_SLAB = register("roseite_slab", RoseiteSlabBlock::new,
-            AbstractBlock.Settings.copy(ROSEITE_BLOCK), true);
+            Settings.copy(ROSEITE_BLOCK), true);
     public static final Block ROSEITE_CLUSTER = register("roseite_cluster",
-            settings -> new RoseiteClusterBlock(7.0F, 3.0F, settings),
-            AbstractBlock.Settings.create()
+            settings -> new RoseiteClusterBlock(7.0F, 3.0F, settings), Settings.create()
                     .mapColor(MapColor.PURPLE)
                     .solid()
                     .nonOpaque()
@@ -315,13 +302,13 @@ public final class ModBlocks {
                     .pistonBehavior(PistonBehavior.DESTROY), true);
     public static final Block LARGE_ROSEITE_BUD = register("large_roseite_bud",
             settings -> new RoseiteClusterBlock(5.0F, 3.0F, settings),
-            AbstractBlock.Settings.copy(ROSEITE_CLUSTER).sounds(ModSoundGroups.ROSEITE), true);
+            Settings.copy(ROSEITE_CLUSTER).sounds(ModSoundGroups.ROSEITE), true);
     public static final Block MEDIUM_ROSEITE_BUD = register("medium_roseite_bud",
             settings -> new RoseiteClusterBlock(4.0F, 3.0F, settings),
-            AbstractBlock.Settings.copy(ROSEITE_CLUSTER).sounds(ModSoundGroups.ROSEITE), true);
+            Settings.copy(ROSEITE_CLUSTER).sounds(ModSoundGroups.ROSEITE), true);
     public static final Block SMALL_ROSEITE_BUD = register("small_roseite_bud",
             settings -> new RoseiteClusterBlock(3.0F, 4.0F, settings),
-            AbstractBlock.Settings.copy(ROSEITE_CLUSTER).sounds(ModSoundGroups.ROSEITE), true);
+            Settings.copy(ROSEITE_CLUSTER).sounds(ModSoundGroups.ROSEITE), true);
 
     // Midnight Spores
     public static final Block MIDNIGHT_SPORE_SEA = register("midnight_spore_sea",
@@ -331,11 +318,10 @@ public final class ModBlocks {
     public static final Block MIDNIGHT_SPORE_BLOCK = register("midnight_spore_block",
             settings -> new LivingAetherSporeBlock(MidnightSpores.getInstance(),
                     ModBlocks.MIDNIGHT_SPORE_SEA, settings),
-            AbstractBlock.Settings.copy(ModBlocks.DEAD_SPORE_BLOCK)
-                    .ticksRandomly()
-                    .mapColor(MapColor.BLACK), false);
+            Settings.copy(ModBlocks.DEAD_SPORE_BLOCK).ticksRandomly().mapColor(MapColor.BLACK),
+            false);
     public static final Block MIDNIGHT_ESSENCE = register("midnight_essence",
-            MidnightEssenceBlock::new, AbstractBlock.Settings.create()
+            MidnightEssenceBlock::new, Settings.create()
                     // Impossible to break, but can be destroyed
                     .strength(-1.0f, 0.5f)
                     .dropsNothing()
@@ -350,160 +336,152 @@ public final class ModBlocks {
     // Order matters! Be careful.
     public static final Block DEAD_SPORE_CAULDRON = register("dead_spore_cauldron",
             settings -> new SporeCauldronBlock(ModCauldronBehaviors.DEAD_SPORE_CAULDRON_BEHAVIOR,
-                    DeadSpores.getInstance(), settings),
-            AbstractBlock.Settings.copy(Blocks.CAULDRON), false);
+                    DeadSpores.getInstance(), settings), Settings.copy(Blocks.CAULDRON), false);
     public static final Block VERDANT_SPORE_CAULDRON = register("verdant_spore_cauldron",
             settings -> new LivingSporeCauldronBlock(
                     ModCauldronBehaviors.VERDANT_SPORE_CAULDRON_BEHAVIOR,
                     VerdantSpores.getInstance(), settings),
-            AbstractBlock.Settings.copy(Blocks.CAULDRON).ticksRandomly(), false);
+            Settings.copy(Blocks.CAULDRON).ticksRandomly(), false);
     public static final Block CRIMSON_SPORE_CAULDRON = register("crimson_spore_cauldron",
             settings -> new LivingSporeCauldronBlock(
                     ModCauldronBehaviors.CRIMSON_SPORE_CAULDRON_BEHAVIOR,
                     CrimsonSpores.getInstance(), settings),
-            AbstractBlock.Settings.copy(Blocks.CAULDRON).ticksRandomly(), false);
+            Settings.copy(Blocks.CAULDRON).ticksRandomly(), false);
     public static final Block ZEPHYR_SPORE_CAULDRON = register("zephyr_spore_cauldron",
             settings -> new LivingSporeCauldronBlock(
                     ModCauldronBehaviors.ZEPHYR_SPORE_CAULDRON_BEHAVIOR, ZephyrSpores.getInstance(),
-                    settings), AbstractBlock.Settings.copy(Blocks.CAULDRON).ticksRandomly(), false);
+                    settings), Settings.copy(Blocks.CAULDRON).ticksRandomly(), false);
     public static final Block SUNLIGHT_SPORE_CAULDRON = register("sunlight_spore_cauldron",
             settings -> new LivingSporeCauldronBlock(
                     ModCauldronBehaviors.SUNLIGHT_SPORE_CAULDRON_BEHAVIOR,
                     SunlightSpores.getInstance(), settings),
-            AbstractBlock.Settings.copy(Blocks.CAULDRON).ticksRandomly(), false);
+            Settings.copy(Blocks.CAULDRON).ticksRandomly(), false);
     public static final Block ROSEITE_SPORE_CAULDRON = register("roseite_spore_cauldron",
             settings -> new LivingSporeCauldronBlock(
                     ModCauldronBehaviors.ROSEITE_SPORE_CAULDRON_BEHAVIOR,
                     RoseiteSpores.getInstance(), settings),
-            AbstractBlock.Settings.copy(Blocks.CAULDRON).ticksRandomly(), false);
+            Settings.copy(Blocks.CAULDRON).ticksRandomly(), false);
     public static final Block MIDNIGHT_SPORE_CAULDRON = register("midnight_spore_cauldron",
             settings -> new LivingSporeCauldronBlock(
                     ModCauldronBehaviors.MIDNIGHT_SPORE_CAULDRON_BEHAVIOR,
                     MidnightSpores.getInstance(), settings),
-            AbstractBlock.Settings.copy(Blocks.CAULDRON).ticksRandomly(), false);
+            Settings.copy(Blocks.CAULDRON).ticksRandomly(), false);
     public static final Block ALUMINUM_CAULDRON = register("aluminum_cauldron", CauldronBlock::new,
-            AbstractBlock.Settings.copy(Blocks.CAULDRON), true);
+            Settings.copy(Blocks.CAULDRON), true);
     public static final Block ALUMINUM_WATER_CAULDRON = register("aluminum_water_cauldron",
             settings -> new LeveledCauldronBlock(Biome.Precipitation.RAIN,
                     CauldronBehavior.WATER_CAULDRON_BEHAVIOR, settings),
-            AbstractBlock.Settings.copy(Blocks.CAULDRON), false);
+            Settings.copy(Blocks.CAULDRON), false);
     public static final Block ALUMINUM_LAVA_CAULDRON = register("aluminum_lava_cauldron",
-            LavaCauldronBlock::new,
-            AbstractBlock.Settings.copy(Blocks.CAULDRON).luminance(state -> 15), false);
+            LavaCauldronBlock::new, Settings.copy(Blocks.CAULDRON).luminance(state -> 15), false);
     public static final Block ALUMINUM_POWDER_SNOW_CAULDRON = register(
             "aluminum_powder_snow_cauldron",
             settings -> new LeveledCauldronBlock(Biome.Precipitation.SNOW,
                     CauldronBehavior.POWDER_SNOW_CAULDRON_BEHAVIOR, settings),
-            AbstractBlock.Settings.copy(Blocks.CAULDRON), false);
+            Settings.copy(Blocks.CAULDRON), false);
     public static final Block ALUMINUM_DEAD_SPORE_CAULDRON = register(
             "aluminum_dead_spore_cauldron",
             settings -> new SporeCauldronBlock(ModCauldronBehaviors.DEAD_SPORE_CAULDRON_BEHAVIOR,
-                    DeadSpores.getInstance(), settings),
-            AbstractBlock.Settings.copy(Blocks.CAULDRON), false);
+                    DeadSpores.getInstance(), settings), Settings.copy(Blocks.CAULDRON), false);
     public static final Block ALUMINUM_VERDANT_SPORE_CAULDRON = register(
             "aluminum_verdant_spore_cauldron", settings -> new LivingSporeCauldronBlock(
                     ModCauldronBehaviors.VERDANT_SPORE_CAULDRON_BEHAVIOR,
                     VerdantSpores.getInstance(), settings),
-            AbstractBlock.Settings.copy(Blocks.CAULDRON).ticksRandomly(), false);
+            Settings.copy(Blocks.CAULDRON).ticksRandomly(), false);
     public static final Block ALUMINUM_CRIMSON_SPORE_CAULDRON = register(
             "aluminum_crimson_spore_cauldron",
             settings -> new SporeCauldronBlock(ModCauldronBehaviors.CRIMSON_SPORE_CAULDRON_BEHAVIOR,
                     CrimsonSpores.getInstance(), settings),
-            AbstractBlock.Settings.copy(Blocks.CAULDRON).ticksRandomly(), false);
+            Settings.copy(Blocks.CAULDRON).ticksRandomly(), false);
     public static final Block ALUMINUM_ZEPHYR_SPORE_CAULDRON = register(
             "aluminum_zephyr_spore_cauldron", settings -> new LivingSporeCauldronBlock(
                     ModCauldronBehaviors.ZEPHYR_SPORE_CAULDRON_BEHAVIOR, ZephyrSpores.getInstance(),
-                    settings), AbstractBlock.Settings.copy(Blocks.CAULDRON).ticksRandomly(), false);
+                    settings), Settings.copy(Blocks.CAULDRON).ticksRandomly(), false);
     public static final Block ALUMINUM_SUNLIGHT_SPORE_CAULDRON = register(
             "aluminum_sunlight_spore_cauldron", settings -> new LivingSporeCauldronBlock(
                     ModCauldronBehaviors.SUNLIGHT_SPORE_CAULDRON_BEHAVIOR,
                     SunlightSpores.getInstance(), settings),
-            AbstractBlock.Settings.copy(Blocks.CAULDRON).ticksRandomly(), false);
+            Settings.copy(Blocks.CAULDRON).ticksRandomly(), false);
     public static final Block ALUMINUM_ROSEITE_SPORE_CAULDRON = register(
             "aluminum_roseite_spore_cauldron", settings -> new LivingSporeCauldronBlock(
                     ModCauldronBehaviors.ROSEITE_SPORE_CAULDRON_BEHAVIOR,
                     RoseiteSpores.getInstance(), settings),
-            AbstractBlock.Settings.copy(Blocks.CAULDRON).ticksRandomly(), false);
+            Settings.copy(Blocks.CAULDRON).ticksRandomly(), false);
     public static final Block ALUMINUM_MIDNIGHT_SPORE_CAULDRON = register(
             "aluminum_midnight_spore_cauldron", settings -> new LivingSporeCauldronBlock(
                     ModCauldronBehaviors.MIDNIGHT_SPORE_CAULDRON_BEHAVIOR,
                     MidnightSpores.getInstance(), settings),
-            AbstractBlock.Settings.copy(Blocks.CAULDRON).ticksRandomly(), false);
+            Settings.copy(Blocks.CAULDRON).ticksRandomly(), false);
 
     // Other
-    public static final Block MAGMA_VENT = register("magma_vent", VentBlock::new,
-            AbstractBlock.Settings.create()
-                    // Same strength as Obsidian (should not be broken easily)
-                    .strength(50.0F, 1200.0F).requiresTool().mapColor(MapColor.DEEPSLATE_GRAY),
-            true);
-    public static final Block SALTSTONE = register("saltstone",
-            AbstractBlock.Settings.create().requiresTool()
-                    // Slightly harder to break than Netherrack
-                    .strength(0.5f, 6.0f).sounds(ModSoundGroups.SALTSTONE), true);
+    public static final Block MAGMA_VENT = register("magma_vent", VentBlock::new, Settings.create()
+            // Same strength as Obsidian (should not be broken easily)
+            .strength(50.0F, 1200.0F).requiresTool().mapColor(MapColor.DEEPSLATE_GRAY), true);
+    public static final Block SALTSTONE = register("saltstone", Settings.create().requiresTool()
+            // Slightly harder to break than Netherrack
+            .strength(0.5f, 6.0f).sounds(ModSoundGroups.SALTSTONE), true);
     public static final Block SALTSTONE_SALT_ORE = register("saltstone_salt_ore",
             settings -> new ExperienceDroppingBlock(UniformIntProvider.create(0, 2), settings),
-            AbstractBlock.Settings.create().requiresTool()
+            Settings.create().requiresTool()
                     // Slightly easier to break than Nether Gold Ore
                     .strength(2.5f, 3.0f).sounds(ModSoundGroups.SALTSTONE), true);
-    public static final Block SALT_BLOCK = register("salt_block",
-            AbstractBlock.Settings.create().requiresTool()
-                    // Same strength as Calcite
-                    .strength(0.75f).sounds(ModSoundGroups.SALT), true);
+    public static final Block SALT_BLOCK = register("salt_block", Settings.create().requiresTool()
+            // Same strength as Calcite
+            .strength(0.75f).sounds(ModSoundGroups.SALT), true);
     public static final Block SILVER_ORE = register("silver_ore",
             settings -> new ExperienceDroppingBlock(ConstantIntProvider.create(0), settings),
-            AbstractBlock.Settings.create().requiresTool()
+            Settings.create().requiresTool()
                     // Equal to Gold Ore
                     .strength(3.0f, 3.0f), true);
     public static final Block DEEPSLATE_SILVER_ORE = register("deepslate_silver_ore",
             settings -> new ExperienceDroppingBlock(ConstantIntProvider.create(0), settings),
-            AbstractBlock.Settings.create().requiresTool()
+            Settings.create().requiresTool()
                     // Equal to Deepslate Gold Ore
                     .strength(4.5f, 3.0f).sounds(BlockSoundGroup.DEEPSLATE), true);
     public static final Block SILVER_BLOCK = register("silver_block",
-            AbstractBlock.Settings.create().requiresTool()
+            Settings.create().requiresTool()
                     // Same strength as Gold Block
                     .strength(3.0f, 6.0f).sounds(BlockSoundGroup.METAL), true);
     public static final Block RAW_SILVER_BLOCK = register("raw_silver_block",
-            AbstractBlock.Settings.create().requiresTool()
+            Settings.create().requiresTool()
                     // Same strength as Raw Gold Block
                     .strength(5.0f, 6.0f), true);
     public static final Block POTTED_VERDANT_VINE_SNARE = register("potted_verdant_vine_snare",
             settings -> new FlowerPotBlock(ModBlocks.VERDANT_VINE_SNARE, settings),
-            AbstractBlock.Settings.create(), false);
+            Settings.create(), false);
     public static final Block POTTED_DEAD_VERDANT_VINE_SNARE = register(
             "potted_dead_verdant_vine_snare",
             settings -> new FlowerPotBlock(ModBlocks.DEAD_VERDANT_VINE_SNARE, settings),
-            AbstractBlock.Settings.create(), false);
+            Settings.create(), false);
     public static final Block POTTED_TWISTING_VERDANT_VINES = register(
             "potted_twisting_verdant_vines",
             settings -> new FlowerPotBlock(ModBlocks.TWISTING_VERDANT_VINES, settings),
-            AbstractBlock.Settings.create(), false);
+            Settings.create(), false);
     public static final Block POTTED_DEAD_TWISTING_VERDANT_VINES = register(
             "potted_dead_twisting_verdant_vines",
             settings -> new FlowerPotBlock(ModBlocks.DEAD_TWISTING_VERDANT_VINES, settings),
-            AbstractBlock.Settings.create(), false);
+            Settings.create(), false);
 
     // Steel
-    public static final Block STEEL_BLOCK = register("steel_block",
-            AbstractBlock.Settings.create().requiresTool()
-                    // +1 strength of Iron Block, same blast resistance as End Stone
-                    .strength(6.0f, 9.0f).sounds(BlockSoundGroup.METAL), true);
+    public static final Block STEEL_BLOCK = register("steel_block", Settings.create().requiresTool()
+            // +1 strength of Iron Block, same blast resistance as End Stone
+            .strength(6.0f, 9.0f).sounds(BlockSoundGroup.METAL), true);
     public static final Block STEEL_ANVIL = register("steel_anvil", SteelAnvilBlock::new,
-            AbstractBlock.Settings.create()
+            Settings.create()
                     .requiresTool()
                     // +1 strength of Iron Anvil, same blast resistance as Anvil
                     .strength(6.0f, 1200.0f)
                     .sounds(BlockSoundGroup.ANVIL)
                     .pistonBehavior(PistonBehavior.BLOCK), true);
     public static final Block CHIPPED_STEEL_ANVIL = register("chipped_steel_anvil",
-            SteelAnvilBlock::new, AbstractBlock.Settings.create()
+            SteelAnvilBlock::new, Settings.create()
                     .requiresTool()
                     // Same settings as Steel Anvil
                     .strength(6.0f, 1200.0f)
                     .sounds(BlockSoundGroup.ANVIL)
                     .pistonBehavior(PistonBehavior.BLOCK), true);
     public static final Block DAMAGED_STEEL_ANVIL = register("damaged_steel_anvil",
-            SteelAnvilBlock::new, AbstractBlock.Settings.create()
+            SteelAnvilBlock::new, Settings.create()
                     .requiresTool()
                     // Same settings as Steel Anvil
                     .strength(6.0f, 1200.0f)
@@ -512,11 +490,11 @@ public final class ModBlocks {
 
     // Aluminum
     public static final Block ALUMINUM_BLOCK = register("aluminum_block",
-            AbstractBlock.Settings.create().requiresTool()
+            Settings.create().requiresTool()
                     // Same strength as Gold Block
                     .strength(3.0f, 6.0f).sounds(BlockSoundGroup.METAL), true);
     public static final Block ALUMINUM_SHEET = register("aluminum_sheet", MultifaceBlock::new,
-            AbstractBlock.Settings.create()
+            Settings.create()
                     .requiresTool()
                     // Same strength as Aluminum Block
                     .strength(3.0f, 6.0f)
@@ -526,7 +504,7 @@ public final class ModBlocks {
                     .sounds(BlockSoundGroup.METAL), true);
 
     public static Block register(RegistryKey<Block> key, Function<Settings, Block> factory,
-            AbstractBlock.Settings settings, boolean shouldRegisterItem) {
+            Settings settings, boolean shouldRegisterItem) {
         Block block = factory.apply(settings.registryKey(key));
         Registry.register(Registries.BLOCK, key, block);
         if (shouldRegisterItem) {
@@ -535,7 +513,7 @@ public final class ModBlocks {
         return block;
     }
 
-    public static Block register(RegistryKey<Block> key, AbstractBlock.Settings settings,
+    public static Block register(RegistryKey<Block> key, Settings settings,
             boolean shouldRegisterItem) {
         return register(key, Block::new, settings, shouldRegisterItem);
     }
@@ -544,25 +522,23 @@ public final class ModBlocks {
         return RegistryKey.of(RegistryKeys.BLOCK, Worldsinger.id(id));
     }
 
-    private static Block register(String id, Function<AbstractBlock.Settings, Block> factory,
-            AbstractBlock.Settings settings, boolean shouldRegisterItem) {
+    private static Block register(String id, Function<Settings, Block> factory, Settings settings,
+            boolean shouldRegisterItem) {
         return register(keyOf(id), factory, settings, shouldRegisterItem);
     }
 
-    private static Block register(String id, AbstractBlock.Settings settings,
-            boolean shouldRegisterItem) {
+    private static Block register(String id, Settings settings, boolean shouldRegisterItem) {
         return register(id, Block::new, settings, shouldRegisterItem);
     }
 
-    private static AbstractBlock.Settings createSettingsWithCustomOffsetter(Offsetter offsetter) {
-        AbstractBlock.Settings settings = AbstractBlock.Settings.create();
+    private static Settings createSettingsWithCustomOffsetter(Offsetter offsetter) {
+        Settings settings = Settings.create();
         ((CustomBlockOffsetterAccess) settings).worldsinger$setCustomOffsetter(offsetter);
         return settings;
     }
 
-    private static AbstractBlock.Settings createSporeFluidSettings(boolean ticksRandomly,
-            MapColor color) {
-        AbstractBlock.Settings settings = AbstractBlock.Settings.create()
+    private static Settings createSporeFluidSettings(boolean ticksRandomly, MapColor color) {
+        Settings settings = Settings.create()
                 .strength(100.0f)
                 .replaceable()
                 .noCollision()

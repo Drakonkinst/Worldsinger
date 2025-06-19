@@ -98,7 +98,7 @@ public class SunlightSpores extends AetherSpores {
         if (this.canFirstSunlightBlockReplace(world.getBlockState(center))) {
             return center;
         }
-        BlockPos.Mutable mutable = new BlockPos.Mutable();
+        Mutable mutable = new Mutable();
         for (Direction offset : ModConstants.CARDINAL_DIRECTIONS) {
             mutable.set(center).move(offset);
             if (this.canFirstSunlightBlockReplace(world.getBlockState(mutable))) {

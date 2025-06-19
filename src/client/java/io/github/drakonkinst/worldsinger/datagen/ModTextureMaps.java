@@ -55,5 +55,7 @@ public final class ModTextureMaps {
         if (core != null) {
             return map;
         }
+        // TODO: Fix
+        return map;
     }
 }

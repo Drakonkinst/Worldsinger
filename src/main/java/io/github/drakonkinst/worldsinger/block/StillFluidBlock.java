@@ -72,7 +72,7 @@ public class StillFluidBlock extends Block implements FluidDrainable {
                     StillFluidBlock.createSettingsCodec()).apply(instance, StillFluidBlock::new));
     protected final StillFluid fluid;
 
-    public StillFluidBlock(StillFluid fluid, AbstractBlock.Settings settings) {
+    public StillFluidBlock(StillFluid fluid, Settings settings) {
         super(settings);
         this.fluid = fluid;
         this.setDefaultState(this.stateManager.getDefaultState());

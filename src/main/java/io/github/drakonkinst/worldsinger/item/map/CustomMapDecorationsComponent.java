@@ -34,25 +34,21 @@ public record CustomMapDecorationsComponent(Map<String, Decoration> decorations)
     public static final CustomMapDecorationsComponent DEFAULT = new CustomMapDecorationsComponent(
             Map.of());
     public static final Codec<CustomMapDecorationsComponent> CODEC = Codec.unboundedMap(
-                    Codec.STRING, CustomMapDecorationsComponent.Decoration.CODEC)
+                    Codec.STRING, Decoration.CODEC)
             .xmap(CustomMapDecorationsComponent::new, CustomMapDecorationsComponent::decorations);
 
-    public CustomMapDecorationsComponent with(String id,
-            CustomMapDecorationsComponent.Decoration decoration) {
+    public CustomMapDecorationsComponent with(String id, Decoration decoration) {
         return new CustomMapDecorationsComponent(Util.mapWith(this.decorations, id, decoration));
     }
 
     public record Decoration(CustomMapDecoration.Type type, double x, double z, float rotation) {
 
-        public static final Codec<CustomMapDecorationsComponent.Decoration> CODEC = RecordCodecBuilder.create(
-                instance -> instance.group(CustomMapDecoration.Type.CODEC.fieldOf("type")
-                                        .forGetter(CustomMapDecorationsComponent.Decoration::type),
-                                Codec.DOUBLE.fieldOf("x")
-                                        .forGetter(CustomMapDecorationsComponent.Decoration::x),
-                                Codec.DOUBLE.fieldOf("z")
-                                        .forGetter(CustomMapDecorationsComponent.Decoration::z),
-                                Codec.FLOAT.fieldOf("rotation")
-                                        .forGetter(CustomMapDecorationsComponent.Decoration::rotation))
-                        .apply(instance, CustomMapDecorationsComponent.Decoration::new));
+        public static final Codec<Decoration> CODEC = RecordCodecBuilder.create(
+                instance -> instance.group(
+                                CustomMapDecoration.Type.CODEC.fieldOf("type").forGetter(Decoration::type),
+                                Codec.DOUBLE.fieldOf("x").forGetter(Decoration::x),
+                                Codec.DOUBLE.fieldOf("z").forGetter(Decoration::z),
+                                Codec.FLOAT.fieldOf("rotation").forGetter(Decoration::rotation))
+                        .apply(instance, Decoration::new));
     }
 }

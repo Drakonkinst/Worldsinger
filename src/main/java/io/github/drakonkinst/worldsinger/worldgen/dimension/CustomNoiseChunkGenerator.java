@@ -229,8 +229,8 @@ public abstract class CustomNoiseChunkGenerator extends NoiseChunkGenerator {
         ChunkNoiseSampler chunkNoiseSampler = chunk.getOrCreateChunkNoiseSampler(
                 thisChunk -> this.createChunkNoiseSampler(thisChunk, structureAccessor, blender,
                         noiseConfig));
-        Heightmap oceanFloorHeightmap = chunk.getHeightmap(Heightmap.Type.OCEAN_FLOOR_WG);
-        Heightmap worldSurfaceHeightmap = chunk.getHeightmap(Heightmap.Type.WORLD_SURFACE_WG);
+        Heightmap oceanFloorHeightmap = chunk.getHeightmap(Type.OCEAN_FLOOR_WG);
+        Heightmap worldSurfaceHeightmap = chunk.getHeightmap(Type.WORLD_SURFACE_WG);
         ChunkPos chunkPos = chunk.getPos();
         int startX = chunkPos.getStartX();
         int startZ = chunkPos.getStartZ();

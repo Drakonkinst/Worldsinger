@@ -203,7 +203,7 @@ public abstract class SporeGrowthEntity extends ServerSideEntity {
     // Called if entity was killed but still has spores remaining
     private void onEarlyDiscard() {
         BlockPos pos = this.getBlockPos();
-        BlockPos.Mutable mutable = pos.mutableCopy();
+        Mutable mutable = pos.mutableCopy();
         World world = this.getWorld();
         // Reset CATALYZED state for self and all neighboring blocks
         SporeGrowthEntity.resetCatalyzed(world, pos);
@@ -464,7 +464,7 @@ public abstract class SporeGrowthEntity extends ServerSideEntity {
 
         List<Direction> validDirections = new ArrayList<>(6);
         BlockPos pos = this.getBlockPos();
-        BlockPos.Mutable mutable = new BlockPos.Mutable();
+        Mutable mutable = new Mutable();
         for (Direction direction : ModConstants.CARDINAL_DIRECTIONS) {
             mutable.set(pos.offset(direction));
             if (this.canPlaceDecorator(world.getBlockState(mutable))) {

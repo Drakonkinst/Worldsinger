@@ -42,3 +42,4 @@ replay_*.log
 
 src/main/generated/
 src/main/datagen/
+remappedSrc/

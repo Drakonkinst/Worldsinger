@@ -44,7 +44,7 @@ public record CustomMapUpdatePayload(MapIdComponent mapId, byte scale, boolean l
                                      Optional<List<CustomMapDecoration>> customDecorations) implements
         CustomPayload {
 
-    public static final Id<CustomMapUpdatePayload> ID = new CustomPayload.Id<>(
+    public static final Id<CustomMapUpdatePayload> ID = new Id<>(
             Worldsinger.id("custom_map_update"));
     public static final PacketCodec<RegistryByteBuf, CustomMapUpdatePayload> CODEC = PacketCodec.tuple(
             MapIdComponent.PACKET_CODEC, CustomMapUpdatePayload::mapId, PacketCodecs.BYTE,

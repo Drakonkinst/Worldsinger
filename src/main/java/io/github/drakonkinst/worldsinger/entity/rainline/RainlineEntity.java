@@ -106,7 +106,7 @@ public class RainlineEntity extends Entity implements GeoEntity {
         if (y > RainlineEntity.getTargetHeight(world)) {
             return;
         }
-        BlockPos.Mutable mutable = new Mutable();
+        Mutable mutable = new Mutable();
         mutable.set(x, y, z);
         BlockState blockState = world.getBlockState(mutable);
         Block block = blockState.getBlock();

@@ -127,12 +127,12 @@ public final class ModItems {
             "midnight_spores_splash_bottle", MidnightSpores.getInstance());
 
     public static final Item VERDANT_VINE = register("verdant_vine",
-            new Item.Settings().food(ModFoodComponents.VERDANT_VINE, ModFoodComponents.SNACK));
+            new Settings().food(ModFoodComponents.VERDANT_VINE, ModFoodComponents.SNACK));
     public static final Item CRIMSON_SPINE = register("crimson_spine");
     public static final Item ROSEITE_CRYSTAL = register("roseite_crystal");
     public static final Item ROSEITE_CORE = register("roseite_core");
     public static final Item SALT = register("salt", SaltItem::new,
-            new Item.Settings().food(ModFoodComponents.SALT, ModFoodComponents.SNACK));
+            new Settings().food(ModFoodComponents.SALT, ModFoodComponents.SNACK));
 
     // Silver
     public static final Item RAW_SILVER = register("raw_silver");
@@ -144,17 +144,17 @@ public final class ModItems {
     public static final Item STEEL_INGOT = register("steel_ingot");
     public static final Item STEEL_NUGGET = register("steel_nugget");
     public static final Item STEEL_HELMET = register("steel_helmet",
-            new Item.Settings().armor(ModArmorMaterials.STEEL, EquipmentType.HELMET));
+            new Settings().armor(ModArmorMaterials.STEEL, EquipmentType.HELMET));
     public static final Item STEEL_CHESTPLATE = register("steel_chestplate",
-            new Item.Settings().armor(ModArmorMaterials.STEEL, EquipmentType.CHESTPLATE));
+            new Settings().armor(ModArmorMaterials.STEEL, EquipmentType.CHESTPLATE));
     public static final Item STEEL_LEGGINGS = register("steel_leggings",
-            new Item.Settings().armor(ModArmorMaterials.STEEL, EquipmentType.LEGGINGS));
+            new Settings().armor(ModArmorMaterials.STEEL, EquipmentType.LEGGINGS));
     public static final Item STEEL_BOOTS = register("steel_boots",
-            new Item.Settings().armor(ModArmorMaterials.STEEL, EquipmentType.BOOTS));
+            new Settings().armor(ModArmorMaterials.STEEL, EquipmentType.BOOTS));
     public static final Item STEEL_SWORD = register("steel_sword",
-            new Item.Settings().sword(ModToolMaterials.STEEL, 3.0f, -2.4f));
+            new Settings().sword(ModToolMaterials.STEEL, 3.0f, -2.4f));
     public static final Item STEEL_PICKAXE = register("steel_pickaxe",
-            new Item.Settings().pickaxe(ModToolMaterials.STEEL, 1.0f, -2.8f));
+            new Settings().pickaxe(ModToolMaterials.STEEL, 1.0f, -2.8f));
     public static final Item STEEL_AXE = register("steel_axe",
             settings -> new AxeItem(ModToolMaterials.STEEL, 6.0f, -3.1f, settings));
     public static final Item STEEL_SHOVEL = register("steel_shovel",
@@ -168,17 +168,15 @@ public final class ModItems {
 
     // Tools
     public static final Item QUARTZ_AND_STEEL = register("quartz_and_steel", FlintAndSteelItem::new,
-            new Item.Settings().maxDamage(88));
+            new Settings().maxDamage(88));
     public static final Item FLINT_AND_IRON = register("flint_and_iron",
-            settings -> new FaultyFirestarterItem(0.33f, settings),
-            new Item.Settings().maxDamage(64));
+            settings -> new FaultyFirestarterItem(0.33f, settings), new Settings().maxDamage(64));
     public static final Item QUARTZ_AND_IRON = register("quartz_and_iron",
-            settings -> new FaultyFirestarterItem(0.33f, settings),
-            new Item.Settings().maxDamage(88));
+            settings -> new FaultyFirestarterItem(0.33f, settings), new Settings().maxDamage(88));
     public static final Item SILVER_KNIFE = register("silver_knife",
             settings -> new SilverKnifeItem(ModToolMaterials.SILVER, 1.0f, -2.0f, settings));
     public static final Item CERAMIC_CANNONBALL = register("ceramic_cannonball",
-            CannonballItem::new, new Item.Settings().maxCount(16)
+            CannonballItem::new, new Settings().maxCount(16)
                     .component(ModDataComponentTypes.CANNONBALL, CannonballComponent.DEFAULT));
 
     // Admin
@@ -196,13 +194,13 @@ public final class ModItems {
         // TODO: Move to components?
         return register(id, settings -> new AetherSporeBucketItem(sporeBlock, sporeFluid,
                         ModSoundEvents.BLOCK_SPORE_BLOCK_PLACE, settings),
-                new Item.Settings().useRemainder(Items.BUCKET).maxCount(1));
+                new Settings().useRemainder(Items.BUCKET).maxCount(1));
     }
 
     private static Item registerSporeBottleItem(String id, AetherSpores sporeType) {
         // TODO: Move to components?
         return register(id, settings -> new SporeBottleItem(sporeType, settings),
-                new Item.Settings().useRemainder(Items.GLASS_BOTTLE)
+                new Settings().useRemainder(Items.GLASS_BOTTLE)
                         .maxCount(16)
                         .component(DataComponentTypes.POTION_CONTENTS,
                                 ModPotions.SPORE_POTIONS_COMPONENT)
@@ -215,7 +213,7 @@ public final class ModItems {
     private static Item registerSporeSplashBottleItem(String id, AetherSpores sporeType) {
         // TODO: Move to components?
         return register(id, settings -> new SplashSporeBottleItem(sporeType, settings),
-                new Item.Settings().maxCount(1)
+                new Settings().maxCount(1)
                         .component(DataComponentTypes.POTION_CONTENTS,
                                 ModPotions.SPORE_POTIONS_COMPONENT)
                         .component(DataComponentTypes.TOOLTIP_DISPLAY,
@@ -235,7 +233,7 @@ public final class ModItems {
         return register(block, BlockItem::new);
     }
 
-    public static Item register(Block block, Item.Settings settings) {
+    public static Item register(Block block, Settings settings) {
         return register(block, BlockItem::new, settings);
     }
 
@@ -254,41 +252,40 @@ public final class ModItems {
         return item;
     }
 
-    public static Item register(Block block, BiFunction<Block, Item.Settings, Item> factory) {
-        return register(block, factory, new Item.Settings());
+    public static Item register(Block block, BiFunction<Block, Settings, Item> factory) {
+        return register(block, factory, new Settings());
     }
 
     @SuppressWarnings("deprecation")
-    public static Item register(Block block, BiFunction<Block, Item.Settings, Item> factory,
-            Item.Settings settings) {
+    public static Item register(Block block, BiFunction<Block, Settings, Item> factory,
+            Settings settings) {
         return register(keyOf(block.getRegistryEntry().registryKey()),
                 itemSettings -> factory.apply(block, itemSettings),
                 settings.useBlockPrefixedTranslationKey());
     }
 
-    public static Item register(String id, Function<Item.Settings, Item> factory) {
-        return register(keyOf(id), factory, new Item.Settings());
+    public static Item register(String id, Function<Settings, Item> factory) {
+        return register(keyOf(id), factory, new Settings());
     }
 
-    public static Item register(String id, Function<Item.Settings, Item> factory,
-            Item.Settings settings) {
+    public static Item register(String id, Function<Settings, Item> factory, Settings settings) {
         return register(keyOf(id), factory, settings);
     }
 
-    public static Item register(String id, Item.Settings settings) {
+    public static Item register(String id, Settings settings) {
         return register(keyOf(id), Item::new, settings);
     }
 
     public static Item register(String id) {
-        return register(keyOf(id), Item::new, new Item.Settings());
+        return register(keyOf(id), Item::new, new Settings());
     }
 
-    public static Item register(RegistryKey<Item> key, Function<Item.Settings, Item> factory) {
-        return register(key, factory, new Item.Settings());
+    public static Item register(RegistryKey<Item> key, Function<Settings, Item> factory) {
+        return register(key, factory, new Settings());
     }
 
-    public static Item register(RegistryKey<Item> key, Function<Item.Settings, Item> factory,
-            Item.Settings settings) {
+    public static Item register(RegistryKey<Item> key, Function<Settings, Item> factory,
+            Settings settings) {
         Item item = factory.apply(settings.registryKey(key));
         if (item instanceof BlockItem blockItem) {
             blockItem.appendBlocks(Item.BLOCK_ITEMS, item);

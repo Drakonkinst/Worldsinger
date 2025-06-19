@@ -35,8 +35,7 @@ import net.minecraft.network.packet.CustomPayload;
 // Server-to-client packet sending lunagree locations
 public record LunagreeSyncPayload(List<LunagreeLocation> locations) implements CustomPayload {
 
-    public static final Id<LunagreeSyncPayload> ID = new CustomPayload.Id<>(
-            Worldsinger.id("lunagree_sync"));
+    public static final Id<LunagreeSyncPayload> ID = new Id<>(Worldsinger.id("lunagree_sync"));
     public static final PacketCodec<RegistryByteBuf, LunagreeSyncPayload> CODEC = PacketCodec.tuple(
             LunagreeLocation.PACKET_CODEC.collect(PacketCodecs.toList()),
             LunagreeSyncPayload::locations, LunagreeSyncPayload::new);

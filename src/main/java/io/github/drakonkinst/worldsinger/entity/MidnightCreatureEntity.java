@@ -972,8 +972,8 @@ public class MidnightCreatureEntity extends ShapeshiftingEntity implements
     }
 
     @Override
-    public LivingEntity.FallSounds getFallSounds() {
-        return new LivingEntity.FallSounds(SoundEvents.ENTITY_HOSTILE_SMALL_FALL,
+    public FallSounds getFallSounds() {
+        return new FallSounds(SoundEvents.ENTITY_HOSTILE_SMALL_FALL,
                 SoundEvents.ENTITY_HOSTILE_BIG_FALL);
     }
 

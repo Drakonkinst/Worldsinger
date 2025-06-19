@@ -43,7 +43,7 @@ public class SilverKnifeItem extends Item {
     public static final float SILVER_BONUS_DAMAGE = 6.0f;
 
     public SilverKnifeItem(ToolMaterial toolMaterial, float attackDamage, float attackSpeed,
-            Item.Settings settings) {
+            Settings settings) {
         super(settings.sword(toolMaterial, attackDamage, attackSpeed));
     }
 

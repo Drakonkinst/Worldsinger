@@ -80,7 +80,7 @@ public class LumarChunkGenerator extends CustomNoiseChunkGenerator {
     private static final int SHIFT_X = 10000;
     private static final int SHIFT_Z = 10000;
 
-    private static AquiferSampler.FluidLevelSampler createFluidLevelSampler() {
+    private static FluidLevelSampler createFluidLevelSampler() {
         AquiferSampler.FluidLevel fluidLevel = new AquiferSampler.FluidLevel(SEA_LEVEL,
                 PLACEHOLDER_BLOCK.getDefaultState());
         return (x, y, z) -> fluidLevel;

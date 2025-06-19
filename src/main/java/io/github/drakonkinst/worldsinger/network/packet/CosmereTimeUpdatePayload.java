@@ -34,7 +34,7 @@ import net.minecraft.network.packet.CustomPayload;
 public record CosmereTimeUpdatePayload(byte cosmereWorldId, long time, long timeOfDay,
                                        boolean tickDayTime) implements CustomPayload {
 
-    public static final Id<CosmereTimeUpdatePayload> ID = new CustomPayload.Id<>(
+    public static final Id<CosmereTimeUpdatePayload> ID = new Id<>(
             Worldsinger.id("cosmere_time_update"));
     public static final PacketCodec<RegistryByteBuf, CosmereTimeUpdatePayload> CODEC = PacketCodec.tuple(
             PacketCodecs.BYTE, CosmereTimeUpdatePayload::cosmereWorldId, PacketCodecs.VAR_LONG,
