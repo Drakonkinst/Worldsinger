@@ -37,6 +37,7 @@ import org.jetbrains.annotations.Nullable;
 
 public record SporeBottleTintSource(int defaultColor) implements TintSource {
 
+    public static final String ID = "spore_bottle";
     public static final MapCodec<SporeBottleTintSource> CODEC = RecordCodecBuilder.mapCodec(
             instance -> instance.group(
                             Codecs.RGB.fieldOf("default").forGetter(SporeBottleTintSource::defaultColor))

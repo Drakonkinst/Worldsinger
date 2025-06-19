@@ -46,12 +46,10 @@ public final class ModTextureMaps {
     }
 
     public static TextureMap cannonball(Item baseItem, CannonballCore core, int fuse) {
-        // TODO: Map core and fuse to the proper textures in ModItemRendering
-        // TODO: Maybe set Contents texture based on number of items?
-        TextureMap map = new TextureMap().put(TextureKey.LAYER0, TextureMap.getId(baseItem))
-                .put(ModTextureKeys.CONTENTS_1, ModItemRendering.CANNONBALL_CONTENTS_1)
-                .put(ModTextureKeys.CONTENTS_2, ModItemRendering.CANNONBALL_CONTENTS_2)
-                .put(ModTextureKeys.CONTENTS_3, ModItemRendering.CANNONBALL_CONTENTS_3);
+        TextureMap map = new TextureMap().put(TextureKey.LAYER0, TextureMap.getId(baseItem));
+        // .put(ModTextureKeys.CONTENTS_1, ModItemRendering.CANNONBALL_CONTENTS_1)
+        // .put(ModTextureKeys.CONTENTS_2, ModItemRendering.CANNONBALL_CONTENTS_2)
+        // .put(ModTextureKeys.CONTENTS_3, ModItemRendering.CANNONBALL_CONTENTS_3);
 
         Identifier coreTexture = ModItemRendering.BLANK;
         // Rendering is mostly hardcoded for now, but we may want to make it more dynamic if more options are added

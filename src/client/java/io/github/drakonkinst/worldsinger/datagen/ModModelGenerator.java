@@ -442,6 +442,7 @@ public class ModModelGenerator extends FabricModelProvider {
         registerCannonball(itemModelGenerator, ModItems.CERAMIC_CANNONBALL);
     }
 
+    // Ugh this is complicated
     private void registerCannonball(ItemModelGenerator itemModelGenerator, Item item) {
         Identifier baseModelId = ModelIds.getItemModelId(item);
         CannonballCore[] possibleCores = CannonballCore.values();
@@ -456,14 +457,14 @@ public class ModModelGenerator extends FabricModelProvider {
                 for (int j = 1; j <= CannonballComponent.MAX_FUSE; ++j) {
                     Identifier modelIdWithCoreAndFuse = modelIdWithCore.withSuffixedPath(
                             "_fuse_" + j);
-                    ModModels.TEMPLATE_CANNONBALL.upload(modelIdWithCoreAndFuse,
+                    Models.GENERATED_THREE_LAYERS.upload(modelIdWithCoreAndFuse,
                             ModTextureMaps.cannonball(item, core, j),
                             itemModelGenerator.modelCollector);
                     Unbaked model = ItemModels.basic(modelIdWithCoreAndFuse);
                     fuseEntries.add(ItemModels.rangeDispatchEntry(model, j));
                 }
                 // Generate models with core and no fuse
-                ModModels.TEMPLATE_CANNONBALL.upload(modelIdWithCore,
+                Models.GENERATED_THREE_LAYERS.upload(modelIdWithCore,
                         ModTextureMaps.cannonball(item, core, 0),
                         itemModelGenerator.modelCollector);
                 Unbaked fallbackModel = ItemModels.basic(modelIdWithCore);
@@ -472,7 +473,7 @@ public class ModModelGenerator extends FabricModelProvider {
                         fuseEntries);
             } else {
                 // Generate coreModel with core
-                ModModels.TEMPLATE_CANNONBALL.upload(modelIdWithCore,
+                Models.GENERATED_THREE_LAYERS.upload(modelIdWithCore,
                         ModTextureMaps.cannonball(item, core, 0),
                         itemModelGenerator.modelCollector);
                 coreModel = ItemModels.basic(modelIdWithCore);
@@ -481,16 +482,18 @@ public class ModModelGenerator extends FabricModelProvider {
 
         }
         // Generate fallback model
-        ModModels.TEMPLATE_CANNONBALL.upload(baseModelId,
+        Models.GENERATED_THREE_LAYERS.upload(baseModelId,
                 ModTextureMaps.cannonball(item, CannonballCore.HOLLOW, 0),
                 itemModelGenerator.modelCollector);
         Unbaked baseModel = ItemModels.basic(baseModelId);
         // Put it all together!
+        Unbaked guiItemModel = ItemModels.select(new CannonballCoreProperty(), baseModel,
+                coreEntries);
+        // TODO: Combine with content bar which should be generated separately
+        // Unbaked guiItemModelWithContentBar = ItemModels.composite(guiItemModel, ItemModels.basic());
         itemModelGenerator.output.accept(item,
                 ItemModels.select(new DisplayContextProperty(), baseModel,
-                        ItemModels.switchCase(ItemDisplayContext.GUI,
-                                ItemModels.select(new CannonballCoreProperty(), baseModel,
-                                        coreEntries))));
+                        ItemModels.switchCase(ItemDisplayContext.GUI, guiItemModel)));
     }
 
     private void registerSporeBottle(ItemModelGenerator itemModelGenerator, Item item) {
