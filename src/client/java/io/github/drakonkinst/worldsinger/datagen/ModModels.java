@@ -27,6 +27,7 @@ import io.github.drakonkinst.worldsinger.Worldsinger;
 import java.util.Optional;
 import net.minecraft.client.data.Model;
 import net.minecraft.client.data.TextureKey;
+import net.minecraft.util.Identifier;
 
 public final class ModModels {
 
@@ -42,8 +43,8 @@ public final class ModModels {
             "template_aluminum_cauldron_full", TextureKey.CONTENT, TextureKey.INSIDE,
             TextureKey.PARTICLE, TextureKey.TOP, TextureKey.BOTTOM, TextureKey.SIDE,
             ModTextureKeys.ALUMINUM);
-    public static final Model TEMPLATE_CANNONBALL = ModModels.item("template_cannonball",
-            TextureKey.LAYER0, ModTextureKeys.CORE, ModTextureKeys.FUSE, ModTextureKeys.CONTENTS_1,
+    public static final Model TEMPLATE_CANNONBALL = ModModels.vanillaItem("generated",
+            TextureKey.LAYER0, TextureKey.LAYER1, TextureKey.LAYER2, ModTextureKeys.CONTENTS_1,
             ModTextureKeys.CONTENTS_2, ModTextureKeys.CONTENTS_3);
 
     private static Model block(String parent, TextureKey... requiredTextureKeys) {
@@ -53,6 +54,11 @@ public final class ModModels {
 
     private static Model item(String parent, TextureKey... requiredTextureKeys) {
         return new Model(Optional.of(Worldsinger.id("item/" + parent)), Optional.empty(),
+                requiredTextureKeys);
+    }
+
+    private static Model vanillaItem(String parent, TextureKey... requiredTextureKeys) {
+        return new Model(Optional.of(Identifier.ofVanilla("item/" + parent)), Optional.empty(),
                 requiredTextureKeys);
     }
 

@@ -62,7 +62,7 @@ public final class ModTextureMaps {
         } else if (core == CannonballCore.HOLLOW) {
 
         }
-        map.put(ModTextureKeys.CORE, coreTexture);
+        map.put(TextureKey.LAYER1, coreTexture);
 
         Identifier fuseTexture = ModItemRendering.BLANK;
         if (fuse >= 3) {
@@ -72,7 +72,7 @@ public final class ModTextureMaps {
         } else if (fuse == 1) {
             fuseTexture = ModItemRendering.CANNONBALL_FUSE_1;
         }
-        map.put(ModTextureKeys.FUSE, fuseTexture);
+        map.put(TextureKey.LAYER2, fuseTexture);
 
         return map;
     }

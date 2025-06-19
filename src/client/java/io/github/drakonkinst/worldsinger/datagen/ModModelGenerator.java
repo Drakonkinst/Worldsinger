@@ -466,9 +466,9 @@ public class ModModelGenerator extends FabricModelProvider {
                 ModModels.TEMPLATE_CANNONBALL.upload(modelIdWithCore,
                         ModTextureMaps.cannonball(item, core, 0),
                         itemModelGenerator.modelCollector);
-                Unbaked model = ItemModels.basic(baseModelId);
+                Unbaked fallbackModel = ItemModels.basic(modelIdWithCore);
                 // Add everything to coreEntries
-                coreModel = ItemModels.rangeDispatch(new CannonballFuseProperty(), model,
+                coreModel = ItemModels.rangeDispatch(new CannonballFuseProperty(), fallbackModel,
                         fuseEntries);
             } else {
                 // Generate coreModel with core
