@@ -2,6 +2,7 @@ package io.github.drakonkinst.worldsinger.item;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
+import io.github.drakonkinst.worldsinger.Worldsinger;
 import io.github.drakonkinst.worldsinger.item.component.CannonballComponent;
 import io.github.drakonkinst.worldsinger.item.component.CannonballComponent.CannonballCore;
 import io.github.drakonkinst.worldsinger.registry.ModDataComponentTypes;
@@ -10,10 +11,12 @@ import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemDisplayContext;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 
 public record CannonballCoreProperty() implements SelectProperty<CannonballCore> {
 
+    public static final Identifier ID = Worldsinger.id("cannonball_core");
     public static final SelectProperty.Type<CannonballCoreProperty, CannonballCore> TYPE = SelectProperty.Type.create(
             MapCodec.unit(new CannonballCoreProperty()), CannonballCore.CODEC);
 

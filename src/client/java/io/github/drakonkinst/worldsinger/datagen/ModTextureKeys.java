@@ -28,6 +28,11 @@ import net.minecraft.client.data.TextureKey;
 public final class ModTextureKeys {
 
     public static final TextureKey ALUMINUM = TextureKey.of("aluminum");
+    public static final TextureKey CONTENTS_1 = TextureKey.of("contents_1");
+    public static final TextureKey CONTENTS_2 = TextureKey.of("contents_2");
+    public static final TextureKey CONTENTS_3 = TextureKey.of("contents_3");
+    public static final TextureKey FUSE = TextureKey.of("fuse");
+    public static final TextureKey CORE = TextureKey.of("core");
 
     private ModTextureKeys() {}
 }

@@ -25,6 +25,7 @@
 package io.github.drakonkinst.worldsinger.registry;
 
 import io.github.drakonkinst.worldsinger.Worldsinger;
+import net.fabricmc.fabric.api.client.model.loading.v1.ModelLoadingPlugin;
 import net.minecraft.util.Identifier;
 
 public final class ModItemRendering {
@@ -71,6 +72,7 @@ public final class ModItemRendering {
         //             return model;
         //         });
         // });
+        ModelLoadingPlugin.register();
     }
 
     private ModItemRendering() {}

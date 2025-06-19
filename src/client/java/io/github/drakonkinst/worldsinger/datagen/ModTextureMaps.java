@@ -24,9 +24,11 @@
 package io.github.drakonkinst.worldsinger.datagen;
 
 import io.github.drakonkinst.worldsinger.block.ModBlocks;
+import io.github.drakonkinst.worldsinger.item.component.CannonballComponent.CannonballCore;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.data.TextureKey;
 import net.minecraft.client.data.TextureMap;
+import net.minecraft.item.Item;
 import net.minecraft.util.Identifier;
 
 public final class ModTextureMaps {
@@ -40,5 +42,18 @@ public final class ModTextureMaps {
                 .put(TextureKey.INSIDE, TextureMap.getSubId(Blocks.CAULDRON, "_inner"))
                 .put(ModTextureKeys.ALUMINUM, TextureMap.getId(ModBlocks.ALUMINUM_BLOCK))
                 .put(TextureKey.CONTENT, content);
+    }
+
+    public static TextureMap cannonball(Item baseItem, CannonballCore core, int fuse) {
+        // TODO: Map core and fuse to the proper textures in ModItemRendering
+        TextureMap map = new TextureMap().put(TextureKey.LAYER0, TextureMap.getId(baseItem))
+                .put(ModTextureKeys.CORE, null)
+                .put(ModTextureKeys.FUSE, null)
+                .put(ModTextureKeys.CONTENTS_1, null)
+                .put(ModTextureKeys.CONTENTS_2, null)
+                .put(ModTextureKeys.CONTENTS_3, null);
+        if (core != null) {
+            return map;
+        }
     }
 }

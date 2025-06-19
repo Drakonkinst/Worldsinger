@@ -42,9 +42,17 @@ public final class ModModels {
             "template_aluminum_cauldron_full", TextureKey.CONTENT, TextureKey.INSIDE,
             TextureKey.PARTICLE, TextureKey.TOP, TextureKey.BOTTOM, TextureKey.SIDE,
             ModTextureKeys.ALUMINUM);
+    public static final Model TEMPLATE_CANNONBALL = ModModels.item("template_cannonball",
+            TextureKey.LAYER0, ModTextureKeys.CORE, ModTextureKeys.FUSE, ModTextureKeys.CONTENTS_1,
+            ModTextureKeys.CONTENTS_2, ModTextureKeys.CONTENTS_3);
 
     private static Model block(String parent, TextureKey... requiredTextureKeys) {
         return new Model(Optional.of(Worldsinger.id("block/" + parent)), Optional.empty(),
+                requiredTextureKeys);
+    }
+
+    private static Model item(String parent, TextureKey... requiredTextureKeys) {
+        return new Model(Optional.of(Worldsinger.id("item/" + parent)), Optional.empty(),
                 requiredTextureKeys);
     }
 

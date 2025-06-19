@@ -2,6 +2,7 @@ package io.github.drakonkinst.worldsinger.item;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import io.github.drakonkinst.worldsinger.Worldsinger;
 import io.github.drakonkinst.worldsinger.item.component.CannonballComponent;
 import io.github.drakonkinst.worldsinger.item.component.CannonballComponent.CannonballContent;
 import io.github.drakonkinst.worldsinger.registry.ModDataComponentTypes;
@@ -11,11 +12,13 @@ import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemDisplayContext;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.dynamic.Codecs;
 import org.jetbrains.annotations.Nullable;
 
 public record CannonballContentProperty(int index) implements SelectProperty<CannonballContent> {
 
+    public static final Identifier ID = Worldsinger.id("cannonball_content");
     public static final SelectProperty.Type<CannonballContentProperty, CannonballContent> TYPE = SelectProperty.Type.create(
             RecordCodecBuilder.mapCodec(instance -> instance.group(
                             Codecs.NON_NEGATIVE_INT.optionalFieldOf("index", 0)

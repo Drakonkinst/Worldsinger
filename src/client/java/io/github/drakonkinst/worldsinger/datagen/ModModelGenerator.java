@@ -26,8 +26,12 @@ package io.github.drakonkinst.worldsinger.datagen;
 import io.github.drakonkinst.worldsinger.block.ModBlocks;
 import io.github.drakonkinst.worldsinger.item.ModItems;
 import io.github.drakonkinst.worldsinger.item.SporeBottleTintSource;
+import io.github.drakonkinst.worldsinger.item.component.CannonballComponent;
+import io.github.drakonkinst.worldsinger.item.component.CannonballComponent.CannonballCore;
 import io.github.drakonkinst.worldsinger.mixin.client.accessor.BlockStateModelGeneratorAccessor;
 import io.github.drakonkinst.worldsinger.registry.ModEquipmentAssetKeys;
+import java.util.ArrayList;
+import java.util.List;
 import net.fabricmc.fabric.api.client.datagen.v1.provider.FabricModelProvider;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.minecraft.block.Block;
@@ -45,6 +49,7 @@ import net.minecraft.client.data.MultipartBlockModelDefinitionCreator;
 import net.minecraft.client.data.TextureMap;
 import net.minecraft.client.data.TexturedModel;
 import net.minecraft.client.data.VariantsBlockModelDefinitionCreator;
+import net.minecraft.client.render.item.model.SelectItemModel.SwitchCase;
 import net.minecraft.client.render.model.json.WeightedVariant;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
@@ -378,7 +383,6 @@ public class ModModelGenerator extends FabricModelProvider {
                 ModItems.QUARTZ_AND_STEEL,
                 ModItems.ROSEITE_CRYSTAL,
                 ModItems.ROSEITE_CORE,
-                ModItems.CERAMIC_CANNONBALL,
                 ModItems.MIDNIGHT_CREATURE_SPAWN_EGG
         });
         registerHandheldItems(itemModelGenerator, new ItemConvertible[] {
@@ -428,10 +432,34 @@ public class ModModelGenerator extends FabricModelProvider {
         registerSporeSplashBottle(itemModelGenerator, ModItems.ZEPHYR_SPORES_SPLASH_BOTTLE);
         registerSporeBottle(itemModelGenerator, ModItems.MIDNIGHT_SPORES_BOTTLE);
         registerSporeSplashBottle(itemModelGenerator, ModItems.MIDNIGHT_SPORES_SPLASH_BOTTLE);
+
+        registerCannonball(itemModelGenerator, ModItems.CERAMIC_CANNONBALL);
     }
 
-    private void registerCannonball(Item item) {
+    private void registerCannonball(ItemModelGenerator itemModelGenerator, Item item) {
+        Identifier baseModelId = ModelIds.getItemModelId(item);
+        Identifier textureId = TextureMap.getId(item);
+        CannonballCore[] possibleCores = CannonballCore.values();
+        List<SwitchCase<CannonballCore>> entries = new ArrayList<>(possibleCores.length);
+        for (CannonballCore core : possibleCores) {
+            if (core.canHaveFuse()) {
+                // Generate fuse definitions
+                for (int j = 1; j <= CannonballComponent.MAX_FUSE; ++j) {
+                    Identifier modelId = baseModelId.withSuffixedPath("_fuse_" + j);
 
+                }
+                // Also generate the fallback
+                // TODO: Generate fallback model with no fuse
+            } else {
+                // Just generate one model
+            }
+        }
+        // TODO: Generate fallback model
+        // itemModelGenerator.output.accept(item,
+        //         ItemModels.select(new DisplayContextProperty(), fallback,
+        //                 ItemModels.switchCase(ItemDisplayContext.GUI,
+        //                         ItemModels.select(new CannonballCoreProperty(), fallback,
+        //                                 entries))));
     }
 
     private void registerSporeBottle(ItemModelGenerator itemModelGenerator, Item item) {
