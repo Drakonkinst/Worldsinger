@@ -23,7 +23,9 @@
  */
 package io.github.drakonkinst.worldsinger.datagen;
 
+import io.github.drakonkinst.worldsinger.Worldsinger;
 import io.github.drakonkinst.worldsinger.block.ModBlocks;
+import io.github.drakonkinst.worldsinger.item.CannonballContentTintSource;
 import io.github.drakonkinst.worldsinger.item.CannonballCoreProperty;
 import io.github.drakonkinst.worldsinger.item.CannonballFuseProperty;
 import io.github.drakonkinst.worldsinger.item.ModItems;
@@ -32,6 +34,7 @@ import io.github.drakonkinst.worldsinger.item.component.CannonballComponent;
 import io.github.drakonkinst.worldsinger.item.component.CannonballComponent.CannonballCore;
 import io.github.drakonkinst.worldsinger.mixin.client.accessor.BlockStateModelGeneratorAccessor;
 import io.github.drakonkinst.worldsinger.registry.ModEquipmentAssetKeys;
+import io.github.drakonkinst.worldsinger.registry.ModItemRendering;
 import java.util.ArrayList;
 import java.util.List;
 import net.fabricmc.fabric.api.client.datagen.v1.provider.FabricModelProvider;
@@ -439,11 +442,24 @@ public class ModModelGenerator extends FabricModelProvider {
         registerSporeBottle(itemModelGenerator, ModItems.MIDNIGHT_SPORES_BOTTLE);
         registerSporeSplashBottle(itemModelGenerator, ModItems.MIDNIGHT_SPORES_SPLASH_BOTTLE);
 
-        registerCannonball(itemModelGenerator, ModItems.CERAMIC_CANNONBALL);
+        Unbaked cannonballContentBarModel = registerCannonballContentBar(itemModelGenerator);
+        registerCannonball(itemModelGenerator, ModItems.CERAMIC_CANNONBALL,
+                cannonballContentBarModel);
+    }
+
+    private Unbaked registerCannonballContentBar(ItemModelGenerator itemModelGenerator) {
+        Identifier id = Worldsinger.id("item/cannonball_content_bar");
+        Models.GENERATED_THREE_LAYERS.upload(id,
+                TextureMap.layered(ModItemRendering.CANNONBALL_CONTENTS_1,
+                        ModItemRendering.CANNONBALL_CONTENTS_2,
+                        ModItemRendering.CANNONBALL_CONTENTS_3), itemModelGenerator.modelCollector);
+        return ItemModels.tinted(id, new CannonballContentTintSource(2),
+                new CannonballContentTintSource(1), new CannonballContentTintSource(0));
     }
 
     // Ugh this is complicated
-    private void registerCannonball(ItemModelGenerator itemModelGenerator, Item item) {
+    private void registerCannonball(ItemModelGenerator itemModelGenerator, Item item,
+            Unbaked contentBarModel) {
         Identifier baseModelId = ModelIds.getItemModelId(item);
         CannonballCore[] possibleCores = CannonballCore.values();
         List<SwitchCase<CannonballCore>> coreEntries = new ArrayList<>(possibleCores.length);
@@ -489,11 +505,10 @@ public class ModModelGenerator extends FabricModelProvider {
         // Put it all together!
         Unbaked guiItemModel = ItemModels.select(new CannonballCoreProperty(), baseModel,
                 coreEntries);
-        // TODO: Combine with content bar which should be generated separately
-        // Unbaked guiItemModelWithContentBar = ItemModels.composite(guiItemModel, ItemModels.basic());
+        Unbaked guiItemModelWithContentBar = ItemModels.composite(guiItemModel, contentBarModel);
         itemModelGenerator.output.accept(item,
                 ItemModels.select(new DisplayContextProperty(), baseModel,
-                        ItemModels.switchCase(ItemDisplayContext.GUI, guiItemModel)));
+                        ItemModels.switchCase(ItemDisplayContext.GUI, guiItemModelWithContentBar)));
     }
 
     private void registerSporeBottle(ItemModelGenerator itemModelGenerator, Item item) {

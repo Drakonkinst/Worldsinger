@@ -63,11 +63,6 @@ public final class ModItemRendering {
                 ModItemRendering.SILVER_LINED_CHEST_BOAT_OVERLAY,
                 ModItemRendering.SILVER_LINED_RAFT_OVERLAY,
                 ModItemRendering.SILVER_LINED_CHEST_RAFT_OVERLAY,
-                ModItemRendering.CANNONBALL_CORE_ROSEITE,
-                ModItemRendering.CANNONBALL_CORE_WATER,
-                ModItemRendering.CANNONBALL_FUSE_1,
-                ModItemRendering.CANNONBALL_FUSE_2,
-                ModItemRendering.CANNONBALL_FUSE_3,
         };
 
         // FIXME: Restore

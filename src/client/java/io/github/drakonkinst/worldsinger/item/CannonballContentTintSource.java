@@ -28,8 +28,12 @@ public record CannonballContentTintSource(int index, int defaultColor) implement
                     .apply(instance, CannonballContentTintSource::new));
     private static final int COLOR_TRANSPARENT = ColorHelper.getWhite(0);
 
+    public CannonballContentTintSource(int index) {
+        this(index, COLOR_TRANSPARENT);
+    }
+
     public CannonballContentTintSource() {
-        this(-1, 0xffffff);
+        this(-1);
     }
 
     @Override
