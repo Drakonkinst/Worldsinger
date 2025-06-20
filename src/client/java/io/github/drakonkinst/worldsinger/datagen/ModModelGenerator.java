@@ -26,6 +26,7 @@ package io.github.drakonkinst.worldsinger.datagen;
 import io.github.drakonkinst.worldsinger.block.ModBlocks;
 import io.github.drakonkinst.worldsinger.item.CannonballCoreProperty;
 import io.github.drakonkinst.worldsinger.item.CannonballFuseProperty;
+import io.github.drakonkinst.worldsinger.item.ItemOverlay;
 import io.github.drakonkinst.worldsinger.item.ModItems;
 import io.github.drakonkinst.worldsinger.item.SporeBottleTintSource;
 import io.github.drakonkinst.worldsinger.item.component.CannonballComponent;
@@ -440,6 +441,14 @@ public class ModModelGenerator extends FabricModelProvider {
         registerSporeSplashBottle(itemModelGenerator, ModItems.MIDNIGHT_SPORES_SPLASH_BOTTLE);
 
         registerCannonball(itemModelGenerator, ModItems.CERAMIC_CANNONBALL);
+        registerOverlays(itemModelGenerator);
+    }
+
+    private void registerOverlays(ItemModelGenerator itemModelGenerator) {
+        for (ItemOverlay itemOverlay : ItemOverlay.VALUES) {
+            Identifier id = itemOverlay.getId();
+            Models.GENERATED.upload(id, TextureMap.layer0(id), itemModelGenerator.modelCollector);
+        }
     }
 
     // Ugh this is complicated

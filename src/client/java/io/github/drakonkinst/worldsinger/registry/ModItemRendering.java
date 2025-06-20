@@ -25,21 +25,22 @@
 package io.github.drakonkinst.worldsinger.registry;
 
 import io.github.drakonkinst.worldsinger.Worldsinger;
+import io.github.drakonkinst.worldsinger.item.ItemOverlay;
+import java.util.Collections;
+import java.util.List;
+import net.fabricmc.fabric.api.client.model.loading.v1.ExtraModelKey;
+import net.fabricmc.fabric.api.client.model.loading.v1.ModelLoadingPlugin;
+import net.fabricmc.fabric.api.client.model.loading.v1.SimpleUnbakedExtraModel;
+import net.minecraft.client.render.item.model.BasicItemModel;
+import net.minecraft.client.render.item.model.ItemModel;
+import net.minecraft.client.render.model.BakedQuad;
+import net.minecraft.client.render.model.ModelRotation;
+import net.minecraft.client.render.model.ModelSettings;
+import net.minecraft.client.render.model.ModelTextures;
 import net.minecraft.util.Identifier;
 
 public final class ModItemRendering {
 
-    public static final Identifier SALT_OVERLAY = Worldsinger.id("item/salted_overlay");
-    public static final Identifier SILVER_LINED_AXE_OVERLAY = Worldsinger.id(
-            "item/silver_lined_axe_overlay");
-    public static final Identifier SILVER_LINED_BOAT_OVERLAY = Worldsinger.id(
-            "item/silver_lined_boat_overlay");
-    public static final Identifier SILVER_LINED_CHEST_BOAT_OVERLAY = Worldsinger.id(
-            "item/silver_lined_chest_boat_overlay");
-    public static final Identifier SILVER_LINED_RAFT_OVERLAY = Worldsinger.id(
-            "item/silver_lined_raft_overlay");
-    public static final Identifier SILVER_LINED_CHEST_RAFT_OVERLAY = Worldsinger.id(
-            "item/silver_lined_chest_raft_overlay");
     public static final Identifier CANNONBALL_CORE_ROSEITE = Worldsinger.id(
             "item/cannonball/core_roseite");
     public static final Identifier CANNONBALL_CORE_WATER = Worldsinger.id(
@@ -47,33 +48,27 @@ public final class ModItemRendering {
     public static final Identifier CANNONBALL_FUSE_1 = Worldsinger.id("item/cannonball/fuse_1");
     public static final Identifier CANNONBALL_FUSE_2 = Worldsinger.id("item/cannonball/fuse_2");
     public static final Identifier CANNONBALL_FUSE_3 = Worldsinger.id("item/cannonball/fuse_3");
-    public static final Identifier CANNONBALL_CONTENTS_1 = Worldsinger.id(
-            "item/cannonball/contents_1");
-    public static final Identifier CANNONBALL_CONTENTS_2 = Worldsinger.id(
-            "item/cannonball/contents_2");
-    public static final Identifier CANNONBALL_CONTENTS_3 = Worldsinger.id(
-            "item/cannonball/contents_3");
     public static final Identifier BLANK = Worldsinger.id("item/blank");
 
     public static void register() {
-        final Identifier[] overlayModels = new Identifier[] {
-                ModItemRendering.SALT_OVERLAY,
-                ModItemRendering.SILVER_LINED_AXE_OVERLAY,
-                ModItemRendering.SILVER_LINED_BOAT_OVERLAY,
-                ModItemRendering.SILVER_LINED_CHEST_BOAT_OVERLAY,
-                ModItemRendering.SILVER_LINED_RAFT_OVERLAY,
-                ModItemRendering.SILVER_LINED_CHEST_RAFT_OVERLAY,
-        };
+        ModelLoadingPlugin.register(pluginContext -> {
+            for (ItemOverlay itemOverlay : ItemOverlay.VALUES) {
+                registerItemOverlay(pluginContext, itemOverlay.getModelKey(), itemOverlay.getId());
+            }
+        });
+    }
 
-        // FIXME: Restore
-        // ModelLoadingPlugin.register(pluginContext -> {
-        // pluginContext.addModels(overlayModels);
-        // pluginContext.modifyModelOnLoad()
-        //         .register(ModelModifier.WRAP_PHASE, (model, context) -> {
-        //             return model;
-        //         });
-        // });
-        // ModelLoadingPlugin.register();
+    private static void registerItemOverlay(ModelLoadingPlugin.Context pluginContext,
+            ExtraModelKey<ItemModel> model, Identifier id) {
+        pluginContext.addModel(model,
+                new SimpleUnbakedExtraModel<>(id, ((bakedSimpleModel, baker) -> {
+                    ModelTextures modelTextures = bakedSimpleModel.getTextures();
+                    List<BakedQuad> list = bakedSimpleModel.bakeGeometry(modelTextures, baker,
+                            ModelRotation.X0_Y0).getAllQuads();
+                    ModelSettings modelSettings = ModelSettings.resolveSettings(baker,
+                            bakedSimpleModel, modelTextures);
+                    return new BasicItemModel(Collections.emptyList(), list, modelSettings);
+                })));
     }
 
     private ModItemRendering() {}
