@@ -2,11 +2,13 @@ package io.github.drakonkinst.worldsinger.item;
 
 import io.github.drakonkinst.worldsinger.Worldsinger;
 import io.github.drakonkinst.worldsinger.cosmere.SaltedFoodUtil;
+import io.github.drakonkinst.worldsinger.cosmere.SilverLined;
 import net.fabricmc.fabric.api.client.model.loading.v1.ExtraModelKey;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.item.ItemModelManager;
 import net.minecraft.client.render.item.ItemRenderState;
 import net.minecraft.client.render.item.model.ItemModel;
+import net.minecraft.client.render.model.BakedModelManager;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemDisplayContext;
@@ -38,12 +40,17 @@ public enum ItemOverlay {
         }
         if (SaltedFoodUtil.isSalted(stack)) {
             // Apply salt overlay
-            ItemModel saltedModel = MinecraftClient.getInstance()
-                    .getBakedModelManager()
-                    .getModel(SALTED_FOOD.getModelKey());
-            if (saltedModel != null) {
-                saltedModel.update(renderState, stack, itemModelManager, ItemDisplayContext.GUI,
-                        world, entity, seed);
+            SALTED_FOOD.getModel()
+                    .update(renderState, stack, itemModelManager, displayContext, world, entity,
+                            seed);
+        }
+        if (SilverLined.isSilverLined(stack)) {
+            // Apply silver-lined overlay
+            ItemOverlay overlay = getSilverLinedOverlayForItem(stack);
+            if (overlay != null) {
+                overlay.getModel()
+                        .update(renderState, stack, itemModelManager, displayContext, world, entity,
+                                seed);
             }
         }
     }
@@ -80,5 +87,15 @@ public enum ItemOverlay {
 
     public ExtraModelKey<ItemModel> getModelKey() {
         return modelKey;
+    }
+
+    public ItemModel getModel() {
+        BakedModelManager modelManager = MinecraftClient.getInstance().getBakedModelManager();
+        ItemModel model = modelManager.getModel(getModelKey());
+        if (model == null) {
+            // Return missing item texture
+            return modelManager.getItemModel(null);
+        }
+        return model;
     }
 }
