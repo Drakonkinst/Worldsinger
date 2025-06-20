@@ -23,8 +23,7 @@
  */
 package io.github.drakonkinst.worldsinger.mixin.entity;
 
-import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
-import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
 import io.github.drakonkinst.worldsinger.api.ModAttachmentTypes;
 import io.github.drakonkinst.worldsinger.cosmere.SilverLined;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.SeetheManager;
@@ -269,23 +268,27 @@ public abstract class BoatEntityMovementMixin extends VehicleEntity {
         }
     }
 
-    @WrapOperation(method = "updatePaddles", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/vehicle/AbstractBoatEntity;setVelocity(Lnet/minecraft/util/math/Vec3d;)V"))
-    private void restrictMovementInSporeSea(AbstractBoatEntity instance, Vec3d velocity,
-            Operation<Void> original) {
-        if (this.inSporeSea && this.location != Location.ON_LAND
-                && !SeetheManager.areSporesFluidized(this.getWorld())) {
-            return;
-        }
-        original.call(instance, velocity);
+    @WrapWithCondition(method = "updatePaddles", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/vehicle/AbstractBoatEntity;setVelocity(Lnet/minecraft/util/math/Vec3d;)V"))
+    private boolean cancelMovementInSporeSea(AbstractBoatEntity instance, Vec3d vec3d) {
+        return !this.inSporeSea || this.location == Location.ON_LAND
+                || SeetheManager.areSporesFluidized(this.getWorld());
     }
 
+    // Prevent all passengers in the boat from turning based on boat movement that is not happening
     @Inject(method = "updatePassengerPosition", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;setYaw(F)V"), cancellable = true)
     private void restrictMovementInSporeSeaPassenger(CallbackInfo ci) {
-        if (this.inSporeSea && this.location != Location.ON_LAND) {
-            World world = this.getWorld();
-            if (!SeetheManager.areSporesFluidized(world)) {
-                ci.cancel();
-            }
+        if (this.inSporeSea && this.location != Location.ON_LAND
+                && !SeetheManager.areSporesFluidized(this.getWorld())) {
+            ci.cancel();
+        }
+    }
+
+    // Cannot turn for any reason while spore-locked
+    @Override
+    public void setYaw(float yaw) {
+        if (!this.inSporeSea || this.location == Location.ON_LAND
+                || SeetheManager.areSporesFluidized(this.getWorld())) {
+            super.setYaw(yaw);
         }
     }
 
@@ -296,5 +299,4 @@ public abstract class BoatEntityMovementMixin extends VehicleEntity {
             BlockPos blockPos) {
         return instance.getCollisionShape(blockView, blockPos, ShapeContext.of(this));
     }
-
 }

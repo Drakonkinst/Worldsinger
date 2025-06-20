@@ -54,8 +54,6 @@ public final class ModTextureMaps {
             coreTexture = ModItemRendering.CANNONBALL_CORE_ROSEITE;
         } else if (core == CannonballCore.WATER) {
             coreTexture = ModItemRendering.CANNONBALL_CORE_WATER;
-        } else if (core == CannonballCore.HOLLOW) {
-
         }
         map.put(TextureKey.LAYER1, coreTexture);
 
