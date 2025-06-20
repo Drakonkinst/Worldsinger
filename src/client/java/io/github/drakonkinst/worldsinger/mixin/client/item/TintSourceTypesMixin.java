@@ -26,7 +26,6 @@ package io.github.drakonkinst.worldsinger.mixin.client.item;
 
 import com.mojang.serialization.MapCodec;
 import io.github.drakonkinst.worldsinger.Worldsinger;
-import io.github.drakonkinst.worldsinger.item.CannonballContentTintSource;
 import io.github.drakonkinst.worldsinger.item.SporeBottleTintSource;
 import net.minecraft.client.render.item.tint.TintSource;
 import net.minecraft.client.render.item.tint.TintSourceTypes;
@@ -50,7 +49,6 @@ public class TintSourceTypesMixin {
     @Inject(method = "bootstrap", at = @At("TAIL"))
     private static void bootstrapModTintSources(CallbackInfo ci) {
         add(SporeBottleTintSource.ID, SporeBottleTintSource.CODEC);
-        add(CannonballContentTintSource.ID, CannonballContentTintSource.CODEC);
     }
 
     @Unique
