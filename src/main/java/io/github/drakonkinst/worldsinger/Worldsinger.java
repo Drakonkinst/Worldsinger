@@ -43,6 +43,7 @@ import io.github.drakonkinst.worldsinger.recipe.ModRecipeSerializer;
 import io.github.drakonkinst.worldsinger.registry.ModDataComponentTypes;
 import io.github.drakonkinst.worldsinger.registry.ModDispenserBehaviors;
 import io.github.drakonkinst.worldsinger.registry.ModGameRules;
+import io.github.drakonkinst.worldsinger.registry.ModMapDecorationTypes;
 import io.github.drakonkinst.worldsinger.registry.ModPotions;
 import io.github.drakonkinst.worldsinger.registry.ModSoundEvents;
 import io.github.drakonkinst.worldsinger.util.ModConstants;
@@ -88,6 +89,7 @@ public class Worldsinger implements ModInitializer {
         ModEntityTypes.initialize();
         ModCommands.initialize();
         ModPotions.initialize();
+        ModMapDecorationTypes.initialize();
         ModCauldronBehaviors.initialize();
         ModDispenserBehaviors.register();
         ModDimensions.initialize();

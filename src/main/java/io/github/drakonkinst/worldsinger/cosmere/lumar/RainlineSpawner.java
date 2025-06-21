@@ -25,11 +25,11 @@
 package io.github.drakonkinst.worldsinger.cosmere.lumar;
 
 import io.github.drakonkinst.worldsinger.entity.rainline.RainlineEntity;
-import io.github.drakonkinst.worldsinger.item.map.CustomMapDecorationsComponent.Decoration;
 import io.github.drakonkinst.worldsinger.util.VectorUtil;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import net.minecraft.component.type.MapDecorationsComponent.Decoration;
 import net.minecraft.item.map.MapState;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.server.world.ServerWorld;

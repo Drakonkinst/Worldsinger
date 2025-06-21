@@ -24,8 +24,8 @@
 
 package io.github.drakonkinst.worldsinger.cosmere.lumar;
 
-import io.github.drakonkinst.worldsinger.item.map.CustomMapDecorationsComponent.Decoration;
 import java.util.Map;
+import net.minecraft.component.type.MapDecorationsComponent.Decoration;
 import net.minecraft.item.map.MapState;
 import net.minecraft.server.world.ServerWorld;
 import org.jetbrains.annotations.Nullable;

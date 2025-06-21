@@ -24,14 +24,14 @@
 
 package io.github.drakonkinst.worldsinger.cosmere.lumar;
 
-import io.github.drakonkinst.worldsinger.item.map.CustomMapDecoration;
-import io.github.drakonkinst.worldsinger.item.map.CustomMapDecorationsComponent.Decoration;
+import io.github.drakonkinst.worldsinger.registry.ModMapDecorationTypes;
 import io.github.drakonkinst.worldsinger.util.math.Int2;
 import io.github.drakonkinst.worldsinger.worldgen.lumar.LumarChunkGenerator;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import net.minecraft.component.type.MapDecorationsComponent.Decoration;
 import net.minecraft.item.map.MapState;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.MathHelper;
@@ -197,7 +197,7 @@ public class RainlinePath {
                         * MathHelper.DEGREES_PER_RADIAN;
                 ++numAdded;
                 decorations.put("rainline-" + cellNeighborIndex + "-" + (++nextIconId),
-                        new Decoration(CustomMapDecoration.Type.RAINLINE, x, z, rotation));
+                        new Decoration(ModMapDecorationTypes.RAINLINE, x, z, rotation));
             }
             prevX = x;
             prevZ = z;
@@ -209,8 +209,10 @@ public class RainlinePath {
         float scaleModifier = 1 << mapState.scale;
         float mapX = (x - mapState.centerX) / scaleModifier;
         float mapY = (z - mapState.centerZ) / scaleModifier;
-        return mapX >= -CustomMapDecoration.MAP_LIMITS && mapY >= -CustomMapDecoration.MAP_LIMITS
-                && mapX <= CustomMapDecoration.MAP_LIMITS && mapY <= CustomMapDecoration.MAP_LIMITS;
+        return mapX >= -ModMapDecorationTypes.MAP_LIMITS
+                && mapY >= -ModMapDecorationTypes.MAP_LIMITS
+                && mapX <= ModMapDecorationTypes.MAP_LIMITS
+                && mapY <= ModMapDecorationTypes.MAP_LIMITS;
     }
 
     private Spline calculateSpline(int i, List<Int2> rainlineNodes) {

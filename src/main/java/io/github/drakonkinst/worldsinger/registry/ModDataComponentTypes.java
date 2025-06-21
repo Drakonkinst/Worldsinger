@@ -28,7 +28,6 @@ import com.mojang.serialization.Codec;
 import io.github.drakonkinst.worldsinger.Worldsinger;
 import io.github.drakonkinst.worldsinger.item.component.CannonballComponent;
 import io.github.drakonkinst.worldsinger.item.component.SilverLinedComponent;
-import io.github.drakonkinst.worldsinger.item.map.CustomMapDecorationsComponent;
 import java.util.function.UnaryOperator;
 import net.fabricmc.fabric.api.item.v1.ComponentTooltipAppenderRegistry;
 import net.minecraft.component.ComponentType;
@@ -52,9 +51,6 @@ public final class ModDataComponentTypes {
     public static final ComponentType<Float> SILVER_DURABILITY_DISPLAY_FACTOR = register(
             "silver_durability_display_factor",
             builder -> builder.codec(Codecs.POSITIVE_FLOAT).packetCodec(PacketCodecs.FLOAT));
-    public static final ComponentType<CustomMapDecorationsComponent> CUSTOM_MAP_DECORATIONS = register(
-            "custom_map_decorations",
-            builder -> builder.codec(CustomMapDecorationsComponent.CODEC));
     public static final ComponentType<CannonballComponent> CANNONBALL = register("cannonball",
             builder -> builder.codec(CannonballComponent.CODEC)
                     .packetCodec(CannonballComponent.PACKET_CODEC)

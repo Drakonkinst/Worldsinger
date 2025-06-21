@@ -23,7 +23,6 @@
     "gui.InGameHudMixin",
     "gui.InGameOverlayRendererPossessionMixin",
     "item.ItemModelManagerMixin",
-    "item.MapRendererMixin",
     "item.TintSourceTypesMixin",
     "network.ClientPlayerInteractionManagerPossessionMixin",
     "network.GameOptionsMixin",

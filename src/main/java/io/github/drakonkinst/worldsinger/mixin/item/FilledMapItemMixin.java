@@ -22,17 +22,17 @@
  * SOFTWARE.
  */
 
-package io.github.drakonkinst.worldsinger.mixin.item.map;
+package io.github.drakonkinst.worldsinger.mixin.item;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.llamalad7.mixinextras.sugar.Local;
 import io.github.drakonkinst.worldsinger.cosmere.CosmerePlanet;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarManagerAccess;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.RainlineSpawner;
-import io.github.drakonkinst.worldsinger.item.map.CustomMapDecorationsComponent;
-import io.github.drakonkinst.worldsinger.registry.ModDataComponentTypes;
 import java.util.HashMap;
 import java.util.Map;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.MapDecorationsComponent;
 import net.minecraft.component.type.MapIdComponent;
 import net.minecraft.item.FilledMapItem;
 import net.minecraft.item.Item;
@@ -49,26 +49,25 @@ public abstract class FilledMapItemMixin extends Item {
     }
 
     @ModifyReturnValue(method = "createMap", at = @At("RETURN"))
-    private static ItemStack addRainlineIcons(ItemStack original, ServerWorld world, int x, int z,
-            byte scale, boolean showIcons, boolean unlimitedTracking,
+    private static ItemStack addRainlineIconsOnMapCreation(ItemStack original, ServerWorld world,
+            int x, int z, byte scale, boolean showIcons, boolean unlimitedTracking,
             @Local MapIdComponent mapIdComponent) {
         if (!CosmerePlanet.isLumar(world)) {
             return original;
         }
 
-        CustomMapDecorationsComponent customMapDecorations = original.getOrDefault(
-                ModDataComponentTypes.CUSTOM_MAP_DECORATIONS,
-                CustomMapDecorationsComponent.DEFAULT);
-        Map<String, CustomMapDecorationsComponent.Decoration> updatedDecorations = new HashMap<>(
-                customMapDecorations.decorations());
+        MapDecorationsComponent mapDecorations = original.getOrDefault(
+                DataComponentTypes.MAP_DECORATIONS, MapDecorationsComponent.DEFAULT);
+        Map<String, MapDecorationsComponent.Decoration> updatedDecorations = new HashMap<>(
+                mapDecorations.decorations());
         RainlineSpawner rainlineSpawner = ((LumarManagerAccess) world).worldsinger$getLumarManager()
                 .getRainlineManager();
         rainlineSpawner.applyMapDecorations(world, updatedDecorations,
                 world.getMapState(mapIdComponent));
 
-        if (updatedDecorations.size() > customMapDecorations.decorations().size()) {
-            original.set(ModDataComponentTypes.CUSTOM_MAP_DECORATIONS,
-                    new CustomMapDecorationsComponent(updatedDecorations));
+        if (updatedDecorations.size() > mapDecorations.decorations().size()) {
+            original.set(DataComponentTypes.MAP_DECORATIONS,
+                    new MapDecorationsComponent(updatedDecorations));
         }
 
         return original;
