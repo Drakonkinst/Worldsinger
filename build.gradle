@@ -12,6 +12,7 @@ base {
 }
 
 repositories {
+    mavenLocal()
     maven {
         name = "Jitpack"
         url = "https://jitpack.io/"
@@ -68,7 +69,8 @@ dependencies {
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
     include(implementation("com.github.Chocohead:Fabric-ASM:${project.fabric_asm_version}"))
     include(implementation(annotationProcessor("com.github.bawnorton.mixinsquared:mixinsquared-fabric:${project.mixinsquared_version}")))
-    include(modImplementation("com.github.Drakonkinst:DataTables:${project.data_tables_version}")) {
+//    include(modImplementation("com.github.Drakonkinst:DataTables:v${project.data_tables_version}")) {
+    include(modImplementation("io.github.drakonkinst.datatables:DataTables:${project.data_tables_version}")) {
         exclude(group: "net.fabricmc.fabric-api")
     }
 
