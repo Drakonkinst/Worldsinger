@@ -36,6 +36,7 @@ import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LimbAnimator;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.data.DataTracker;
+import net.minecraft.entity.data.DataTracker.Builder;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.mob.MobEntity;
@@ -68,6 +69,12 @@ public abstract class ShapeshiftingEntity extends PathAwareEntity implements Sha
 
     protected ShapeshiftingEntity(EntityType<? extends PathAwareEntity> entityType, World world) {
         super(entityType, world);
+    }
+
+    @Override
+    protected void initDataTracker(Builder builder) {
+        super.initDataTracker(builder);
+        builder.add(MORPH, new NbtCompound());
     }
 
     @Override
