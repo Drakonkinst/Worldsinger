@@ -25,30 +25,23 @@ package io.github.drakonkinst.worldsinger.entity;
 
 import io.github.drakonkinst.worldsinger.Worldsinger;
 import io.github.drakonkinst.worldsinger.cosmere.ShapeshiftingManager;
-import io.github.drakonkinst.worldsinger.mixin.accessor.EntityAccessor;
-import io.github.drakonkinst.worldsinger.mixin.accessor.LimbAnimatorAccessor;
-import io.github.drakonkinst.worldsinger.mixin.accessor.LivingEntityAccessor;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.LimbAnimator;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.DataTracker.Builder;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
-import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.PathAwareEntity;
-import net.minecraft.entity.mob.PhantomEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.storage.NbtWriteView;
 import net.minecraft.storage.ReadView;
 import net.minecraft.storage.WriteView;
 import net.minecraft.util.ErrorReporter;
-import net.minecraft.util.Hand;
+import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -144,8 +137,8 @@ public abstract class ShapeshiftingEntity extends PathAwareEntity implements Sha
                 this.getErrorReporterContext(), Worldsinger.LOGGER)) {
             NbtWriteView nbtWriteView = NbtWriteView.create(logging, this.getRegistryManager());
             morph.writeData(nbtWriteView);
-            // See if we need this
-            // nbtWriteView.putString("id", this.getSavedEntityId());
+            Identifier entityId = EntityType.getId(morph.getType());
+            nbtWriteView.putString("id", entityId == null ? "unknown" : entityId.toString());
             this.setMorphData(nbtWriteView.getNbt());
         }
     }
@@ -172,71 +165,6 @@ public abstract class ShapeshiftingEntity extends PathAwareEntity implements Sha
             this.setMorphDataFromEntity(morph);
             ShapeshiftingManager.syncToNearbyPlayers(serverWorld, this);
         }
-    }
-
-    @Override
-    public void copyDataToMorph(LivingEntity morph) {
-        LimbAnimator target = morph.limbAnimator;
-        LimbAnimator source = this.limbAnimator;
-        target.setSpeed(source.getSpeed());
-        ((LimbAnimatorAccessor) target).worldsinger$setLastSpeed(
-                ((LimbAnimatorAccessor) source).worldsinger$getLastSpeed());
-        ((LimbAnimatorAccessor) target).worldsinger$setAnimationProgress(
-                source.getAnimationProgress());
-
-        // Sync data
-        morph.handSwinging = this.handSwinging;
-        morph.handSwingTicks = this.handSwingTicks;
-        morph.lastHandSwingProgress = this.lastHandSwingProgress;
-        morph.handSwingProgress = this.handSwingProgress;
-        morph.bodyYaw = this.bodyYaw;
-        morph.lastBodyYaw = this.lastBodyYaw;
-        morph.headYaw = this.headYaw;
-        morph.lastHeadYaw = this.lastHeadYaw;
-        morph.age = this.age;
-        morph.preferredHand = this.preferredHand;
-        morph.deathTime = this.deathTime;
-        morph.hurtTime = this.hurtTime;
-        morph.setOnGround(this.isOnGround());
-        morph.setVelocity(this.getVelocity());
-
-        ((EntityAccessor) morph).worldsinger$setVehicle(this.getVehicle());
-        ((EntityAccessor) morph).worldsinger$setTouchingWater(this.isTouchingWater());
-
-        // Pitch for Phantoms is inverted
-        if (morph instanceof PhantomEntity) {
-            morph.setPitch(-this.getPitch());
-            morph.lastPitch = -this.lastPitch;
-        } else {
-            morph.setPitch(this.getPitch());
-            morph.lastPitch = this.lastPitch;
-        }
-
-        configureEquipment(morph);
-
-        if (morph instanceof MobEntity) {
-            ((MobEntity) morph).setAttacking(this.isAttacking());
-        }
-
-        // Assign pose
-        morph.setPose(this.getPose());
-
-        // Set active hand after configuring held items
-        morph.setCurrentHand(this.getActiveHand() == null ? Hand.MAIN_HAND : this.getActiveHand());
-        ((LivingEntityAccessor) morph).worldsinger$setLivingFlag(1, this.isUsingItem());
-        morph.getItemUseTime();
-        ((LivingEntityAccessor) morph).worldsinger$tickActiveItemStack();
-    }
-
-    protected void configureEquipment(LivingEntity morph) {
-        // Equip held items and armor
-        // Note: Should not run these if using visual equipment
-        morph.equipStack(EquipmentSlot.MAINHAND, this.getEquippedStack(EquipmentSlot.MAINHAND));
-        morph.equipStack(EquipmentSlot.OFFHAND, this.getEquippedStack(EquipmentSlot.OFFHAND));
-        morph.equipStack(EquipmentSlot.HEAD, this.getEquippedStack(EquipmentSlot.HEAD));
-        morph.equipStack(EquipmentSlot.CHEST, this.getEquippedStack(EquipmentSlot.CHEST));
-        morph.equipStack(EquipmentSlot.LEGS, this.getEquippedStack(EquipmentSlot.LEGS));
-        morph.equipStack(EquipmentSlot.FEET, this.getEquippedStack(EquipmentSlot.FEET));
     }
 
     @Nullable

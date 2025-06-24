@@ -24,37 +24,30 @@
 
 package io.github.drakonkinst.worldsinger.mixin.client.world;
 
-import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
-import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import io.github.drakonkinst.worldsinger.entity.Shapeshifter;
-import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.WorldRenderer;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
 
 @Mixin(WorldRenderer.class)
 public abstract class WorldRendererShapeshifterMixin {
 
-    @WrapOperation(method = "renderEntities", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/WorldRenderer;renderEntity(Lnet/minecraft/entity/Entity;DDDFLnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;)V"))
-    private void renderMorphs(WorldRenderer instance, Entity entity, double cameraX, double cameraY,
-            double cameraZ, float tickDelta, MatrixStack matrices,
-            VertexConsumerProvider vertexConsumers, Operation<Void> original) {
-        if (entity instanceof Shapeshifter shapeshifter) {
-            LivingEntity morph = shapeshifter.getMorph();
-            if (morph != null) {
-                shapeshifter.copyDataToMorph(morph);
-                original.call(instance, morph, cameraX, cameraY, cameraZ, tickDelta, matrices,
-                        vertexConsumers);
-                if (shapeshifter.shouldMorphReplaceSelf()) {
-                    return;
-                }
-            }
-        }
-        original.call(instance, entity, cameraX, cameraY, cameraZ, tickDelta, matrices,
-                vertexConsumers);
-    }
+    // TODO: Restore or remove if not needed
+    // @WrapOperation(method = "renderEntities", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/WorldRenderer;renderEntity(Lnet/minecraft/entity/Entity;DDDFLnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;)V"))
+    // private void renderMorphs(WorldRenderer instance, Entity entity, double cameraX, double cameraY,
+    //         double cameraZ, float tickDelta, MatrixStack matrices,
+    //         VertexConsumerProvider vertexConsumers, Operation<Void> original) {
+    //     if (entity instanceof Shapeshifter shapeshifter) {
+    //         LivingEntity morph = shapeshifter.getMorph();
+    //         if (morph != null) {
+    //             shapeshifter.copyDataToMorph(morph);
+    //             original.call(instance, morph, cameraX, cameraY, cameraZ, tickDelta, matrices,
+    //                     vertexConsumers);
+    //             if (shapeshifter.shouldMorphReplaceSelf()) {
+    //                 return;
+    //             }
+    //         }
+    //     }
+    //     original.call(instance, entity, cameraX, cameraY, cameraZ, tickDelta, matrices,
+    //             vertexConsumers);
+    // }
 
 }

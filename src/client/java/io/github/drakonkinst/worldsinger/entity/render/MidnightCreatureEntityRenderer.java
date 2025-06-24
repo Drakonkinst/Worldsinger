@@ -52,7 +52,7 @@ public class MidnightCreatureEntityRenderer extends
 
     public MidnightCreatureEntityRenderer(EntityRendererFactory.Context context) {
         // TODO: Make this actually render a block instead of hacking one in
-        super(context, new MidnightCreatureEntityModel(context.getPart(EntityModelLayers.PLAYER)),
+        super(context, new MidnightCreatureEntityModel(context.getPart(EntityModelLayers.GUARDIAN)),
                 0.5f);
         this.blockRenderManager = context.getBlockRenderManager();
     }
@@ -76,12 +76,12 @@ public class MidnightCreatureEntityRenderer extends
 
     @Override
     public void updateRenderState(MidnightCreatureEntity entity,
-            MidnightCreatureEntityRenderState entityRenderState, float f) {
-        super.updateRenderState(entity, entityRenderState, f);
+            MidnightCreatureEntityRenderState renderState, float f) {
+        super.updateRenderState(entity, renderState, f);
         LivingEntity morph = entity.getMorph();
         if (morph instanceof SchoolingFishEntity) {
             // Always render fish upright
-            entityRenderState.touchingWater = true;
+            renderState.touchingWater = true;
         }
 
     }

@@ -220,6 +220,12 @@ public class MidnightCreatureEntity extends ShapeshiftingEntity implements
         return this.dataTracker.get(CONTROLLER_UUID).orElse(null);
     }
 
+    // FIXME temp
+    @Override
+    public boolean shouldMorphReplaceSelf() {
+        return false;
+    }
+
     @Override
     public void setControllerUuid(UUID uuid) {
         if (this.getWorld().isClient()) {

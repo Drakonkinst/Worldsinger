@@ -44,4 +44,17 @@ public interface LivingEntityAccessor {
 
     @Invoker("applyDamage")
     void worldsinger$applyDamage(ServerWorld world, DamageSource source, float amount);
+
+    @Accessor("leaningPitch")
+    float worldsinger$getLeaningPitch();
+
+    @Accessor("leaningPitch")
+    void worldsinger$setLeaningPitch(float value);
+
+    @Accessor("lastLeaningPitch")
+    float worldsinger$getLastLeaningPitch();
+
+    @Accessor("lastLeaningPitch")
+    void worldsinger$setLastLeaningPitch(float value);
+
 }

@@ -42,10 +42,6 @@ public interface Shapeshifter {
         // Do nothing
     }
 
-    default void copyDataToMorph(LivingEntity morph) {
-        // Do nothing
-    }
-
     default boolean shouldCopyEquipmentVisuals() {
         return false;
     }
