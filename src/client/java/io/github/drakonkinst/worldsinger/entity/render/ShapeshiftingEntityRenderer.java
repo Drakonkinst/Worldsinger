@@ -36,7 +36,6 @@ import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.render.entity.EntityRendererFactory.Context;
 import net.minecraft.client.render.entity.MobEntityRenderer;
 import net.minecraft.client.render.entity.model.EntityModel;
-import net.minecraft.client.render.entity.state.EntityRenderState;
 import net.minecraft.client.render.entity.state.LivingEntityRenderState;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.EquipmentSlot;
@@ -149,14 +148,13 @@ public abstract class ShapeshiftingEntityRenderer<T extends ShapeshiftingEntity,
             updateMorphAttributes(entity, morph);
 
             // Copy it to the render state
-            @SuppressWarnings("unchecked") EntityRenderer<LivingEntity, LivingEntityRenderState> morphRenderer = (EntityRenderer<LivingEntity, LivingEntityRenderState>) MinecraftClient.getInstance()
+            // I had to do black magic to deal with type erasure, sorry
+            EntityRenderer<? super LivingEntity, ?> morphRenderer = MinecraftClient.getInstance()
                     .getEntityRenderDispatcher()
                     .getRenderer(morph);
             renderState.morph = morph;
-            if (renderState.morphRenderState == null) {
-                renderState.morphRenderState = morphRenderer.createRenderState();
-            }
-            morphRenderer.updateRenderState(morph, renderState.morphRenderState, tickProgress);
+            renderState.morphRenderState = (LivingEntityRenderState) morphRenderer.getAndUpdateRenderState(
+                    morph, tickProgress);
         }
     }
 
@@ -170,10 +168,9 @@ public abstract class ShapeshiftingEntityRenderer<T extends ShapeshiftingEntity,
         }
 
         // Unfortunately there's some type erasure here
-        @SuppressWarnings("unchecked") EntityRenderer<LivingEntity, EntityRenderState> morphRenderer = (EntityRenderer<LivingEntity, EntityRenderState>) MinecraftClient.getInstance()
+        @SuppressWarnings("unchecked") EntityRenderer<LivingEntity, LivingEntityRenderState> morphRenderer = (EntityRenderer<LivingEntity, LivingEntityRenderState>) MinecraftClient.getInstance()
                 .getEntityRenderDispatcher()
                 .getRenderer(morph);
-        EntityRenderState morphRenderState = renderState.morphRenderState;
-        morphRenderer.render(morphRenderState, matrices, vertexConsumers, light);
+        morphRenderer.render(renderState.morphRenderState, matrices, vertexConsumers, light);
     }
 }
