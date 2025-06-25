@@ -49,36 +49,6 @@ import net.minecraft.util.Hand;
 public abstract class ShapeshiftingEntityRenderer<T extends ShapeshiftingEntity, S extends ShapeshiftingEntityRenderState, M extends EntityModel<S>> extends
         MobEntityRenderer<T, S, M> {
 
-    public static void updateMorphRenderStateAttributes(ShapeshiftingEntityRenderState entity,
-            EntityRenderState morph) {
-        // General entity stuff
-        morph.x = entity.x;
-        morph.y = entity.y;
-        morph.z = entity.z;
-        morph.age = entity.age;
-        morph.positionOffset = entity.positionOffset;
-
-        // LivingEntityRenderState-specific
-        if (morph instanceof LivingEntityRenderState livingMorph) {
-            livingMorph.pose = entity.pose;
-            livingMorph.limbSwingAnimationProgress = entity.limbSwingAnimationProgress;
-            livingMorph.limbSwingAmplitude = entity.limbSwingAmplitude;
-            livingMorph.bodyYaw = entity.bodyYaw;
-            livingMorph.relativeHeadYaw = entity.relativeHeadYaw;
-            livingMorph.pitch = entity.pitch;
-            livingMorph.headItemAnimationProgress = entity.headItemAnimationProgress;
-            livingMorph.touchingWater = entity.touchingWater;
-            livingMorph.baseScale = entity.baseScale;
-            livingMorph.shaking = entity.shaking;
-            livingMorph.deathTime = entity.deathTime;
-            livingMorph.flipUpsideDown = entity.flipUpsideDown;
-            livingMorph.baby = entity.baby;
-            livingMorph.hurt = entity.hurt;
-            livingMorph.usingRiptide = entity.usingRiptide;
-            livingMorph.invisibleToPlayer = entity.invisibleToPlayer;
-        }
-    }
-
     public static void updateMorphAttributes(ShapeshiftingEntity entity, LivingEntity morph) {
         // Copy LimbAnimator attributes
         LimbAnimator target = morph.limbAnimator;
@@ -172,33 +142,38 @@ public abstract class ShapeshiftingEntityRenderer<T extends ShapeshiftingEntity,
     }
 
     @Override
-    public void updateRenderState(T entity, S renderState, float f) {
-        super.updateRenderState(entity, renderState, f);
+    public void updateRenderState(T entity, S renderState, float tickProgress) {
+        super.updateRenderState(entity, renderState, tickProgress);
         LivingEntity morph = entity.getMorph();
         if (morph != null) {
             updateMorphAttributes(entity, morph);
+
+            // Copy it to the render state
+            @SuppressWarnings("unchecked") EntityRenderer<LivingEntity, LivingEntityRenderState> morphRenderer = (EntityRenderer<LivingEntity, LivingEntityRenderState>) MinecraftClient.getInstance()
+                    .getEntityRenderDispatcher()
+                    .getRenderer(morph);
             renderState.morph = morph;
+            if (renderState.morphRenderState == null) {
+                renderState.morphRenderState = morphRenderer.createRenderState();
+            }
+            morphRenderer.updateRenderState(morph, renderState.morphRenderState, tickProgress);
         }
     }
 
     @Override
     public void render(S renderState, MatrixStack matrices, VertexConsumerProvider vertexConsumers,
             int light) {
-        // FIXME: Might be able to take out this logic and stop it from being called at all?
-        LivingEntity morph = renderState.getMorph();
+        LivingEntity morph = renderState.morph;
         if (morph == null) {
             renderDefault(renderState, matrices, vertexConsumers, light);
             return;
         }
 
-        // // Render the morph instead of the
-        // // FIXME: Restore
         // Unfortunately there's some type erasure here
         @SuppressWarnings("unchecked") EntityRenderer<LivingEntity, EntityRenderState> morphRenderer = (EntityRenderer<LivingEntity, EntityRenderState>) MinecraftClient.getInstance()
                 .getEntityRenderDispatcher()
                 .getRenderer(morph);
-        EntityRenderState morphRenderState = morphRenderer.createRenderState();
-        updateMorphRenderStateAttributes(renderState, morphRenderState);
+        EntityRenderState morphRenderState = renderState.morphRenderState;
         morphRenderer.render(morphRenderState, matrices, vertexConsumers, light);
     }
 }

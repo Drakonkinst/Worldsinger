@@ -24,6 +24,11 @@
 
 package io.github.drakonkinst.worldsinger.mixin.entity;
 
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import io.github.drakonkinst.worldsinger.cosmere.CosmerePlanet;
+import java.util.Optional;
+import java.util.function.Predicate;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.InteractionObserver;
 import net.minecraft.entity.passive.MerchantEntity;
@@ -31,6 +36,7 @@ import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.village.VillagerDataContainer;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
 
 @Mixin(VillagerEntity.class)
 public abstract class VillagerEntityMixin extends MerchantEntity implements InteractionObserver,
@@ -41,9 +47,16 @@ public abstract class VillagerEntityMixin extends MerchantEntity implements Inte
         throw new UnsupportedOperationException();
     }
 
-    // FIXME: Restore
-    // @ModifyConstant(method = "hasRecentlySlept", constant = @Constant(longValue = 24000L))
-    // private long adjustSleepCycleForPlanet(long constant) {
-    //     return CosmerePlanet.getDayLengthOrDefault(this.getWorld(), constant);
-    // }
+    @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
+    @WrapOperation(method = "hasRecentlySlept", at = @At(value = "INVOKE", target = "Ljava/util/Optional;filter(Ljava/util/function/Predicate;)Ljava/util/Optional;"))
+    private Optional<Long> adjustSleepCycleForPlanet(Optional<Long> instance,
+            Predicate<? super Long> predicate, Operation<Optional<Long>> original, long worldTime) {
+        World world = this.getWorld();
+        CosmerePlanet planet = CosmerePlanet.getPlanet(world);
+        if (planet == CosmerePlanet.NONE) {
+            return original.call(instance, predicate);
+
+        }
+        return instance.filter(lastSlept -> worldTime - lastSlept < planet.getDayLength());
+    }
 }

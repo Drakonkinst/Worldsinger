@@ -52,7 +52,8 @@ public class MidnightCreatureEntityRenderer extends
 
     public MidnightCreatureEntityRenderer(EntityRendererFactory.Context context) {
         // TODO: Make this actually render a block instead of hacking one in
-        super(context, new MidnightCreatureEntityModel(context.getPart(EntityModelLayers.GUARDIAN)),
+        super(context,
+                new MidnightCreatureEntityModel(context.getPart(EntityModelLayers.WITHER_SKULL)),
                 0.5f);
         this.blockRenderManager = context.getBlockRenderManager();
     }
@@ -71,13 +72,12 @@ public class MidnightCreatureEntityRenderer extends
                 matrixStack, vertexConsumerProvider, i,
                 LivingEntityRenderer.getOverlay(entityRenderState, 0.0f));
         matrixStack.pop();
-        super.renderDefault(entityRenderState, matrixStack, vertexConsumerProvider, i);
     }
 
     @Override
     public void updateRenderState(MidnightCreatureEntity entity,
-            MidnightCreatureEntityRenderState renderState, float f) {
-        super.updateRenderState(entity, renderState, f);
+            MidnightCreatureEntityRenderState renderState, float tickProgress) {
+        super.updateRenderState(entity, renderState, tickProgress);
         LivingEntity morph = entity.getMorph();
         if (morph instanceof SchoolingFishEntity) {
             // Always render fish upright

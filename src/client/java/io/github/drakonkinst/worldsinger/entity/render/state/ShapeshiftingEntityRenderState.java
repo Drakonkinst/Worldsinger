@@ -28,14 +28,11 @@ import net.minecraft.client.render.entity.state.LivingEntityRenderState;
 import net.minecraft.entity.LivingEntity;
 import org.jetbrains.annotations.Nullable;
 
-public abstract class ShapeshiftingEntityRenderState extends LivingEntityRenderState implements
-        ShapeshifterRenderState {
+public abstract class ShapeshiftingEntityRenderState extends LivingEntityRenderState {
 
     @Nullable
-    public LivingEntity morph = null;
+    public LivingEntity morph;
 
-    @Override
-    public LivingEntity getMorph() {
-        return morph;
-    }
+    @Nullable
+    public LivingEntityRenderState morphRenderState;
 }
