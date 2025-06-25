@@ -85,7 +85,6 @@
     "item.FilledMapItemMixin",
     "item.GlassBottleItemMixin",
     "item.ItemMixin",
-    "item.ItemsMixin",
     "item.PotionItemMixin",
     "screen.AnvilScreenHandlerMixin",
     "screen.BrewingStandScreenHandlerFuelSlotMixin",

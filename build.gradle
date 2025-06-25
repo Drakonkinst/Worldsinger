@@ -41,6 +41,17 @@ repositories {
             includeGroup('software.bernie.geckolib')
         }
     }
+    exclusiveContent {
+        forRepository {
+            maven {
+                name = "Modrinth"
+                url = "https://api.modrinth.com/maven"
+            }
+        }
+        filter {
+            includeGroup "maven.modrinth"
+        }
+    }
 }
 
 loom {
@@ -90,6 +101,9 @@ dependencies {
 
     // GeckoLib
     modImplementation "software.bernie.geckolib:geckolib-fabric-${project.geckolib_version}"
+
+    // Item Components
+    modImplementation "maven.modrinth:item-components:${project.itemcomponents_version}"
 }
 
 processResources {
