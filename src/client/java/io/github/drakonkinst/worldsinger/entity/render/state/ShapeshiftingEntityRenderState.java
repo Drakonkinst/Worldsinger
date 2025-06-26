@@ -25,13 +25,9 @@
 package io.github.drakonkinst.worldsinger.entity.render.state;
 
 import net.minecraft.client.render.entity.state.LivingEntityRenderState;
-import net.minecraft.entity.LivingEntity;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class ShapeshiftingEntityRenderState extends LivingEntityRenderState {
-
-    @Nullable
-    public LivingEntity morph;
 
     @Nullable
     public LivingEntityRenderState morphRenderState;

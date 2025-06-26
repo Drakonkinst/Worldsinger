@@ -144,7 +144,9 @@ public abstract class ShapeshiftingEntityRenderer<T extends ShapeshiftingEntity,
     public void updateRenderState(T entity, S renderState, float tickProgress) {
         super.updateRenderState(entity, renderState, tickProgress);
         LivingEntity morph = entity.getMorph();
-        if (morph != null) {
+        if (morph == null) {
+            renderState.morphRenderState = null;
+        } else {
             updateMorphAttributes(entity, morph);
 
             // Copy it to the render state
@@ -152,7 +154,6 @@ public abstract class ShapeshiftingEntityRenderer<T extends ShapeshiftingEntity,
             EntityRenderer<? super LivingEntity, ?> morphRenderer = MinecraftClient.getInstance()
                     .getEntityRenderDispatcher()
                     .getRenderer(morph);
-            renderState.morph = morph;
             renderState.morphRenderState = (LivingEntityRenderState) morphRenderer.getAndUpdateRenderState(
                     morph, tickProgress);
         }
@@ -161,8 +162,8 @@ public abstract class ShapeshiftingEntityRenderer<T extends ShapeshiftingEntity,
     @Override
     public void render(S renderState, MatrixStack matrices, VertexConsumerProvider vertexConsumers,
             int light) {
-        LivingEntity morph = renderState.morph;
-        if (morph == null) {
+        LivingEntityRenderState morphRenderState = renderState.morphRenderState;
+        if (morphRenderState == null) {
             renderDefault(renderState, matrices, vertexConsumers, light);
             return;
         }
@@ -170,7 +171,7 @@ public abstract class ShapeshiftingEntityRenderer<T extends ShapeshiftingEntity,
         // Unfortunately there's some type erasure here
         @SuppressWarnings("unchecked") EntityRenderer<LivingEntity, LivingEntityRenderState> morphRenderer = (EntityRenderer<LivingEntity, LivingEntityRenderState>) MinecraftClient.getInstance()
                 .getEntityRenderDispatcher()
-                .getRenderer(morph);
+                .getRenderer(morphRenderState);
         morphRenderer.render(renderState.morphRenderState, matrices, vertexConsumers, light);
     }
 }
