@@ -106,7 +106,8 @@ public abstract class ShapeshiftingEntityRenderer<T extends ShapeshiftingEntity,
         }
 
         if (morph instanceof MobEntity mobEntity) {
-            mobEntity.setAttacking(entity.isAttacking() || entity.isUsingItem());
+            mobEntity.setAttacking(
+                    entity.isAttacking() || entity.isUsingItem() || entity.getAttacking() != null);
         }
 
         // Assign pose

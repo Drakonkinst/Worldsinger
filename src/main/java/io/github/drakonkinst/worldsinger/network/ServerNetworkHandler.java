@@ -109,6 +109,7 @@ public final class ServerNetworkHandler {
             boolean success = attacker.tryAttack(serverWorld, target);
             // Set player's attacking target so other pets respond
             if (success) {
+                attacker.onAttacking(target);
                 player.onAttacking(target);
             }
         });
