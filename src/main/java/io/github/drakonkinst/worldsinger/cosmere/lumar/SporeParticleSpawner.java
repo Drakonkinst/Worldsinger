@@ -31,7 +31,6 @@ import net.minecraft.util.math.Vec3d;
 // Spawns various kinds of spore particles
 public final class SporeParticleSpawner {
 
-    // TODO: Should tune these values later
     // Splashing when landing on block or in a fluid
     private static final double SPLASH_RADIUS_MULTIPLIER = 0.75;
     private static final double SPLASH_HEIGHT_PER_BLOCK = 0.3;

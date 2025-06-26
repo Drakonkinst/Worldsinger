@@ -53,7 +53,7 @@ public class MidnightCreatureEntityRenderer extends
     private final BlockRenderManager blockRenderManager;
 
     public MidnightCreatureEntityRenderer(EntityRendererFactory.Context context) {
-        // TODO: Make this actually render a block instead of hacking one in
+        // Doesn't really matter which model layer we pick, it should never show up
         super(context,
                 new MidnightCreatureEntityModel(context.getPart(EntityModelLayers.WITHER_SKULL)),
                 0.5f);

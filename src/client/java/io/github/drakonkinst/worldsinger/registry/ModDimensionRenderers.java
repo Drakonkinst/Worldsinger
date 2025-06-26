@@ -34,7 +34,7 @@ public final class ModDimensionRenderers {
         DimensionRenderingRegistry.registerDimensionEffects(ModDimensions.LUMAR,
                 new LumarDimensionEffects());
         ClientLifecycleEvents.CLIENT_STARTED.register(client -> {
-            // TODO: Add some sky renderers here
+            // FIXME: Add some sky renderers here
         });
     }
 

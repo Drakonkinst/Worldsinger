@@ -54,6 +54,7 @@ public class SilverLinedChestBoatRecipe extends SpecialCraftingRecipe {
         itemToResultMap.put(Items.MANGROVE_BOAT, Items.MANGROVE_CHEST_BOAT);
         itemToResultMap.put(Items.CHERRY_BOAT, Items.CHERRY_CHEST_BOAT);
         itemToResultMap.put(Items.BAMBOO_RAFT, Items.BAMBOO_CHEST_RAFT);
+        itemToResultMap.put(Items.PALE_OAK_BOAT, Items.PALE_OAK_CHEST_BOAT);
         // TODO: More boat types
         // TODO: Populate this dynamically based on BoatItem creations in the future
         return itemToResultMap;

@@ -79,7 +79,7 @@ public class CannonballEntity extends ThrownItemEntity implements FlyingItemEnti
     private static final CannonballBehavior EMPTY_CANNONBALL_BEHAVIOR = new EmptyCannonballBehavior();
     private static final CannonballBehavior WATER_CANNONBALL_BEHAVIOR = new WaterCannonballBehavior();
     private static final LoadingCache<CannonballComponent, CannonballBehavior> CACHED_CANNONBALL_BEHAVIORS = CacheBuilder.newBuilder()
-            // .recordStats() // FIXME: Turn off for release build
+            // .recordStats() // TODO: Turn off for release build
             .maximumSize(12) // 12 Aethers :P no other reason
             .expireAfterWrite(10, TimeUnit.MINUTES).build(new CacheLoader<>() {
                 @Override

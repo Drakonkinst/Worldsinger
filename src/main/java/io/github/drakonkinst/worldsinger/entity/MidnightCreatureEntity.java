@@ -220,12 +220,6 @@ public class MidnightCreatureEntity extends ShapeshiftingEntity implements
         return this.dataTracker.get(CONTROLLER_UUID).orElse(null);
     }
 
-    // FIXME temp
-    @Override
-    public boolean shouldMorphReplaceSelf() {
-        return false;
-    }
-
     @Override
     public void setControllerUuid(UUID uuid) {
         if (this.getWorld().isClient()) {
@@ -983,7 +977,7 @@ public class MidnightCreatureEntity extends ShapeshiftingEntity implements
                 SoundEvents.ENTITY_HOSTILE_BIG_FALL);
     }
 
-    // TODO: Validate that MidnightCreatureEntity still drops XP
+    // FIXME: Validate that MidnightCreatureEntity still drops XP
 
     @Override
     protected boolean shouldDropLoot() {

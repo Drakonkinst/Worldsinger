@@ -50,7 +50,7 @@ public class CosmereWorldData extends PersistentState {
             CosmereWorldData::new, CODEC, DataFixTypes.LEVEL);
 
     private long timeOfDay;
-    // FIXME: Fix optional field
+    // TODO: Fix optional field
     private Optional<BlockPos> spawnPos;
 
     public CosmereWorldData() {

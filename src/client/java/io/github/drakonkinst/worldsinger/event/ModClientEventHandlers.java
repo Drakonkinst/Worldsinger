@@ -48,7 +48,7 @@ public final class ModClientEventHandlers {
     }
 
     private static void registerHudEvents() {
-        // TODO: Restore
+        // FIXME: Restore
         // HudLayerRegistrationCallback.EVENT.register((layeredDrawer) -> {
 
         // layeredDrawer.attachLayerAfter(IdentifiedLayer.HOTBAR_AND_BARS,

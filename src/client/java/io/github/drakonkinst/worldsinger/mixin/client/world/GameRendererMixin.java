@@ -42,7 +42,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(GameRenderer.class)
 public abstract class GameRendererMixin {
 
-    // FIXME: Actually update the shader code
     @Unique
     private static final Identifier MIDNIGHT_CREATURE_OVERLAY = Worldsinger.id(
             "midnight_creature_overlay");
