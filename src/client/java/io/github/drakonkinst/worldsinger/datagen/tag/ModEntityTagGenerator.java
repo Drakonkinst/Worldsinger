@@ -54,6 +54,7 @@ public class ModEntityTagGenerator extends EntityTypeTagProvider {
         valueLookupBuilder(ModEntityTypeTags.MIDNIGHT_CREATURES_CANNOT_IMITATE).add(
                         EntityType.ENDER_DRAGON)
                 .add(EntityType.GHAST)
+                .add(EntityType.HAPPY_GHAST)
                 .add(EntityType.WITHER)
                 .add(ModEntityTypes.MIDNIGHT_CREATURE);
         // Mobs that are covered in or made of water-based materials, and thus catalyze spores on contact.

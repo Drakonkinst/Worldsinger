@@ -35,9 +35,11 @@ import net.minecraft.client.render.block.BlockRenderManager;
 import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
+import net.minecraft.client.render.entity.state.LivingEntityRenderState;
+import net.minecraft.client.render.entity.state.LlamaEntityRenderState;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.passive.SchoolingFishEntity;
+import net.minecraft.entity.mob.WaterCreatureEntity;
 import net.minecraft.util.Identifier;
 
 public class MidnightCreatureEntityRenderer extends
@@ -75,15 +77,15 @@ public class MidnightCreatureEntityRenderer extends
     }
 
     @Override
-    public void updateRenderState(MidnightCreatureEntity entity,
-            MidnightCreatureEntityRenderState renderState, float tickProgress) {
-        super.updateRenderState(entity, renderState, tickProgress);
-        LivingEntity morph = entity.getMorph();
-        if (morph instanceof SchoolingFishEntity) {
+    public void modifyMorphRenderState(LivingEntity morph, LivingEntityRenderState renderState) {
+        if (renderState instanceof LlamaEntityRenderState llamaEntityRenderState) {
+            // Never render trader llama overlay
+            llamaEntityRenderState.trader = false;
+        }
+        if (morph instanceof WaterCreatureEntity) {
             // Always render fish upright
             renderState.touchingWater = true;
         }
-
     }
 
     @Override

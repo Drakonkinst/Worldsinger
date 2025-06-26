@@ -48,7 +48,7 @@ import net.minecraft.util.Hand;
 public abstract class ShapeshiftingEntityRenderer<T extends ShapeshiftingEntity, S extends ShapeshiftingEntityRenderState, M extends EntityModel<S>> extends
         MobEntityRenderer<T, S, M> {
 
-    public static void updateMorphAttributes(ShapeshiftingEntity entity, LivingEntity morph) {
+    public void updateMorphAttributes(ShapeshiftingEntity entity, LivingEntity morph) {
         // Copy LimbAnimator attributes
         LimbAnimator target = morph.limbAnimator;
         LimbAnimator source = entity.limbAnimator;
@@ -132,6 +132,10 @@ public abstract class ShapeshiftingEntityRenderer<T extends ShapeshiftingEntity,
         }
     }
 
+    public void modifyMorphRenderState(LivingEntity morph, LivingEntityRenderState renderState) {
+        // Nothing by default
+    }
+
     public ShapeshiftingEntityRenderer(Context context, M entityModel, float shadowRadius) {
         super(context, entityModel, shadowRadius);
     }
@@ -157,6 +161,7 @@ public abstract class ShapeshiftingEntityRenderer<T extends ShapeshiftingEntity,
                     .getRenderer(morph);
             renderState.morphRenderState = (LivingEntityRenderState) morphRenderer.getAndUpdateRenderState(
                     morph, tickProgress);
+            modifyMorphRenderState(morph, renderState.morphRenderState);
         }
     }
 

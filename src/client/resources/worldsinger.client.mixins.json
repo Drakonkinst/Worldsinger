@@ -11,6 +11,8 @@
     "entity.EntityRenderDispatcherMixin",
     "entity.render.AbstractBoatEntityRendererMixin",
     "entity.render.BoatEntityRendererMixin",
+    "entity.render.BreezeEyesFeatureRendererMixin",
+    "entity.render.BreezeWindFeatureRendererMixin",
     "entity.render.EntityRendererMixin",
     "entity.render.EyesFeatureRendererMixin",
     "entity.render.LivingEntityRendererMixin",
