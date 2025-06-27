@@ -71,6 +71,12 @@ fabricApi {
     configureDataGeneration() {
         client = true
     }
+    // FIXME: Add in later
+//    configureTests {
+//        createSourceSet = true
+//        modId = "gametest-${project.name}"
+//        eula = true
+//    }
 }
 
 dependencies {
@@ -79,6 +85,7 @@ dependencies {
     modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
     include(implementation("com.github.Chocohead:Fabric-ASM:${project.fabric_asm_version}"))
+    testImplementation "net.fabricmc:fabric-loader-junit:${project.loader_version}"
     include(implementation(annotationProcessor("com.github.bawnorton.mixinsquared:mixinsquared-fabric:${project.mixinsquared_version}")))
 //    include(modImplementation("com.github.Drakonkinst:DataTables:v${project.data_tables_version}")) {
     include(modImplementation("io.github.drakonkinst.datatables:DataTables:${project.data_tables_version}")) {
@@ -126,6 +133,10 @@ java {
 
     sourceCompatibility = JavaVersion.VERSION_21
     targetCompatibility = JavaVersion.VERSION_21
+}
+
+test {
+    useJUnitPlatform()
 }
 
 jar {

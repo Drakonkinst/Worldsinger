@@ -82,6 +82,7 @@ public final class BlockPosUtil {
         return BlockPosUtil.iterateBoundingBoxForEntity(entity, blockPos, 0, 0, 0);
     }
 
+    // Rounds only the y-coordinate
     public static BlockPos toRoundedBlockPos(Vec3d pos) {
         int x = MathHelper.floor(pos.getX());
         int y = (int) Math.round(pos.getY());
