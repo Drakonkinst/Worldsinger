@@ -25,7 +25,6 @@ package io.github.drakonkinst.worldsinger.registry;
 
 import io.github.drakonkinst.worldsinger.world.LumarDimensionEffects;
 import io.github.drakonkinst.worldsinger.worldgen.dimension.ModDimensions;
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.DimensionRenderingRegistry;
 
 public final class ModDimensionRenderers {
@@ -33,9 +32,6 @@ public final class ModDimensionRenderers {
     public static void initialize() {
         DimensionRenderingRegistry.registerDimensionEffects(ModDimensions.LUMAR,
                 new LumarDimensionEffects());
-        ClientLifecycleEvents.CLIENT_STARTED.register(client -> {
-            // FIXME: Add some sky renderers here
-        });
     }
 
     private ModDimensionRenderers() {}

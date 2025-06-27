@@ -28,9 +28,10 @@ import io.github.drakonkinst.worldsinger.Worldsinger;
 import io.github.drakonkinst.worldsinger.api.ClientLunagreeData;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarLunagreeGenerator;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LunagreeLocation;
+import io.github.drakonkinst.worldsinger.mixin.client.world.SkyRenderingInvoker;
+import io.github.drakonkinst.worldsinger.registry.ModRenderLayer;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.SkyRendering;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
@@ -39,6 +40,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.RotationAxis;
 import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
@@ -52,16 +54,15 @@ public class LumarSkyRendering {
     private static final int MOON_TEXTURE_SECTIONS_Y = 1;
     private static final int MOON_TEXTURE_SECTIONS_X = 6;
 
-    private static final float MOON_RADIUS = 200.0f;
+    private static final float MOON_RADIUS = 250.0f;
     private static final int[] SPORE_ID_TO_MOON_INDEX = { -1, 0, 1, 2, 3, 4, 5 };
     // 90 degrees above horizon (directly above)
     private static final float MOON_VERTICAL_ANGLE_START = 90.0f * MathHelper.RADIANS_PER_DEGREE;
     // 45 degrees below horizon
     private static final float MOON_VERTICAL_ANGLE_END = -45.0f * MathHelper.RADIANS_PER_DEGREE;
-    private static final float MOON_VISUAL_HEIGHT_START = 100.0f;
-    private static final float MOON_VISUAL_HEIGHT_END = 300.0f;
+    private static final float MOON_VISUAL_HEIGHT_START = 75.0f;
+    private static final float MOON_VISUAL_HEIGHT_END = 400.0f;
 
-    // FIXME: Temp
     public final SkyRendering skyRendering;
 
     public LumarSkyRendering(SkyRendering skyRendering) {
@@ -103,35 +104,26 @@ public class LumarSkyRendering {
 
     public void renderLumarCelestialBodies(MatrixStack matrices, Immediate vertexConsumers,
             float skyAngle, float tickDelta, float skyAlpha, float starBrightness) {
-        skyRendering.renderCelestialBodies(matrices, vertexConsumers, skyAngle, 0, skyAlpha,
-                starBrightness);
-
-        // FIXME: Restore
         // Render normal sky without moon
-        // matrices.push();
-        // matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-90.0F));
-        // matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(skyAngle * 360.0F));
-        // ((SkyRenderingInvoker) skyRendering).worldsinger$renderSun(skyAlpha, vertexConsumers,
-        //         matrices);
-        // vertexConsumers.draw();
-        // if (starBrightness > 0.0F) {
-        //     ((SkyRenderingInvoker) skyRendering).worldsinger$renderStars(starBrightness,
-        //             matrices);
-        // }
-        // matrices.pop();
+        matrices.push();
+        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-90.0F));
+        matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(skyAngle * 360.0F));
+        ((SkyRenderingInvoker) skyRendering).worldsinger$renderSun(skyAlpha, vertexConsumers,
+                matrices);
+        vertexConsumers.draw();
+        if (starBrightness > 0.0F) {
+            ((SkyRenderingInvoker) skyRendering).worldsinger$renderStars(starBrightness, matrices);
+        }
+        matrices.pop();
 
         // Render moons
-        // renderMoons(vertexConsumers, matrices, tickDelta);
-        // vertexConsumers.draw();
+        renderMoons(vertexConsumers, matrices, tickDelta);
+        vertexConsumers.draw();
     }
 
     public void renderMoons(Immediate vertexConsumers, MatrixStack matrices, float tickDelta) {
         ClientPlayerEntity player = MinecraftClient.getInstance().player;
         assert (player != null);
-        // RenderSystem.setShader(ShaderProgramKeys.POSITION_TEX);
-        // RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-        // VertexConsumer vertexConsumer = vertexConsumers.getBuffer(RenderLayer.getCelestial(SUN_TEXTURE));
-        // RenderSystem.setShaderTexture(0, LUMAR_MOON_TEXTURE);
         final ClientLunagreeData lunagreeData = ClientLunagreeData.get(player.getWorld());
         final Vec3d playerPos = player.getCameraPosVec(tickDelta);
         for (LunagreeLocation location : lunagreeData.getLunagreeLocations()) {
@@ -146,10 +138,6 @@ public class LumarSkyRendering {
             // Render moon
             renderMoonAtLocation(vertexConsumers, matrices, location, playerPos, distSq);
         }
-        // RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-        // RenderSystem.disableBlend();
-        // RenderSystem.defaultBlendFunc();
-        // RenderSystem.depthMask(true);
     }
 
     private void renderMoonAtLocation(Immediate vertexConsumers, MatrixStack matrices,
@@ -198,7 +186,7 @@ public class LumarSkyRendering {
 
         // Draw moon
         VertexConsumer vertexConsumer = vertexConsumers.getBuffer(
-                RenderLayer.getCelestial(LUMAR_MOON_TEXTURE));
+                ModRenderLayer.getLumarMoons(LUMAR_MOON_TEXTURE));
         int color = ColorHelper.getWhite(1.0f);
         Matrix4f moonPosition = matrices.peek().getPositionMatrix();
         vertexConsumer.vertex(moonPosition, -radius, height, -radius).texture(x1, y1).color(color);

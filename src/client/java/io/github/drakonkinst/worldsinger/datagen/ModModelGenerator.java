@@ -422,7 +422,6 @@ public class ModModelGenerator extends FabricModelProvider {
                 ItemModelGenerator.LEGGINGS_TRIM_ID_PREFIX, false);
         itemModelGenerator.registerArmor(ModItems.STEEL_BOOTS, ModEquipmentAssetKeys.STEEL,
                 ItemModelGenerator.BOOTS_TRIM_ID_PREFIX, false);
-        // FIXME: Make sure steel armor entity coreModel is registered properly
 
         // Tinted
         registerSporeBottle(itemModelGenerator, ModItems.DEAD_SPORES_BOTTLE);
