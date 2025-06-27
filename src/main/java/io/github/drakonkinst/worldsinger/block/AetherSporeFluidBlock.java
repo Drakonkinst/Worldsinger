@@ -97,8 +97,7 @@ public class AetherSporeFluidBlock extends FluidBlock implements SporeEmitting {
     // generally the block underneath it
     public static boolean shouldFluidize(BlockState fluidizeSource) {
         return fluidizeSource.isOf(Blocks.MAGMA_BLOCK) || fluidizeSource.isOf(ModBlocks.MAGMA_VENT)
-                || AetherSporeFluidBlock.isFluidSourceSpores(fluidizeSource)
-                || AetherSporeFluidBlock.isFluidloggedInSpores(fluidizeSource);
+                || AetherSporeFluidBlock.isFluidSourceSpores(fluidizeSource);
     }
 
     // Update fluidization for a single block. Returns false if obstructed

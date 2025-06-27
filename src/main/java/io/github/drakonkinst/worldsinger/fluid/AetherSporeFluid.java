@@ -30,7 +30,6 @@ import io.github.drakonkinst.worldsinger.cosmere.lumar.SeetheManager;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.SporeParticleManager;
 import io.github.drakonkinst.worldsinger.mixin.accessor.FlowableFluidInvoker;
 import io.github.drakonkinst.worldsinger.registry.ModSoundEvents;
-import io.github.drakonkinst.worldsinger.util.ColorUtil;
 import java.util.Optional;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -63,18 +62,10 @@ public abstract class AetherSporeFluid extends FlowableFluid implements SporeEmi
     public static final double FLUID_SPEED = 0.012;
 
     private final AetherSpores sporeType;
-    private final float fogRed;
-    private final float fogGreen;
-    private final float fogBlue;
 
     public AetherSporeFluid(AetherSpores sporeType) {
         super();
         this.sporeType = sporeType;
-
-        int color = sporeType.getColor();
-        this.fogRed = ColorUtil.getNormalizedRed(color);
-        this.fogGreen = ColorUtil.getNormalizedGreen(color);
-        this.fogBlue = ColorUtil.getNormalizedBlue(color);
     }
 
     @Override
