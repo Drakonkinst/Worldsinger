@@ -32,7 +32,6 @@ import io.github.drakonkinst.worldsinger.recipe.SilverLinedItemRecipe;
 import io.github.drakonkinst.worldsinger.recipe.SporeCannonballRecipe;
 import io.github.drakonkinst.worldsinger.recipe.WaterCannonballRecipe;
 import io.github.drakonkinst.worldsinger.registry.tag.ModConventionalItemTags;
-import io.github.drakonkinst.worldsinger.registry.tag.ModItemTags;
 import io.github.drakonkinst.worldsinger.util.ModConstants;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -188,41 +187,13 @@ public class ModRecipeGenerator extends FabricRecipeProvider {
                         .criterion(hasItem(ModItems.CRIMSON_SPINE),
                                 this.conditionsFromItem(ModItems.CRIMSON_SPINE))
                         .offerTo(exporter);
-                // Should replace vanilla recipe
-                this.createShaped(RecipeCategory.REDSTONE, Blocks.COMPARATOR)
-                        .pattern(" # ")
-                        .pattern("#X#")
-                        .pattern("III")
-                        .input('#', Items.REDSTONE_TORCH)
-                        .input('I', Items.COMPARATOR)
-                        .input('X', ModItemTags.REPLACES_QUARTZ_IN_REDSTONE)
-                        .criterion(hasItem(Items.QUARTZ),
-                                this.conditionsFromTag(ModItemTags.REPLACES_QUARTZ_IN_REDSTONE))
-                        .offerTo(exporter);
-                // Should replace vanilla recipe
-                this.createShaped(RecipeCategory.REDSTONE, Blocks.DAYLIGHT_DETECTOR)
-                        .pattern("GGG")
-                        .pattern("QQQ")
-                        .pattern("WWW")
-                        .input('Q', ModItemTags.REPLACES_QUARTZ_IN_REDSTONE)
-                        .input('G', Blocks.GLASS)
-                        .input('W', ItemTags.WOODEN_SLABS)
-                        .criterion(hasItem(Items.QUARTZ),
-                                this.conditionsFromTag(ModItemTags.REPLACES_QUARTZ_IN_REDSTONE))
-                        .offerTo(exporter);
-                // Should replace vanilla recipe
-                this.createShaped(RecipeCategory.REDSTONE, Blocks.OBSERVER)
-                        .pattern("###")
-                        .pattern("RRQ")
-                        .pattern("###")
-                        .input('Q', ModItemTags.REPLACES_QUARTZ_IN_REDSTONE)
-                        .input('R', Items.REDSTONE)
-                        .input('#', Blocks.COBBLESTONE)
-                        .criterion(hasItem(Items.QUARTZ),
-                                this.conditionsFromTag(ModItemTags.REPLACES_QUARTZ_IN_REDSTONE))
-                        .offerTo(exporter);
+                this.generateAlternateQuartzRecipes();
                 offer2x2CompactingRecipe(RecipeCategory.BUILDING_BLOCKS, ModBlocks.ROSEITE_BLOCK,
                         ModItems.ROSEITE_CRYSTAL);
+                this.offer2x2CompactingRecipe(RecipeCategory.BUILDING_BLOCKS,
+                        ModBlocks.CRIMSON_GROWTH, ModItems.CRIMSON_SPINE);
+                this.offerCompactingRecipe(RecipeCategory.BUILDING_BLOCKS,
+                        ModBlocks.VERDANT_VINE_BLOCK, ModItems.VERDANT_VINE);
                 offerDefaultArmorRecipes(ModConventionalItemTags.STEEL_INGOTS, ModItems.STEEL_INGOT,
                         ModItems.STEEL_HELMET, ModItems.STEEL_CHESTPLATE, ModItems.STEEL_LEGGINGS,
                         ModItems.STEEL_BOOTS);
@@ -236,6 +207,54 @@ public class ModRecipeGenerator extends FabricRecipeProvider {
                         ModItems.STEEL_SHOVEL);
                 offerDefaultSwordRecipe(ModConventionalItemTags.STEEL_INGOTS, ModItems.STEEL_INGOT,
                         ModItems.STEEL_SWORD);
+            }
+
+            private void generateAlternateQuartzRecipes() {
+                // Roseite Crystal can replace Nether Quartz in all recipes
+                this.createShaped(RecipeCategory.REDSTONE, Blocks.COMPARATOR)
+                        .pattern(" # ")
+                        .pattern("#X#")
+                        .pattern("III")
+                        .input('#', Items.REDSTONE_TORCH)
+                        .input('I', Items.COMPARATOR)
+                        .input('X', ConventionalItemTags.QUARTZ_GEMS)
+                        .criterion(hasItem(Items.QUARTZ),
+                                this.conditionsFromTag(ConventionalItemTags.QUARTZ_GEMS))
+                        .offerTo(exporter);
+                this.createShaped(RecipeCategory.REDSTONE, Blocks.DAYLIGHT_DETECTOR)
+                        .pattern("GGG")
+                        .pattern("QQQ")
+                        .pattern("WWW")
+                        .input('Q', ConventionalItemTags.QUARTZ_GEMS)
+                        .input('G', Blocks.GLASS)
+                        .input('W', ItemTags.WOODEN_SLABS)
+                        .criterion(hasItem(Items.QUARTZ),
+                                this.conditionsFromTag(ConventionalItemTags.QUARTZ_GEMS))
+                        .offerTo(exporter);
+                this.createShaped(RecipeCategory.REDSTONE, Blocks.OBSERVER)
+                        .pattern("###")
+                        .pattern("RRQ")
+                        .pattern("###")
+                        .input('Q', ConventionalItemTags.QUARTZ_GEMS)
+                        .input('R', Items.REDSTONE)
+                        .input('#', Blocks.COBBLESTONE)
+                        .criterion(hasItem(Items.QUARTZ),
+                                this.conditionsFromTag(ConventionalItemTags.QUARTZ_GEMS))
+                        .offerTo(exporter);
+                this.createShaped(RecipeCategory.BUILDING_BLOCKS, Blocks.DIORITE, 2)
+                        .input('Q', ConventionalItemTags.QUARTZ_GEMS)
+                        .input('C', Blocks.COBBLESTONE)
+                        .pattern("CQ")
+                        .pattern("QC")
+                        .criterion("has_quartz",
+                                this.conditionsFromTag(ConventionalItemTags.QUARTZ_GEMS))
+                        .offerTo(this.exporter);
+                this.createShapeless(RecipeCategory.BUILDING_BLOCKS, Blocks.GRANITE)
+                        .input(Blocks.DIORITE)
+                        .input(ConventionalItemTags.QUARTZ_GEMS)
+                        .criterion("has_quartz",
+                                this.conditionsFromTag(ConventionalItemTags.QUARTZ_GEMS))
+                        .offerTo(this.exporter);
             }
 
             private void generateShapelessRecipes() {

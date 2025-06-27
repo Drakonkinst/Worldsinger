@@ -107,6 +107,7 @@ public class ModItemTagGenerator extends ItemTagProvider {
         copy(ConventionalBlockTags.ORES, ConventionalItemTags.ORES);
         copy(ConventionalBlockTags.STORAGE_BLOCKS, ConventionalItemTags.STORAGE_BLOCKS);
         copy(ConventionalBlockTags.STORAGE_BLOCKS_RAW_COPPER, ConventionalItemTags.STORAGE_BLOCKS);
+        valueLookupBuilder(ConventionalItemTags.QUARTZ_GEMS).add(ModItems.ROSEITE_CRYSTAL);
 
         // Add mod tags
         valueLookupBuilder(ModItemTags.ALL_COOKED_MEAT).addOptionalTag(
@@ -147,8 +148,6 @@ public class ModItemTagGenerator extends ItemTagProvider {
                 .addOptionalTag(ItemTags.AXES);
         valueLookupBuilder(ModItemTags.TEMPTS_MIDNIGHT_CREATURES).add(Items.POTION)
                 .addOptionalTag(ConventionalItemTags.WATER_BUCKETS);
-        valueLookupBuilder(ModItemTags.REPLACES_QUARTZ_IN_REDSTONE).add(Items.QUARTZ,
-                ModItems.ROSEITE_CRYSTAL);
 
         copy(ModBlockTags.HAS_IRON, ModItemTags.HAS_IRON);
         valueLookupBuilder(ModItemTags.HAS_IRON).add(Items.IRON_SHOVEL)

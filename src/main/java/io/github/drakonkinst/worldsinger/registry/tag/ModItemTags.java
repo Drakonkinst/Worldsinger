@@ -43,8 +43,6 @@ public final class ModItemTags {
     public static final TagKey<Item> CHANCE_TO_GIVE_THIRST = ModItemTags.of(
             "chance_to_give_thirst");
     public static final TagKey<Item> EXCLUDE_SILVER_LINED = ModItemTags.of("exclude_silver_lined");
-    public static final TagKey<Item> REPLACES_QUARTZ_IN_REDSTONE = ModItemTags.of(
-            "replaces_quartz_in_redstone");
 
     public static final TagKey<Item> ALL_COOKED_MEAT = ModItemTags.of("all_cooked_meat");
     public static final TagKey<Item> ALL_RAW_MEAT = ModItemTags.of("all_raw_meat");
