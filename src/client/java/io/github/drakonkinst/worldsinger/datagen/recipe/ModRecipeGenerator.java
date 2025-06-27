@@ -21,16 +21,17 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.github.drakonkinst.worldsinger.datagen;
+package io.github.drakonkinst.worldsinger.datagen.recipe;
 
 import io.github.drakonkinst.worldsinger.Worldsinger;
 import io.github.drakonkinst.worldsinger.block.ModBlocks;
 import io.github.drakonkinst.worldsinger.item.ModItems;
+import io.github.drakonkinst.worldsinger.mixin.client.datagen.RecipeGeneratorAccessor;
 import io.github.drakonkinst.worldsinger.recipe.SaltedFoodRecipe;
-import io.github.drakonkinst.worldsinger.recipe.SilverLinedChestBoatRecipe;
 import io.github.drakonkinst.worldsinger.recipe.SilverLinedItemRecipe;
 import io.github.drakonkinst.worldsinger.recipe.SporeCannonballRecipe;
 import io.github.drakonkinst.worldsinger.recipe.WaterCannonballRecipe;
+import io.github.drakonkinst.worldsinger.registry.ModDataComponentTypes;
 import io.github.drakonkinst.worldsinger.registry.tag.ModConventionalItemTags;
 import io.github.drakonkinst.worldsinger.util.ModConstants;
 import java.util.List;
@@ -51,6 +52,7 @@ import net.minecraft.item.Items;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.book.RecipeCategory;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryEntryLookup;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
@@ -106,19 +108,50 @@ public class ModRecipeGenerator extends FabricRecipeProvider {
                 generateSpecialRecipes();
                 generateShapedRecipes();
                 generateShapelessRecipes();
+                generateVanillaRecipes();
             }
 
             private void generateSpecialRecipes() {
                 ComplexRecipeJsonBuilder.create(SaltedFoodRecipe::new)
                         .offerTo(exporter, "salted_food");
-                ComplexRecipeJsonBuilder.create(SilverLinedChestBoatRecipe::new)
-                        .offerTo(exporter, "silver_lined_chest_boat");
                 ComplexRecipeJsonBuilder.create(SilverLinedItemRecipe::new)
                         .offerTo(exporter, "silver_lined_item");
                 ComplexRecipeJsonBuilder.create(SporeCannonballRecipe::new)
                         .offerTo(exporter, "spore_cannonball");
                 ComplexRecipeJsonBuilder.create(WaterCannonballRecipe::new)
                         .offerTo(exporter, "water_cannonball");
+            }
+
+            private void generateVanillaRecipes() {
+                offerModifiedChestBoatRecipe(Items.ACACIA_CHEST_BOAT, Items.ACACIA_BOAT);
+                offerModifiedChestBoatRecipe(Items.BIRCH_CHEST_BOAT, Items.BIRCH_BOAT);
+                offerModifiedChestBoatRecipe(Items.DARK_OAK_CHEST_BOAT, Items.DARK_OAK_BOAT);
+                offerModifiedChestBoatRecipe(Items.PALE_OAK_CHEST_BOAT, Items.PALE_OAK_BOAT);
+                offerModifiedChestBoatRecipe(Items.JUNGLE_CHEST_BOAT, Items.JUNGLE_BOAT);
+                offerModifiedChestBoatRecipe(Items.OAK_CHEST_BOAT, Items.OAK_BOAT);
+                offerModifiedChestBoatRecipe(Items.SPRUCE_CHEST_BOAT, Items.SPRUCE_BOAT);
+                offerModifiedChestBoatRecipe(Items.MANGROVE_CHEST_BOAT, Items.MANGROVE_BOAT);
+                offerModifiedChestBoatRecipe(Items.CHERRY_CHEST_BOAT, Items.CHERRY_BOAT);
+                offerModifiedChestBoatRecipe(Items.BAMBOO_CHEST_RAFT, Items.BAMBOO_RAFT);
+            }
+
+            private void offerModifiedChestBoatRecipe(ItemConvertible output,
+                    ItemConvertible input) {
+                this.createSilverLinedShapeless(RecipeCategory.MISC, output)
+                        .input(Blocks.CHEST)
+                        .input(input)
+                        .componentSource(input)
+                        .copyComponent(ModDataComponentTypes.SILVER_DURABILITY)
+                        .group("chest_boat")
+                        .criterion("has_boat", this.conditionsFromTag(ItemTags.BOATS))
+                        .offerTo(exporter);
+            }
+
+            private ShapelessComponentCopyRecipeJsonBuilder createSilverLinedShapeless(
+                    RecipeCategory recipeCategory, ItemConvertible output) {
+                RegistryEntryLookup<Item> itemLookup = ((RecipeGeneratorAccessor) (Object) this).worldsinger$getItemLookup();
+                return ShapelessComponentCopyRecipeJsonBuilder.create(itemLookup, recipeCategory,
+                        output.asItem().getDefaultStack());
             }
 
             private void generateShapedRecipes() {

@@ -41,9 +41,10 @@ public final class ModRecipeSerializer {
     public static final RecipeSerializer<SporeCannonballRecipe> SPORE_CANNONBALL = RecipeSerializer.register(
             Worldsinger.idStr("spore_cannonball"),
             new SpecialRecipeSerializer<>(SporeCannonballRecipe::new));
-    public static final RecipeSerializer<SilverLinedChestBoatRecipe> SILVER_LINED_CHEST_BOAT = RecipeSerializer.register(
-            Worldsinger.idStr("silver_lined_chest_boat"),
-            new SpecialRecipeSerializer<>(SilverLinedChestBoatRecipe::new));
+    // This recipe was originally intended just for converting silver-lined boats to silver-lined chest boats, but it could be used for anything really
+    public static final RecipeSerializer<ShapelessComponentCopyRecipe> SHAPELESS_COMPONENT_COPY = RecipeSerializer.register(
+            Worldsinger.idStr("shapeless_component_copy"),
+            new ShapelessComponentCopyRecipe.Serializer());
 
     public static void initialize() {}
 

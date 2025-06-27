@@ -23,6 +23,7 @@
  */
 package io.github.drakonkinst.worldsinger.datagen;
 
+import io.github.drakonkinst.worldsinger.datagen.recipe.ModRecipeGenerator;
 import io.github.drakonkinst.worldsinger.datagen.tag.ModBiomeTagGenerator;
 import io.github.drakonkinst.worldsinger.datagen.tag.ModBlockTagGenerator;
 import io.github.drakonkinst.worldsinger.datagen.tag.ModDamageTypeTagGenerator;

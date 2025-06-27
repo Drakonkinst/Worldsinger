@@ -150,6 +150,9 @@ public final class SporeParticleSpawner {
         } else {
             radius = CANNONBALL_STRENGTH_1_RADIUS;
         }
+        double height = radius * 0.75;
+        // Allow it to hit a little underneath the collision point
+        pos = pos.add(0, -height / 2, 0.0);
         SporeParticleManager.createRandomSporeParticles(world, sporeType, pos, radius, 0.0,
                 radius * 0.75, 0.0, CANNONBALL_PARTICLE_SIZE, CANNONBALL_PARTICLE_COUNT, true);
 
