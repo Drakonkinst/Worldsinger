@@ -27,16 +27,14 @@ import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import io.github.drakonkinst.worldsinger.entity.CameraPossessable;
 import io.github.drakonkinst.worldsinger.entity.MidnightCreatureEntity;
 import io.github.drakonkinst.worldsinger.entity.PossessionClientUtil;
-import io.github.drakonkinst.worldsinger.gui.ThirstStatusBar;
+import io.github.drakonkinst.worldsinger.gui.thirst.ThirstStatusBar;
 import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
-import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -61,7 +59,7 @@ public abstract class InGameHudMixin {
     // Add an extra row to give space for the thirst meter, if it should render.
     @ModifyExpressionValue(method = "getAirBubbleY", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/InGameHud;getHeartRows(I)I"))
     private int adjustAirStatusMeter(int original) {
-        if (ThirstStatusBar.shouldRenderThirstBar(this.getCameraPlayer())) {
+        if (ThirstStatusBar.isThirstBarVisible()) {
             return original + 1;
         }
         return original;
@@ -92,8 +90,4 @@ public abstract class InGameHudMixin {
 
         ci.cancel();
     }
-
-    @Shadow
-    @Nullable
-    protected abstract PlayerEntity getCameraPlayer();
 }

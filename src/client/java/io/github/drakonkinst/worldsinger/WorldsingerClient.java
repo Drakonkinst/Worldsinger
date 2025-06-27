@@ -24,16 +24,17 @@
 package io.github.drakonkinst.worldsinger;
 
 import io.github.drakonkinst.worldsinger.api.ModClientAttachmentTypes;
-import io.github.drakonkinst.worldsinger.event.ModClientEventHandlers;
 import io.github.drakonkinst.worldsinger.fluid.ModFluidRendering;
+import io.github.drakonkinst.worldsinger.item.ModModelProperties;
 import io.github.drakonkinst.worldsinger.network.ClientNetworkHandler;
 import io.github.drakonkinst.worldsinger.network.ClientProxy;
 import io.github.drakonkinst.worldsinger.particle.ModParticleManager;
 import io.github.drakonkinst.worldsinger.registry.ModBlockRendering;
+import io.github.drakonkinst.worldsinger.registry.ModClientEventHandlers;
 import io.github.drakonkinst.worldsinger.registry.ModDimensionRenderers;
 import io.github.drakonkinst.worldsinger.registry.ModEntityRendering;
+import io.github.drakonkinst.worldsinger.registry.ModHudElements;
 import io.github.drakonkinst.worldsinger.registry.ModItemRendering;
-import io.github.drakonkinst.worldsinger.item.ModModelProperties;
 import net.fabricmc.api.ClientModInitializer;
 
 public class WorldsingerClient implements ClientModInitializer {
@@ -55,6 +56,7 @@ public class WorldsingerClient implements ClientModInitializer {
         ModParticleManager.register();
 
         ModClientEventHandlers.registerEventHandlers();
+        ModHudElements.registerHudElements();
         ClientNetworkHandler.registerPacketHandlers();
     }
 }

@@ -21,16 +21,22 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.github.drakonkinst.worldsinger.gui;
+package io.github.drakonkinst.worldsinger.gui.thirst;
 
 import io.github.drakonkinst.worldsinger.Worldsinger;
 import io.github.drakonkinst.worldsinger.api.ModAttachmentTypes;
 import io.github.drakonkinst.worldsinger.effect.ModStatusEffects;
+import io.github.drakonkinst.worldsinger.event.thirst.ThirstEvents;
+import io.github.drakonkinst.worldsinger.registry.ModHudElements;
+import io.github.drakonkinst.worldsinger.util.ModConstants;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.profiler.Profiler;
+import net.minecraft.util.profiler.Profilers;
 
 @SuppressWarnings("UnstableApiUsage")
 public final class ThirstStatusBar {
@@ -50,7 +56,31 @@ public final class ThirstStatusBar {
     private static final Identifier WATER_FULL_THIRST_TEXTURE = Worldsinger.id(
             "hud/water_full_thirst");
 
-    public static void renderThirstStatusBar(MinecraftClient client, DrawContext context,
+    private static long keepThirstBarVisibleUntil = 0;
+    private static boolean isThirstBarVisible = false;
+
+    // We can assume that the conditions for showing hunger bar are already met, and don't need to re-check these
+    public static void renderThirstBar(DrawContext context, RenderTickCounter tickCounter) {
+        MinecraftClient client = MinecraftClient.getInstance();
+        assert client.player != null;
+        assert client.world != null;
+        boolean shouldShowThirstBar = ThirstEvents.VISIBLE_PREDICATE.invoker()
+                .shouldBeVisible(client.player);
+        if (shouldShowThirstBar) {
+            keepThirstBarVisibleUntil = client.world.getTime()
+                    + ModHudElements.hideThirstAfterSeconds * ModConstants.SECONDS_TO_TICKS;
+        }
+        isThirstBarVisible =
+                shouldShowThirstBar || keepThirstBarVisibleUntil > client.world.getTime();
+        if (isThirstBarVisible) {
+            Profiler profiler = Profilers.get();
+            profiler.push("thirst");
+            drawThirstBar(client, context, client.player);
+            profiler.pop();
+        }
+    }
+
+    public static void drawThirstBar(MinecraftClient client, DrawContext context,
             PlayerEntity player) {
         final int height = client.getWindow().getScaledHeight();
         final int halfWidth = client.getWindow().getScaledWidth() / 2;
@@ -85,13 +115,8 @@ public final class ThirstStatusBar {
         }
     }
 
-    // TODO: Add an option for players to show it all the time
-    // TODO: Should typically show when equipping a water-based power
-    // TODO: Or maybe when holding an item that changes thirst?
-    public static boolean shouldRenderThirstBar(PlayerEntity player) {
-        return player.getAttachedOrCreate(ModAttachmentTypes.THIRST).isCritical() ||
-                player.getAttachedOrCreate(ModAttachmentTypes.MIDNIGHT_AETHER_BOND).getBondCount()
-                        > 0;
+    public static boolean isThirstBarVisible() {
+        return isThirstBarVisible;
     }
 
     private ThirstStatusBar() {}
