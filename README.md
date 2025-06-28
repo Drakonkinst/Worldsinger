@@ -24,6 +24,9 @@ spore seas on the colorful and deadly world of **Lumar**, as seen in *Tress of t
 
 ### Art Credits
 
+* the_khuzdul1
+    * Silver
+    * Salt
 * FurbyMom22 - Aether Spore Sea Texture
 * [u/SeiyoNoShogun](https://www.reddit.com/r/Minecraft/comments/sjnzd9/i_never_really_liked_the_look_of_the_default_iron) -
   Steel Block Texture
