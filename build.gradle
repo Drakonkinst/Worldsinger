@@ -165,4 +165,5 @@ publishing {
 yamlang {
     targetSourceSets = [sourceSets.main]
     inputDir = 'assets/worldsinger/lang'
+    outputDir = 'assets/worldsinger/lang'
 }
