@@ -7,13 +7,17 @@ import io.github.drakonkinst.worldsinger.item.ModItems;
 import io.github.drakonkinst.worldsinger.item.component.CannonballComponent;
 import io.github.drakonkinst.worldsinger.item.component.CannonballComponent.CannonballCore;
 import io.github.drakonkinst.worldsinger.item.component.CannonballComponent.CannonballShell;
+import io.github.drakonkinst.worldsinger.item.component.SilverLinedPredicate;
+import io.github.drakonkinst.worldsinger.registry.ModComponentPredicateTypes;
 import io.github.drakonkinst.worldsinger.registry.ModDataComponentTypes;
 import io.github.drakonkinst.worldsinger.worldgen.dimension.ModDimensions;
 import java.util.Collections;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricAdvancementProvider;
+import net.fabricmc.fabric.api.tag.convention.v2.ConventionalEntityTypeTags;
 import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.AdvancementEntry;
 import net.minecraft.advancement.AdvancementFrame;
@@ -21,10 +25,18 @@ import net.minecraft.advancement.AdvancementRequirements;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.advancement.criterion.ImpossibleCriterion;
 import net.minecraft.advancement.criterion.InventoryChangedCriterion;
+import net.minecraft.advancement.criterion.PlayerInteractedWithEntityCriterion;
 import net.minecraft.advancement.criterion.TickCriterion;
+import net.minecraft.entity.EntityType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.predicate.NumberRange;
+import net.minecraft.predicate.component.ComponentsPredicate;
+import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.LocationPredicate;
+import net.minecraft.predicate.item.ItemPredicate;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.text.Text;
 
@@ -48,6 +60,9 @@ public class ModAdvancementGenerator extends FabricAdvancementProvider {
         sporeCannonball.set(ModDataComponentTypes.CANNONBALL,
                 new CannonballComponent(CannonballShell.CERAMIC, CannonballCore.ROSEITE, 3,
                         Collections.emptyList()));
+        // Registries
+        RegistryWrapper<EntityType<?>> entityTypeWrapper = wrapperLookup.getOrThrow(
+                RegistryKeys.ENTITY_TYPE);
 
         // Cosmere Advancements
         AdvancementEntry cosmere = Advancement.Builder.create()
@@ -105,9 +120,21 @@ public class ModAdvancementGenerator extends FabricAdvancementProvider {
                         Text.translatable(
                                 "advancements.worldsinger.lumar.use_silver_lined_boat.description"),
                         null, AdvancementFrame.TASK, true, true, false)
-                // TODO: Criterion
-                .criterion("impossible",
-                        Criteria.IMPOSSIBLE.create(new ImpossibleCriterion.Conditions()))
+                .criterion("interact_with_silver_lined_boat",
+                        PlayerInteractedWithEntityCriterion.Conditions.create(
+                                ItemPredicate.Builder.create(), Optional.of(
+                                        EntityPredicate.contextPredicateFromEntityPredicate(
+                                                EntityPredicate.Builder.create()
+                                                        .type(entityTypeWrapper,
+                                                                ConventionalEntityTypeTags.BOATS)
+                                                        .components(
+                                                                ComponentsPredicate.Builder.create()
+                                                                        .partial(
+                                                                                ModComponentPredicateTypes.SILVER_LINED,
+                                                                                new SilverLinedPredicate(
+                                                                                        NumberRange.IntRange.atLeast(
+                                                                                                1)))
+                                                                        .build())))))
                 .build(consumer, Worldsinger.idStr("lumar/use_silver_lined_boat"));
         AdvancementEntry obtainSaltstone = Advancement.Builder.create()
                 .parent(killSpores)

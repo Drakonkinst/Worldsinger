@@ -50,13 +50,7 @@ public interface SilverLined {
     }
 
     static void transferDataFromItemStackToEntity(ItemStack itemStack, AbstractBoatEntity entity) {
-        int silverDurability = SilverLined.getSilverDurability(itemStack);
-        if (silverDurability <= 0) {
-            return;
-        }
-        SilverLined silverEntityData = entity.getAttachedOrCreate(
-                ModAttachmentTypes.SILVER_LINED_BOAT);
-        silverEntityData.setSilverDurability(silverDurability);
+        entity.copyComponentsFrom(itemStack);
     }
 
     static boolean canBeSilverLined(ItemStack stack) {

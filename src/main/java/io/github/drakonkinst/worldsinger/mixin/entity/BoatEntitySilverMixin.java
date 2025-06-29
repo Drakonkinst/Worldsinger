@@ -28,8 +28,12 @@ import io.github.drakonkinst.worldsinger.api.ModAttachmentTypes;
 import io.github.drakonkinst.worldsinger.api.sync.AttachmentSync;
 import io.github.drakonkinst.worldsinger.cosmere.SilverLined;
 import io.github.drakonkinst.worldsinger.entity.SilverLinedEntityData;
+import io.github.drakonkinst.worldsinger.item.component.SilverLinedComponent;
+import io.github.drakonkinst.worldsinger.registry.ModDataComponentTypes;
 import io.github.drakonkinst.worldsinger.registry.ModSoundEvents;
 import io.github.drakonkinst.worldsinger.registry.tag.ModConventionalItemTags;
+import net.minecraft.component.ComponentType;
+import net.minecraft.component.ComponentsAccess;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.vehicle.AbstractBoatEntity;
@@ -38,6 +42,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -88,5 +93,36 @@ public abstract class BoatEntitySilverMixin extends VehicleEntity {
     private ItemStack addSilverData(ItemStack itemStack) {
         SilverLined.transferDataFromEntityToItemStack(this, itemStack);
         return itemStack;
+    }
+
+    @Nullable
+    @Override
+    public <T> T get(ComponentType<? extends T> type) {
+        if (type == ModDataComponentTypes.SILVER_DURABILITY) {
+            SilverLinedEntityData silverData = this.getAttachedOrCreate(
+                    ModAttachmentTypes.SILVER_LINED_BOAT);
+            // noinspection unchecked
+            return (T) castComponentValue(ModDataComponentTypes.SILVER_DURABILITY,
+                    new SilverLinedComponent(silverData.getSilverDurability()));
+        }
+        return super.get(type);
+    }
+
+    @Override
+    protected void copyComponentsFrom(ComponentsAccess from) {
+        this.copyComponentFrom(from, ModDataComponentTypes.SILVER_DURABILITY);
+        super.copyComponentsFrom(from);
+    }
+
+    @Override
+    protected <T> boolean setApplicableComponent(ComponentType<T> type, T value) {
+        if (type == ModDataComponentTypes.SILVER_DURABILITY) {
+            SilverLinedEntityData silverData = this.getAttachedOrCreate(
+                    ModAttachmentTypes.SILVER_LINED_BOAT);
+            silverData.setSilverDurability(
+                    castComponentValue(ModDataComponentTypes.SILVER_DURABILITY, value).value());
+            return true;
+        }
+        return super.setApplicableComponent(type, value);
     }
 }
