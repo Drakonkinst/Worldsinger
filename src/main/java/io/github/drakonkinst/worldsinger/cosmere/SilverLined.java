@@ -37,8 +37,8 @@ import net.minecraft.world.World;
 @SuppressWarnings("UnstableApiUsage")
 public interface SilverLined {
 
-    int SILVER_METER_COLOR = 0xC0C0C0;
-    int SILVER_TEXT_COLOR = 0xC0C0C0;
+    int SILVER_METER_COLOR = 0xC1D5D5;
+    int SILVER_TEXT_COLOR = 0xC1D5D5;
     int BOAT_MAX_DURABILITY = 45000;
     float BOAT_VISUAL_SCALE_FACTOR = 1.0f / 100.0f;
 

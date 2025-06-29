@@ -227,4 +227,71 @@ config.worldsinger:
     category:
       interface:
         title: Interface
+advancements.worldsinger:
+  cosmere:
+    root:
+      title: Cosmere
+      description: Wander across worlds connected by magic
+    obtain_full_steel:
+      title: Shining Armor
+      description: Craft a full set of Steel Armor
+    obtain_salted_food:
+      title: Lightly Seasoned
+      description: Add salt to your food to make it taste better
+  lumar:
+    enter_lumar:
+      title: Under the Twelve Moons
+      description: Travel to the aether spore seas of Lumar
+    use_silver_lined_boat:
+      title: Safety on the Seas
+      description: Sail in a Boat lined with silver
+    kill_spores:
+      title: Salt and Silver
+      description: Use salt or silver to protect yourself from spores
+    obtain_magma_vent:
+      title: The Power of Fluidization
+      description: Obtain a Magma Vent
+    obtain_saltstone:
+      title: A Barren Rock
+      description: Gather Saltstone from a Saltstone Island
+    find_lunagree:
+      title: A Deadly Fountain
+      description: Reach a lunagree
+    loot_shipwreck:
+      title: Lonely Wreckage
+      description: Loot a shipwreck on the spore sea
+    obtain_all_spore_buckets:
+      title: Apprentice Sprouter
+      description: Collect a bucket of every spore type
+    obtain_spore_cannonball:
+      title: Spore Crafter
+      description: Craft a Cannonball with a Roseite Core and some spores
+    brew_spore_splash_bottle:
+      title: Spore Brewer
+      description: Brew a splash bottle of spores using Zephyr Spores for the ingredient and Sunlight Spores as the fuel
+    tame_midnight_creature:
+      title: A Dangerous Trade
+      description: Bond a Midnight Creature
+    obtain_all_spore_growths:
+      title: Spore Decor
+      description: Gather all the spore growth blocks with Silk Touch
+    explore_lumar:
+      title: Lumar Adventurer
+      description: Explore every ocean and biome on Lumar
+    enter_crimson_sea:
+      title: Unpredictable Rains
+      description: Enter the Crimson Sea. Beware of rogue rainlines...
+    enter_midnight_sea:
+      title: The Domain of the Sorceress
+      description: Enter the Midnight Sea
+    find_rainline:
+      title: Lumar Cartographer
+      description: Locate a rainline on a map
+    sail_in_spores:
+      title: Sporelocked!
+      description: Try to sail a boat during a stilling
+    walk_on_spore_sea:
+      title: Just Keep Moving
+      description: Walk on the spore sea during a stilling
+
 ...

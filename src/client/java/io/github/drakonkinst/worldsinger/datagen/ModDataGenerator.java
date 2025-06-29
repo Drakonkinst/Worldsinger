@@ -53,6 +53,7 @@ public class ModDataGenerator implements DataGeneratorEntrypoint {
         pack.addProvider(ModDamageTypeGenerator::new);
         pack.addProvider(ModDamageTypeTagGenerator::new);
         pack.addProvider(ModBiomeTagGenerator::new);
+        pack.addProvider(ModAdvancementGenerator::new);
     }
 
     @Override
