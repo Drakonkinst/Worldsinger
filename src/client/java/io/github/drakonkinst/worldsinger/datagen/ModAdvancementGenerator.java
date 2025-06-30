@@ -11,6 +11,7 @@ import io.github.drakonkinst.worldsinger.item.component.SilverLinedPredicate;
 import io.github.drakonkinst.worldsinger.registry.ModComponentPredicateTypes;
 import io.github.drakonkinst.worldsinger.registry.ModDataComponentTypes;
 import io.github.drakonkinst.worldsinger.registry.ModLootTables;
+import io.github.drakonkinst.worldsinger.registry.tag.ModBlockTags;
 import io.github.drakonkinst.worldsinger.worldgen.dimension.ModDimensions;
 import java.util.Collections;
 import java.util.Optional;
@@ -27,13 +28,17 @@ import net.minecraft.advancement.AdvancementRequirements.CriterionMerger;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.advancement.criterion.ImpossibleCriterion;
 import net.minecraft.advancement.criterion.InventoryChangedCriterion;
+import net.minecraft.advancement.criterion.ItemCriterion;
 import net.minecraft.advancement.criterion.PlayerGeneratesContainerLootCriterion;
 import net.minecraft.advancement.criterion.PlayerInteractedWithEntityCriterion;
 import net.minecraft.advancement.criterion.TickCriterion;
+import net.minecraft.block.Block;
 import net.minecraft.entity.EntityType;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.loot.condition.LocationCheckLootCondition;
+import net.minecraft.predicate.BlockPredicate;
 import net.minecraft.predicate.NumberRange;
 import net.minecraft.predicate.component.ComponentMapPredicate;
 import net.minecraft.predicate.component.ComponentsPredicate;
@@ -69,6 +74,7 @@ public class ModAdvancementGenerator extends FabricAdvancementProvider {
         RegistryWrapper<EntityType<?>> entityTypeWrapper = wrapperLookup.getOrThrow(
                 RegistryKeys.ENTITY_TYPE);
         RegistryWrapper<Item> itemLookup = wrapperLookup.getOrThrow(RegistryKeys.ITEM);
+        RegistryWrapper<Block> blockLookup = wrapperLookup.getOrThrow(RegistryKeys.BLOCK);
 
         // Cosmere Advancements
         AdvancementEntry cosmere = Advancement.Builder.create()
@@ -109,15 +115,22 @@ public class ModAdvancementGenerator extends FabricAdvancementProvider {
                 .criterion("entered_lumar", TickCriterion.Conditions.createLocation(
                         LocationPredicate.Builder.createDimension(ModDimensions.WORLD_LUMAR)))
                 .build(consumer, Worldsinger.idStr("lumar/enter_lumar"));
+        // Turns out, detecting whether you are responsible for killing spores is REALLY HARD
+        // Instead, we'll just go off placing certain blocks
         AdvancementEntry killSpores = Advancement.Builder.create()
                 .parent(enterLumar)
                 .display(ModItems.SALT,
                         Text.translatable("advancements.worldsinger.lumar.kill_spores.title"),
                         Text.translatable("advancements.worldsinger.lumar.kill_spores.description"),
                         null, AdvancementFrame.TASK, true, true, false)
-                // TODO: Criterion
-                .criterion("impossible",
-                        Criteria.IMPOSSIBLE.create(new ImpossibleCriterion.Conditions()))
+                .criterion("place_spore_killing_block_on_lumar",
+                        ItemCriterion.Conditions.createPlacedBlock(
+                                LocationCheckLootCondition.builder(
+                                        LocationPredicate.Builder.create()
+                                                .dimension(ModDimensions.WORLD_LUMAR)
+                                                .block(BlockPredicate.Builder.create()
+                                                        .tag(blockLookup,
+                                                                ModBlockTags.KILLS_SPORES)))))
                 .build(consumer, Worldsinger.idStr("lumar/kill_spores"));
         AdvancementEntry useSilverLinedBoat = Advancement.Builder.create()
                 .parent(killSpores)
@@ -291,9 +304,13 @@ public class ModAdvancementGenerator extends FabricAdvancementProvider {
                         Text.translatable(
                                 "advancements.worldsinger.lumar.brew_spore_splash_bottle.description"),
                         null, AdvancementFrame.TASK, true, true, false)
-                // TODO: Criterion
-                .criterion("impossible",
-                        Criteria.IMPOSSIBLE.create(new ImpossibleCriterion.Conditions()))
+                .criterion("obtain_spore_splash_bottle", InventoryChangedCriterion.Conditions.items(
+                        ModItems.CRIMSON_SPORES_SPLASH_BOTTLE,
+                        ModItems.VERDANT_SPORES_SPLASH_BOTTLE,
+                        ModItems.ROSEITE_SPORES_SPLASH_BOTTLE,
+                        ModItems.MIDNIGHT_SPORES_SPLASH_BOTTLE,
+                        ModItems.ZEPHYR_SPORES_SPLASH_BOTTLE,
+                        ModItems.SUNLIGHT_SPORES_SPLASH_BOTTLE))
                 .build(consumer, Worldsinger.idStr("lumar/brew_spore_splash_bottle"));
         AdvancementEntry obtainMagmaVent = Advancement.Builder.create()
                 .parent(obtainAllSporeBuckets)
@@ -378,9 +395,12 @@ public class ModAdvancementGenerator extends FabricAdvancementProvider {
                         Text.translatable(
                                 "advancements.worldsinger.lumar.walk_on_spore_sea.description"),
                         null, AdvancementFrame.TASK, true, true, false)
-                // TODO: Criterion
-                .criterion("impossible",
-                        Criteria.IMPOSSIBLE.create(new ImpossibleCriterion.Conditions()))
+                .criterion("walk_on_spore_sea", TickCriterion.Conditions.createLocation(
+                        EntityPredicate.Builder.create()
+                                .steppingOn(LocationPredicate.Builder.create()
+                                        .block(BlockPredicate.Builder.create()
+                                                .tag(blockLookup,
+                                                        ModBlockTags.AETHER_SPORE_SEA_BLOCKS)))))
                 .build(consumer, Worldsinger.idStr("lumar/walk_on_spore_sea"));
 
     }
