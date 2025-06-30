@@ -44,7 +44,6 @@ import net.minecraft.block.ShapeContext;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
@@ -153,8 +152,8 @@ public abstract class AbstractBlockStateMixin {
         return state;
     }
 
-    @Inject(method = "onStateReplaced", at = @At("TAIL"))
-    private void addBlockPlaceBehaviors(ServerWorld world, BlockPos pos, boolean moved,
+    @Inject(method = "onBlockAdded", at = @At("TAIL"))
+    private void addBlockPlaceBehaviors(World world, BlockPos pos, BlockState state, boolean notify,
             CallbackInfo ci) {
         checkSporeKillingBehavior(world, pos, this.asBlockState());
         checkSporeKilledOnPlace(world, pos, this.asBlockState());
