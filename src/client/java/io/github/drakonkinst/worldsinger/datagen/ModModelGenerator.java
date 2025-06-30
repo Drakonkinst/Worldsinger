@@ -440,9 +440,12 @@ public class ModModelGenerator extends FabricModelProvider {
         registerSporeSplashBottle(itemModelGenerator, ModItems.MIDNIGHT_SPORES_SPLASH_BOTTLE);
 
         registerCannonball(itemModelGenerator, ModItems.CERAMIC_CANNONBALL);
-        registerOverlays(itemModelGenerator);
+        // registerOverlays(itemModelGenerator);
     }
 
+    // This doesn't work well because we need to modify the model scales, and overlays
+    // vary based on the type of item it's overlaying
+    // Will write this by hand for now
     private void registerOverlays(ItemModelGenerator itemModelGenerator) {
         for (ItemOverlay itemOverlay : ItemOverlay.VALUES) {
             Identifier id = itemOverlay.getId();

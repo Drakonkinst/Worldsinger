@@ -37,7 +37,10 @@ import net.minecraft.client.render.model.BakedQuad;
 import net.minecraft.client.render.model.ModelRotation;
 import net.minecraft.client.render.model.ModelSettings;
 import net.minecraft.client.render.model.ModelTextures;
+import net.minecraft.client.render.model.json.ModelTransformation;
+import net.minecraft.client.render.model.json.Transformation;
 import net.minecraft.util.Identifier;
+import org.joml.Vector3f;
 
 public final class ModItemRendering {
 
@@ -49,6 +52,7 @@ public final class ModItemRendering {
     public static final Identifier CANNONBALL_FUSE_2 = Worldsinger.id("item/cannonball/fuse_2");
     public static final Identifier CANNONBALL_FUSE_3 = Worldsinger.id("item/cannonball/fuse_3");
     public static final Identifier BLANK = Worldsinger.id("item/blank");
+    private static final float Z_FIGHTING_SCALE_MODIFIER = 0.001f;
 
     public static void register() {
         ModelLoadingPlugin.register(pluginContext -> {
@@ -65,10 +69,37 @@ public final class ModItemRendering {
                     ModelTextures modelTextures = bakedSimpleModel.getTextures();
                     List<BakedQuad> list = bakedSimpleModel.bakeGeometry(modelTextures, baker,
                             ModelRotation.X0_Y0).getAllQuads();
+                    // Modifies ModelSettings.resolveSettings()
+                    // Sprite sprite = bakedSimpleModel.getParticleTexture(modelTextures, baker);
+                    // ModelSettings modelSettings = new ModelSettings(
+                    //         bakedSimpleModel.getGuiLight().isSide(), sprite,
+                    //         fixZFighting(bakedSimpleModel.getTransformations()));
                     ModelSettings modelSettings = ModelSettings.resolveSettings(baker,
                             bakedSimpleModel, modelTextures);
                     return new BasicItemModel(Collections.emptyList(), list, modelSettings);
                 })));
+    }
+
+    private static ModelTransformation fixZFighting(ModelTransformation model) {
+        Transformation firstPersonLeftHand = fixZFighting(model.firstPersonLeftHand());
+        Transformation firstPersonRightHand = fixZFighting(model.firstPersonRightHand());
+        Transformation thirdPersonLeftHand = fixZFighting(model.thirdPersonLeftHand());
+        Transformation thirdPersonRightHand = fixZFighting(model.thirdPersonRightHand());
+        Transformation head = model.head();
+        Transformation gui = model.gui();
+        Transformation ground = model.ground();
+        Transformation fixed = model.fixed();
+        return new ModelTransformation(thirdPersonLeftHand, thirdPersonRightHand,
+                firstPersonLeftHand, firstPersonRightHand, head, gui, ground, fixed);
+    }
+
+    private static Transformation fixZFighting(Transformation transformation) {
+        Vector3f resultVector = new Vector3f();
+        transformation.scale()
+                .add(Z_FIGHTING_SCALE_MODIFIER, Z_FIGHTING_SCALE_MODIFIER,
+                        Z_FIGHTING_SCALE_MODIFIER, resultVector);
+        return new Transformation(transformation.rotation(), transformation.translation(),
+                resultVector);
     }
 
     private ModItemRendering() {}

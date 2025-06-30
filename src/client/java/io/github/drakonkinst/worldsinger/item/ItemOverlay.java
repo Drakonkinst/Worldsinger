@@ -35,10 +35,7 @@ public enum ItemOverlay {
     public static void applyItemOverlays(ItemRenderState renderState, ItemStack stack,
             ItemModelManager itemModelManager, ItemDisplayContext displayContext, ClientWorld world,
             LivingEntity entity, int seed) {
-        if (displayContext != ItemDisplayContext.GUI) {
-            return;
-        }
-        if (SaltedFoodUtil.isSalted(stack)) {
+        if (SaltedFoodUtil.isSalted(stack) && displayContext == ItemDisplayContext.GUI) {
             // Apply salt overlay
             SALTED_FOOD.getModel()
                     .update(renderState, stack, itemModelManager, displayContext, world, entity,
