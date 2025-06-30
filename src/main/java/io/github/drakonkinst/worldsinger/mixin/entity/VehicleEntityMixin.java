@@ -27,7 +27,7 @@ import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import io.github.drakonkinst.worldsinger.cosmere.SilverLined;
 import net.minecraft.entity.ItemEntity;
-import net.minecraft.entity.vehicle.BoatEntity;
+import net.minecraft.entity.vehicle.AbstractBoatEntity;
 import net.minecraft.entity.vehicle.VehicleEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
@@ -40,7 +40,7 @@ public abstract class VehicleEntityMixin {
     @WrapOperation(method = "killAndDropItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/vehicle/VehicleEntity;dropStack(Lnet/minecraft/server/world/ServerWorld;Lnet/minecraft/item/ItemStack;)Lnet/minecraft/entity/ItemEntity;"))
     private ItemEntity dropStackWithSilverData(VehicleEntity instance, ServerWorld serverWorld,
             ItemStack itemStack, Operation<ItemEntity> original) {
-        if (instance instanceof BoatEntity boatEntity) {
+        if (instance instanceof AbstractBoatEntity boatEntity) {
             // Modify the item stack to include silver data
             SilverLined.transferDataFromEntityToItemStack(boatEntity, itemStack);
         }

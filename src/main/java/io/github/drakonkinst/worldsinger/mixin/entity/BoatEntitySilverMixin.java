@@ -85,7 +85,7 @@ public abstract class BoatEntitySilverMixin extends VehicleEntity {
     }
 
     @ModifyReturnValue(method = "getPickBlockStack", at = @At("RETURN"))
-    private ItemStack dropWithSilverData(ItemStack itemStack) {
+    private ItemStack pickBlockWithSilverData(ItemStack itemStack) {
         return this.addSilverData(itemStack);
     }
 
