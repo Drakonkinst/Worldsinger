@@ -20,7 +20,6 @@
     "entity.render.state.BoatEntityRenderStateMixin",
     "entity.render.state.LivingEntityRenderStateMixin",
     "gui.DebugHudMixin",
-    "gui.DrawContextMixin",
     "gui.InGameHudMixin",
     "gui.InGameOverlayRendererPossessionMixin",
     "item.ItemModelManagerMixin",
