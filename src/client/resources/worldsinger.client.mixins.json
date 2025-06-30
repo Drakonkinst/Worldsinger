@@ -36,6 +36,7 @@
     "world.ClientWorldLumarMixin",
     "world.FogRendererMixin",
     "world.GameRendererMixin",
+    "world.IntegratedServerLoaderMixin",
     "world.SkyRenderingInvoker",
     "world.StandardFogModifierMixin",
     "world.WeatherRenderingMixin",
