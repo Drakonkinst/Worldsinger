@@ -33,6 +33,7 @@ import io.github.drakonkinst.worldsinger.registry.ModSoundEvents;
 import java.util.Optional;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Waterloggable;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.fluid.FlowableFluid;
 import net.minecraft.fluid.Fluid;
@@ -168,10 +169,14 @@ public abstract class AetherSporeFluid extends FlowableFluid implements SporeEmi
         if (this.isInfinite(world) && neighboringSourceBlocks >= 2) {
             BlockState belowBlockState = world.getBlockState(pos.down());
             FluidState belowFluidState = belowBlockState.getFluidState();
-            if (belowBlockState.isSolid()
-                    || ((FlowableFluidInvoker) this).worldsinger$isMatchingAndStill(
-                    belowFluidState)) {
-                return this.getStill(false);
+            // Don't automatically fill in waterloggable blocks unless we know they won't immediately dissipate
+            if (!(state.getBlock() instanceof Waterloggable)
+                    || AetherSporeFluidBlock.shouldFluidize(belowBlockState)) {
+                if (belowBlockState.isSolid()
+                        || ((FlowableFluidInvoker) this).worldsinger$isMatchingAndStill(
+                        belowFluidState)) {
+                    return this.getStill(false);
+                }
             }
         }
 
