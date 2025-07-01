@@ -266,7 +266,7 @@ advancements.worldsinger:
     obtain_spore_cannonball:
       title: Spore Crafter
       description: Craft a Cannonball with a Roseite Core and some spores
-      brew_spore_splash_bottle:
+    brew_spore_splash_bottle:
       title: Spore Brewer
       description: Brew a splash bottle of spores using Zephyr Spores for the ingredient and Sunlight Spores as the fuel
     tame_midnight_creature:

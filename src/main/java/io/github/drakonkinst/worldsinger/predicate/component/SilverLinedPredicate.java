@@ -1,7 +1,8 @@
-package io.github.drakonkinst.worldsinger.item.component;
+package io.github.drakonkinst.worldsinger.predicate.component;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import io.github.drakonkinst.worldsinger.item.component.SilverLinedComponent;
 import io.github.drakonkinst.worldsinger.registry.ModDataComponentTypes;
 import net.minecraft.component.ComponentType;
 import net.minecraft.predicate.NumberRange;

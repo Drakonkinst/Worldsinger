@@ -3,15 +3,24 @@ package io.github.drakonkinst.worldsinger.datagen;
 import io.github.drakonkinst.worldsinger.Worldsinger;
 import io.github.drakonkinst.worldsinger.block.ModBlocks;
 import io.github.drakonkinst.worldsinger.cosmere.SilverLined;
+import io.github.drakonkinst.worldsinger.cosmere.lumar.AetherSpores;
+import io.github.drakonkinst.worldsinger.cosmere.lumar.CrimsonSpores;
+import io.github.drakonkinst.worldsinger.cosmere.lumar.MidnightSpores;
+import io.github.drakonkinst.worldsinger.cosmere.lumar.RoseiteSpores;
+import io.github.drakonkinst.worldsinger.cosmere.lumar.SunlightSpores;
+import io.github.drakonkinst.worldsinger.cosmere.lumar.VerdantSpores;
+import io.github.drakonkinst.worldsinger.cosmere.lumar.ZephyrSpores;
 import io.github.drakonkinst.worldsinger.item.ModItems;
 import io.github.drakonkinst.worldsinger.item.component.CannonballComponent;
 import io.github.drakonkinst.worldsinger.item.component.CannonballComponent.CannonballCore;
 import io.github.drakonkinst.worldsinger.item.component.CannonballComponent.CannonballShell;
-import io.github.drakonkinst.worldsinger.item.component.SilverLinedPredicate;
+import io.github.drakonkinst.worldsinger.loot.condition.SporeSeaLocationCheckLootCondition;
+import io.github.drakonkinst.worldsinger.predicate.component.SilverLinedPredicate;
 import io.github.drakonkinst.worldsinger.registry.ModComponentPredicateTypes;
 import io.github.drakonkinst.worldsinger.registry.ModDataComponentTypes;
 import io.github.drakonkinst.worldsinger.registry.ModLootTables;
 import io.github.drakonkinst.worldsinger.registry.tag.ModBlockTags;
+import io.github.drakonkinst.worldsinger.worldgen.ModBiomes;
 import io.github.drakonkinst.worldsinger.worldgen.dimension.ModDimensions;
 import java.util.Collections;
 import java.util.Optional;
@@ -21,6 +30,7 @@ import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricAdvancementProvider;
 import net.fabricmc.fabric.api.tag.convention.v2.ConventionalEntityTypeTags;
 import net.minecraft.advancement.Advancement;
+import net.minecraft.advancement.AdvancementCriterion;
 import net.minecraft.advancement.AdvancementEntry;
 import net.minecraft.advancement.AdvancementFrame;
 import net.minecraft.advancement.AdvancementRequirements;
@@ -32,6 +42,7 @@ import net.minecraft.advancement.criterion.ItemCriterion;
 import net.minecraft.advancement.criterion.PlayerGeneratesContainerLootCriterion;
 import net.minecraft.advancement.criterion.PlayerInteractedWithEntityCriterion;
 import net.minecraft.advancement.criterion.TickCriterion;
+import net.minecraft.advancement.criterion.TickCriterion.Conditions;
 import net.minecraft.block.Block;
 import net.minecraft.entity.EntityType;
 import net.minecraft.item.Item;
@@ -44,11 +55,14 @@ import net.minecraft.predicate.component.ComponentMapPredicate;
 import net.minecraft.predicate.component.ComponentsPredicate;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.LocationPredicate;
+import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.text.Text;
+import net.minecraft.world.biome.Biome;
 
 public class ModAdvancementGenerator extends FabricAdvancementProvider {
 
@@ -75,9 +89,10 @@ public class ModAdvancementGenerator extends FabricAdvancementProvider {
                 RegistryKeys.ENTITY_TYPE);
         RegistryWrapper<Item> itemLookup = wrapperLookup.getOrThrow(RegistryKeys.ITEM);
         RegistryWrapper<Block> blockLookup = wrapperLookup.getOrThrow(RegistryKeys.BLOCK);
+        RegistryWrapper<Biome> biomeLookup = wrapperLookup.getOrThrow(RegistryKeys.BIOME);
 
         // Cosmere Advancements
-        AdvancementEntry cosmere = Advancement.Builder.create()
+        AdvancementEntry cosmere = Advancement.Builder.createUntelemetered()
                 .display(ModBlocks.VERDANT_VINE_SNARE,
                         Text.translatable("advancements.worldsinger.cosmere.root.title"),
                         Text.translatable("advancements.worldsinger.cosmere.root.description"),
@@ -87,7 +102,7 @@ public class ModAdvancementGenerator extends FabricAdvancementProvider {
                 .criterion("entered_lumar", TickCriterion.Conditions.createLocation(
                         LocationPredicate.Builder.createDimension(ModDimensions.WORLD_LUMAR)))
                 .build(consumer, Worldsinger.idStr("cosmere/root"));
-        AdvancementEntry obtainFullSteel = Advancement.Builder.create()
+        AdvancementEntry obtainFullSteel = Advancement.Builder.createUntelemetered()
                 .parent(cosmere)
                 .display(ModItems.STEEL_CHESTPLATE, Text.translatable(
                                 "advancements.worldsinger.cosmere.obtain_full_steel.title"),
@@ -106,7 +121,7 @@ public class ModAdvancementGenerator extends FabricAdvancementProvider {
                 .build(consumer, Worldsinger.idStr("cosmere/obtain_full_steel"));
 
         // Lumar Advancements
-        AdvancementEntry enterLumar = Advancement.Builder.create()
+        AdvancementEntry enterLumar = Advancement.Builder.createUntelemetered()
                 .parent(cosmere)
                 .display(ModItems.VERDANT_VINE,
                         Text.translatable("advancements.worldsinger.lumar.enter_lumar.title"),
@@ -117,7 +132,7 @@ public class ModAdvancementGenerator extends FabricAdvancementProvider {
                 .build(consumer, Worldsinger.idStr("lumar/enter_lumar"));
         // Turns out, detecting whether you are responsible for killing spores is REALLY HARD
         // Instead, we'll just go off placing certain blocks
-        AdvancementEntry killSpores = Advancement.Builder.create()
+        AdvancementEntry killSpores = Advancement.Builder.createUntelemetered()
                 .parent(enterLumar)
                 .display(ModItems.SALT,
                         Text.translatable("advancements.worldsinger.lumar.kill_spores.title"),
@@ -132,7 +147,7 @@ public class ModAdvancementGenerator extends FabricAdvancementProvider {
                                                         .tag(blockLookup,
                                                                 ModBlockTags.KILLS_SPORES)))))
                 .build(consumer, Worldsinger.idStr("lumar/kill_spores"));
-        AdvancementEntry useSilverLinedBoat = Advancement.Builder.create()
+        AdvancementEntry useSilverLinedBoat = Advancement.Builder.createUntelemetered()
                 .parent(killSpores)
                 .display(silverLinedBoat, Text.translatable(
                                 "advancements.worldsinger.lumar.use_silver_lined_boat.title"),
@@ -155,7 +170,7 @@ public class ModAdvancementGenerator extends FabricAdvancementProvider {
                                                                                                 1)))
                                                                         .build())))))
                 .build(consumer, Worldsinger.idStr("lumar/use_silver_lined_boat"));
-        AdvancementEntry obtainSaltstone = Advancement.Builder.create()
+        AdvancementEntry obtainSaltstone = Advancement.Builder.createUntelemetered()
                 .parent(killSpores)
                 .display(ModBlocks.SALTSTONE,
                         Text.translatable("advancements.worldsinger.lumar.obtain_saltstone.title"),
@@ -166,7 +181,7 @@ public class ModAdvancementGenerator extends FabricAdvancementProvider {
                         InventoryChangedCriterion.Conditions.items(ModBlocks.SALTSTONE))
                 .build(consumer, Worldsinger.idStr("lumar/obtain_saltstone"));
         // Can move this around later
-        AdvancementEntry obtainSaltedFood = Advancement.Builder.create()
+        AdvancementEntry obtainSaltedFood = Advancement.Builder.createUntelemetered()
                 .parent(obtainSaltstone)
                 .display(saltedChicken, Text.translatable(
                                 "advancements.worldsinger.cosmere.obtain_salted_food.title"),
@@ -180,7 +195,7 @@ public class ModAdvancementGenerator extends FabricAdvancementProvider {
                                                 ModDataComponentTypes.SALTED, true))
                                         .build())))
                 .build(consumer, Worldsinger.idStr("cosmere/obtain_salted_food"));
-        AdvancementEntry findLunagree = Advancement.Builder.create()
+        AdvancementEntry findLunagree = Advancement.Builder.createUntelemetered()
                 .parent(useSilverLinedBoat)
                 .display(ModItems.ROSEITE_SPORES_BUCKET,
                         Text.translatable("advancements.worldsinger.lumar.find_lunagree.title"),
@@ -191,7 +206,7 @@ public class ModAdvancementGenerator extends FabricAdvancementProvider {
                 .criterion("impossible",
                         Criteria.IMPOSSIBLE.create(new ImpossibleCriterion.Conditions()))
                 .build(consumer, Worldsinger.idStr("lumar/find_lunagree"));
-        AdvancementEntry lootShipwreck = Advancement.Builder.create()
+        AdvancementEntry lootShipwreck = Advancement.Builder.createUntelemetered()
                 .parent(enterLumar)
                 .display(Items.OAK_PLANKS,
                         Text.translatable("advancements.worldsinger.lumar.loot_shipwreck.title"),
@@ -209,7 +224,7 @@ public class ModAdvancementGenerator extends FabricAdvancementProvider {
                         PlayerGeneratesContainerLootCriterion.Conditions.create(
                                 ModLootTables.LUMAR_SHIPWRECK_SUPPLY_CHEST))
                 .build(consumer, Worldsinger.idStr("lumar/loot_shipwreck"));
-        AdvancementEntry obtainAllSporeBuckets = Advancement.Builder.create()
+        AdvancementEntry obtainAllSporeBuckets = Advancement.Builder.createUntelemetered()
                 .parent(useSilverLinedBoat)
                 .display(ModItems.ZEPHYR_SPORES_BUCKET, Text.translatable(
                                 "advancements.worldsinger.lumar.obtain_all_spore_buckets.title"),
@@ -230,7 +245,7 @@ public class ModAdvancementGenerator extends FabricAdvancementProvider {
                 .criterion("sunlight_spores_bucket",
                         InventoryChangedCriterion.Conditions.items(ModItems.SUNLIGHT_SPORES_BUCKET))
                 .build(consumer, Worldsinger.idStr("lumar/obtain_all_spore_buckets"));
-        AdvancementEntry obtainAllSporeGrowths = Advancement.Builder.create()
+        AdvancementEntry obtainAllSporeGrowths = Advancement.Builder.createUntelemetered()
                 .parent(obtainAllSporeBuckets)
                 .display(ModBlocks.LARGE_ROSEITE_BUD, Text.translatable(
                                 "advancements.worldsinger.lumar.obtain_all_spore_growths.title"),
@@ -280,7 +295,7 @@ public class ModAdvancementGenerator extends FabricAdvancementProvider {
                 .criterion("small_roseite_bud",
                         InventoryChangedCriterion.Conditions.items(ModBlocks.SMALL_ROSEITE_BUD))
                 .build(consumer, Worldsinger.idStr("lumar/obtain_all_spore_growths"));
-        AdvancementEntry obtainSporeCannonball = Advancement.Builder.create()
+        AdvancementEntry obtainSporeCannonball = Advancement.Builder.createUntelemetered()
                 .parent(obtainAllSporeBuckets)
                 .display(sporeCannonball, Text.translatable(
                                 "advancements.worldsinger.lumar.obtain_spore_cannonball.title"),
@@ -297,7 +312,7 @@ public class ModAdvancementGenerator extends FabricAdvancementProvider {
                 .criterion("impossible",
                         Criteria.IMPOSSIBLE.create(new ImpossibleCriterion.Conditions()))
                 .build(consumer, Worldsinger.idStr("lumar/obtain_spore_cannonball"));
-        AdvancementEntry brewSporeSplashBottle = Advancement.Builder.create()
+        AdvancementEntry brewSporeSplashBottle = Advancement.Builder.createUntelemetered()
                 .parent(obtainAllSporeBuckets)
                 .display(ModItems.SUNLIGHT_SPORES_SPLASH_BOTTLE, Text.translatable(
                                 "advancements.worldsinger.lumar.brew_spore_splash_bottle.title"),
@@ -312,7 +327,7 @@ public class ModAdvancementGenerator extends FabricAdvancementProvider {
                         ModItems.ZEPHYR_SPORES_SPLASH_BOTTLE,
                         ModItems.SUNLIGHT_SPORES_SPLASH_BOTTLE))
                 .build(consumer, Worldsinger.idStr("lumar/brew_spore_splash_bottle"));
-        AdvancementEntry obtainMagmaVent = Advancement.Builder.create()
+        AdvancementEntry obtainMagmaVent = Advancement.Builder.createUntelemetered()
                 .parent(obtainAllSporeBuckets)
                 .display(ModBlocks.MAGMA_VENT,
                         Text.translatable("advancements.worldsinger.lumar.obtain_magma_vent.title"),
@@ -322,29 +337,27 @@ public class ModAdvancementGenerator extends FabricAdvancementProvider {
                 .criterion("magma_vent",
                         InventoryChangedCriterion.Conditions.items(ModBlocks.MAGMA_VENT))
                 .build(consumer, Worldsinger.idStr("lumar/obtain_magma_vent"));
-        AdvancementEntry enterCrimsonSea = Advancement.Builder.create()
+        AdvancementEntry enterCrimsonSea = Advancement.Builder.createUntelemetered()
                 .parent(useSilverLinedBoat)
                 .display(ModBlocks.CRIMSON_SPORE_BLOCK,
                         Text.translatable("advancements.worldsinger.lumar.enter_crimson_sea.title"),
                         Text.translatable(
                                 "advancements.worldsinger.lumar.enter_crimson_sea.description"),
                         null, AdvancementFrame.TASK, true, true, false)
-                // TODO: Criterion
-                .criterion("impossible",
-                        Criteria.IMPOSSIBLE.create(new ImpossibleCriterion.Conditions()))
+                .criterion("enter_crimson_sea",
+                        createEnterSporeSeaCriterion(CrimsonSpores.getInstance()))
                 .build(consumer, Worldsinger.idStr("lumar/enter_crimson_sea"));
-        AdvancementEntry enterMidnightSea = Advancement.Builder.create()
+        AdvancementEntry enterMidnightSea = Advancement.Builder.createUntelemetered()
                 .parent(enterCrimsonSea)
                 .display(ModBlocks.MIDNIGHT_SPORE_BLOCK, Text.translatable(
                                 "advancements.worldsinger.lumar.enter_midnight_sea.title"),
                         Text.translatable(
                                 "advancements.worldsinger.lumar.enter_midnight_sea.description"),
                         null, AdvancementFrame.TASK, true, true, false)
-                // TODO: Criterion
-                .criterion("impossible",
-                        Criteria.IMPOSSIBLE.create(new ImpossibleCriterion.Conditions()))
+                .criterion("enter_midnight_sea",
+                        createEnterSporeSeaCriterion(MidnightSpores.getInstance()))
                 .build(consumer, Worldsinger.idStr("lumar/enter_midnight_sea"));
-        AdvancementEntry tameMidnightCreature = Advancement.Builder.create()
+        AdvancementEntry tameMidnightCreature = Advancement.Builder.createUntelemetered()
                 .parent(enterMidnightSea)
                 .display(ModBlocks.MIDNIGHT_ESSENCE, Text.translatable(
                                 "advancements.worldsinger.lumar.tame_midnight_creature.title"),
@@ -355,7 +368,7 @@ public class ModAdvancementGenerator extends FabricAdvancementProvider {
                 .criterion("impossible",
                         Criteria.IMPOSSIBLE.create(new ImpossibleCriterion.Conditions()))
                 .build(consumer, Worldsinger.idStr("lumar/tame_midnight_creature"));
-        AdvancementEntry findRainline = Advancement.Builder.create()
+        AdvancementEntry findRainline = Advancement.Builder.createUntelemetered()
                 .parent(lootShipwreck)
                 .display(Items.FILLED_MAP,
                         Text.translatable("advancements.worldsinger.lumar.find_rainline.title"),
@@ -366,18 +379,42 @@ public class ModAdvancementGenerator extends FabricAdvancementProvider {
                 .criterion("impossible",
                         Criteria.IMPOSSIBLE.create(new ImpossibleCriterion.Conditions()))
                 .build(consumer, Worldsinger.idStr("lumar/find_rainline"));
-        AdvancementEntry exploreLumar = Advancement.Builder.create()
+        AdvancementEntry exploreLumar = Advancement.Builder.createUntelemetered()
                 .parent(findRainline)
                 .display(silverLinedBoat,
                         Text.translatable("advancements.worldsinger.lumar.explore_lumar.title"),
                         Text.translatable(
                                 "advancements.worldsinger.lumar.explore_lumar.description"), null,
                         AdvancementFrame.TASK, true, true, false)
-                // TODO: Criterion
-                .criterion("impossible",
-                        Criteria.IMPOSSIBLE.create(new ImpossibleCriterion.Conditions()))
+                .criteriaMerger(CriterionMerger.AND)
+                .criterion("enter_verdant_sea",
+                        createEnterSporeSeaCriterion(VerdantSpores.getInstance()))
+                .criterion("enter_zephyr_sea",
+                        createEnterSporeSeaCriterion(ZephyrSpores.getInstance()))
+                .criterion("enter_sunlight_sea",
+                        createEnterSporeSeaCriterion(SunlightSpores.getInstance()))
+                .criterion("enter_crimson_sea",
+                        createEnterSporeSeaCriterion(CrimsonSpores.getInstance()))
+                .criterion("enter_roseite_sea",
+                        createEnterSporeSeaCriterion(RoseiteSpores.getInstance()))
+                .criterion("enter_midnight_sea",
+                        createEnterSporeSeaCriterion(MidnightSpores.getInstance()))
+                // TODO: Make this even more data-driven later
+                .criterion("deep_spore_sea",
+                        createEnterBiomeCriterion(biomeLookup, ModBiomes.DEEP_SPORE_SEA))
+                .criterion("lumar_forest",
+                        createEnterBiomeCriterion(biomeLookup, ModBiomes.LUMAR_FOREST))
+                .criterion("lumar_grasslands",
+                        createEnterBiomeCriterion(biomeLookup, ModBiomes.LUMAR_GRASSLANDS))
+                .criterion("lumar_peaks",
+                        createEnterBiomeCriterion(biomeLookup, ModBiomes.LUMAR_PEAKS))
+                .criterion("lumar_rocks",
+                        createEnterBiomeCriterion(biomeLookup, ModBiomes.LUMAR_ROCKS))
+                .criterion("saltstone_island",
+                        createEnterBiomeCriterion(biomeLookup, ModBiomes.SALTSTONE_ISLAND))
+                .criterion("spore_sea", createEnterBiomeCriterion(biomeLookup, ModBiomes.SPORE_SEA))
                 .build(consumer, Worldsinger.idStr("lumar/explore_lumar"));
-        AdvancementEntry sailInSpores = Advancement.Builder.create()
+        AdvancementEntry sailInSpores = Advancement.Builder.createUntelemetered()
                 .parent(useSilverLinedBoat)
                 .display(ModBlocks.VERDANT_SPORE_BLOCK,
                         Text.translatable("advancements.worldsinger.lumar.sail_in_spores.title"),
@@ -388,7 +425,7 @@ public class ModAdvancementGenerator extends FabricAdvancementProvider {
                 .criterion("impossible",
                         Criteria.IMPOSSIBLE.create(new ImpossibleCriterion.Conditions()))
                 .build(consumer, Worldsinger.idStr("lumar/sail_in_spores"));
-        AdvancementEntry walkOnSporeSea = Advancement.Builder.create()
+        AdvancementEntry walkOnSporeSea = Advancement.Builder.createUntelemetered()
                 .parent(sailInSpores)
                 .display(Items.LEATHER_BOOTS,
                         Text.translatable("advancements.worldsinger.lumar.walk_on_spore_sea.title"),
@@ -403,5 +440,17 @@ public class ModAdvancementGenerator extends FabricAdvancementProvider {
                                                         ModBlockTags.AETHER_SPORE_SEA_BLOCKS)))))
                 .build(consumer, Worldsinger.idStr("lumar/walk_on_spore_sea"));
 
+    }
+
+    private AdvancementCriterion<Conditions> createEnterSporeSeaCriterion(AetherSpores sporeType) {
+        return Criteria.LOCATION.create(new TickCriterion.Conditions(Optional.of(
+                LootContextPredicate.create(
+                        SporeSeaLocationCheckLootCondition.builder(sporeType).build()))));
+    }
+
+    private AdvancementCriterion<Conditions> createEnterBiomeCriterion(
+            RegistryWrapper<Biome> biomeLookup, RegistryKey<Biome> biome) {
+        return TickCriterion.Conditions.createLocation(
+                LocationPredicate.Builder.createBiome(biomeLookup.getOrThrow(biome)));
     }
 }

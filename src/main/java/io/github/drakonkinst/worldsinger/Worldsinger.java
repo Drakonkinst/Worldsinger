@@ -35,6 +35,7 @@ import io.github.drakonkinst.worldsinger.event.ModEventHandlers;
 import io.github.drakonkinst.worldsinger.fluid.Fluidlogged;
 import io.github.drakonkinst.worldsinger.fluid.ModFluids;
 import io.github.drakonkinst.worldsinger.item.ModItems;
+import io.github.drakonkinst.worldsinger.loot.condition.ModLootConditionTypes;
 import io.github.drakonkinst.worldsinger.network.CommonProxy;
 import io.github.drakonkinst.worldsinger.network.ModPayloadRegistry;
 import io.github.drakonkinst.worldsinger.network.ServerNetworkHandler;
@@ -99,6 +100,7 @@ public class Worldsinger implements ModInitializer {
         ModEventHandlers.initialize();
         ModDataComponentTypes.initialize();
         ModComponentPredicateTypes.initialize();
+        ModLootConditionTypes.initialize();
 
         // AI
         ModMemoryModuleTypes.initialize();

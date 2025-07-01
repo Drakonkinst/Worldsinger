@@ -95,8 +95,7 @@ public class LumarChunkGenerator extends CustomNoiseChunkGenerator {
         double first = temperature.sample(new DensityFunction.UnblendedNoisePos(x, 0, z));
         double second = temperature.sample(
                 new DensityFunction.UnblendedNoisePos(z + SHIFT_X, 0, x + SHIFT_Z));
-        SporeSeaEntry entry = LumarChunkGenerator.getNearestSporeSeaEntry(first, second);
-        return entry;
+        return LumarChunkGenerator.getNearestSporeSeaEntry(first, second);
     }
 
     private static SporeSeaEntry getNearestSporeSeaEntry(double x, double y) {

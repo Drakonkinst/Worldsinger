@@ -2,7 +2,7 @@ package io.github.drakonkinst.worldsinger.registry;
 
 import com.mojang.serialization.Codec;
 import io.github.drakonkinst.worldsinger.Worldsinger;
-import io.github.drakonkinst.worldsinger.item.component.SilverLinedPredicate;
+import io.github.drakonkinst.worldsinger.predicate.component.SilverLinedPredicate;
 import net.minecraft.predicate.component.ComponentPredicate;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
