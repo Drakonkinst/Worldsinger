@@ -65,7 +65,7 @@ public final class ModDamageTypes {
                 world.getRegistryManager().getOrThrow(RegistryKeys.DAMAGE_TYPE).getOrThrow(key));
     }
 
-    public static void generateTypes(Registerable<DamageType> damageTypeRegisterable) {
+    public static void bootstrap(Registerable<DamageType> damageTypeRegisterable) {
         damageTypeRegisterable.register(ModDamageTypes.VERDANT_SPORE,
                 new DamageType("verdant_spore", DamageScaling.WHEN_CAUSED_BY_LIVING_NON_PLAYER,
                         0.0f, DamageEffects.FREEZING));

@@ -23,6 +23,7 @@
  */
 package io.github.drakonkinst.worldsinger;
 
+import io.github.drakonkinst.worldsinger.advancement.ModCriteria;
 import io.github.drakonkinst.worldsinger.api.ModApi;
 import io.github.drakonkinst.worldsinger.block.ModBlocks;
 import io.github.drakonkinst.worldsinger.block.ModCauldronBehaviors;
@@ -51,6 +52,8 @@ import io.github.drakonkinst.worldsinger.registry.ModSoundEvents;
 import io.github.drakonkinst.worldsinger.util.ModConstants;
 import io.github.drakonkinst.worldsinger.util.ModProperties;
 import io.github.drakonkinst.worldsinger.worldgen.dimension.ModDimensions;
+import io.github.drakonkinst.worldsinger.worldgen.feature.ModConfiguredFeatures;
+import io.github.drakonkinst.worldsinger.worldgen.feature.ModPlacedFeatures;
 import io.github.drakonkinst.worldsinger.worldgen.structure.ModStructurePieceTypes;
 import io.github.drakonkinst.worldsinger.worldgen.structure.ModStructureTypes;
 import net.fabricmc.api.ModInitializer;
@@ -101,6 +104,9 @@ public class Worldsinger implements ModInitializer {
         ModDataComponentTypes.initialize();
         ModComponentPredicateTypes.initialize();
         ModLootConditionTypes.initialize();
+        ModCriteria.initialize();
+        ModPlacedFeatures.initialize();
+        ModConfiguredFeatures.initialize();
 
         // AI
         ModMemoryModuleTypes.initialize();

@@ -31,9 +31,15 @@ import io.github.drakonkinst.worldsinger.datagen.tag.ModEntityTagGenerator;
 import io.github.drakonkinst.worldsinger.datagen.tag.ModFluidTagGenerator;
 import io.github.drakonkinst.worldsinger.datagen.tag.ModItemTagGenerator;
 import io.github.drakonkinst.worldsinger.registry.ModDamageTypes;
+import io.github.drakonkinst.worldsinger.worldgen.biome.ModBiomes;
+import io.github.drakonkinst.worldsinger.worldgen.carver.ModConfiguredCarvers;
+import io.github.drakonkinst.worldsinger.worldgen.feature.ModConfiguredFeatures;
+import io.github.drakonkinst.worldsinger.worldgen.feature.ModPlacedFeatures;
 import net.fabricmc.fabric.api.datagen.v1.DataGeneratorEntrypoint;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataGenerator;
+import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryBuilder;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 
 public class ModDataGenerator implements DataGeneratorEntrypoint {
@@ -41,23 +47,45 @@ public class ModDataGenerator implements DataGeneratorEntrypoint {
     @Override
     public void onInitializeDataGenerator(FabricDataGenerator dataGenerator) {
         FabricDataGenerator.Pack pack = dataGenerator.createPack();
+        // Core Registries
         pack.addProvider(ModModelGenerator::new);
         pack.addProvider(ModRecipeGenerator::new);
         pack.addProvider(ModBlockLootTableGenerator::new);
         pack.addProvider(ModChestLootTableGenerator::new);
+        pack.addProvider(ModAdvancementGenerator::new);
+
+        // Dynamic Registries
+        addDynamicProvider(pack, "Worldsinger Damage Types", RegistryKeys.DAMAGE_TYPE);
+        addDynamicProvider(pack, "Worldsinger Configured Carvers", RegistryKeys.CONFIGURED_CARVER);
+        addDynamicProvider(pack, "Worldsinger Configured Features",
+                RegistryKeys.CONFIGURED_FEATURE);
+        addDynamicProvider(pack, "Worldsinger Placed Features", RegistryKeys.PLACED_FEATURE);
+        addDynamicProvider(pack, "Worldsinger Biomes", RegistryKeys.BIOME);
+
+        // Tags
         ModBlockTagGenerator blockTagGenerator = pack.addProvider(ModBlockTagGenerator::new);
         pack.addProvider((output, registries) -> new ModItemTagGenerator(output, registries,
                 blockTagGenerator));
         pack.addProvider(ModFluidTagGenerator::new);
         pack.addProvider(ModEntityTagGenerator::new);
-        pack.addProvider(ModDamageTypeGenerator::new);
         pack.addProvider(ModDamageTypeTagGenerator::new);
         pack.addProvider(ModBiomeTagGenerator::new);
-        pack.addProvider(ModAdvancementGenerator::new);
+    }
+
+    private void addDynamicProvider(FabricDataGenerator.Pack pack, String id,
+            RegistryKey<? extends Registry<?>> registryKey) {
+        pack.addProvider((output, registriesFuture) -> new ModDynamicRegistryGenerator(output,
+                registriesFuture, id, registryKey));
     }
 
     @Override
     public void buildRegistry(RegistryBuilder registryBuilder) {
-        registryBuilder.addRegistry(RegistryKeys.DAMAGE_TYPE, ModDamageTypes::generateTypes);
+        registryBuilder.addRegistry(RegistryKeys.DAMAGE_TYPE, ModDamageTypes::bootstrap);
+        registryBuilder.addRegistry(RegistryKeys.CONFIGURED_CARVER,
+                ModConfiguredCarvers::bootstrap);
+        registryBuilder.addRegistry(RegistryKeys.CONFIGURED_FEATURE,
+                ModConfiguredFeatures::bootstrap);
+        registryBuilder.addRegistry(RegistryKeys.PLACED_FEATURE, ModPlacedFeatures::bootstrap);
+        registryBuilder.addRegistry(RegistryKeys.BIOME, ModBiomes::bootstrap);
     }
 }

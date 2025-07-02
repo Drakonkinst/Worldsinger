@@ -21,29 +21,26 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+package io.github.drakonkinst.worldsinger.worldgen.biome;
 
-package io.github.drakonkinst.worldsinger.datagen;
-
-import java.util.concurrent.CompletableFuture;
-import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
-import net.fabricmc.fabric.api.datagen.v1.provider.FabricDynamicRegistryProvider;
+import io.github.drakonkinst.worldsinger.Worldsinger;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
-import net.minecraft.registry.RegistryWrapper.WrapperLookup;
+import net.minecraft.world.biome.Biome;
 
-public class ModDamageTypeGenerator extends FabricDynamicRegistryProvider {
+public final class ModBiomeKeys {
 
-    public ModDamageTypeGenerator(FabricDataOutput output,
-            CompletableFuture<WrapperLookup> registriesFuture) {
-        super(output, registriesFuture);
+    public static final RegistryKey<Biome> LUMAR_FOREST = ModBiomeKeys.of("lumar_forest");
+    public static final RegistryKey<Biome> LUMAR_GRASSLANDS = ModBiomeKeys.of("lumar_grasslands");
+    public static final RegistryKey<Biome> LUMAR_PEAKS = ModBiomeKeys.of("lumar_peaks");
+    public static final RegistryKey<Biome> LUMAR_ROCKS = ModBiomeKeys.of("lumar_rocks");
+    public static final RegistryKey<Biome> SALTSTONE_ISLAND = ModBiomeKeys.of("saltstone_island");
+    public static final RegistryKey<Biome> SPORE_SEA = ModBiomeKeys.of("spore_sea");
+    public static final RegistryKey<Biome> DEEP_SPORE_SEA = ModBiomeKeys.of("deep_spore_sea");
+
+    private static RegistryKey<Biome> of(String id) {
+        return RegistryKey.of(RegistryKeys.BIOME, Worldsinger.id(id));
     }
 
-    @Override
-    protected void configure(WrapperLookup registries, Entries entries) {
-        entries.addAll(registries.getOrThrow(RegistryKeys.DAMAGE_TYPE));
-    }
-
-    @Override
-    public String getName() {
-        return "Worldsinger Damage Types";
-    }
+    private ModBiomeKeys() {}
 }

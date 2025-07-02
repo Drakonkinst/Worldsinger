@@ -32,7 +32,7 @@ import io.github.drakonkinst.worldsinger.command.LocateSporeSeaCommand;
 import io.github.drakonkinst.worldsinger.network.packet.LunagreeSyncPayload;
 import io.github.drakonkinst.worldsinger.util.HexCoordUtil;
 import io.github.drakonkinst.worldsinger.util.math.Int2;
-import io.github.drakonkinst.worldsinger.worldgen.ModBiomes;
+import io.github.drakonkinst.worldsinger.worldgen.biome.ModBiomeKeys;
 import io.github.drakonkinst.worldsinger.worldgen.lumar.LumarChunkGenerator.SporeSeaEntry;
 import it.unimi.dsi.fastutil.ints.IntArraySet;
 import it.unimi.dsi.fastutil.ints.IntSet;
@@ -159,7 +159,7 @@ public class LumarLunagreeGenerator extends PersistentState implements LunagreeG
         int centerZ = HexCoordUtil.getCenterZForHexCell(q, r, CELL_SIZE) + CENTER_Z;
         Pair<BlockPos, SporeSeaEntry> result = LocateSporeSeaCommand.locateSporeSea(world, centerX,
                 centerZ, SEARCH_RADIUS, SEARCH_CHECK_INTERVAL, false, possibleSporeIds,
-                biome -> ModBiomes.DEEP_SPORE_SEA.equals(biome.getKey().orElse(null)));
+                biome -> ModBiomeKeys.DEEP_SPORE_SEA.equals(biome.getKey().orElse(null)));
 
         int lunagreeX;
         int lunagreeZ;
