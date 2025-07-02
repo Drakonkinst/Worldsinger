@@ -1,6 +1,7 @@
 package io.github.drakonkinst.worldsinger.datagen;
 
 import io.github.drakonkinst.worldsinger.Worldsinger;
+import io.github.drakonkinst.worldsinger.advancement.SailedInSporeSeaCriterion;
 import io.github.drakonkinst.worldsinger.block.ModBlocks;
 import io.github.drakonkinst.worldsinger.cosmere.SilverLined;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.AetherSpores;
@@ -20,7 +21,7 @@ import io.github.drakonkinst.worldsinger.registry.ModComponentPredicateTypes;
 import io.github.drakonkinst.worldsinger.registry.ModDataComponentTypes;
 import io.github.drakonkinst.worldsinger.registry.ModLootTables;
 import io.github.drakonkinst.worldsinger.registry.tag.ModBlockTags;
-import io.github.drakonkinst.worldsinger.worldgen.ModBiomes;
+import io.github.drakonkinst.worldsinger.worldgen.biome.ModBiomeKeys;
 import io.github.drakonkinst.worldsinger.worldgen.dimension.ModDimensions;
 import java.util.Collections;
 import java.util.Optional;
@@ -401,18 +402,19 @@ public class ModAdvancementGenerator extends FabricAdvancementProvider {
                         createEnterSporeSeaCriterion(MidnightSpores.getInstance()))
                 // TODO: Make this even more data-driven later
                 .criterion("deep_spore_sea",
-                        createEnterBiomeCriterion(biomeLookup, ModBiomes.DEEP_SPORE_SEA))
+                        createEnterBiomeCriterion(biomeLookup, ModBiomeKeys.DEEP_SPORE_SEA))
                 .criterion("lumar_forest",
-                        createEnterBiomeCriterion(biomeLookup, ModBiomes.LUMAR_FOREST))
+                        createEnterBiomeCriterion(biomeLookup, ModBiomeKeys.LUMAR_FOREST))
                 .criterion("lumar_grasslands",
-                        createEnterBiomeCriterion(biomeLookup, ModBiomes.LUMAR_GRASSLANDS))
+                        createEnterBiomeCriterion(biomeLookup, ModBiomeKeys.LUMAR_GRASSLANDS))
                 .criterion("lumar_peaks",
-                        createEnterBiomeCriterion(biomeLookup, ModBiomes.LUMAR_PEAKS))
+                        createEnterBiomeCriterion(biomeLookup, ModBiomeKeys.LUMAR_PEAKS))
                 .criterion("lumar_rocks",
-                        createEnterBiomeCriterion(biomeLookup, ModBiomes.LUMAR_ROCKS))
+                        createEnterBiomeCriterion(biomeLookup, ModBiomeKeys.LUMAR_ROCKS))
                 .criterion("saltstone_island",
-                        createEnterBiomeCriterion(biomeLookup, ModBiomes.SALTSTONE_ISLAND))
-                .criterion("spore_sea", createEnterBiomeCriterion(biomeLookup, ModBiomes.SPORE_SEA))
+                        createEnterBiomeCriterion(biomeLookup, ModBiomeKeys.SALTSTONE_ISLAND))
+                .criterion("spore_sea",
+                        createEnterBiomeCriterion(biomeLookup, ModBiomeKeys.SPORE_SEA))
                 .build(consumer, Worldsinger.idStr("lumar/explore_lumar"));
         AdvancementEntry sailInSpores = Advancement.Builder.createUntelemetered()
                 .parent(useSilverLinedBoat)
@@ -421,9 +423,8 @@ public class ModAdvancementGenerator extends FabricAdvancementProvider {
                         Text.translatable(
                                 "advancements.worldsinger.lumar.sail_in_spores.description"), null,
                         AdvancementFrame.TASK, true, true, false)
-                // TODO: Criterion
-                .criterion("impossible",
-                        Criteria.IMPOSSIBLE.create(new ImpossibleCriterion.Conditions()))
+                .criterion("sail_in_spores_during_stilling",
+                        SailedInSporeSeaCriterion.Conditions.create(false))
                 .build(consumer, Worldsinger.idStr("lumar/sail_in_spores"));
         AdvancementEntry walkOnSporeSea = Advancement.Builder.createUntelemetered()
                 .parent(sailInSpores)

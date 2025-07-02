@@ -24,8 +24,11 @@
 package io.github.drakonkinst.worldsinger.mixin.entity;
 
 import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
+import io.github.drakonkinst.worldsinger.advancement.ModCriteria;
 import io.github.drakonkinst.worldsinger.api.ModAttachmentTypes;
 import io.github.drakonkinst.worldsinger.cosmere.SilverLined;
+import io.github.drakonkinst.worldsinger.cosmere.lumar.AetherSpores;
+import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarManagerAccess;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.SeetheManager;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.SporeKillingUtil;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.SporeParticleSpawner;
@@ -34,11 +37,13 @@ import io.github.drakonkinst.worldsinger.fluid.ModFluidTags;
 import io.github.drakonkinst.worldsinger.registry.ModSoundEvents;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ShapeContext;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.vehicle.AbstractBoatEntity;
 import net.minecraft.entity.vehicle.AbstractBoatEntity.Location;
 import net.minecraft.entity.vehicle.VehicleEntity;
 import net.minecraft.fluid.FluidState;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.math.BlockPos;
@@ -144,8 +149,18 @@ public abstract class BoatEntityMovementMixin extends VehicleEntity {
                 double xOffset = paddleIndex == 1 ? -vec3d.z : vec3d.z;
                 double zOffset = paddleIndex == 1 ? vec3d.x : -vec3d.x;
                 Vec3d pos = new Vec3d(this.getX() + xOffset, this.getY(), this.getZ() + zOffset);
-                SporeParticleSpawner.spawnRowingParticles(world,
-                        lastAetherSporeFluid.getSporeType(), pos);
+                AetherSpores sporeType = lastAetherSporeFluid.getSporeType();
+                int sporeId = sporeType.getId();
+                boolean isSeetheActive = ((LumarManagerAccess) world).worldsinger$getLumarManager()
+                        .getSeetheManager()
+                        .isSeething();
+                SporeParticleSpawner.spawnRowingParticles(world, sporeType, pos);
+                for (Entity entity : this.getPassengerList()) {
+                    if (entity instanceof ServerPlayerEntity playerEntity) {
+                        ModCriteria.SAILED_IN_SPORE_SEA.trigger(playerEntity, sporeId,
+                                isSeetheActive);
+                    }
+                }
             }
         }
     }
