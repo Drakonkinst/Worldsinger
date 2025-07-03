@@ -1,6 +1,7 @@
 plugins {
     id 'fabric-loom' version "${loom_version}"
     id 'maven-publish'
+    // https://github.com/Fallen-Breath/yamlang
     id "me.fallenbreath.yamlang" version "1.4.1"
 }
 

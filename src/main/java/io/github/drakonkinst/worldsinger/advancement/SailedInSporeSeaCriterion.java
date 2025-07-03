@@ -29,9 +29,7 @@ public class SailedInSporeSeaCriterion extends
                 }
             }
             if (!conditions.sporeTypes().isEmpty()) {
-                if (!conditions.sporeTypes().contains(sporeId)) {
-                    return false;
-                }
+                return conditions.sporeTypes().contains(sporeId);
             }
             return true;
         });

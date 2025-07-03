@@ -8,6 +8,8 @@ public final class ModCriteria {
 
     public static final SailedInSporeSeaCriterion SAILED_IN_SPORE_SEA = register(
             "sailed_in_spore_sea", new SailedInSporeSeaCriterion());
+    public static final SailedNearLunagreeCriterion SAILED_NEAR_LUNAGREE = register(
+            "sailed_near_lunagree", new SailedNearLunagreeCriterion());
 
     public static void initialize() {}
 

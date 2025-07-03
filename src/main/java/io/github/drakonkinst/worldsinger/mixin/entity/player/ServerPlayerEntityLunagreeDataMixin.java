@@ -24,9 +24,11 @@
 package io.github.drakonkinst.worldsinger.mixin.entity.player;
 
 import com.mojang.authlib.GameProfile;
+import io.github.drakonkinst.worldsinger.advancement.ModCriteria;
 import io.github.drakonkinst.worldsinger.cosmere.CosmerePlanet;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarManagerAccess;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LunagreeGenerator;
+import io.github.drakonkinst.worldsinger.cosmere.lumar.LunagreeLocation;
 import io.github.drakonkinst.worldsinger.world.LunagreeDataReceiver;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -79,6 +81,25 @@ public abstract class ServerPlayerEntityLunagreeDataMixin extends PlayerEntity i
             }
             shouldCheckPosition = false;
             nextUpdateTick = world.getTime() + UPDATE_DELAY;
+        }
+    }
+
+    @Inject(method = "playerTick", at = @At(value = "INVOKE", target = "Lnet/minecraft/advancement/criterion/TickCriterion;trigger(Lnet/minecraft/server/network/ServerPlayerEntity;)V"))
+    private void triggerNearLunagreeCriterion(CallbackInfo ci) {
+        ServerWorld world = this.getWorld();
+        if (!CosmerePlanet.isLumar(world)) {
+            return;
+        }
+        LunagreeGenerator lunagreeGenerator = ((LumarManagerAccess) world).worldsinger$getLumarManager()
+                .getLunagreeGenerator();
+        // We use MAX_VALUE here, but the implementation is naturally limited by the range of the neighboring lunagrees
+        LunagreeLocation nearestLocation = lunagreeGenerator.getNearestLunagree(world,
+                this.getBlockX(), this.getBlockZ(), Integer.MAX_VALUE);
+        if (nearestLocation != null) {
+            double distSq = nearestLocation.distSqTo(this.getX(), this.getZ());
+            int lunagreeSporeId = nearestLocation.sporeId();
+            ModCriteria.SAILED_NEAR_LUNAGREE.trigger((ServerPlayerEntity) (Object) this,
+                    lunagreeSporeId, distSq);
         }
     }
 

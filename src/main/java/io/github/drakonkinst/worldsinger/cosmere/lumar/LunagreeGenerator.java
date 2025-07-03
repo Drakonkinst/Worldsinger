@@ -89,7 +89,8 @@ public interface LunagreeGenerator {
             int deltaX = blockX - location.blockX();
             int deltaZ = blockZ - location.blockZ();
             int distSq = deltaX * deltaX + deltaZ * deltaZ;
-            if (distSq < minDistSq && distSq < maxDistance * maxDistance) {
+            if (distSq < minDistSq && (maxDistance == Integer.MAX_VALUE
+                    || distSq < maxDistance * maxDistance)) {
                 nearestLocation = location;
                 minDistSq = distSq;
             }

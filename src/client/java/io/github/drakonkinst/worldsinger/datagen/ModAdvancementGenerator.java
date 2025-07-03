@@ -2,10 +2,12 @@ package io.github.drakonkinst.worldsinger.datagen;
 
 import io.github.drakonkinst.worldsinger.Worldsinger;
 import io.github.drakonkinst.worldsinger.advancement.SailedInSporeSeaCriterion;
+import io.github.drakonkinst.worldsinger.advancement.SailedNearLunagreeCriterion;
 import io.github.drakonkinst.worldsinger.block.ModBlocks;
 import io.github.drakonkinst.worldsinger.cosmere.SilverLined;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.AetherSpores;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.CrimsonSpores;
+import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarLunagreeGenerator;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.MidnightSpores;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.RoseiteSpores;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.SunlightSpores;
@@ -203,9 +205,8 @@ public class ModAdvancementGenerator extends FabricAdvancementProvider {
                         Text.translatable(
                                 "advancements.worldsinger.lumar.find_lunagree.description"), null,
                         AdvancementFrame.TASK, true, true, false)
-                // TODO: Criterion
-                .criterion("impossible",
-                        Criteria.IMPOSSIBLE.create(new ImpossibleCriterion.Conditions()))
+                .criterion("sail_near_lunagree", SailedNearLunagreeCriterion.Conditions.create(
+                        LumarLunagreeGenerator.SPORE_FALL_RADIUS + 75.0))
                 .build(consumer, Worldsinger.idStr("lumar/find_lunagree"));
         AdvancementEntry lootShipwreck = Advancement.Builder.createUntelemetered()
                 .parent(enterLumar)
