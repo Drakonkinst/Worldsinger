@@ -82,6 +82,7 @@
     "item.BoatItemMixin",
     "item.BrushItemMixin",
     "item.BucketItemMixin",
+    "item.EmptyMapItemMixin",
     "item.FilledMapItemMixin",
     "item.GlassBottleItemMixin",
     "item.ItemMixin",

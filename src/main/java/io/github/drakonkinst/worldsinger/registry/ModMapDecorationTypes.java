@@ -31,7 +31,6 @@ import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.util.Identifier;
 
 public final class ModMapDecorationTypes {
 
@@ -45,7 +44,7 @@ public final class ModMapDecorationTypes {
             boolean showOnItemFrame, int mapColor, boolean trackCount,
             boolean explorationMapElement) {
         RegistryKey<MapDecorationType> registryKey = RegistryKey.of(
-                RegistryKeys.MAP_DECORATION_TYPE, Identifier.ofVanilla(id));
+                RegistryKeys.MAP_DECORATION_TYPE, Worldsinger.id(id));
         MapDecorationType mapDecorationType = new MapDecorationType(Worldsinger.id(assetId),
                 showOnItemFrame, mapColor, explorationMapElement, trackCount);
         return Registry.registerReference(Registries.MAP_DECORATION_TYPE, registryKey,

@@ -24,6 +24,7 @@
 package io.github.drakonkinst.worldsinger.entity;
 
 import io.github.drakonkinst.worldsinger.Worldsinger;
+import io.github.drakonkinst.worldsinger.advancement.ModCriteria;
 import io.github.drakonkinst.worldsinger.api.ModAttachmentTypes;
 import io.github.drakonkinst.worldsinger.block.ModBlocks;
 import io.github.drakonkinst.worldsinger.cosmere.PossessionManager;
@@ -89,6 +90,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsage;
 import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
@@ -575,6 +577,9 @@ public class MidnightCreatureEntity extends ShapeshiftingEntity implements
         } else {
             if (!isInitial && !host.isCreative()) {
                 thirstManager.remove(1);
+            }
+            if (host instanceof ServerPlayerEntity serverPlayerEntity) {
+                ModCriteria.BOND_ENTITY.trigger(serverPlayerEntity, this);
             }
             bondData.updateBond(this.getId());
         }

@@ -271,7 +271,7 @@ advancements.worldsinger:
       description: Brew a splash bottle of spores using Zephyr Spores for the ingredient and Sunlight Spores as the fuel
     tame_midnight_creature:
       title: A Dangerous Trade
-      description: Bond a Midnight Creature
+      description: Bond with Midnight Essence
     obtain_all_spore_growths:
       title: Spore Decor
       description: Gather all the spore growth blocks with Silk Touch
@@ -280,16 +280,16 @@ advancements.worldsinger:
       description: Explore every ocean and biome on Lumar
     enter_crimson_sea:
       title: Unpredictable Rains
-      description: Enter the Crimson Sea. Beware of rogue rainlines...
+      description: Enter the Crimson Sea. Beware of rogue Rainlines...
     enter_midnight_sea:
       title: The Domain of the Sorceress
       description: Enter the Midnight Sea
     find_rainline:
-      title: Lumar Cartographer
-      description: Locate a rainline on a map
+      title: Ribbons of Death
+      description: Chart the path of a Rainline with a Map
     sail_in_spores:
       title: Sporelocked!
-      description: Try to sail a boat during a stilling
+      description: Try to sail a Boat during a stilling
     walk_on_spore_sea:
       title: Just Keep Moving
       description: Walk on the spore sea during a stilling

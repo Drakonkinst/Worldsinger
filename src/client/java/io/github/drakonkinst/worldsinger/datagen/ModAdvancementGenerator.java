@@ -1,6 +1,8 @@
 package io.github.drakonkinst.worldsinger.datagen;
 
 import io.github.drakonkinst.worldsinger.Worldsinger;
+import io.github.drakonkinst.worldsinger.advancement.BondEntityCriterion;
+import io.github.drakonkinst.worldsinger.advancement.FindIconOnMapCriterion;
 import io.github.drakonkinst.worldsinger.advancement.SailedInSporeSeaCriterion;
 import io.github.drakonkinst.worldsinger.advancement.SailedNearLunagreeCriterion;
 import io.github.drakonkinst.worldsinger.block.ModBlocks;
@@ -13,6 +15,7 @@ import io.github.drakonkinst.worldsinger.cosmere.lumar.RoseiteSpores;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.SunlightSpores;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.VerdantSpores;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.ZephyrSpores;
+import io.github.drakonkinst.worldsinger.entity.ModEntityTypes;
 import io.github.drakonkinst.worldsinger.item.ModItems;
 import io.github.drakonkinst.worldsinger.item.component.CannonballComponent;
 import io.github.drakonkinst.worldsinger.item.component.CannonballComponent.CannonballCore;
@@ -22,6 +25,7 @@ import io.github.drakonkinst.worldsinger.predicate.component.SilverLinedPredicat
 import io.github.drakonkinst.worldsinger.registry.ModComponentPredicateTypes;
 import io.github.drakonkinst.worldsinger.registry.ModDataComponentTypes;
 import io.github.drakonkinst.worldsinger.registry.ModLootTables;
+import io.github.drakonkinst.worldsinger.registry.ModMapDecorationTypes;
 import io.github.drakonkinst.worldsinger.registry.tag.ModBlockTags;
 import io.github.drakonkinst.worldsinger.worldgen.biome.ModBiomeKeys;
 import io.github.drakonkinst.worldsinger.worldgen.dimension.ModDimensions;
@@ -51,12 +55,14 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.item.map.MapDecorationType;
 import net.minecraft.loot.condition.LocationCheckLootCondition;
 import net.minecraft.predicate.BlockPredicate;
 import net.minecraft.predicate.NumberRange;
 import net.minecraft.predicate.component.ComponentMapPredicate;
 import net.minecraft.predicate.component.ComponentsPredicate;
 import net.minecraft.predicate.entity.EntityPredicate;
+import net.minecraft.predicate.entity.EntityPredicate.Builder;
 import net.minecraft.predicate.entity.LocationPredicate;
 import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
@@ -88,11 +94,13 @@ public class ModAdvancementGenerator extends FabricAdvancementProvider {
                 new CannonballComponent(CannonballShell.CERAMIC, CannonballCore.ROSEITE, 3,
                         Collections.emptyList()));
         // Registries
-        RegistryWrapper<EntityType<?>> entityTypeWrapper = wrapperLookup.getOrThrow(
+        RegistryWrapper<EntityType<?>> entityTypeLookup = wrapperLookup.getOrThrow(
                 RegistryKeys.ENTITY_TYPE);
         RegistryWrapper<Item> itemLookup = wrapperLookup.getOrThrow(RegistryKeys.ITEM);
         RegistryWrapper<Block> blockLookup = wrapperLookup.getOrThrow(RegistryKeys.BLOCK);
         RegistryWrapper<Biome> biomeLookup = wrapperLookup.getOrThrow(RegistryKeys.BIOME);
+        RegistryWrapper<MapDecorationType> mapDecorationLookup = wrapperLookup.getOrThrow(
+                RegistryKeys.MAP_DECORATION_TYPE);
 
         // Cosmere Advancements
         AdvancementEntry cosmere = Advancement.Builder.createUntelemetered()
@@ -162,7 +170,7 @@ public class ModAdvancementGenerator extends FabricAdvancementProvider {
                                 ItemPredicate.Builder.create(), Optional.of(
                                         EntityPredicate.contextPredicateFromEntityPredicate(
                                                 EntityPredicate.Builder.create()
-                                                        .type(entityTypeWrapper,
+                                                        .type(entityTypeLookup,
                                                                 ConventionalEntityTypeTags.BOATS)
                                                         .components(
                                                                 ComponentsPredicate.Builder.create()
@@ -346,7 +354,7 @@ public class ModAdvancementGenerator extends FabricAdvancementProvider {
                         Text.translatable(
                                 "advancements.worldsinger.lumar.enter_crimson_sea.description"),
                         null, AdvancementFrame.TASK, true, true, false)
-                .criterion("enter_crimson_sea",
+                .criterion("entered_crimson_sea",
                         createEnterSporeSeaCriterion(CrimsonSpores.getInstance()))
                 .build(consumer, Worldsinger.idStr("lumar/enter_crimson_sea"));
         AdvancementEntry enterMidnightSea = Advancement.Builder.createUntelemetered()
@@ -356,7 +364,7 @@ public class ModAdvancementGenerator extends FabricAdvancementProvider {
                         Text.translatable(
                                 "advancements.worldsinger.lumar.enter_midnight_sea.description"),
                         null, AdvancementFrame.TASK, true, true, false)
-                .criterion("enter_midnight_sea",
+                .criterion("entered_midnight_sea",
                         createEnterSporeSeaCriterion(MidnightSpores.getInstance()))
                 .build(consumer, Worldsinger.idStr("lumar/enter_midnight_sea"));
         AdvancementEntry tameMidnightCreature = Advancement.Builder.createUntelemetered()
@@ -366,9 +374,8 @@ public class ModAdvancementGenerator extends FabricAdvancementProvider {
                         Text.translatable(
                                 "advancements.worldsinger.lumar.tame_midnight_creature.description"),
                         null, AdvancementFrame.TASK, true, true, false)
-                // TODO: Criterion
-                .criterion("impossible",
-                        Criteria.IMPOSSIBLE.create(new ImpossibleCriterion.Conditions()))
+                .criterion("bonded_midnight_creature", BondEntityCriterion.Conditions.create(
+                        new Builder().type(entityTypeLookup, ModEntityTypes.MIDNIGHT_CREATURE)))
                 .build(consumer, Worldsinger.idStr("lumar/tame_midnight_creature"));
         AdvancementEntry findRainline = Advancement.Builder.createUntelemetered()
                 .parent(lootShipwreck)
@@ -377,9 +384,8 @@ public class ModAdvancementGenerator extends FabricAdvancementProvider {
                         Text.translatable(
                                 "advancements.worldsinger.lumar.find_rainline.description"), null,
                         AdvancementFrame.TASK, true, true, false)
-                // TODO: Criterion
-                .criterion("impossible",
-                        Criteria.IMPOSSIBLE.create(new ImpossibleCriterion.Conditions()))
+                .criterion("found_rainline_on_map",
+                        FindIconOnMapCriterion.Conditions.create(ModMapDecorationTypes.RAINLINE))
                 .build(consumer, Worldsinger.idStr("lumar/find_rainline"));
         AdvancementEntry exploreLumar = Advancement.Builder.createUntelemetered()
                 .parent(findRainline)
@@ -389,17 +395,17 @@ public class ModAdvancementGenerator extends FabricAdvancementProvider {
                                 "advancements.worldsinger.lumar.explore_lumar.description"), null,
                         AdvancementFrame.TASK, true, true, false)
                 .criteriaMerger(CriterionMerger.AND)
-                .criterion("enter_verdant_sea",
+                .criterion("entered_verdant_sea",
                         createEnterSporeSeaCriterion(VerdantSpores.getInstance()))
-                .criterion("enter_zephyr_sea",
+                .criterion("entered_zephyr_sea",
                         createEnterSporeSeaCriterion(ZephyrSpores.getInstance()))
-                .criterion("enter_sunlight_sea",
+                .criterion("entered_sunlight_sea",
                         createEnterSporeSeaCriterion(SunlightSpores.getInstance()))
-                .criterion("enter_crimson_sea",
+                .criterion("entered_crimson_sea",
                         createEnterSporeSeaCriterion(CrimsonSpores.getInstance()))
-                .criterion("enter_roseite_sea",
+                .criterion("entered_roseite_sea",
                         createEnterSporeSeaCriterion(RoseiteSpores.getInstance()))
-                .criterion("enter_midnight_sea",
+                .criterion("entered_midnight_sea",
                         createEnterSporeSeaCriterion(MidnightSpores.getInstance()))
                 // TODO: Make this even more data-driven later
                 .criterion("deep_spore_sea",

@@ -10,6 +10,10 @@ public final class ModCriteria {
             "sailed_in_spore_sea", new SailedInSporeSeaCriterion());
     public static final SailedNearLunagreeCriterion SAILED_NEAR_LUNAGREE = register(
             "sailed_near_lunagree", new SailedNearLunagreeCriterion());
+    public static final BondEntityCriterion BOND_ENTITY = register("bond_entity",
+            new BondEntityCriterion());
+    public static final FindIconOnMapCriterion FIND_ICON_ON_MAP = register("find_icon_on_map",
+            new FindIconOnMapCriterion());
 
     public static void initialize() {}
 
