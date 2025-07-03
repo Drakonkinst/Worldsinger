@@ -172,11 +172,12 @@ public class CannonballEntity extends ThrownItemEntity implements FlyingItemEnti
     public void handleStatus(byte status) {
         if (status == EntityStatuses.PLAY_DEATH_SOUND_OR_ADD_PROJECTILE_HIT_PARTICLES) {
             // TODO: Make a custom particle effect for this?
-            ItemStack stack = this.getStack();
-            if (stack.isOf(ModItems.CERAMIC_CANNONBALL)) {
-                stack = Items.BRICK.getDefaultStack();
+            ItemStack particleStack = this.getStack();
+            if (particleStack.isOf(ModItems.CERAMIC_CANNONBALL)) {
+                particleStack = Items.BRICK.getDefaultStack();
             }
-            ParticleEffect particleEffect = new ItemStackParticleEffect(ParticleTypes.ITEM, stack);
+            ParticleEffect particleEffect = new ItemStackParticleEffect(ParticleTypes.ITEM,
+                    particleStack);
 
             for (int i = 0; i < 8; i++) {
                 float velocityX = this.random.nextFloat() * PARTICLE_SPEED * 2.0f - PARTICLE_SPEED;
@@ -185,6 +186,13 @@ public class CannonballEntity extends ThrownItemEntity implements FlyingItemEnti
                 this.getWorld()
                         .addParticleClient(particleEffect, this.getX(), this.getY(), this.getZ(),
                                 velocityX, velocityY, velocityZ);
+            }
+
+            // TODO: Can make this into another CannonballBehavior method
+            CannonballComponent cannonballComponent = this.getStack()
+                    .get(ModDataComponentTypes.CANNONBALL);
+            if (cannonballComponent != null && cannonballComponent.core() == CannonballCore.WATER) {
+                WaterCannonballBehavior.spawnWaterParticlesClient(this);
             }
         }
     }
@@ -212,13 +220,14 @@ public class CannonballEntity extends ThrownItemEntity implements FlyingItemEnti
                 .get(ModDataComponentTypes.CANNONBALL);
         CannonballBehavior behavior = getCannonballBehavior(cannonballComponent);
 
-        if (world.isClient) {
+        if (world.isClient()) {
+            // TODO: For some reason the client side is called inconsistently, so moving some logic away from it
             behavior.onCollisionClient(this, hitPos);
-            world.playSoundClient(hitPos.getX(), hitPos.getY(), hitPos.getZ(),
-                    ModSoundEvents.ENTITY_CANNONBALL_BREAK, SoundCategory.PLAYERS, 1.0f,
-                    random.nextFloat() * 0.1f + 1.25f, true);
         } else {
             behavior.onCollisionServer(this, hitPos);
+            world.playSound(null, hitPos.getX(), hitPos.getY(), hitPos.getZ(),
+                    ModSoundEvents.ENTITY_CANNONBALL_BREAK, SoundCategory.PLAYERS, 1.0f,
+                    random.nextFloat() * 0.1f + 1.25f, world.getRandom().nextLong());
             this.getWorld()
                     .sendEntityStatus(this,
                             EntityStatuses.PLAY_DEATH_SOUND_OR_ADD_PROJECTILE_HIT_PARTICLES);

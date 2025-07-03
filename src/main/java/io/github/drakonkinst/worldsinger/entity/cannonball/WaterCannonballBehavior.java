@@ -50,13 +50,11 @@ public class WaterCannonballBehavior implements CannonballBehavior {
     private static final int WATER_SPLASH_RADIUS_HORIZONTAL = 4;
     private static final int WATER_SPLASH_RADIUS_VERTICAL = 2;
 
-    @Override
-    public void onCollisionClient(CannonballEntity entity, Vec3d hitPos) {
+    public static void spawnWaterParticlesClient(CannonballEntity entity) {
         double width = entity.getWidth();
         double radius = width * 0.5;
         Random random = entity.getRandom();
         World world = entity.getWorld();
-        // TODO: This happens inconsistently for some reason
         for (int i = 0; i < 20; i++) {
             double offsetX = random.nextDouble() * width - radius;
             double offsetY = random.nextDouble() * width - radius;
@@ -64,6 +62,12 @@ public class WaterCannonballBehavior implements CannonballBehavior {
             world.addParticleClient(ParticleTypes.SPLASH, entity.getX() + offsetX,
                     entity.getY() + offsetY, entity.getZ() + offsetZ, 0.0f, 0.0f, 0.0f);
         }
+    }
+
+    @Override
+    public void onCollisionClient(CannonballEntity entity, Vec3d hitPos) {
+        // Since this is called inconsistently, moving it somewhere else
+        // spawnWaterParticlesClient(entity);
     }
 
     @Override
