@@ -36,6 +36,9 @@ import io.github.drakonkinst.worldsinger.cosmere.lumar.ZephyrSpores;
 import io.github.drakonkinst.worldsinger.entity.ModEntityTypes;
 import io.github.drakonkinst.worldsinger.fluid.ModFluids;
 import io.github.drakonkinst.worldsinger.item.component.CannonballComponent;
+import io.github.drakonkinst.worldsinger.item.component.CannonballComponent.CannonballContent;
+import io.github.drakonkinst.worldsinger.item.component.CannonballComponent.CannonballCore;
+import io.github.drakonkinst.worldsinger.item.component.CannonballComponent.CannonballShell;
 import io.github.drakonkinst.worldsinger.registry.ModArmorMaterials;
 import io.github.drakonkinst.worldsinger.registry.ModDataComponentTypes;
 import io.github.drakonkinst.worldsinger.registry.ModFoodComponents;
@@ -43,9 +46,13 @@ import io.github.drakonkinst.worldsinger.registry.ModPotions;
 import io.github.drakonkinst.worldsinger.registry.ModSoundEvents;
 import io.github.drakonkinst.worldsinger.registry.ModToolMaterials;
 import it.unimi.dsi.fastutil.objects.ReferenceSortedSets;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
+import java.util.stream.Stream;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.minecraft.block.Block;
@@ -396,15 +403,7 @@ public final class ModItems {
             itemGroup.addAfter(Items.FLINT_AND_STEEL, ModItems.QUARTZ_AND_STEEL,
                     ModItems.FLINT_AND_IRON, ModItems.QUARTZ_AND_IRON);
             // Spore Buckets
-            itemGroup.addAfter(Items.MILK_BUCKET, new ItemConvertible[] {
-                    ModItems.VERDANT_SPORES_BUCKET,
-                    ModItems.CRIMSON_SPORES_BUCKET,
-                    ModItems.ZEPHYR_SPORES_BUCKET,
-                    ModItems.SUNLIGHT_SPORES_BUCKET,
-                    ModItems.ROSEITE_SPORES_BUCKET,
-                    ModItems.MIDNIGHT_SPORES_BUCKET,
-                    ModItems.DEAD_SPORES_BUCKET
-            });
+            itemGroup.addAfter(Items.MILK_BUCKET, getAllSporeBuckets());
             itemGroup.addAfter(Items.FISHING_ROD, ModItems.SILVER_KNIFE);
         });
 
@@ -418,6 +417,7 @@ public final class ModItems {
                     ModItems.STEEL_BOOTS
             });
             itemGroup.addAfter(Items.TRIDENT, ModItems.SILVER_KNIFE);
+            itemGroup.addAfter(Items.WIND_CHARGE, createCannonballExamples());
         });
 
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.FOOD_AND_DRINK).register((itemGroup) -> {
@@ -462,13 +462,7 @@ public final class ModItems {
             // For now, this item group should only contain important items
 
             // Spore Buckets
-            itemGroup.add(ModItems.VERDANT_SPORES_BUCKET);
-            itemGroup.add(ModItems.CRIMSON_SPORES_BUCKET);
-            itemGroup.add(ModItems.ZEPHYR_SPORES_BUCKET);
-            itemGroup.add(ModItems.SUNLIGHT_SPORES_BUCKET);
-            itemGroup.add(ModItems.ROSEITE_SPORES_BUCKET);
-            itemGroup.add(ModItems.MIDNIGHT_SPORES_BUCKET);
-            itemGroup.add(ModItems.DEAD_SPORES_BUCKET);
+            itemGroup.addAll(getAllSporeBuckets());
 
             // Spore Growth Blocks
             itemGroup.add(ModBlocks.VERDANT_VINE_BLOCK);
@@ -501,8 +495,7 @@ public final class ModItems {
 
             // Tools
             itemGroup.add(ModItems.SILVER_KNIFE);
-            itemGroup.add(
-                    ModItems.CERAMIC_CANNONBALL); // TODO: Should add this to normal tabs + pre-made variations
+            itemGroup.addAll(createCannonballExamples());
 
             // Ingredients
             itemGroup.add(ModItems.VERDANT_VINE);
@@ -533,6 +526,32 @@ public final class ModItems {
             // Spawn Eggs
             itemGroup.add(ModItems.MIDNIGHT_CREATURE_SPAWN_EGG);
         });
+    }
+
+    private static List<ItemStack> getAllSporeBuckets() {
+        return Stream.of(ModItems.VERDANT_SPORES_BUCKET, ModItems.CRIMSON_SPORES_BUCKET,
+                ModItems.ZEPHYR_SPORES_BUCKET, ModItems.SUNLIGHT_SPORES_BUCKET,
+                ModItems.ROSEITE_SPORES_BUCKET, ModItems.MIDNIGHT_SPORES_BUCKET,
+                ModItems.DEAD_SPORES_BUCKET).map(Item::getDefaultStack).toList();
+    }
+
+    private static List<ItemStack> createCannonballExamples() {
+        List<ItemStack> list = new ArrayList<>();
+        list.add(ModItems.CERAMIC_CANNONBALL.getDefaultStack());
+        list.add(createCannonball(CannonballCore.WATER, 0, null, 0));
+        list.add(createCannonball(CannonballCore.ROSEITE, 1, CannonballContent.SUNLIGHT_SPORES, 2));
+        list.add(createCannonball(CannonballCore.ROSEITE, 3, CannonballContent.VERDANT_SPORES, 3));
+        list.add(createCannonball(CannonballCore.ROSEITE, 3, CannonballContent.ROSEITE_SPORES, 3));
+        return list;
+    }
+
+    private static ItemStack createCannonball(CannonballCore core, int fuse,
+            CannonballContent content, int amount) {
+        ItemStack cannonball = ModItems.CERAMIC_CANNONBALL.getDefaultStack();
+        cannonball.set(ModDataComponentTypes.CANNONBALL,
+                new CannonballComponent(CannonballShell.CERAMIC, core, fuse,
+                        Collections.nCopies(amount, content)));
+        return cannonball;
     }
 
     private ModItems() {}
