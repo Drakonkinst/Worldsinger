@@ -21,8 +21,9 @@ import io.github.drakonkinst.worldsinger.item.component.CannonballComponent;
 import io.github.drakonkinst.worldsinger.item.component.CannonballComponent.CannonballCore;
 import io.github.drakonkinst.worldsinger.item.component.CannonballComponent.CannonballShell;
 import io.github.drakonkinst.worldsinger.loot.condition.SporeSeaLocationCheckLootCondition;
+import io.github.drakonkinst.worldsinger.predicate.component.CannonballPredicate;
+import io.github.drakonkinst.worldsinger.predicate.component.ModComponentPredicateTypes;
 import io.github.drakonkinst.worldsinger.predicate.component.SilverLinedPredicate;
-import io.github.drakonkinst.worldsinger.registry.ModComponentPredicateTypes;
 import io.github.drakonkinst.worldsinger.registry.ModDataComponentTypes;
 import io.github.drakonkinst.worldsinger.registry.ModLootTables;
 import io.github.drakonkinst.worldsinger.registry.ModMapDecorationTypes;
@@ -43,7 +44,6 @@ import net.minecraft.advancement.AdvancementFrame;
 import net.minecraft.advancement.AdvancementRequirements;
 import net.minecraft.advancement.AdvancementRequirements.CriterionMerger;
 import net.minecraft.advancement.criterion.Criteria;
-import net.minecraft.advancement.criterion.ImpossibleCriterion;
 import net.minecraft.advancement.criterion.InventoryChangedCriterion;
 import net.minecraft.advancement.criterion.ItemCriterion;
 import net.minecraft.advancement.criterion.PlayerGeneratesContainerLootCriterion;
@@ -312,15 +312,16 @@ public class ModAdvancementGenerator extends FabricAdvancementProvider {
                         Text.translatable(
                                 "advancements.worldsinger.lumar.obtain_spore_cannonball.description"),
                         null, AdvancementFrame.TASK, true, true, false)
-                // TODO: Criterion
                 .criterion("spore_cannonball", InventoryChangedCriterion.Conditions.items(
                         ItemPredicate.Builder.create()
                                 .items(itemLookup, ModItems.CERAMIC_CANNONBALL)
-                        // TODO: Make custom predicate
-                        // .components(ComponentsPredicate.Builder.create().exact().build())))
-                ))
-                .criterion("impossible",
-                        Criteria.IMPOSSIBLE.create(new ImpossibleCriterion.Conditions()))
+                                .components(ComponentsPredicate.Builder.create()
+                                        .partial(ModComponentPredicateTypes.CANNONBALL,
+                                                new CannonballPredicate(
+                                                        Optional.of(CannonballCore.ROSEITE),
+                                                        NumberRange.IntRange.atLeast(1),
+                                                        NumberRange.IntRange.ANY))
+                                        .build())))
                 .build(consumer, Worldsinger.idStr("lumar/obtain_spore_cannonball"));
         AdvancementEntry brewSporeSplashBottle = Advancement.Builder.createUntelemetered()
                 .parent(obtainAllSporeBuckets)

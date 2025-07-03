@@ -75,15 +75,22 @@ public final class BlockPosUtil {
     // per entity type, regardless of position. Starts from the minimum noiseY (entity's position).
     public static Iterable<BlockPos> iterateBoundingBoxForEntity(Entity entity) {
         return BlockPosUtil.iterateBoundingBoxForEntity(entity,
-                BlockPosUtil.toRoundedBlockPos(entity.getPos()));
+                BlockPosUtil.toRoundedYBlockPos(entity.getPos()));
     }
 
     public static Iterable<BlockPos> iterateBoundingBoxForEntity(Entity entity, BlockPos blockPos) {
         return BlockPosUtil.iterateBoundingBoxForEntity(entity, blockPos, 0, 0, 0);
     }
 
-    // Rounds only the y-coordinate
     public static BlockPos toRoundedBlockPos(Vec3d pos) {
+        int x = (int) Math.round(pos.getX());
+        int y = (int) Math.round(pos.getY());
+        int z = (int) Math.round(pos.getZ());
+        return new BlockPos(x, y, z);
+    }
+
+    // Rounds only the y-coordinate
+    public static BlockPos toRoundedYBlockPos(Vec3d pos) {
         int x = MathHelper.floor(pos.getX());
         int y = (int) Math.round(pos.getY());
         int z = MathHelper.floor(pos.getZ());

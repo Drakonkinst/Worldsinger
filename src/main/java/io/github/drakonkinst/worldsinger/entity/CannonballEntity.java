@@ -214,12 +214,11 @@ public class CannonballEntity extends ThrownItemEntity implements FlyingItemEnti
 
         if (world.isClient) {
             behavior.onCollisionClient(this, hitPos);
+            world.playSoundClient(hitPos.getX(), hitPos.getY(), hitPos.getZ(),
+                    ModSoundEvents.ENTITY_CANNONBALL_BREAK, SoundCategory.PLAYERS, 1.0f,
+                    random.nextFloat() * 0.1f + 1.25f, true);
         } else {
             behavior.onCollisionServer(this, hitPos);
-            // TODO: This should probably be client-side
-            world.playSound(null, hitPos.getX(), hitPos.getY(), hitPos.getZ(),
-                    ModSoundEvents.ENTITY_CANNONBALL_BREAK, SoundCategory.PLAYERS, 1.0f,
-                    random.nextFloat() * 0.1f + 1.25f, world.getRandom().nextLong());
             this.getWorld()
                     .sendEntityStatus(this,
                             EntityStatuses.PLAY_DEATH_SOUND_OR_ADD_PROJECTILE_HIT_PARTICLES);
