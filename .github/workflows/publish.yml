@@ -1,0 +1,57 @@
+name: publish
+on: [ pull_request, workflow_dispatch ]
+env:
+  MINECRAFT_VERSION: 1.21.7
+  JAVA_VERSION: 21
+  MOD_VERSION: 1.7.1
+  MOD_NAME: Worldsinger
+  MODRINTH_TOKEN: ${{ secrets.PUBLISH_MODRINTH_TOKEN }}
+  GITHUB_TOKEN: ${{ secrets.PUBLISH_GITHUB_TOKEN }}
+permissions:
+  contents: write
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check Environment Variables
+        run: env
+
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: ${{env.JAVA_VERSION}}
+
+      - name: Make Gradle Wrapper Executable
+        if: ${{ runner.os != 'Windows' }}
+        run: chmod +x ./gradlew
+
+      - name: Build
+        run: ./gradlew clean build
+
+      - name: Parse Changelog
+        run: ./.github/scripts/parse-changelog.sh ${{ env.MOD_VERSION }}
+
+      - name: Publish
+        uses: Kir-Antipov/mc-publish@v3.3
+        with:
+          modrinth-id: worldsinger
+          modrinth-token: "${{env.MODRINTH_TOKEN}}"
+          modrinth-featured: true
+
+          github-tag: "${{env.VERSION}}"
+          github-token: "${{env.GITHUB_TOKEN}}"
+
+          name: "${{env.MOD_NAME}} ${{env.MOD_VERSION}}"
+          version: "${{env.VERSION}}"
+          version-type: release
+          changelog-file: RELEASE_CHANGELOG.md
+
+          loaders: fabric
+          game-versions: "${{env.MINECRAFT_VERSION}}"
+          java: "${{env.JAVA_VERSION}}"
