@@ -65,7 +65,8 @@ public class PlayerThirstManager implements ThirstManager {
     private static final float MIN_HEALTH_ON_NORMAL = 1.0f;
 
     // Constants that can possibly change for balancing
-    private static final int MIN_NATURAL_THIRST = 6;
+    private static final int MIN_NATURAL_THIRST = 10;
+    private static final int MIN_CRITICAL_THIRST = 6;
     private static final float DRAIN_MULTIPLIER = 0.75f;
     private static final float DAMAGE_FROM_THIRST = 1.0f;
 
@@ -94,9 +95,9 @@ public class PlayerThirstManager implements ThirstManager {
             }
         }
 
-        // Use MIN_NATURAL_THIRST as the threshold after which you get negative effects from dehydration.
+        // Use MIN_CRITICAL_THIRST as the threshold after which you get negative effects from dehydration.
         // TODO: Might replace with a "Dehydrated" status effect later
-        if (thirstLevel < MIN_NATURAL_THIRST && entity instanceof PlayerEntity player
+        if (thirstLevel < MIN_CRITICAL_THIRST && entity instanceof PlayerEntity player
                 && !player.isCreative()) {
             player.addStatusEffect(
                     new StatusEffectInstance(StatusEffects.MINING_FATIGUE, 60, 0, false, false,
@@ -174,6 +175,10 @@ public class PlayerThirstManager implements ThirstManager {
 
     @Override
     public boolean isCritical() {
+        return thirstLevel < MIN_CRITICAL_THIRST;
+    }
+
+    public boolean isBelowNaturalThirst() {
         return thirstLevel < MIN_NATURAL_THIRST;
     }
 

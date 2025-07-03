@@ -18,6 +18,7 @@ public class ModHudElements {
 
     // TODO: Replace with an actual config
     public static boolean showThirstAlways = false;
+    public static boolean showThirstWhenBelowNaturalThirst = true;
     public static boolean showThirstWhenCritical = true;
     public static boolean showThirstWhenStatusEffect = true;
     public static long hideThirstAfterSeconds = 3;
@@ -48,6 +49,9 @@ public class ModHudElements {
         ThirstEvents.VISIBLE_PREDICATE.register(
                 player -> showThirstWhenCritical && player.getAttachedOrCreate(
                         ModAttachmentTypes.THIRST).isCritical());
+        ThirstEvents.VISIBLE_PREDICATE.register(
+                player -> showThirstWhenBelowNaturalThirst && player.getAttachedOrCreate(
+                        ModAttachmentTypes.THIRST).isBelowNaturalThirst());
         ThirstEvents.VISIBLE_PREDICATE.register(
                 player -> showThirstWhenStatusEffect && player.hasStatusEffect(
                         ModStatusEffects.THIRST));
