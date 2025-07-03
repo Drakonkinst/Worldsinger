@@ -1,6 +1,5 @@
 package io.github.drakonkinst.worldsinger.mixin.world;
 
-import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import io.github.drakonkinst.worldsinger.cosmere.CosmerePlanet;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarManager;
@@ -13,6 +12,7 @@ import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
+import net.minecraft.world.Heightmap.Type;
 import net.minecraft.world.MutableWorldProperties;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
@@ -52,9 +52,11 @@ public abstract class WorldLumarMixin implements WorldAccess, AutoCloseable, Lum
         lumarManager = LumarManager.NULL;
     }
 
-    @ModifyExpressionValue(method = "getPrecipitation", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/biome/Biome;getPrecipitation(Lnet/minecraft/util/math/BlockPos;I)Lnet/minecraft/world/biome/Biome$Precipitation;"))
+    @ModifyReturnValue(method = "getPrecipitation", at = @At(value = "RETURN"))
     private Precipitation considerRainlinesAsRaining(Precipitation original, BlockPos pos) {
-        if (original != Precipitation.NONE) {
+        // If no other precipitation is present AND the location is not blocked
+        if (original != Precipitation.NONE
+                || this.getTopPosition(Type.MOTION_BLOCKING, pos).getY() > pos.getY()) {
             return original;
         }
         if ((Object) this instanceof ServerWorld serverWorld) {
