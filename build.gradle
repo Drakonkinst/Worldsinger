@@ -88,9 +88,16 @@ dependencies {
     include(implementation("com.github.Chocohead:Fabric-ASM:${project.fabric_asm_version}"))
     testImplementation "net.fabricmc:fabric-loader-junit:${project.loader_version}"
     include(implementation(annotationProcessor("com.github.bawnorton.mixinsquared:mixinsquared-fabric:${project.mixinsquared_version}")))
-//    include(modImplementation("com.github.Drakonkinst:DataTables:v${project.data_tables_version}")) {
-    include(modImplementation("io.github.drakonkinst.datatables:DataTables:${project.data_tables_version}")) {
-        exclude(group: "net.fabricmc.fabric-api")
+
+    // Use maven local for local builds
+    if (rootProject.file('local.gradle').exists()) {
+        include(modImplementation("io.github.drakonkinst.datatables:DataTables:${project.data_tables_version}")) {
+            exclude(group: "net.fabricmc.fabric-api")
+        }
+    } else {
+        include(modImplementation("com.github.Drakonkinst:DataTables:v${project.data_tables_version}")) {
+            exclude(group: "net.fabricmc.fabric-api")
+        }
     }
 
     modImplementation("net.tslat.smartbrainlib:SmartBrainLib-fabric-${project.sbl_version}") {
