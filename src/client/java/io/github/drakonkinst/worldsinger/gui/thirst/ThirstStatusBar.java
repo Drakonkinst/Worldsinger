@@ -25,6 +25,7 @@ package io.github.drakonkinst.worldsinger.gui.thirst;
 
 import io.github.drakonkinst.worldsinger.Worldsinger;
 import io.github.drakonkinst.worldsinger.api.ModAttachmentTypes;
+import io.github.drakonkinst.worldsinger.cosmere.ThirstManager;
 import io.github.drakonkinst.worldsinger.effect.ModStatusEffects;
 import io.github.drakonkinst.worldsinger.event.thirst.ThirstEvents;
 import io.github.drakonkinst.worldsinger.registry.ModHudElements;
@@ -35,6 +36,7 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.profiler.Profilers;
 
@@ -55,6 +57,8 @@ public final class ThirstStatusBar {
     private static final Identifier WATER_FULL_TEXTURE = Worldsinger.id("hud/water_full");
     private static final Identifier WATER_FULL_THIRST_TEXTURE = Worldsinger.id(
             "hud/water_full_thirst");
+
+    private static final Random random = Random.create();
 
     private static long keepThirstBarVisibleUntil = 0;
     private static boolean isThirstBarVisible = false;
@@ -85,7 +89,8 @@ public final class ThirstStatusBar {
         final int height = client.getWindow().getScaledHeight();
         final int halfWidth = client.getWindow().getScaledWidth() / 2;
 
-        int thirstLevel = player.getAttachedOrCreate(ModAttachmentTypes.THIRST).get();
+        ThirstManager thirstComponent = player.getAttachedOrCreate(ModAttachmentTypes.THIRST);
+        int thirstLevel = thirstComponent.get();
         int yPos = height - HOTBAR_HEIGHT - STATUS_BAR_HEIGHT;
 
         for (int i = 0; i < 10; ++i) {
@@ -102,15 +107,21 @@ public final class ThirstStatusBar {
                 fullTexture = WATER_FULL_TEXTURE;
             }
 
+            int modifiedYPos = yPos;
+            if (thirstComponent.isCritical()
+                    && client.inGameHud.getTicks() % (thirstLevel * 3 + 1) == 0) {
+                modifiedYPos += random.nextInt(3) - 1;
+            }
+
             int xPos = halfWidth + THIRST_BAR_OFFSET_X - i * (ICON_SIZE - 1) - ICON_SIZE;
-            context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, emptyTexture, xPos, yPos,
+            context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, emptyTexture, xPos, modifiedYPos,
                     ICON_SIZE, ICON_SIZE);
             if (i * 2 + 1 < thirstLevel) {
-                context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, fullTexture, xPos, yPos,
-                        ICON_SIZE, ICON_SIZE);
+                context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, fullTexture, xPos,
+                        modifiedYPos, ICON_SIZE, ICON_SIZE);
             } else if (i * 2 + 1 == thirstLevel) {
-                context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, halfTexture, xPos, yPos,
-                        ICON_SIZE, ICON_SIZE);
+                context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, halfTexture, xPos,
+                        modifiedYPos, ICON_SIZE, ICON_SIZE);
             }
         }
     }
