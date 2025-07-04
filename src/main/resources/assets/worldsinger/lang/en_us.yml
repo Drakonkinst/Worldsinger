@@ -4,6 +4,17 @@ modmenu:
   descriptionTranslation.worldsinger: A Cosmere mod for Minecraft.
 gamerule:
   worldsinger_startOnLumar: Start on Lumar, the world of Tress and the Emerald Sea
+menu.worldsinger:
+  worldhop:
+    title: Worldhop
+    description: Select a travel destination.
+    item:
+      overworld:
+        title: Overworld
+        tooltip: The original world
+      lumar:
+        title: Lumar
+        tooltip: The world of §oTress and the Emerald Sea§r
 cosmere.worldsinger:
   spore_sea:
     verdant: Emerald Sea
@@ -215,6 +226,9 @@ commands:
   seethe.off.duration: Set seethe to Inactive for %s ticks
   seethe.on.query: Seethe is Active for the next %s ticks, or %s seconds
   seethe.off.query: Seethe is Inactive for the next %s ticks, or %s seconds
+  worldhop.teleport.success: Worldhopped to %s
+  worldhop.teleport.must_be_player: Only players may run this command
+  worldhop.teleport.teleport_failed: Teleportation failed, world not found
 config.worldsinger:
   yacl:
     missing: Yet Another Config Lib is not installed
@@ -227,6 +241,9 @@ config.worldsinger:
     category:
       interface:
         title: Interface
+planet.worldsinger:
+  overworld: Overworld
+  lumar: Lumar
 advancements.worldsinger:
   cosmere:
     root:

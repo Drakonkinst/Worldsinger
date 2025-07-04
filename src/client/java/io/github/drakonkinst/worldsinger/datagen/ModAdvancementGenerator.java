@@ -104,7 +104,7 @@ public class ModAdvancementGenerator extends FabricAdvancementProvider {
 
         // Cosmere Advancements
         AdvancementEntry cosmere = Advancement.Builder.createUntelemetered()
-                .display(ModBlocks.VERDANT_VINE_SNARE,
+                .display(ModItems.CRIMSON_SPINE,
                         Text.translatable("advancements.worldsinger.cosmere.root.title"),
                         Text.translatable("advancements.worldsinger.cosmere.root.description"),
                         Worldsinger.id("block/saltstone"), AdvancementFrame.TASK, false, false,

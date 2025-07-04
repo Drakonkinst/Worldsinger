@@ -30,6 +30,7 @@ import io.github.drakonkinst.worldsinger.datagen.tag.ModDamageTypeTagGenerator;
 import io.github.drakonkinst.worldsinger.datagen.tag.ModEntityTagGenerator;
 import io.github.drakonkinst.worldsinger.datagen.tag.ModFluidTagGenerator;
 import io.github.drakonkinst.worldsinger.datagen.tag.ModItemTagGenerator;
+import io.github.drakonkinst.worldsinger.dialog.ModDialogs;
 import io.github.drakonkinst.worldsinger.registry.ModDamageTypes;
 import io.github.drakonkinst.worldsinger.worldgen.biome.ModBiomes;
 import io.github.drakonkinst.worldsinger.worldgen.carver.ModConfiguredCarvers;
@@ -61,6 +62,7 @@ public class ModDataGenerator implements DataGeneratorEntrypoint {
                 RegistryKeys.CONFIGURED_FEATURE);
         addDynamicProvider(pack, "Worldsinger Placed Features", RegistryKeys.PLACED_FEATURE);
         addDynamicProvider(pack, "Worldsinger Biomes", RegistryKeys.BIOME);
+        addDynamicProvider(pack, "Worldsinger Dialogs", RegistryKeys.DIALOG);
 
         // Tags
         ModBlockTagGenerator blockTagGenerator = pack.addProvider(ModBlockTagGenerator::new);
@@ -80,6 +82,7 @@ public class ModDataGenerator implements DataGeneratorEntrypoint {
 
     @Override
     public void buildRegistry(RegistryBuilder registryBuilder) {
+        registryBuilder.addRegistry(RegistryKeys.DIALOG, ModDialogs::bootstrap);
         registryBuilder.addRegistry(RegistryKeys.DAMAGE_TYPE, ModDamageTypes::bootstrap);
         registryBuilder.addRegistry(RegistryKeys.CONFIGURED_CARVER,
                 ModConfiguredCarvers::bootstrap);

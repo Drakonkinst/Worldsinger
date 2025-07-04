@@ -28,6 +28,7 @@ import io.github.drakonkinst.worldsinger.api.ModApi;
 import io.github.drakonkinst.worldsinger.block.ModBlocks;
 import io.github.drakonkinst.worldsinger.block.ModCauldronBehaviors;
 import io.github.drakonkinst.worldsinger.command.ModCommands;
+import io.github.drakonkinst.worldsinger.command.argument.ModArgumentTypes;
 import io.github.drakonkinst.worldsinger.entity.ModEntityTypes;
 import io.github.drakonkinst.worldsinger.entity.ai.ModActivities;
 import io.github.drakonkinst.worldsinger.entity.ai.ModMemoryModuleTypes;
@@ -92,7 +93,6 @@ public class Worldsinger implements ModInitializer {
         ModBlocks.initialize();
         ModRecipeSerializer.initialize();
         ModEntityTypes.initialize();
-        ModCommands.initialize();
         ModPotions.initialize();
         ModMapDecorationTypes.initialize();
         ModCauldronBehaviors.initialize();
@@ -107,6 +107,10 @@ public class Worldsinger implements ModInitializer {
         ModCriteria.initialize();
         ModPlacedFeatures.initialize();
         ModConfiguredFeatures.initialize();
+
+        // Commands
+        ModArgumentTypes.register();
+        ModCommands.initialize();
 
         // AI
         ModMemoryModuleTypes.initialize();

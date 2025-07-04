@@ -24,28 +24,61 @@
 
 package io.github.drakonkinst.worldsinger.cosmere;
 
+import com.mojang.serialization.Codec;
 import io.github.drakonkinst.worldsinger.util.ModConstants;
 import io.github.drakonkinst.worldsinger.worldgen.dimension.ModDimensions;
+import io.netty.buffer.ByteBuf;
+import java.util.function.IntFunction;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.registry.RegistryKey;
+import net.minecraft.util.StringIdentifiable;
+import net.minecraft.util.function.ValueLists;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
-public enum CosmerePlanet {
-    NONE(ModConstants.VANILLA_DAY_LENGTH), LUMAR(ModConstants.VANILLA_DAY_LENGTH * 2);
+public enum CosmerePlanet implements StringIdentifiable {
+    NONE(0, "overworld", ModConstants.VANILLA_DAY_LENGTH, World.OVERWORLD),
+    LUMAR(1, "lumar", ModConstants.VANILLA_DAY_LENGTH * 2, ModDimensions.WORLD_LUMAR);
 
+    private static final IntFunction<CosmerePlanet> BY_ID = ValueLists.createIndexToValueFunction(
+            CosmerePlanet::getId, values(), ValueLists.OutOfBoundsHandling.ZERO);
+    public static final PacketCodec<ByteBuf, CosmerePlanet> PACKET_CODEC = PacketCodecs.indexed(
+            BY_ID, CosmerePlanet::getId);
+    public static final Codec<CosmerePlanet> CODEC = StringIdentifiable.createBasicCodec(
+            CosmerePlanet::getOrderedPlanets);
+
+    private final String translationKey;
+    private final int id;
     private final long dayLength;
+    private final RegistryKey<World> registryKey;
 
-    CosmerePlanet(long dayLength) {
+    CosmerePlanet(int id, String translationKey, long dayLength, RegistryKey<World> registryKey) {
+        this.id = id;
+        this.translationKey = translationKey;
         this.dayLength = dayLength;
+        this.registryKey = registryKey;
     }
 
     public long getDayLength() {
         return dayLength;
     }
 
-    // Can switch to another system if ordinal is not enough
     public int getId() {
-        return ordinal();
+        return id;
+    }
+
+    public String getTranslationKey() {
+        return translationKey;
+    }
+
+    @Override
+    public String asString() {
+        return translationKey;
+    }
+
+    public RegistryKey<World> getRegistryKey() {
+        return registryKey;
     }
 
     // Should only be used in world constructors when the planet field might not have been set yet.
@@ -92,5 +125,12 @@ public enum CosmerePlanet {
             return 1.0f;
         }
         return (float) planet.getDayLength() / ModConstants.VANILLA_DAY_LENGTH;
+    }
+
+    // Determines the order of how this appears in dialogs and such.
+    public static CosmerePlanet[] getOrderedPlanets() {
+        return new CosmerePlanet[] {
+                LUMAR, NONE
+        };
     }
 }

@@ -26,6 +26,7 @@ package io.github.drakonkinst.worldsinger.cosmere;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import java.util.Optional;
 import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.PersistentState;
@@ -43,7 +44,7 @@ public class CosmereWorldData extends PersistentState {
     private final static Codec<CosmereWorldData> CODEC = RecordCodecBuilder.create(
             builder -> builder.group(
                             Codec.LONG.fieldOf(KEY_TIME).forGetter(CosmereWorldData::getTimeOfDay),
-                            BlockPos.CODEC.optionalFieldOf(KEY_SPAWN_POS, null)
+                            net.minecraft.util.math.BlockPos.CODEC.optionalFieldOf(KEY_SPAWN_POS)
                                     .forGetter(cosmereWorldData -> cosmereWorldData.spawnPos),
                             Codec.FLOAT.fieldOf(KEY_SPAWN_ANGLE).forGetter(CosmereWorldData::getSpawnAngle))
                     .apply(builder, CosmereWorldData::new));
@@ -51,14 +52,14 @@ public class CosmereWorldData extends PersistentState {
             CosmereWorldData::new, CODEC, DataFixTypes.LEVEL);
 
     private long timeOfDay;
-    private @Nullable BlockPos spawnPos;
+    private Optional<BlockPos> spawnPos;
     private float spawnAngle;
 
     public CosmereWorldData() {
-        this(-1, null, 0.0f);
+        this(-1, Optional.empty(), 0.0f);
     }
 
-    public CosmereWorldData(long timeOfDay, @Nullable BlockPos spawnPos, float spawnAngle) {
+    public CosmereWorldData(long timeOfDay, Optional<BlockPos> spawnPos, float spawnAngle) {
         this.timeOfDay = timeOfDay;
         this.spawnPos = spawnPos;
         this.spawnAngle = spawnAngle;
@@ -69,7 +70,7 @@ public class CosmereWorldData extends PersistentState {
     }
 
     public void setSpawnPos(@Nullable BlockPos pos) {
-        this.spawnPos = pos;
+        this.spawnPos = Optional.ofNullable(pos);
     }
 
     public void setSpawnAngle(float spawnAngle) {
@@ -81,7 +82,7 @@ public class CosmereWorldData extends PersistentState {
     }
 
     public @Nullable BlockPos getSpawnPos() {
-        return spawnPos;
+        return spawnPos.orElse(null);
     }
 
     public float getSpawnAngle() {

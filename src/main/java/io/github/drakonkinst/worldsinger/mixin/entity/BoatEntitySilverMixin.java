@@ -95,14 +95,14 @@ public abstract class BoatEntitySilverMixin extends VehicleEntity {
         return itemStack;
     }
 
+    @SuppressWarnings("unchecked")
     @Nullable
     @Override
     public <T> T get(ComponentType<? extends T> type) {
         if (type == ModDataComponentTypes.SILVER_DURABILITY) {
             SilverLinedEntityData silverData = this.getAttachedOrCreate(
                     ModAttachmentTypes.SILVER_LINED_BOAT);
-            // noinspection unchecked
-            return (T) castComponentValue(ModDataComponentTypes.SILVER_DURABILITY,
+            return castComponentValue((ComponentType<T>) ModDataComponentTypes.SILVER_DURABILITY,
                     new SilverLinedComponent(silverData.getSilverDurability()));
         }
         return super.get(type);
