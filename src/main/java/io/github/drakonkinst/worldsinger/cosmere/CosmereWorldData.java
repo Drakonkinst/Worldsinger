@@ -26,7 +26,6 @@ package io.github.drakonkinst.worldsinger.cosmere;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import java.util.Optional;
 import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.PersistentState;
@@ -37,29 +36,32 @@ public class CosmereWorldData extends PersistentState {
 
     private static final String KEY_TIME = "time";
     private static final String KEY_SPAWN_POS = "spawn_pos";
+    private static final String KEY_SPAWN_ANGLE = "spawn_angle";
 
     public static final String NAME = "cosmere";
 
     private final static Codec<CosmereWorldData> CODEC = RecordCodecBuilder.create(
-            builder -> builder.group(Codec.LONG.fieldOf(KEY_TIME)
-                                    .forGetter(cosmereWorldData -> cosmereWorldData.timeOfDay),
-                            BlockPos.CODEC.optionalFieldOf(KEY_SPAWN_POS)
-                                    .forGetter(cosmereWorldData -> cosmereWorldData.spawnPos))
+            builder -> builder.group(
+                            Codec.LONG.fieldOf(KEY_TIME).forGetter(CosmereWorldData::getTimeOfDay),
+                            BlockPos.CODEC.optionalFieldOf(KEY_SPAWN_POS, null)
+                                    .forGetter(cosmereWorldData -> cosmereWorldData.spawnPos),
+                            Codec.FLOAT.fieldOf(KEY_SPAWN_ANGLE).forGetter(CosmereWorldData::getSpawnAngle))
                     .apply(builder, CosmereWorldData::new));
     public static PersistentStateType<CosmereWorldData> STATE_TYPE = new PersistentStateType<>(NAME,
             CosmereWorldData::new, CODEC, DataFixTypes.LEVEL);
 
     private long timeOfDay;
-    // TODO: Fix optional field
-    private Optional<BlockPos> spawnPos;
+    private @Nullable BlockPos spawnPos;
+    private float spawnAngle;
 
     public CosmereWorldData() {
-        this(-1, Optional.empty());
+        this(-1, null, 0.0f);
     }
 
-    public CosmereWorldData(long timeOfDay, Optional<BlockPos> spawnPos) {
+    public CosmereWorldData(long timeOfDay, @Nullable BlockPos spawnPos, float spawnAngle) {
         this.timeOfDay = timeOfDay;
         this.spawnPos = spawnPos;
+        this.spawnAngle = spawnAngle;
     }
 
     public void setTimeOfDay(long timeOfDay) {
@@ -67,7 +69,11 @@ public class CosmereWorldData extends PersistentState {
     }
 
     public void setSpawnPos(@Nullable BlockPos pos) {
-        this.spawnPos = Optional.ofNullable(pos);
+        this.spawnPos = pos;
+    }
+
+    public void setSpawnAngle(float spawnAngle) {
+        this.spawnAngle = spawnAngle;
     }
 
     public long getTimeOfDay() {
@@ -75,6 +81,10 @@ public class CosmereWorldData extends PersistentState {
     }
 
     public @Nullable BlockPos getSpawnPos() {
-        return spawnPos.orElse(null);
+        return spawnPos;
+    }
+
+    public float getSpawnAngle() {
+        return spawnAngle;
     }
 }

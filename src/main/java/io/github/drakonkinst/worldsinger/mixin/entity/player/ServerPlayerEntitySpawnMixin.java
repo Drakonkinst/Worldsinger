@@ -27,32 +27,37 @@ package io.github.drakonkinst.worldsinger.mixin.entity.player;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.mojang.authlib.GameProfile;
-import io.github.drakonkinst.worldsinger.registry.ModGameRules;
-import io.github.drakonkinst.worldsinger.worldgen.dimension.ModDimensions;
+import io.github.drakonkinst.worldsinger.cosmere.CosmerePlanet;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 
 @Mixin(ServerPlayerEntity.class)
 public abstract class ServerPlayerEntitySpawnMixin extends PlayerEntity {
+
+    @Shadow
+    public abstract ServerWorld getWorld();
 
     public ServerPlayerEntitySpawnMixin(World world, GameProfile gameProfile) {
         super(world, gameProfile);
     }
 
     @WrapOperation(method = "getRespawnTarget", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/MinecraftServer;getOverworld()Lnet/minecraft/server/world/ServerWorld;"))
-    private ServerWorld overrideSpawnDimension(MinecraftServer instance,
+    private ServerWorld overrideDefaultRespawnDimension(MinecraftServer instance,
             Operation<ServerWorld> original) {
         MinecraftServer server = this.getServer();
-        if (server != null) {
-            if (this.getServer().getGameRules().getBoolean(ModGameRules.START_ON_LUMAR)) {
-                return server.getWorld(ModDimensions.WORLD_LUMAR);
-            }
+        ServerWorld world = this.getWorld();
+        CosmerePlanet planet = CosmerePlanet.getPlanet(world);
+        if (planet == CosmerePlanet.NONE || server == null) {
+            // One of the default dimensions, return as normal
+            return original.call(instance);
         }
-        return original.call(instance);
+        // This should typically be the same world, but might as well keep it consistent
+        return server.getWorld(planet.getRegistryKey());
     }
 }
