@@ -1,6 +1,13 @@
 ## 1.7.1
 
-* To be added
+* Updated salt and silver textures (Thanks, Khuz!)
+* Added 21 advancements
+* Added more crafting recipes for Roseite Crystals, Crimson Spines, and Verdant Vines
+* Tweaked spore-logged mechanics to be more consistent
+* Fixed silver-lined boats not preserving silver durability when crafted into chest
+* Fixed water cannonballs inconsistently spawning splash particles
+* Fixed z-fighting glitch with silver-lined items
+* Various other QoL updates
 
 ## 1.6.3
 

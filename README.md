@@ -2,7 +2,7 @@
 
 [![Modrinth Downloads](https://img.shields.io/modrinth/dt/worldsinger?style=flat&logo=modrinth&logoColor=%23ffffff&label=Modrinth&color=%231bd96a)](https://modrinth.com/mod/worldsinger)
 
-A content mod for **Minecraft 1.21.1** that brings worlds of Brandon Sanderson's **Cosmere** to the
+A content mod for **Minecraft 1.21.7** that brings worlds of Brandon Sanderson's **Cosmere** to the
 game.
 
 Sail the
@@ -24,7 +24,7 @@ spore seas on the colorful and deadly world of **Lumar**, as seen in *Tress of t
 
 ### Art Credits
 
-* the_khuzdul1
+* the_khuzdul1 - Many textures, including:
     * Silver
     * Salt
 * FurbyMom22 - Aether Spore Sea Texture

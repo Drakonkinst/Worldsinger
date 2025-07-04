@@ -5,6 +5,7 @@ env:
   JAVA_VERSION: 21
   MOD_VERSION: 1.7.1
   MOD_NAME: Worldsinger
+  MODRINTH_ID: wHHS9ISQ
   MODRINTH_TOKEN: ${{ secrets.PUBLISH_MODRINTH_TOKEN }}
   GITHUB_TOKEN: ${{ secrets.PUBLISH_GITHUB_TOKEN }}
 permissions:
@@ -40,7 +41,7 @@ jobs:
       - name: Publish
         uses: Kir-Antipov/mc-publish@v3.3
         with:
-          modrinth-id: worldsinger
+          modrinth-id: "${{env.MODRINTH_ID}}"
           modrinth-token: "${{env.MODRINTH_TOKEN}}"
           modrinth-featured: true
 
