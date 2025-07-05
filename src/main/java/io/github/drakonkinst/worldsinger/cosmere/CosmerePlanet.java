@@ -41,6 +41,8 @@ public enum CosmerePlanet implements StringIdentifiable {
     NONE(0, "overworld", ModConstants.VANILLA_DAY_LENGTH, World.OVERWORLD),
     LUMAR(1, "lumar", ModConstants.VANILLA_DAY_LENGTH * 2, ModDimensions.WORLD_LUMAR);
 
+    public static final CosmerePlanet[] VALUES = CosmerePlanet.getOrderedPlanets();
+
     private static final IntFunction<CosmerePlanet> BY_ID = ValueLists.createIndexToValueFunction(
             CosmerePlanet::getId, values(), ValueLists.OutOfBoundsHandling.ZERO);
     public static final PacketCodec<ByteBuf, CosmerePlanet> PACKET_CODEC = PacketCodecs.indexed(
@@ -128,7 +130,7 @@ public enum CosmerePlanet implements StringIdentifiable {
     }
 
     // Determines the order of how this appears in dialogs and such.
-    public static CosmerePlanet[] getOrderedPlanets() {
+    private static CosmerePlanet[] getOrderedPlanets() {
         return new CosmerePlanet[] {
                 LUMAR, NONE
         };

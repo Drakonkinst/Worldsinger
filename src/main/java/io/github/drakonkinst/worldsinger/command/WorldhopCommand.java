@@ -51,7 +51,7 @@ public class WorldhopCommand {
     }
 
     @Nullable
-    private static TeleportTarget createTeleportTarget(ServerWorld world,
+    public static TeleportTarget createTeleportTarget(ServerWorld world,
             RegistryKey<World> targetWorldKey) {
         ServerWorld targetWorld = world.getServer().getWorld(targetWorldKey);
         if (targetWorld == null) {

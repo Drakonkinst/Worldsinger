@@ -17,16 +17,20 @@ import net.minecraft.dialog.type.Dialog;
 import net.minecraft.dialog.type.MultiActionDialog;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.Registerable;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 
 public final class ModDialogs {
 
-    public static final RegistryKey<Dialog> WORLDHOP = ModDialogs.of("worldhop");
+    public static final String WORLDHOP_PAYLOAD_KEY = "worldhop_destination";
+    public static final Identifier WORLDHOP_ID = Worldsinger.id("worldhop");
+    public static final RegistryKey<Dialog> WORLDHOP = ModDialogs.of(WORLDHOP_ID);
 
     private static final int BUTTON_WIDTH = 150;
     private static final int TEXT_WIDTH = 200;
@@ -39,8 +43,12 @@ public final class ModDialogs {
         return RegistryKey.of(RegistryKeys.DIALOG, Worldsinger.id(id));
     }
 
+    private static RegistryKey<Dialog> of(Identifier id) {
+        return RegistryKey.of(RegistryKeys.DIALOG, id);
+    }
+
     private static List<DialogActionButtonData> createWorldhopButtons() {
-        CosmerePlanet[] options = CosmerePlanet.getOrderedPlanets();
+        CosmerePlanet[] options = CosmerePlanet.VALUES;
         List<DialogActionButtonData> result = new ArrayList<>(options.length);
         for (CosmerePlanet planet : options) {
             result.add(createWorldhopButton(planet.getTranslationKey()));
@@ -49,12 +57,15 @@ public final class ModDialogs {
     }
 
     private static DialogActionButtonData createWorldhopButton(String id) {
+        NbtCompound payload = new NbtCompound();
+        payload.putString(WORLDHOP_PAYLOAD_KEY, id);
         return new DialogActionButtonData(new DialogButtonData(
                 Text.translatable("menu.worldsinger.worldhop.item.%s.title".formatted(id)),
                 Optional.of(Text.translatable(
                         "menu.worldsinger.worldhop.item.%s.tooltip".formatted(id))), BUTTON_WIDTH),
                 // FIXME: Don't run the command directly so that non-opped players can run it on startup
-                Optional.of(new SimpleDialogAction(new ClickEvent.RunCommand("/worldhop " + id))));
+                Optional.of(new SimpleDialogAction(
+                        new ClickEvent.Custom(WORLDHOP_ID, Optional.of(payload)))));
     }
 
     public static void bootstrap(Registerable<Dialog> registry) {

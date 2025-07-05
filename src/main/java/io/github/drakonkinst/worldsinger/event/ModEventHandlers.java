@@ -26,11 +26,14 @@ package io.github.drakonkinst.worldsinger.event;
 import io.github.drakonkinst.worldsinger.api.ModAttachmentTypes;
 import io.github.drakonkinst.worldsinger.api.sync.AttachmentSync;
 import io.github.drakonkinst.worldsinger.block.LivingSporeGrowthBlock;
+import io.github.drakonkinst.worldsinger.command.WorldhopCommand;
+import io.github.drakonkinst.worldsinger.cosmere.CosmerePlanet;
 import io.github.drakonkinst.worldsinger.cosmere.PossessionManager;
 import io.github.drakonkinst.worldsinger.cosmere.SilverLined;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarManagerAccess;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.MidnightAetherBondManager;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.SporeKillingUtil;
+import io.github.drakonkinst.worldsinger.dialog.ModDialogs;
 import io.github.drakonkinst.worldsinger.effect.ModStatusEffects;
 import io.github.drakonkinst.worldsinger.entity.CameraPossessable;
 import io.github.drakonkinst.worldsinger.item.ModItems;
@@ -52,13 +55,16 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.TeleportTarget;
+import org.jetbrains.annotations.Nullable;
 
 public final class ModEventHandlers {
 
-    @SuppressWarnings("UnstableApiUsage")
-    public static void initialize() {
+    private static void registerRegistryHandlers() {
         // Furnace fuels
         FuelRegistryEvents.BUILD.register((builder, context) -> {
             // // Using the time required to cook most items
@@ -67,6 +73,68 @@ public final class ModEventHandlers {
             builder.add(ModItems.SUNLIGHT_SPORES_BUCKET, 100 * numItemsToTicks);
         });
 
+        // TODO: Move this to item_components, but hopefully add some datagen first
+        // Modify default item components
+        DefaultItemComponentEvents.MODIFY.register(context -> {
+            // TODO: I'd like to make this properly data-driven one day, but tags are not supported here
+            List<Item> boats = List.of(Items.ACACIA_BOAT, Items.BIRCH_BOAT, Items.CHERRY_BOAT,
+                    Items.DARK_OAK_BOAT, Items.JUNGLE_BOAT, Items.MANGROVE_BOAT, Items.OAK_BOAT,
+                    Items.SPRUCE_BOAT, Items.BAMBOO_RAFT, Items.ACACIA_CHEST_BOAT,
+                    Items.BIRCH_CHEST_BOAT, Items.CHERRY_CHEST_BOAT, Items.DARK_OAK_CHEST_BOAT,
+                    Items.JUNGLE_CHEST_BOAT, Items.MANGROVE_CHEST_BOAT, Items.OAK_CHEST_BOAT,
+                    Items.SPRUCE_CHEST_BOAT, Items.BAMBOO_CHEST_RAFT, Items.PALE_OAK_BOAT,
+                    Items.PALE_OAK_CHEST_BOAT);
+            List<Item> axes = List.of(Items.WOODEN_AXE, Items.GOLDEN_AXE, Items.STONE_AXE,
+                    Items.IRON_AXE, ModItems.STEEL_AXE, Items.DIAMOND_AXE, Items.NETHERITE_AXE);
+
+            // Add silver-lined to boats
+            context.modify(boats, (builder, item) -> {
+                builder.add(ModDataComponentTypes.MAX_SILVER_DURABILITY,
+                        SilverLined.BOAT_MAX_DURABILITY);
+                builder.add(ModDataComponentTypes.SILVER_DURABILITY_DISPLAY_FACTOR,
+                        SilverLined.BOAT_VISUAL_SCALE_FACTOR);
+            });
+
+            // Add silver-lined to axes
+            context.modify(axes, ((builder, item) -> {
+                int maxDurability = builder.getOrDefault(DataComponentTypes.MAX_DAMAGE, 1);
+                builder.add(ModDataComponentTypes.MAX_SILVER_DURABILITY, maxDurability);
+            }));
+        });
+
+        CustomClickActionCallback.EVENT.register((player, id, payload) -> {
+            if (id.equals(ModDialogs.WORLDHOP_ID) && payload.isPresent()) {
+                handleWorldhopAction(player, payload.get().asCompound().orElse(null));
+            }
+        });
+    }
+
+    private static void handleWorldhopAction(ServerPlayerEntity player,
+            @Nullable NbtCompound compound) {
+        if (compound == null) {
+            return;
+        }
+        compound.getString(ModDialogs.WORLDHOP_PAYLOAD_KEY).ifPresent(planetId -> {
+            // TODO: At some point we might want to prevent players from sending this action more than once
+            CosmerePlanet targetPlanet = null;
+            for (CosmerePlanet planet : CosmerePlanet.VALUES) {
+                if (planet.getTranslationKey().equals(planetId)) {
+                    targetPlanet = planet;
+                }
+            }
+            if (targetPlanet != null) {
+                // It's valid
+                TeleportTarget target = WorldhopCommand.createTeleportTarget(player.getWorld(),
+                        targetPlanet.getRegistryKey());
+                if (target != null) {
+                    player.teleportTo(target);
+                }
+            }
+        });
+    }
+
+    @SuppressWarnings("UnstableApiUsage")
+    private static void registerThirstHandlers() {
         // Add Thirst-related effects when consuming an item
         FinishConsumingItemCallback.EVENT.register((entity, stack) -> {
             if (entity instanceof PlayerEntity player) {
@@ -86,7 +154,9 @@ public final class ModEventHandlers {
                 }
             }
         });
+    }
 
+    private static void registerBlockInteractionEvents() {
         // Kill spore growth blocks when first mining them with a silver tool
         AttackBlockCallback.EVENT.register((player, world, hand, pos, direction) -> {
             if (player.isSpectator()) {
@@ -122,37 +192,9 @@ public final class ModEventHandlers {
             }
             return ActionResult.PASS;
         });
+    }
 
-        // When a player takes a successful melee attack from a silver tool, dispel their Midnight/
-        // Luhel bonds.
-        ServerPlayerHurtCallback.EVENT.register(
-                (player, source, damageDealt, damageTaken, wasBlocked) -> {
-                    // We assume that if the amount is greater than 0, and it was direct, then it was a
-                    // successful (non-blocked) melee attack from the main hand
-                    Entity attacker = source.getAttacker();
-                    if (!wasBlocked && damageTaken > 0.0f && source.isDirect()
-                            && attacker instanceof LivingEntity livingEntity) {
-                        ItemStack attackingItem = livingEntity.getMainHandStack();
-
-                        if (attackingItem.isIn(ModItemTags.KILLS_SPORE_GROWTHS)) {
-                            MidnightAetherBondManager midnightAetherBond = player.getAttachedOrCreate(
-                                    ModAttachmentTypes.MIDNIGHT_AETHER_BOND);
-                            if (midnightAetherBond.hasAnyBonds()) {
-                                midnightAetherBond.dispelAllBonds(player, true);
-                            }
-                        }
-                    }
-                });
-
-        // Sync entity attachments
-        StartTrackingEntityCallback.EVENT.register(AttachmentSync::syncEntityAttachments);
-        PlayerSyncCallback.EVENT.register(
-                (player -> AttachmentSync.syncEntityAttachments(player, player)));
-
-        ServerTickEvents.END_WORLD_TICK.register(world -> {
-            ((LumarManagerAccess) world).worldsinger$getLumarManager().serverTick(world);
-        });
-
+    private static void registerPossessionHandlers() {
         // Prevent entity/block picking while possessing an entity
         PlayerPickItemEvents.BLOCK.register((player, pos, state, requestIncludeData) -> {
             PossessionManager possessionManager = player.getAttached(ModAttachmentTypes.POSSESSION);
@@ -181,34 +223,49 @@ public final class ModEventHandlers {
             // Use default behavior
             return null;
         });
+    }
 
-        // Modify default item components
-        DefaultItemComponentEvents.MODIFY.register(context -> {
-            // TODO: I'd like to make this properly data-driven one day, but tags are not supported here
-            List<Item> boats = List.of(Items.ACACIA_BOAT, Items.BIRCH_BOAT, Items.CHERRY_BOAT,
-                    Items.DARK_OAK_BOAT, Items.JUNGLE_BOAT, Items.MANGROVE_BOAT, Items.OAK_BOAT,
-                    Items.SPRUCE_BOAT, Items.BAMBOO_RAFT, Items.ACACIA_CHEST_BOAT,
-                    Items.BIRCH_CHEST_BOAT, Items.CHERRY_CHEST_BOAT, Items.DARK_OAK_CHEST_BOAT,
-                    Items.JUNGLE_CHEST_BOAT, Items.MANGROVE_CHEST_BOAT, Items.OAK_CHEST_BOAT,
-                    Items.SPRUCE_CHEST_BOAT, Items.BAMBOO_CHEST_RAFT);
-            List<Item> axes = List.of(Items.WOODEN_AXE, Items.GOLDEN_AXE, Items.STONE_AXE,
-                    Items.IRON_AXE, ModItems.STEEL_AXE, Items.DIAMOND_AXE, Items.NETHERITE_AXE);
+    private static void registerEntityHandlers() {
+        // When a player takes a successful melee attack from a silver tool, dispel their Midnight/
+        // Luhel bonds.
+        ServerPlayerHurtCallback.EVENT.register(
+                (player, source, damageDealt, damageTaken, wasBlocked) -> {
+                    // We assume that if the amount is greater than 0, and it was direct, then it was a
+                    // successful (non-blocked) melee attack from the main hand
+                    Entity attacker = source.getAttacker();
+                    if (!wasBlocked && damageTaken > 0.0f && source.isDirect()
+                            && attacker instanceof LivingEntity livingEntity) {
+                        ItemStack attackingItem = livingEntity.getMainHandStack();
 
-            // Add silver-lined to boats
-            context.modify(boats, (builder, item) -> {
-                builder.add(ModDataComponentTypes.MAX_SILVER_DURABILITY,
-                        SilverLined.BOAT_MAX_DURABILITY);
-                builder.add(ModDataComponentTypes.SILVER_DURABILITY_DISPLAY_FACTOR,
-                        SilverLined.BOAT_VISUAL_SCALE_FACTOR);
-            });
+                        if (attackingItem.isIn(ModItemTags.KILLS_SPORE_GROWTHS)) {
+                            MidnightAetherBondManager midnightAetherBond = player.getAttachedOrCreate(
+                                    ModAttachmentTypes.MIDNIGHT_AETHER_BOND);
+                            if (midnightAetherBond.hasAnyBonds()) {
+                                midnightAetherBond.dispelAllBonds(player, true);
+                            }
+                        }
+                    }
+                });
 
-            // Add silver-lined to axes
-            context.modify(axes, ((builder, item) -> {
-                int maxDurability = builder.getOrDefault(DataComponentTypes.MAX_DAMAGE, 1);
-                builder.add(ModDataComponentTypes.MAX_SILVER_DURABILITY, maxDurability);
-            }));
+        // Sync entity attachments
+        StartTrackingEntityCallback.EVENT.register(AttachmentSync::syncEntityAttachments);
+        PlayerSyncCallback.EVENT.register(
+                (player -> AttachmentSync.syncEntityAttachments(player, player)));
+    }
 
+    private static void registerWorldHandlers() {
+        ServerTickEvents.END_WORLD_TICK.register(world -> {
+            ((LumarManagerAccess) world).worldsinger$getLumarManager().serverTick(world);
         });
+    }
+
+    public static void initialize() {
+        registerRegistryHandlers();
+        registerThirstHandlers();
+        registerBlockInteractionEvents();
+        registerPossessionHandlers();
+        registerEntityHandlers();
+        registerWorldHandlers();
     }
 
     private ModEventHandlers() {}

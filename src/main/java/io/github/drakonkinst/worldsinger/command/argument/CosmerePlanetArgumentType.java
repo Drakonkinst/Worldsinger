@@ -8,7 +8,7 @@ import net.minecraft.server.command.ServerCommandSource;
 public class CosmerePlanetArgumentType extends EnumArgumentType<CosmerePlanet> {
 
     private CosmerePlanetArgumentType() {
-        super(CosmerePlanet.CODEC, CosmerePlanet::getOrderedPlanets);
+        super(CosmerePlanet.CODEC, () -> CosmerePlanet.VALUES);
     }
 
     public static CosmerePlanetArgumentType cosmerePlanet() {
