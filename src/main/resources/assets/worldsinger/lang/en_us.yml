@@ -213,6 +213,7 @@ block.worldsinger:
   roseite_spore_cauldron: Roseite Spore Cauldron
   midnight_spore_cauldron: Midnight Spore Cauldron
 action.worldsinger.possess.on_start: Press %1$s to Exit
+action.worldsinger.choose_origin_planet.already_selected: You have already chosen a planet of origin
 commands:
   locate.spore_sea.not_found: Could not find %s within reasonable distance
   locate.spore_sea.unknown: 'Unknown spore sea: %s'
@@ -229,6 +230,8 @@ commands:
   worldhop.teleport.success: Worldhopped to %s
   worldhop.teleport.must_be_player: Only players may run this command
   worldhop.teleport.teleport_failed: Teleportation failed, world not found
+  resetorigin.success: Reset origin for %s
+  resetorigin.info: Your origin has been reset. Rejoin the server to select your origin.
 config.worldsinger:
   yacl:
     missing: Yet Another Config Lib is not installed

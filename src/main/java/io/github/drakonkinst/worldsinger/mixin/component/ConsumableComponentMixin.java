@@ -25,7 +25,7 @@
 package io.github.drakonkinst.worldsinger.mixin.component;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
-import io.github.drakonkinst.worldsinger.api.ModAttachmentTypes;
+import io.github.drakonkinst.worldsinger.entity.attachments.ModAttachmentTypes;
 import io.github.drakonkinst.worldsinger.cosmere.ThirstManager;
 import io.github.drakonkinst.worldsinger.event.FinishConsumingItemCallback;
 import net.minecraft.component.type.ConsumableComponent;

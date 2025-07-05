@@ -23,7 +23,7 @@
  */
 package io.github.drakonkinst.worldsinger.mixin.entity.player;
 
-import io.github.drakonkinst.worldsinger.api.ModAttachmentTypes;
+import io.github.drakonkinst.worldsinger.entity.attachments.ModAttachmentTypes;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;

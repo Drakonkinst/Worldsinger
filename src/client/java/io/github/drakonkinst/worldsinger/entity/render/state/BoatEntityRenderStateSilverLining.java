@@ -1,6 +1,6 @@
 package io.github.drakonkinst.worldsinger.entity.render.state;
 
-import io.github.drakonkinst.worldsinger.api.ModAttachmentTypes;
+import io.github.drakonkinst.worldsinger.entity.attachments.ModAttachmentTypes;
 import io.github.drakonkinst.worldsinger.cosmere.SilverLined;
 import io.github.drakonkinst.worldsinger.cosmere.SilverLiningLevel;
 import net.minecraft.entity.vehicle.AbstractBoatEntity;

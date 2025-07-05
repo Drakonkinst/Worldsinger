@@ -22,31 +22,38 @@
  * SOFTWARE.
  */
 
-package io.github.drakonkinst.worldsinger.api;
+package io.github.drakonkinst.worldsinger.entity.attachments;
 
 import io.github.drakonkinst.worldsinger.Worldsinger;
-import io.github.drakonkinst.worldsinger.entity.PlayerThirstManager;
-import io.github.drakonkinst.worldsinger.entity.SilverLinedBoatData;
-import io.github.drakonkinst.worldsinger.entity.data.PlayerMidnightAetherBondManager;
-import io.github.drakonkinst.worldsinger.entity.data.PlayerPossessionManager;
+import io.github.drakonkinst.worldsinger.entity.attachments.player.PlayerMidnightAetherBondManager;
+import io.github.drakonkinst.worldsinger.entity.attachments.player.PlayerOrigin;
+import io.github.drakonkinst.worldsinger.entity.attachments.player.PlayerPossessionManager;
+import io.github.drakonkinst.worldsinger.entity.attachments.player.PlayerThirstManager;
 import net.fabricmc.fabric.api.attachment.v1.AttachmentRegistry;
 import net.fabricmc.fabric.api.attachment.v1.AttachmentType;
 
+// I think these are only used for entities now
 @SuppressWarnings("UnstableApiUsage")
 public final class ModAttachmentTypes {
 
+    // Player persistent data
+    public static final AttachmentType<PlayerThirstManager> THIRST = AttachmentRegistry.create(
+            Worldsinger.id("thirst"), builder -> builder.persistent(PlayerThirstManager.CODEC)
+                    .initializer(PlayerThirstManager::new));
+    public static final AttachmentType<PlayerOrigin> PLAYER_ORIGIN = AttachmentRegistry.create(
+            Worldsinger.id("player_origin"), builder -> builder.persistent(PlayerOrigin.CODEC)
+                    .initializer(() -> PlayerOrigin.DEFAULT));
+
+    // Player non-persistent data
+    public static final AttachmentType<PlayerMidnightAetherBondManager> MIDNIGHT_AETHER_BOND = AttachmentRegistry.createDefaulted(
+            Worldsinger.id("midnight_aether_bond"), PlayerMidnightAetherBondManager::new);
+    public static final AttachmentType<PlayerPossessionManager> POSSESSION = AttachmentRegistry.create(
+            Worldsinger.id("possession"));
+    // Other entity data
     public static final AttachmentType<SilverLinedBoatData> SILVER_LINED_BOAT = AttachmentRegistry.create(
             Worldsinger.id("silver_lined_boat"),
             builder -> builder.persistent(SilverLinedBoatData.CODEC)
                     .initializer(() -> new SilverLinedBoatData(0)));
-    public static final AttachmentType<PlayerPossessionManager> POSSESSION = AttachmentRegistry.create(
-            Worldsinger.id("possession"));
-    public static final AttachmentType<PlayerThirstManager> THIRST = AttachmentRegistry.create(
-            Worldsinger.id("thirst"), builder -> builder.persistent(PlayerThirstManager.CODEC)
-                    .initializer(PlayerThirstManager::new));
-    // Non-persistent
-    public static final AttachmentType<PlayerMidnightAetherBondManager> MIDNIGHT_AETHER_BOND = AttachmentRegistry.createDefaulted(
-            Worldsinger.id("midnight_aether_bond"), PlayerMidnightAetherBondManager::new);
 
     private ModAttachmentTypes() {}
 }

@@ -25,7 +25,7 @@ package io.github.drakonkinst.worldsinger.network;
 
 import io.github.drakonkinst.worldsinger.Worldsinger;
 import io.github.drakonkinst.worldsinger.api.ClientLunagreeData;
-import io.github.drakonkinst.worldsinger.api.ModAttachmentTypes;
+import io.github.drakonkinst.worldsinger.entity.attachments.ModAttachmentTypes;
 import io.github.drakonkinst.worldsinger.api.sync.SyncableAttachment;
 import io.github.drakonkinst.worldsinger.cosmere.CosmerePlanet;
 import io.github.drakonkinst.worldsinger.cosmere.PossessionManager;
@@ -34,7 +34,7 @@ import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarManagerAccess;
 import io.github.drakonkinst.worldsinger.entity.CameraPossessable;
 import io.github.drakonkinst.worldsinger.entity.PossessionClientUtil;
 import io.github.drakonkinst.worldsinger.entity.Shapeshifter;
-import io.github.drakonkinst.worldsinger.entity.data.PlayerPossessionManager;
+import io.github.drakonkinst.worldsinger.entity.attachments.player.PlayerPossessionManager;
 import io.github.drakonkinst.worldsinger.network.packet.AttachmentEntitySyncPayload;
 import io.github.drakonkinst.worldsinger.network.packet.CosmereTimeUpdatePayload;
 import io.github.drakonkinst.worldsinger.network.packet.LunagreeSyncPayload;

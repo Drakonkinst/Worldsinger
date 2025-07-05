@@ -46,6 +46,7 @@ public final class ModCommands {
         SeetheCommand.register(dispatcher);
         SporeCommand.register(dispatcher);
         WorldhopCommand.register(dispatcher);
+        ResetOriginCommand.register(dispatcher);
     }
 
     private ModCommands() {}

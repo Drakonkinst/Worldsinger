@@ -23,7 +23,7 @@
  */
 package io.github.drakonkinst.worldsinger.item;
 
-import io.github.drakonkinst.worldsinger.api.ModAttachmentTypes;
+import io.github.drakonkinst.worldsinger.entity.attachments.ModAttachmentTypes;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.MidnightAetherBondManager;
 import io.github.drakonkinst.worldsinger.entity.SilverVulnerable;
 import io.github.drakonkinst.worldsinger.mixin.accessor.LivingEntityAccessor;

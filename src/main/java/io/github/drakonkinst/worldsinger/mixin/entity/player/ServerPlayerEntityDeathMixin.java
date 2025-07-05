@@ -24,7 +24,7 @@
 package io.github.drakonkinst.worldsinger.mixin.entity.player;
 
 import com.mojang.authlib.GameProfile;
-import io.github.drakonkinst.worldsinger.api.ModAttachmentTypes;
+import io.github.drakonkinst.worldsinger.entity.attachments.ModAttachmentTypes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;

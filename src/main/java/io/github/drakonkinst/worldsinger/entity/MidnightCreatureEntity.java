@@ -25,7 +25,7 @@ package io.github.drakonkinst.worldsinger.entity;
 
 import io.github.drakonkinst.worldsinger.Worldsinger;
 import io.github.drakonkinst.worldsinger.advancement.ModCriteria;
-import io.github.drakonkinst.worldsinger.api.ModAttachmentTypes;
+import io.github.drakonkinst.worldsinger.entity.attachments.ModAttachmentTypes;
 import io.github.drakonkinst.worldsinger.block.ModBlocks;
 import io.github.drakonkinst.worldsinger.cosmere.PossessionManager;
 import io.github.drakonkinst.worldsinger.cosmere.ThirstManager;
@@ -41,8 +41,7 @@ import io.github.drakonkinst.worldsinger.entity.ai.behavior.OptionalAttackTarget
 import io.github.drakonkinst.worldsinger.entity.ai.behavior.StudyTarget;
 import io.github.drakonkinst.worldsinger.entity.ai.sensor.ConditionalNearbyBlocksSensor;
 import io.github.drakonkinst.worldsinger.entity.ai.sensor.NearestAttackableSensor;
-import io.github.drakonkinst.worldsinger.entity.data.MidnightOverlayAccess;
-import io.github.drakonkinst.worldsinger.entity.data.PlayerPossessionManager;
+import io.github.drakonkinst.worldsinger.entity.attachments.player.PlayerPossessionManager;
 import io.github.drakonkinst.worldsinger.mixin.accessor.EntityAccessor;
 import io.github.drakonkinst.worldsinger.particle.ModParticleTypes;
 import io.github.drakonkinst.worldsinger.registry.ModDamageTypes;
