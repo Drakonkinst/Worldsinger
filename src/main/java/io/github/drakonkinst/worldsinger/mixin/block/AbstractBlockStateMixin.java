@@ -25,7 +25,7 @@ package io.github.drakonkinst.worldsinger.mixin.block;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import io.github.drakonkinst.datatables.DataTable;
-import io.github.drakonkinst.datatables.DataTableRegistry;
+import io.github.drakonkinst.datatables.DataTables;
 import io.github.drakonkinst.worldsinger.block.SporeKillable;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.SporeKillingUtil;
 import io.github.drakonkinst.worldsinger.fluid.FluidShapes;
@@ -164,8 +164,8 @@ public abstract class AbstractBlockStateMixin {
         if (!state.isIn(ModBlockTags.KILLS_SPORES)) {
             return;
         }
-        DataTable dataTable = DataTableRegistry.INSTANCE.get(ModDataTables.SPORE_KILLING_RADIUS);
-        int radius = dataTable.getIntForBlock(state);
+        DataTable dataTable = DataTables.get(ModDataTables.SPORE_KILLING_RADIUS);
+        int radius = dataTable.query(state);
         if (radius <= 0) {
             return;
         }

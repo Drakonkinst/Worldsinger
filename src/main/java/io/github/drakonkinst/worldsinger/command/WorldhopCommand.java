@@ -83,7 +83,8 @@ public class WorldhopCommand {
             throw TELEPORT_FAILED.create();
         }
         player.teleportTo(teleportTarget);
-        Text planetName = Text.translatable("planet.worldsinger." + planet.getTranslationKey());
+        Text planetName = Text.translatable(
+                "cosmere.worldsinger.planet.%s.name".formatted(planet.getTranslationKey()));
         commandContext.getSource()
                 .sendFeedback(
                         () -> Text.translatable("commands.worldhop.teleport.success", planetName),

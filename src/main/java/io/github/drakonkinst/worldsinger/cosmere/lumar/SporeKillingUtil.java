@@ -24,13 +24,13 @@
 package io.github.drakonkinst.worldsinger.cosmere.lumar;
 
 import io.github.drakonkinst.datatables.DataTable;
-import io.github.drakonkinst.datatables.DataTableRegistry;
-import io.github.drakonkinst.worldsinger.entity.attachments.ModAttachmentTypes;
+import io.github.drakonkinst.datatables.DataTables;
 import io.github.drakonkinst.worldsinger.api.sync.AttachmentSync;
 import io.github.drakonkinst.worldsinger.block.LivingSporeGrowthBlock;
 import io.github.drakonkinst.worldsinger.block.SporeKillable;
 import io.github.drakonkinst.worldsinger.cosmere.SilverLined;
 import io.github.drakonkinst.worldsinger.entity.SilverLinedEntityData;
+import io.github.drakonkinst.worldsinger.entity.attachments.ModAttachmentTypes;
 import io.github.drakonkinst.worldsinger.fluid.Fluidlogged;
 import io.github.drakonkinst.worldsinger.fluid.ModFluidTags;
 import io.github.drakonkinst.worldsinger.fluid.ModFluids;
@@ -153,7 +153,7 @@ public final class SporeKillingUtil {
     }
 
     public static boolean isSporeKillingBlockNearby(World world, BlockPos pos) {
-        DataTable dataTable = DataTableRegistry.INSTANCE.get(ModDataTables.SPORE_KILLING_RADIUS);
+        DataTable dataTable = DataTables.get(ModDataTables.SPORE_KILLING_RADIUS);
         for (BlockPos currentPos : BlockPos.iterateOutwards(pos, MAX_BLOCK_RADIUS, MAX_BLOCK_RADIUS,
                 MAX_BLOCK_RADIUS)) {
             BlockState blockState = world.getBlockState(currentPos);
@@ -162,7 +162,7 @@ public final class SporeKillingUtil {
             }
 
             int distance = BlockPosUtil.getDistance(pos, currentPos);
-            if (dataTable.getIntForBlock(blockState) < distance) {
+            if (dataTable.query(blockState) < distance) {
                 continue;
             }
 
@@ -213,7 +213,7 @@ public final class SporeKillingUtil {
 
     public static boolean isSporeKillingBlockNearbyForRange(World world, int minX, int minY,
             int minZ, int maxX, int maxY, int maxZ) {
-        DataTable dataTable = DataTableRegistry.INSTANCE.get(ModDataTables.SPORE_KILLING_RADIUS);
+        DataTable dataTable = DataTables.get(ModDataTables.SPORE_KILLING_RADIUS);
 
         int searchMinX = minX - MAX_BLOCK_RADIUS;
         int searchMinY = minY - MAX_BLOCK_RADIUS;
@@ -233,7 +233,7 @@ public final class SporeKillingUtil {
             SporeKillingUtil.calcClosestPointOnCuboid(searchPos.getX(), searchPos.getY(),
                     searchPos.getZ(), minX, minY, minZ, maxX, maxY, maxZ, closestPos);
             int distance = BlockPosUtil.getDistance(searchPos, closestPos);
-            if (dataTable.getIntForBlock(blockState) < distance) {
+            if (dataTable.query(blockState) < distance) {
                 continue;
             }
 

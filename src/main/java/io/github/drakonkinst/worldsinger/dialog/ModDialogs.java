@@ -60,9 +60,9 @@ public final class ModDialogs {
         NbtCompound payload = new NbtCompound();
         payload.putString(WORLDHOP_PAYLOAD_KEY, id);
         return new DialogActionButtonData(new DialogButtonData(
-                Text.translatable("menu.worldsinger.worldhop.item.%s.title".formatted(id)),
-                Optional.of(Text.translatable(
-                        "menu.worldsinger.worldhop.item.%s.tooltip".formatted(id))), BUTTON_WIDTH),
+                Text.translatable("cosmere.worldsinger.planet.%s.name".formatted(id)), Optional.of(
+                Text.translatable("cosmere.worldsinger.planet.%s.description".formatted(id))),
+                BUTTON_WIDTH),
                 // FIXME: Don't run the command directly so that non-opped players can run it on startup
                 Optional.of(new SimpleDialogAction(
                         new ClickEvent.Custom(WORLDHOP_ID, Optional.of(payload)))));

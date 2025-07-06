@@ -8,14 +8,17 @@ menu.worldsinger:
   worldhop:
     title: Worldhop
     description: Select a travel destination.
-    item:
-      overworld:
-        title: Overworld
-        tooltip: The original world
-      lumar:
-        title: Lumar
-        tooltip: The world of §oTress and the Emerald Sea§r
+planet.worldsinger:
+  overworld: Overworld
+  lumar: Lumar
 cosmere.worldsinger:
+  planet:
+    overworld:
+      name: Overworld
+      description: The original world
+    lumar:
+      name: Lumar
+      description: The world of §oTress and the Emerald Sea§r
   spore_sea:
     verdant: Emerald Sea
     crimson: Crimson Sea
@@ -244,9 +247,6 @@ config.worldsinger:
     category:
       interface:
         title: Interface
-planet.worldsinger:
-  overworld: Overworld
-  lumar: Lumar
 advancements.worldsinger:
   cosmere:
     root:

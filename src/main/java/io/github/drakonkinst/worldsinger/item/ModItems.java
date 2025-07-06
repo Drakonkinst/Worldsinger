@@ -201,13 +201,13 @@ public final class ModItems {
         // TODO: Move to components?
         return register(id, settings -> new AetherSporeBucketItem(sporeBlock, sporeFluid,
                         ModSoundEvents.BLOCK_SPORE_BLOCK_PLACE, settings),
-                new Settings().useRemainder(Items.BUCKET).maxCount(1));
+                new Settings().recipeRemainder(Items.BUCKET).maxCount(1));
     }
 
     private static Item registerSporeBottleItem(String id, AetherSpores sporeType) {
         // TODO: Move to components?
         return register(id, settings -> new SporeBottleItem(sporeType, settings),
-                new Settings().useRemainder(Items.GLASS_BOTTLE)
+                new Settings().recipeRemainder(Items.GLASS_BOTTLE)
                         .maxCount(16)
                         .component(DataComponentTypes.POTION_CONTENTS,
                                 ModPotions.SPORE_POTIONS_COMPONENT)

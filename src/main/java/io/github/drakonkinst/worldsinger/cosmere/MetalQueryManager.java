@@ -48,7 +48,7 @@ public final class MetalQueryManager {
         int ironContent = 0;
 
         if (entity.getType().isIn(metal.getEntityTypeTag())) {
-            ironContent += entityDataTable.getIntForEntity(entity);
+            ironContent += entityDataTable.query(entity);
         }
 
         if (entity instanceof LivingEntity livingEntity) {
@@ -63,7 +63,7 @@ public final class MetalQueryManager {
             for (EquipmentSlot equipmentSlot : AttributeModifierSlot.ARMOR) {
                 ItemStack itemStack = livingEntity.getEquippedStack(equipmentSlot);
                 if (!itemStack.isEmpty() && itemStack.isIn(metal.getItemTag())) {
-                    ironContent += armorDataTable.getIntForItem(itemStack.getItem());
+                    ironContent += armorDataTable.query(itemStack.getItem());
                 }
             }
 
