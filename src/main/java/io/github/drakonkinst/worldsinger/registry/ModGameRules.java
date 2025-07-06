@@ -24,16 +24,11 @@
 
 package io.github.drakonkinst.worldsinger.registry;
 
-import net.fabricmc.fabric.api.gamerule.v1.GameRuleFactory;
-import net.fabricmc.fabric.api.gamerule.v1.GameRuleRegistry;
-import net.minecraft.world.GameRules;
-import net.minecraft.world.GameRules.Category;
-
 public final class ModGameRules {
 
-    public static final GameRules.Key<GameRules.BooleanRule> START_ON_LUMAR = GameRuleRegistry.register(
-            createModGameRuleName("startOnLumar"), Category.MISC,
-            GameRuleFactory.createBooleanRule(false));
+    // public static final GameRules.Key<GameRules.BooleanRule> START_ON_LUMAR = GameRuleRegistry.register(
+    //         createModGameRuleName("startOnLumar"), Category.MISC,
+    //         GameRuleFactory.createBooleanRule(false));
 
     private ModGameRules() {}
 

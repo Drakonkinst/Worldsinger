@@ -2,8 +2,6 @@
 modmenu:
   nameTranslation.worldsinger: Worldsinger
   descriptionTranslation.worldsinger: A Cosmere mod for Minecraft.
-gamerule:
-  worldsinger_startOnLumar: Start on Lumar, the world of Tress and the Emerald Sea
 menu.worldsinger:
   worldhop:
     title: Worldhop
