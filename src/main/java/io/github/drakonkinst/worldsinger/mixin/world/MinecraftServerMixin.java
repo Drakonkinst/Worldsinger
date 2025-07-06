@@ -29,6 +29,7 @@ import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import io.github.drakonkinst.worldsinger.cosmere.CosmerePlanet;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarManager;
 import io.github.drakonkinst.worldsinger.network.packet.CosmereTimeUpdatePayload;
+import io.github.drakonkinst.worldsinger.worldgen.CosmereGeneration;
 import io.github.drakonkinst.worldsinger.worldgen.dimension.ModDimensions;
 import net.minecraft.network.packet.s2c.common.CustomPayloadS2CPacket;
 import net.minecraft.registry.RegistryKey;
@@ -39,6 +40,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
+import net.minecraft.world.level.ServerWorldProperties;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -80,5 +82,18 @@ public abstract class MinecraftServerMixin {
             return LumarManager.generateOrFetchStartingPos(instance);
         }
         return original.call(instance);
+    }
+
+    @WrapOperation(method = "createWorlds", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/MinecraftServer;setupSpawn(Lnet/minecraft/server/world/ServerWorld;Lnet/minecraft/world/level/ServerWorldProperties;ZZ)V"))
+    private void createBonusChestsForAllWorlds(ServerWorld world,
+            ServerWorldProperties worldProperties, boolean bonusChest, boolean debugWorld,
+            Operation<Void> original) {
+        // Overworld
+        original.call(world, worldProperties, bonusChest, debugWorld);
+        if (bonusChest) {
+            // Lumar
+            CosmereGeneration.generateBonusChest((MinecraftServer) (Object) this,
+                    ModDimensions.WORLD_LUMAR, worldProperties.getSpawnPos());
+        }
     }
 }
