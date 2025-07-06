@@ -2,10 +2,13 @@ package io.github.drakonkinst.worldsinger.mixin.sync;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import com.mojang.authlib.GameProfile;
 import io.github.drakonkinst.worldsinger.event.CustomClickConfigActionCallback;
 import io.github.drakonkinst.worldsinger.event.CustomClickConfigActionCallback.ConfigAction;
+import io.github.drakonkinst.worldsinger.network.UUIDProvider;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import net.fabricmc.fabric.api.networking.v1.FabricServerConfigurationNetworkHandler;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.listener.ServerConfigurationPacketListener;
@@ -18,15 +21,20 @@ import net.minecraft.server.network.ServerCommonNetworkHandler;
 import net.minecraft.server.network.ServerConfigurationNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 
 @Mixin(ServerConfigurationNetworkHandler.class)
 public abstract class ServerConfigurationNetworkHandlerMixin extends
         ServerCommonNetworkHandler implements ServerConfigurationPacketListener,
-        TickablePacketListener, FabricServerConfigurationNetworkHandler {
+        TickablePacketListener, FabricServerConfigurationNetworkHandler, UUIDProvider {
 
+    @Shadow
+    @Final
+    private GameProfile profile;
     @Unique
     private final Map<Identifier, ConfigAction> configActions = new HashMap<>();
 
@@ -52,5 +60,10 @@ public abstract class ServerConfigurationNetworkHandlerMixin extends
         for (ConfigAction action : configActions.values()) {
             action.setup(player);
         }
+    }
+
+    @Override
+    public UUID worldsinger$getUuid() {
+        return this.profile.getId();
     }
 }
