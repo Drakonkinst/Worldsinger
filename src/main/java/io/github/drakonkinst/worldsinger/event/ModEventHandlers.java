@@ -25,19 +25,14 @@ package io.github.drakonkinst.worldsinger.event;
 
 import io.github.drakonkinst.worldsinger.api.sync.AttachmentSync;
 import io.github.drakonkinst.worldsinger.block.LivingSporeGrowthBlock;
-import io.github.drakonkinst.worldsinger.command.ModCommands;
-import io.github.drakonkinst.worldsinger.command.WorldhopCommand;
-import io.github.drakonkinst.worldsinger.cosmere.CosmerePlanet;
 import io.github.drakonkinst.worldsinger.cosmere.PossessionManager;
 import io.github.drakonkinst.worldsinger.cosmere.SilverLined;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarManagerAccess;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.MidnightAetherBondManager;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.SporeKillingUtil;
-import io.github.drakonkinst.worldsinger.dialog.ModDialogs;
 import io.github.drakonkinst.worldsinger.effect.ModStatusEffects;
 import io.github.drakonkinst.worldsinger.entity.CameraPossessable;
 import io.github.drakonkinst.worldsinger.entity.attachments.ModAttachmentTypes;
-import io.github.drakonkinst.worldsinger.entity.attachments.player.PlayerOrigin;
 import io.github.drakonkinst.worldsinger.item.ModItems;
 import io.github.drakonkinst.worldsinger.registry.ModDataComponentTypes;
 import io.github.drakonkinst.worldsinger.registry.tag.ModItemTags;
@@ -57,13 +52,8 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.TeleportTarget;
-import org.jetbrains.annotations.Nullable;
 
 public final class ModEventHandlers {
 
@@ -105,48 +95,6 @@ public final class ModEventHandlers {
             }));
         });
 
-        CustomClickActionCallback.EVENT.register((player, id, payload) -> {
-            if (id.equals(ModDialogs.WORLDHOP_ID) && payload.isPresent()) {
-                handleWorldhopAction(player, payload.get().asCompound().orElse(null));
-            }
-        });
-    }
-
-    @SuppressWarnings("UnstableApiUsage")
-    private static void handleWorldhopAction(ServerPlayerEntity player,
-            @Nullable NbtCompound compound) {
-        if (compound == null) {
-            return;
-        }
-        compound.getString(ModDialogs.WORLDHOP_PAYLOAD_KEY).ifPresent(planetId -> {
-            // TODO: At some point we might want to prevent players from sending this action more than once
-            boolean force = player.hasPermissionLevel(ModCommands.PERMISSION_LEVEL_GAMEMASTER);
-            PlayerOrigin playerOrigin = player.getAttachedOrCreate(
-                    ModAttachmentTypes.PLAYER_ORIGIN);
-            if (playerOrigin.hasPlayerSelectedOrigin() && !force) {
-                player.sendMessage(Text.translatable(
-                        "action.worldsinger.choose_origin_planet.already_selected"));
-                return;
-            }
-            CosmerePlanet targetPlanet = null;
-            for (CosmerePlanet planet : CosmerePlanet.VALUES) {
-                if (planet.getTranslationKey().equals(planetId)) {
-                    targetPlanet = planet;
-                }
-            }
-            if (targetPlanet != null) {
-                // It's valid
-                TeleportTarget target = WorldhopCommand.createTeleportTarget(player.getWorld(),
-                        targetPlanet.getRegistryKey());
-                if (target != null) {
-                    player.teleportTo(target);
-                }
-            }
-            if (!playerOrigin.hasPlayerSelectedOrigin()) {
-                player.setAttached(ModAttachmentTypes.PLAYER_ORIGIN,
-                        playerOrigin.setStartingPlanet(targetPlanet));
-            }
-        });
     }
 
     @SuppressWarnings("UnstableApiUsage")

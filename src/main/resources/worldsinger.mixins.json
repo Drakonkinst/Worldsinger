@@ -92,6 +92,7 @@
     "screen.BrewingStandScreenHandlerPotionSlotMixin",
     "sync.EntitySyncableMixin",
     "sync.EntityTrackerEntryMixin",
+    "sync.ServerConfigurationNetworkHandlerMixin",
     "sync.ServerPlayNetworkHandlerMixin",
     "world.ChunkDataSenderMixin",
     "world.ChunkLightProviderMixin",
