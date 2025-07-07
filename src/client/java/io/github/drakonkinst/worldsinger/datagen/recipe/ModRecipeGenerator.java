@@ -156,16 +156,15 @@ public class ModRecipeGenerator extends FabricRecipeProvider {
 
             private void generateShapedRecipes() {
                 this.createShaped(RecipeCategory.BREWING, ModBlocks.ALUMINUM_CAULDRON)
-                        .pattern(" # ")
-                        .pattern("#C#")
-                        .pattern(" # ")
-                        .input('#', ModBlocks.ALUMINUM_SHEET)
-                        .input('C', Blocks.CAULDRON)
-                        .criterion(hasItem(ModBlocks.ALUMINUM_SHEET),
-                                this.conditionsFromItem(ModBlocks.ALUMINUM_SHEET))
-                        .offerTo(exporter);
-                this.createShaped(RecipeCategory.DECORATIONS, ModBlocks.ALUMINUM_SHEET, 16)
                         .pattern("###")
+                        .pattern("#C#")
+                        .pattern("###")
+                        .input('#', ModItems.ALUMINUM_NUGGET)
+                        .input('C', Blocks.CAULDRON)
+                        .criterion(hasItem(ModItems.ALUMINUM_NUGGET),
+                                this.conditionsFromItem(ModItems.ALUMINUM_NUGGET))
+                        .offerTo(exporter);
+                this.createShaped(RecipeCategory.DECORATIONS, ModBlocks.ALUMINUM_SHEET, 8)
                         .pattern("###")
                         .input('#', ModConventionalItemTags.ALUMINUM_INGOTS)
                         .criterion(hasItem(ModItems.ALUMINUM_INGOT),
