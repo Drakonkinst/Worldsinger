@@ -42,6 +42,7 @@ import net.fabricmc.fabric.api.event.player.AttackBlockCallback;
 import net.fabricmc.fabric.api.event.player.PlayerPickItemEvents;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.item.v1.DefaultItemComponentEvents;
+import net.fabricmc.fabric.api.registry.CompostingChanceRegistry;
 import net.fabricmc.fabric.api.registry.FuelRegistryEvents;
 import net.minecraft.block.BlockState;
 import net.minecraft.component.DataComponentTypes;
@@ -65,6 +66,8 @@ public final class ModEventHandlers {
             builder.add(ModItems.SUNLIGHT_SPORES_BOTTLE, 8 * numItemsToTicks);
             builder.add(ModItems.SUNLIGHT_SPORES_BUCKET, 100 * numItemsToTicks);
         });
+
+        CompostingChanceRegistry.INSTANCE.add(ModItems.VERDANT_VINE, 0.3f);
 
         // TODO: Move this to item_components, but hopefully add some datagen first
         // Modify default item components
