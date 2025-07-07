@@ -18,7 +18,7 @@ public record SelectWorldOriginTask(MinecraftServer server) implements
     public void sendPacket(Consumer<Packet<?>> sender) {
         sender.accept(new ShowDialogS2CPacket(server.getRegistryManager()
                 .getOrThrow(RegistryKeys.DIALOG)
-                .getOrThrow(ModDialogs.WORLDHOP)));
+                .getOrThrow(ModDialogs.WORLDHOP_CONFIG)));
     }
 
     @Override

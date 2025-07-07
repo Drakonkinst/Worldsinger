@@ -30,7 +30,9 @@ public final class ModDialogs {
 
     public static final String WORLDHOP_PAYLOAD_KEY = "worldhop_destination";
     public static final Identifier WORLDHOP_ID = Worldsinger.id("worldhop");
+    public static final Identifier WORLDHOP_CONFIG_ID = Worldsinger.id("worldhop_config");
     public static final RegistryKey<Dialog> WORLDHOP = ModDialogs.of(WORLDHOP_ID);
+    public static final RegistryKey<Dialog> WORLDHOP_CONFIG = ModDialogs.of(WORLDHOP_CONFIG_ID);
 
     private static final int BUTTON_WIDTH = 150;
     private static final int TEXT_WIDTH = 200;
@@ -71,14 +73,24 @@ public final class ModDialogs {
     public static void bootstrap(Registerable<Dialog> registry) {
         ItemStack worldhopIcon = Items.ENDER_EYE.getDefaultStack();
         worldhopIcon.set(DataComponentTypes.ENCHANTMENT_GLINT_OVERRIDE, true);
+        List<DialogActionButtonData> worldhopButtons = createWorldhopButtons();
+        // Config version does not have a back button because that freezes
+        registry.register(WORLDHOP_CONFIG, new MultiActionDialog(
+                new DialogCommonData(Text.translatable("menu.worldsinger.worldhop.title"),
+                        Optional.empty(), false, true, AfterAction.CLOSE,
+                        List.of(new ItemDialogBody(Items.ENDER_EYE.getDefaultStack(),
+                                Optional.empty(), true, false, 16, 16), new PlainMessageDialogBody(
+                                Text.translatable("menu.worldsinger.worldhop.description"),
+                                TEXT_WIDTH)), List.of()), worldhopButtons, Optional.empty(), 1));
+        // Version with the back button
         registry.register(WORLDHOP, new MultiActionDialog(
                 new DialogCommonData(Text.translatable("menu.worldsinger.worldhop.title"),
                         Optional.empty(), true, true, AfterAction.CLOSE,
                         List.of(new ItemDialogBody(Items.ENDER_EYE.getDefaultStack(),
                                 Optional.empty(), false, false, 16, 16), new PlainMessageDialogBody(
                                 Text.translatable("menu.worldsinger.worldhop.description"),
-                                TEXT_WIDTH)), List.of()), createWorldhopButtons(),
-                Optional.of(BACK_BUTTON), 1));
+                                TEXT_WIDTH)), List.of()), worldhopButtons, Optional.of(BACK_BUTTON),
+                1));
     }
 
     private ModDialogs() {}
