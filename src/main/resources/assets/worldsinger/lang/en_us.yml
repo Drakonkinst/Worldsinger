@@ -311,5 +311,38 @@ advancements.worldsinger:
     walk_on_spore_sea:
       title: Just Keep Moving
       description: Walk on the spore sea during a stilling
+tag.item:
+  worldsinger:
+    flint_and_steel_variants: Flint and Steel variants
+    has_steel: Items that contain steel
+    has_iron: Items that contain iron
+    brewing_stand_fuels: Items that can be used as fuel on a brewing stand
+    kills_spore_growths: Items that kill spore growths
+    tempts_midnight_creatures: Items that Midnight Creatures are attracted to
+    can_be_salted: Items that can be crafted with Salt to become salted
+    always_give_thirst: Items that always inflict the Thirst effect when consumed
+    chance_to_give_thirst: Items that have a chance to inflict the Thirst effect when consumed
+    exclude_silver_lined: Items that cannot be silver-lined which usually would be
+    all_cooked_meat: All cooked meat items
+    all_raw_meat: All raw meat items
+    all_cauldrons: All cauldron items and variants
+  c:
+    salt: Salt items
+    ingots.steel: Steel ingots
+    ingots.silver: Silver ingots
+    ingots.aluminum: Aluminum ingots
+    nuggets.steel: Steel nuggets
+    nuggets.silver: Silver nuggets
+    nuggets.aluminum: Aluminum nuggets
+    ores.silver: Silver ores
+    ores.salt: Salt ores
+    storage_blocks.steel: Steel storage blocks
+    storage_blocks.silver: Silver storage blocks
+    storage_blocks.aluminum: Aluminum storage blocks
+    storage_blocks.salt: Salt storage blocks
+    storage_blocks.raw_silver: Raw silver storage blocks
+    raw_materials.silver: Silver raw materials
+    steel_tool_materials: Steel tool materials
+    silver_tool_materials: Silver tool materials
 
 ...
