@@ -1,12 +1,19 @@
 ## 1.7.1
 
+* Updated to Minecraft 1.21.7
 * Updated salt and silver textures (Thanks, Khuz!)
-* Added 21 advancements
-* Added more crafting recipes for Roseite Crystals, Crimson Spines, and Verdant Vines
+* Added a Cosmere advancements tab with 21 advancements
+* Added a recipe to craft Crimson Spines into Crimson Growths
+* Added a recipe to craft Verdant Vines into Verdant Vine Blocks
+* Made Verdant Vines compostable
+* Added recipes to replace Nether Quartz with Roseite Crystals for Diorite/Granite
+* Tweaked Aluminum Sheet recipe to require 3 ingots for 8 sheets, instead of 6 ingots for 16 sheets
 * Tweaked spore-logged mechanics to be more consistent
 * Fixed silver-lined boats not preserving silver durability when crafted into chest
 * Fixed water cannonballs inconsistently spawning splash particles
 * Fixed z-fighting glitch with silver-lined items
+* Fixed issue where silver-lined boats did not retain silver durability after completely restarting
+  the game
 * Various other QoL updates
 
 ## 1.6.3

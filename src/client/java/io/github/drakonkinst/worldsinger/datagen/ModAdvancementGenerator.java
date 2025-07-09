@@ -364,7 +364,7 @@ public class ModAdvancementGenerator extends FabricAdvancementProvider {
                                 "advancements.worldsinger.lumar.enter_midnight_sea.title"),
                         Text.translatable(
                                 "advancements.worldsinger.lumar.enter_midnight_sea.description"),
-                        null, AdvancementFrame.TASK, true, true, false)
+                        null, AdvancementFrame.GOAL, true, true, false)
                 .criterion("entered_midnight_sea",
                         createEnterSporeSeaCriterion(MidnightSpores.getInstance()))
                 .build(consumer, Worldsinger.idStr("lumar/enter_midnight_sea"));
@@ -394,7 +394,7 @@ public class ModAdvancementGenerator extends FabricAdvancementProvider {
                         Text.translatable("advancements.worldsinger.lumar.explore_lumar.title"),
                         Text.translatable(
                                 "advancements.worldsinger.lumar.explore_lumar.description"), null,
-                        AdvancementFrame.TASK, true, true, false)
+                        AdvancementFrame.CHALLENGE, true, true, false)
                 .criteriaMerger(CriterionMerger.AND)
                 .criterion("entered_verdant_sea",
                         createEnterSporeSeaCriterion(VerdantSpores.getInstance()))

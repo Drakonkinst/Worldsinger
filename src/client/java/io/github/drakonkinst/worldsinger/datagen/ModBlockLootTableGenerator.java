@@ -149,7 +149,7 @@ public class ModBlockLootTableGenerator extends FabricBlockLootTableProvider {
         addPottedPlantDrops(ModBlocks.POTTED_VERDANT_VINE_SNARE);
 
         // Spore growths
-        addSporeGrowthDrop(ModBlocks.VERDANT_VINE_BLOCK, itemEntry(ModItems.VERDANT_VINE, 2, 4));
+        addSporeGrowthDrop(ModBlocks.VERDANT_VINE_BLOCK, itemEntry(ModItems.VERDANT_VINE, 3, 5));
         addSporeGrowthDrop(ModBlocks.VERDANT_VINE_BRANCH, itemEntry(ModItems.VERDANT_VINE, 1, 3));
         addSporeGrowthDrop(ModBlocks.VERDANT_VINE_SNARE, itemEntry(ModItems.VERDANT_VINE, 0, 2));
         addSporeGrowthDrop(ModBlocks.TWISTING_VERDANT_VINES,
@@ -157,7 +157,7 @@ public class ModBlockLootTableGenerator extends FabricBlockLootTableProvider {
         addSporeGrowthDrop(ModBlocks.TWISTING_VERDANT_VINES_PLANT,
                 itemEntry(ModBlocks.TWISTING_VERDANT_VINES),
                 itemEntry(ModItems.VERDANT_VINE, 0, 1));
-        addSporeGrowthDrop(ModBlocks.CRIMSON_GROWTH, itemEntry(ModItems.CRIMSON_SPINE, 3, 5));
+        addSporeGrowthDrop(ModBlocks.CRIMSON_GROWTH, itemEntry(ModItems.CRIMSON_SPINE, 2, 4));
         addSporeGrowthDrop(ModBlocks.CRIMSON_SNARE, itemEntry(ModItems.CRIMSON_SPINE, 1, 3));
         addSporeGrowthDrop(ModBlocks.CRIMSON_SPIKE, itemEntry(ModItems.CRIMSON_SPINE, 1, 3));
         addSporeGrowthDrop(ModBlocks.TALL_CRIMSON_SPINES, itemEntry(ModItems.CRIMSON_SPINE, 0, 2));
