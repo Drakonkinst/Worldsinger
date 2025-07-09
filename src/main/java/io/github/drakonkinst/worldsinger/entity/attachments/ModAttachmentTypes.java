@@ -56,4 +56,6 @@ public final class ModAttachmentTypes {
                     .initializer(() -> new SilverLinedBoatData(0)));
 
     private ModAttachmentTypes() {}
+
+    public static void initialize() {}
 }

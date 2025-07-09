@@ -33,6 +33,7 @@ import io.github.drakonkinst.worldsinger.entity.ModEntityTypes;
 import io.github.drakonkinst.worldsinger.entity.ai.ModActivities;
 import io.github.drakonkinst.worldsinger.entity.ai.ModMemoryModuleTypes;
 import io.github.drakonkinst.worldsinger.entity.ai.sensor.ModSensors;
+import io.github.drakonkinst.worldsinger.entity.attachments.ModAttachmentTypes;
 import io.github.drakonkinst.worldsinger.event.ModEventHandlers;
 import io.github.drakonkinst.worldsinger.fluid.Fluidlogged;
 import io.github.drakonkinst.worldsinger.fluid.ModFluids;
@@ -84,6 +85,7 @@ public class Worldsinger implements ModInitializer {
         // I'll figure out the proper order for these...one day
         Fluidlogged.initialize();
 
+        ModAttachmentTypes.initialize();
         ModProperties.initialize();
         ModGameRules.initialize();
         ModParticleTypes.initialize();
