@@ -19,6 +19,7 @@
     "entity.render.RaftEntityRendererMixin",
     "entity.render.state.BoatEntityRenderStateMixin",
     "entity.render.state.LivingEntityRenderStateMixin",
+    "gui.CreateWorldScreenMixin",
     "gui.DebugHudMixin",
     "gui.InGameHudMixin",
     "gui.InGameOverlayRendererPossessionMixin",
