@@ -32,16 +32,13 @@ public final class ModModels {
 
     public static final Model TEMPLATE_ALUMINUM_CAULDRON_LEVEL1 = ModModels.block(
             "template_aluminum_cauldron_level1", TextureKey.CONTENT, TextureKey.INSIDE,
-            TextureKey.PARTICLE, TextureKey.TOP, TextureKey.BOTTOM, TextureKey.SIDE,
-            ModTextureKeys.ALUMINUM);
+            TextureKey.PARTICLE, TextureKey.TOP, TextureKey.BOTTOM, TextureKey.SIDE);
     public static final Model TEMPLATE_ALUMINUM_CAULDRON_LEVEL2 = ModModels.block(
             "template_aluminum_cauldron_level2", TextureKey.CONTENT, TextureKey.INSIDE,
-            TextureKey.PARTICLE, TextureKey.TOP, TextureKey.BOTTOM, TextureKey.SIDE,
-            ModTextureKeys.ALUMINUM);
+            TextureKey.PARTICLE, TextureKey.TOP, TextureKey.BOTTOM, TextureKey.SIDE);
     public static final Model TEMPLATE_ALUMINUM_CAULDRON_FULL = ModModels.block(
             "template_aluminum_cauldron_full", TextureKey.CONTENT, TextureKey.INSIDE,
-            TextureKey.PARTICLE, TextureKey.TOP, TextureKey.BOTTOM, TextureKey.SIDE,
-            ModTextureKeys.ALUMINUM);
+            TextureKey.PARTICLE, TextureKey.TOP, TextureKey.BOTTOM, TextureKey.SIDE);
 
     private static Model block(String parent, TextureKey... requiredTextureKeys) {
         return new Model(Optional.of(Worldsinger.id("block/" + parent)), Optional.empty(),

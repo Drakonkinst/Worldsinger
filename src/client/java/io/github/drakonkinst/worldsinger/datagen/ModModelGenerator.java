@@ -147,8 +147,6 @@ public class ModModelGenerator extends FabricModelProvider {
         roseiteTexturePool.stairs(ModBlocks.ROSEITE_STAIRS);
         roseiteTexturePool.slab(ModBlocks.ROSEITE_SLAB);
 
-        registerAliasedModel(blockStateModelGenerator, ModBlocks.ALUMINUM_SHEET,
-                ModBlocks.ALUMINUM_BLOCK);
         blockStateModelGenerator.registerMultifaceBlockModel(ModBlocks.ALUMINUM_SHEET);
 
         registerBranch(blockStateModelGenerator, ModBlocks.VERDANT_VINE_BRANCH);
@@ -343,7 +341,6 @@ public class ModModelGenerator extends FabricModelProvider {
 
     private void registerLeveledCauldron(BlockStateModelGenerator blockStateModelGenerator,
             Block cauldronBlock, Block contentBlock) {
-
         TextureMap textureMap = TextureMap.cauldron(TextureMap.getId(contentBlock));
         registerGenericLeveledCauldron(blockStateModelGenerator, cauldronBlock, textureMap,
                 Models.TEMPLATE_CAULDRON_LEVEL1, Models.TEMPLATE_CAULDRON_LEVEL2,
@@ -390,7 +387,8 @@ public class ModModelGenerator extends FabricModelProvider {
                 ModItems.QUARTZ_AND_STEEL,
                 ModItems.ROSEITE_CRYSTAL,
                 ModItems.ROSEITE_CORE,
-                ModItems.MIDNIGHT_CREATURE_SPAWN_EGG
+                ModItems.MIDNIGHT_CREATURE_SPAWN_EGG,
+                ModBlocks.ALUMINUM_SHEET
         });
         registerHandheldItems(itemModelGenerator, new ItemConvertible[] {
                 ModItems.CRIMSON_SPINE,
@@ -408,7 +406,6 @@ public class ModModelGenerator extends FabricModelProvider {
                 ModBlocks.ROSEITE_CLUSTER,
                 ModBlocks.TWISTING_VERDANT_VINES,
                 ModBlocks.DEAD_TWISTING_VERDANT_VINES,
-                ModBlocks.ALUMINUM_SHEET,
                 ModBlocks.CRIMSON_SPIKE,
                 ModBlocks.DEAD_CRIMSON_SPIKE,
         });

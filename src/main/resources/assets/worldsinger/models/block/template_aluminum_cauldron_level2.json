@@ -1,12 +1,12 @@
 {
   "ambientocclusion": false,
   "textures": {
-    "particle": "block/cauldron_side",
-    "top": "block/cauldron_top",
+    "particle": "worldsinger:block/aluminum_cauldron_side",
+    "top": "worldsinger:block/aluminum_cauldron_top",
     "bottom": "block/cauldron_bottom",
-    "side": "block/cauldron_side",
-    "inside": "block/cauldron_inner",
-    "aluminum": "worldsinger:block/aluminum_block"
+    "side": "worldsinger:block/aluminum_cauldron_side",
+    "side_inner": "worldsinger:block/aluminum_cauldron_side_inner",
+    "inside": "worldsinger:block/aluminum_cauldron_inner"
   },
   "elements": [
     {
@@ -26,7 +26,7 @@
           "cullface": "north"
         },
         "east": {
-          "texture": "#aluminum"
+          "texture": "#side_inner"
         },
         "south": {
           "texture": "#side",
@@ -58,7 +58,7 @@
       ],
       "faces": {
         "up": {
-          "texture": "#aluminum"
+          "texture": "#inside"
         },
         "down": {
           "texture": "#inside"
@@ -90,7 +90,7 @@
           "cullface": "south"
         },
         "west": {
-          "texture": "#aluminum"
+          "texture": "#side_inner"
         },
         "up": {
           "texture": "#top",
@@ -118,7 +118,7 @@
           "cullface": "north"
         },
         "south": {
-          "texture": "#aluminum"
+          "texture": "#side_inner"
         },
         "up": {
           "texture": "#top",
@@ -142,7 +142,7 @@
       ],
       "faces": {
         "north": {
-          "texture": "#aluminum"
+          "texture": "#side_inner"
         },
         "south": {
           "texture": "#side",
@@ -153,7 +153,7 @@
           "cullface": "up"
         },
         "down": {
-          "texture": "#aluminum"
+          "texture": "#side_inner"
         }
       }
     },

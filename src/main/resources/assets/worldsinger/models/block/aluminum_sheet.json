@@ -1,8 +1,8 @@
 {
   "ambientocclusion": false,
   "textures": {
-    "particle": "worldsinger:block/aluminum_block",
-    "aluminum_sheet": "worldsinger:block/aluminum_block"
+    "particle": "worldsinger:block/aluminum_sheet",
+    "aluminum_sheet": "worldsinger:block/aluminum_sheet"
   },
   "elements": [
     {
