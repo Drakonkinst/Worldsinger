@@ -1,5 +1,10 @@
 name: publish
-on: [ pull_request, workflow_dispatch ]
+on:
+  pull_request:
+    branches:
+      - main
+      - 'releases/**'
+  workflow_dispatch:
 env:
   MINECRAFT_VERSION: 1.21.7
   JAVA_VERSION: 21
