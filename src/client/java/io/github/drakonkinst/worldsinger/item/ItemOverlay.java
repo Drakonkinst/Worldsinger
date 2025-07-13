@@ -24,6 +24,7 @@ import org.jetbrains.annotations.Nullable;
 public enum ItemOverlay {
     SALTED_FOOD("salted_overlay"),
     SILVER_LINED_AXE("silver_lined_axe_overlay"),
+    SILVER_LINED_PICKAXE("silver_lined_pickaxe_overlay"),
     SILVER_LINED_BOAT("silver_lined_boat_overlay"),
     SILVER_LINED_CHEST_BOAT("silver_lined_chest_boat_overlay"),
     SILVER_LINED_RAFT("silver_lined_raft_overlay"),
@@ -56,6 +57,9 @@ public enum ItemOverlay {
     private static ItemOverlay getSilverLinedOverlayForItem(ItemStack stack) {
         if (stack.isIn(ItemTags.AXES)) {
             return ItemOverlay.SILVER_LINED_AXE;
+        }
+        if (stack.isIn(ItemTags.PICKAXES)) {
+            return ItemOverlay.SILVER_LINED_PICKAXE;
         }
         if (stack.isOf(Items.BAMBOO_CHEST_RAFT)) {
             return ItemOverlay.SILVER_LINED_CHEST_RAFT;

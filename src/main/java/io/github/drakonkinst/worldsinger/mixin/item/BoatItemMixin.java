@@ -45,19 +45,6 @@ public abstract class BoatItemMixin extends Item {
     }
 
     @Override
-    public boolean isItemBarVisible(ItemStack stack) {
-        return super.isItemBarVisible(stack) || SilverLined.isSilverLined(stack);
-    }
-
-    @Override
-    public int getItemBarColor(ItemStack stack) {
-        if (SilverLined.isSilverLined(stack)) {
-            return SilverLined.SILVER_METER_COLOR;
-        }
-        return super.getItemBarColor(stack);
-    }
-
-    @Override
     public int getItemBarStep(ItemStack stack) {
         int silverDurability = SilverLined.getSilverDurability(stack);
         if (silverDurability <= 0) {

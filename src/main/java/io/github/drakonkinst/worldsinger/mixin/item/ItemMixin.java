@@ -24,6 +24,8 @@
 package io.github.drakonkinst.worldsinger.mixin.item;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
+import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import io.github.drakonkinst.worldsinger.cosmere.SaltedFoodUtil;
 import io.github.drakonkinst.worldsinger.cosmere.SilverLined;
 import io.github.drakonkinst.worldsinger.util.EntityUtil;
@@ -62,5 +64,20 @@ public abstract class ItemMixin {
         if (silverDurability > 0 && EntityUtil.isNotCreativePlayer(miner)) {
             SilverLined.damageSilverDurability(stack);
         }
+    }
+
+    // Note: The item bar value will still be whatever the durability value is, by default
+    // Make sure to override it for things like boats if we want to show a different value
+    @WrapMethod(method = "isItemBarVisible")
+    public boolean makeSilverLinedBarVisible(ItemStack stack, Operation<Boolean> original) {
+        return original.call(stack) || SilverLined.isSilverLined(stack);
+    }
+
+    @WrapMethod(method = "getItemBarColor")
+    private int addSilverLinedBar(ItemStack stack, Operation<Integer> original) {
+        if (SilverLined.isSilverLined(stack)) {
+            return SilverLined.SILVER_METER_COLOR;
+        }
+        return original.call(stack);
     }
 }

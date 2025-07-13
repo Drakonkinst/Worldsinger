@@ -1,7 +1,7 @@
 {
   "parent": "minecraft:item/handheld",
   "textures": {
-    "layer0": "worldsinger:item/silver_lined_axe_overlay"
+    "layer0": "worldsinger:item/silver_lined_pickaxe_overlay"
   },
   "display": {
     "thirdperson_righthand": {
@@ -12,8 +12,8 @@
       ],
       "translation": [
         0,
-        3.95,
-        0.52
+        3.9,
+        0.55
       ],
       "scale": [
         0.87,
@@ -29,8 +29,8 @@
       ],
       "translation": [
         0,
-        3.95,
-        0.52
+        3.9,
+        0.55
       ],
       "scale": [
         0.87,

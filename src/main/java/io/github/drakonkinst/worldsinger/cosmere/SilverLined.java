@@ -31,6 +31,7 @@ import net.minecraft.component.ComponentsAccess;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.vehicle.AbstractBoatEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
@@ -91,7 +92,13 @@ public interface SilverLined {
         if (maxSilverDurability <= 0) {
             return ItemStack.EMPTY;
         }
-        int repairAmount = MathHelper.ceil(maxSilverDurability / 4.0f);
+        // Hardcoding this for now, we can make it more extensible later
+        int repairAmount;
+        if (stack.isIn(ItemTags.BOATS) || stack.isIn(ItemTags.BOATS)) {
+            repairAmount = MathHelper.ceil(maxSilverDurability / 4.0f);
+        } else {
+            repairAmount = maxSilverDurability;
+        }
         SilverLined.setSilverDurability(stack, silverDurability + repairAmount * times);
         return stack;
     }

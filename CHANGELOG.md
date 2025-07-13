@@ -9,6 +9,7 @@
 * Added recipes to replace Nether Quartz with Roseite Crystals for Diorite/Granite
 * Tweaked Aluminum Sheet recipe to require 3 ingots for 8 sheets, instead of 6 ingots for 16 sheets
 * Tweaked spore-logged mechanics to be more consistent
+* Added silver-lined pickaxes
 * Fixed silver-lined boats not preserving silver durability when crafted into chest boats
 * Fixed water cannonballs inconsistently spawning splash particles
 * Fixed z-fighting glitch with silver-lined items

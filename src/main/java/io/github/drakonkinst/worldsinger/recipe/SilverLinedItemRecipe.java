@@ -40,6 +40,7 @@ public class SilverLinedItemRecipe extends SpecialCraftingRecipe {
         super(category);
     }
 
+    // TODO: Should maybe stop the player from crafting if there are too many ingots?
     @Override
     public boolean matches(CraftingRecipeInput input, World world) {
         if (input.getStackCount() < 2) {

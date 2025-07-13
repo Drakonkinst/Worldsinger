@@ -82,6 +82,9 @@ public final class ModEventHandlers {
                     Items.PALE_OAK_CHEST_BOAT);
             List<Item> axes = List.of(Items.WOODEN_AXE, Items.GOLDEN_AXE, Items.STONE_AXE,
                     Items.IRON_AXE, ModItems.STEEL_AXE, Items.DIAMOND_AXE, Items.NETHERITE_AXE);
+            List<Item> pickaxes = List.of(Items.WOODEN_PICKAXE, Items.GOLDEN_PICKAXE,
+                    Items.STONE_PICKAXE, Items.IRON_PICKAXE, ModItems.STEEL_PICKAXE,
+                    Items.DIAMOND_PICKAXE, Items.NETHERITE_PICKAXE);
 
             // Add silver-lined to boats
             context.modify(boats, (builder, item) -> {
@@ -93,6 +96,12 @@ public final class ModEventHandlers {
 
             // Add silver-lined to axes
             context.modify(axes, ((builder, item) -> {
+                int maxDurability = builder.getOrDefault(DataComponentTypes.MAX_DAMAGE, 1);
+                builder.add(ModDataComponentTypes.MAX_SILVER_DURABILITY, maxDurability);
+            }));
+
+            // Add silver-lined to pickaxes
+            context.modify(pickaxes, ((builder, item) -> {
                 int maxDurability = builder.getOrDefault(DataComponentTypes.MAX_DAMAGE, 1);
                 builder.add(ModDataComponentTypes.MAX_SILVER_DURABILITY, maxDurability);
             }));
