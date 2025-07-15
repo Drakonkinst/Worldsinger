@@ -40,6 +40,10 @@ jobs:
       - name: Build
         run: ./gradlew clean build
 
+      - name: Make Parse Changelog Executable
+        if: ${{ runner.os != 'Windows' }}
+        run: chmod +x ./.github/scripts/parse-changelog.sh
+
       - name: Parse Changelog
         run: ./.github/scripts/parse-changelog.sh ${{ env.MOD_VERSION }}
 
