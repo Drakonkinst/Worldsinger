@@ -53,7 +53,7 @@
     "fabric-api": "*",
     "smartbrainlib": "*",
     "geckolib": "*",
-    "item-components": "*"
+    "item_components": "*"
   },
   "suggests": {
     "yet_another_config_lib_v3": "*"
