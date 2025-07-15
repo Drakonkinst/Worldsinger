@@ -52,7 +52,8 @@
     "java": ">=21",
     "fabric-api": "*",
     "smartbrainlib": "*",
-    "geckolib": "*"
+    "geckolib": "*",
+    "item-components": "*"
   },
   "suggests": {
     "yet_another_config_lib_v3": "*"
