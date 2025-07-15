@@ -59,6 +59,9 @@
   },
   "custom": {
     "modmenu": {
+      "links": {
+        "modmenu.discord": "https://discord.gg/qcWVqvQnmc"
+      }
     }
   },
   "accessWidener": "worldsinger.accesswidener"

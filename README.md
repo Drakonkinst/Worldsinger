@@ -1,6 +1,7 @@
 # Worldsinger
 
 [![Modrinth Downloads](https://img.shields.io/modrinth/dt/worldsinger?style=flat&logo=modrinth&logoColor=%231bd96a&label=Modrinth&color=%231bd96a)](https://modrinth.com/mod/worldsinger)
+[![Discord](https://img.shields.io/discord/1393129364865945630?color=blue&logo=discord&label=Discord)](https://discord.gg/qcWVqvQnmc)
 
 A content mod for **Minecraft 1.21.7** that brings worlds of Brandon Sanderson's **Cosmere** to the
 game.
