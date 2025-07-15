@@ -25,14 +25,13 @@ package io.github.drakonkinst.worldsinger.mixin.client.world;
 
 import io.github.drakonkinst.worldsinger.entity.CameraPossessable;
 import io.github.drakonkinst.worldsinger.entity.MidnightCreatureEntity;
-import io.github.drakonkinst.worldsinger.util.PossessionClientUtil;
+import io.github.drakonkinst.worldsinger.entity.PossessionClientUtil;
+import java.util.List;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.Camera;
-import net.minecraft.client.render.GameRenderer;
-import net.minecraft.client.render.LightmapTextureManager;
-import net.minecraft.client.render.RenderTickCounter;
+import net.minecraft.client.render.Frustum;
 import net.minecraft.client.render.WorldRenderer;
-import org.joml.Matrix4f;
+import net.minecraft.entity.Entity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.Constant;
 import org.spongepowered.asm.mixin.injection.ModifyConstant;
@@ -42,11 +41,9 @@ public abstract class WorldRendererPossessionMixin {
 
     // Allow the player model to still be rendered while possessing another mob
     @SuppressWarnings("InvalidInjectorMethodSignature")
-    @ModifyConstant(method = "render", constant = @Constant(classValue = ClientPlayerEntity.class))
-    private static boolean allowRenderPlayerModel(Object obj, Class<?> clazz,
-            RenderTickCounter tickCounter, boolean renderBlockOutline, Camera camera,
-            GameRenderer gameRenderer, LightmapTextureManager lightmapTextureManager,
-            Matrix4f matrix4f, Matrix4f matrix4f2) {
+    @ModifyConstant(method = "getEntitiesToRender", constant = @Constant(classValue = ClientPlayerEntity.class))
+    private static boolean allowRenderPlayerModel(Object obj, Class<?> clazz, Camera camera,
+            Frustum frustum, List<Entity> output) {
         CameraPossessable possessedEntity = PossessionClientUtil.getPossessedEntity();
         if (possessedEntity != null) {
 

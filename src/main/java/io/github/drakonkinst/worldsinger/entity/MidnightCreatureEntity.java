@@ -24,7 +24,8 @@
 package io.github.drakonkinst.worldsinger.entity;
 
 import io.github.drakonkinst.worldsinger.Worldsinger;
-import io.github.drakonkinst.worldsinger.api.ModAttachmentTypes;
+import io.github.drakonkinst.worldsinger.advancement.ModCriteria;
+import io.github.drakonkinst.worldsinger.entity.attachments.ModAttachmentTypes;
 import io.github.drakonkinst.worldsinger.block.ModBlocks;
 import io.github.drakonkinst.worldsinger.cosmere.PossessionManager;
 import io.github.drakonkinst.worldsinger.cosmere.ThirstManager;
@@ -40,8 +41,7 @@ import io.github.drakonkinst.worldsinger.entity.ai.behavior.OptionalAttackTarget
 import io.github.drakonkinst.worldsinger.entity.ai.behavior.StudyTarget;
 import io.github.drakonkinst.worldsinger.entity.ai.sensor.ConditionalNearbyBlocksSensor;
 import io.github.drakonkinst.worldsinger.entity.ai.sensor.NearestAttackableSensor;
-import io.github.drakonkinst.worldsinger.entity.data.MidnightOverlayAccess;
-import io.github.drakonkinst.worldsinger.entity.data.PlayerPossessionManager;
+import io.github.drakonkinst.worldsinger.entity.attachments.player.PlayerPossessionManager;
 import io.github.drakonkinst.worldsinger.mixin.accessor.EntityAccessor;
 import io.github.drakonkinst.worldsinger.particle.ModParticleTypes;
 import io.github.drakonkinst.worldsinger.registry.ModDamageTypes;
@@ -64,6 +64,7 @@ import java.util.UUID;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.LazyEntityReference;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
@@ -87,18 +88,19 @@ import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsage;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtList;
 import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.storage.ReadView;
+import net.minecraft.storage.WriteView;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Util;
+import net.minecraft.util.Uuids;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
@@ -123,8 +125,8 @@ import net.tslat.smartbrainlib.api.core.behaviour.custom.target.SetRetaliateTarg
 import net.tslat.smartbrainlib.api.core.sensor.ExtendedSensor;
 import net.tslat.smartbrainlib.api.core.sensor.vanilla.HurtBySensor;
 import net.tslat.smartbrainlib.api.core.sensor.vanilla.NearbyLivingEntitySensor;
-import net.tslat.smartbrainlib.util.BrainUtils;
-import net.tslat.smartbrainlib.util.SensoryUtils;
+import net.tslat.smartbrainlib.util.BrainUtil;
+import net.tslat.smartbrainlib.util.SensoryUtil;
 import org.jetbrains.annotations.Nullable;
 
 @SuppressWarnings("UnstableApiUsage")
@@ -145,8 +147,8 @@ public class MidnightCreatureEntity extends ShapeshiftingEntity implements
     public static final float DAMAGE_FROM_SILVER = 4.0f;
 
     // Tracked Data
-    private static final TrackedData<Optional<UUID>> CONTROLLER_UUID = DataTracker.registerData(
-            MidnightCreatureEntity.class, TrackedDataHandlerRegistry.OPTIONAL_UUID);
+    private static final TrackedData<Optional<LazyEntityReference<LivingEntity>>> CONTROLLER_UUID = DataTracker.registerData(
+            MidnightCreatureEntity.class, TrackedDataHandlerRegistry.LAZY_ENTITY_REFERENCE);
     private static final String MORPHED_NAME_TRANSLATION_KEY = Util.createTranslationKey("entity",
             Worldsinger.id("midnight_creature.morphed"));
 
@@ -215,6 +217,10 @@ public class MidnightCreatureEntity extends ShapeshiftingEntity implements
         builder.add(CONTROLLER_UUID, Optional.empty());
     }
 
+    public LazyEntityReference<LivingEntity> getControllerReference() {
+        return this.dataTracker.get(CONTROLLER_UUID).orElse(null);
+    }
+
     @Override
     public void setControllerUuid(UUID uuid) {
         if (this.getWorld().isClient()) {
@@ -227,7 +233,7 @@ public class MidnightCreatureEntity extends ShapeshiftingEntity implements
             if (!Objects.equals(getControllerUuid(), uuid)) {
                 onStartControlling();
             }
-            this.dataTracker.set(CONTROLLER_UUID, Optional.of(uuid));
+            this.dataTracker.set(CONTROLLER_UUID, Optional.of(new LazyEntityReference<>(uuid)));
         }
     }
 
@@ -240,8 +246,7 @@ public class MidnightCreatureEntity extends ShapeshiftingEntity implements
         if (controller != null && controller.isRemoved()) {
             controller = null;
         }
-        if (controller != null && (controllerUUID == null || !controller.getUuid()
-                .equals(controllerUUID))) {
+        if (controller != null && (!controller.getUuid().equals(controllerUUID))) {
             controller = null;
         }
         return controller;
@@ -250,7 +255,11 @@ public class MidnightCreatureEntity extends ShapeshiftingEntity implements
     @Override
     @Nullable
     public UUID getControllerUuid() {
-        return this.dataTracker.get(CONTROLLER_UUID).orElse(null);
+        LazyEntityReference<LivingEntity> reference = getControllerReference();
+        if (reference == null) {
+            return null;
+        }
+        return reference.getUuid();
     }
 
     // AI
@@ -261,7 +270,7 @@ public class MidnightCreatureEntity extends ShapeshiftingEntity implements
     }
 
     @Override
-    protected void mobTick() {
+    protected void mobTick(ServerWorld world) {
         // Drain water
         UUID controllerUuid = getControllerUuid();
         PlayerEntity controller = getController();
@@ -279,7 +288,7 @@ public class MidnightCreatureEntity extends ShapeshiftingEntity implements
 
         BlockState standingBlock = this.getSteppingBlockState();
         if (standingBlock.isIn(ModBlockTags.HAS_SILVER)) {
-            this.damage(this.getDamageSources().magic(), DAMAGE_FROM_SILVER);
+            this.damage(world, this.getDamageSources().magic(), DAMAGE_FROM_SILVER);
         }
 
         if (!isBeingPossessed) {
@@ -307,7 +316,7 @@ public class MidnightCreatureEntity extends ShapeshiftingEntity implements
                             if (target.getUuid().equals(entity.getControllerUuid())) {
                                 return false;
                             }
-                            return SensoryUtils.isEntityAttackable(entity, target);
+                            return SensoryUtil.isEntityAttackable(entity, target);
                         }),
                 // Track who hurt the mob to retaliate
                 new HurtBySensor<>(),
@@ -369,9 +378,9 @@ public class MidnightCreatureEntity extends ShapeshiftingEntity implements
                             }
 
                             // Not an ally if already targeting
-                            Entity lastHurtBy = BrainUtils.getMemory(ally,
+                            Entity lastHurtBy = BrainUtil.getMemory(ally,
                                     MemoryModuleType.HURT_BY_ENTITY);
-                            return lastHurtBy == null || !ally.isTeammate(lastHurtBy);
+                            return !ally.isTeammate(lastHurtBy);
                         }),
                         // Attack NEAREST_ATTACKABLE if uncontrolled
                         new SetAttackTarget<MidnightCreatureEntity>().attackPredicate(
@@ -420,7 +429,7 @@ public class MidnightCreatureEntity extends ShapeshiftingEntity implements
                                             || target.getOffHandStack()
                                             .isIn(ModItemTags.TEMPTS_MIDNIGHT_CREATURES);
                                 })
-                                .whenStopping(entity -> BrainUtils.setForgettableMemory(entity,
+                                .whenStopping(entity -> BrainUtil.setForgettableMemory(entity,
                                         MemoryModuleType.UNIVERSAL_ANGER, true, ANGER_TIME)),
                         // Start attacking
                         new AnimatableMeleeAttack<MidnightCreatureEntity>(0)));
@@ -504,8 +513,8 @@ public class MidnightCreatureEntity extends ShapeshiftingEntity implements
         double delta = (double) offset / NUM_TRAIL_PARTICLES;
         Vec3d pos = start.lerp(destination, delta);
         this.getWorld()
-                .addParticle(ModParticleTypes.MIDNIGHT_TRAIL, pos.getX(), pos.getY(), pos.getZ(),
-                        direction.getX() * TRAIL_PARTICLE_SPEED,
+                .addParticleClient(ModParticleTypes.MIDNIGHT_TRAIL, pos.getX(), pos.getY(),
+                        pos.getZ(), direction.getX() * TRAIL_PARTICLE_SPEED,
                         direction.getY() * TRAIL_PARTICLE_SPEED,
                         direction.getZ() * TRAIL_PARTICLE_SPEED);
     }
@@ -528,7 +537,7 @@ public class MidnightCreatureEntity extends ShapeshiftingEntity implements
             PossessionManager possessionManager = player.getAttachedOrCreate(
                     ModAttachmentTypes.POSSESSION, () -> PlayerPossessionManager.create(player));
             possessionManager.setPossessionTarget(this);
-            return ActionResult.success(true);
+            return ActionResult.SUCCESS;
         }
 
         int waterAmount = MidnightCreatureManager.getWaterAmountPerUnit(stack);
@@ -543,7 +552,7 @@ public class MidnightCreatureEntity extends ShapeshiftingEntity implements
                 .playSound(player, this.getX(), this.getY(), this.getZ(),
                         ModSoundEvents.ENTITY_MIDNIGHT_CREATURE_DRINK, this.getSoundCategory(),
                         1.0f, 1.0f);
-        return ActionResult.success(true);
+        return ActionResult.SUCCESS;
     }
 
     private void drainWaterFromHost(PlayerEntity host, boolean isInitial) {
@@ -555,8 +564,11 @@ public class MidnightCreatureEntity extends ShapeshiftingEntity implements
             PossessionManager possessionManager = host.getAttached(ModAttachmentTypes.POSSESSION);
             if (possessionManager != null && this.equals(possessionManager.getPossessionTarget())) {
                 // They are trapped in the bond! Start killing them
-                host.damage(ModDamageTypes.createSource(host.getWorld(), ModDamageTypes.THIRST),
-                        POSSESS_THIRST_DAMAGE);
+                if (host.getWorld() instanceof ServerWorld serverWorld) {
+                    host.damage(serverWorld,
+                            ModDamageTypes.createSource(host.getWorld(), ModDamageTypes.THIRST),
+                            POSSESS_THIRST_DAMAGE);
+                }
             } else {
                 bondData.removeBond(this.getId());
                 resetController();
@@ -564,6 +576,9 @@ public class MidnightCreatureEntity extends ShapeshiftingEntity implements
         } else {
             if (!isInitial && !host.isCreative()) {
                 thirstManager.remove(1);
+            }
+            if (host instanceof ServerPlayerEntity serverPlayerEntity) {
+                ModCriteria.BOND_ENTITY.trigger(serverPlayerEntity, this);
             }
             bondData.updateBond(this.getId());
         }
@@ -658,7 +673,8 @@ public class MidnightCreatureEntity extends ShapeshiftingEntity implements
             MidnightSpores.addMidnightParticles(this.getWorld(), this, random, 0.2,
                     NUM_TRANSFORM_PARTICLES);
             this.getWorld()
-                    .playSoundFromEntity(this, ModSoundEvents.ENTITY_MIDNIGHT_CREATURE_TRANSFORM,
+                    .playSoundFromEntityClient(this,
+                            ModSoundEvents.ENTITY_MIDNIGHT_CREATURE_TRANSFORM,
                             this.getSoundCategory(), 2.0f, 1.0f);
         }
 
@@ -667,13 +683,13 @@ public class MidnightCreatureEntity extends ShapeshiftingEntity implements
 
     private void updateStats(LivingEntity morph, boolean showTransformEffects) {
         EntityAttributeInstance movementSpeedAttribute = EntityUtil.getRequiredAttributeInstance(
-                this, EntityAttributes.GENERIC_MOVEMENT_SPEED);
+                this, EntityAttributes.MOVEMENT_SPEED);
         EntityAttributeInstance knockbackResistanceAttribute = EntityUtil.getRequiredAttributeInstance(
-                this, EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE);
+                this, EntityAttributes.KNOCKBACK_RESISTANCE);
         EntityAttributeInstance maxHealthAttribute = EntityUtil.getRequiredAttributeInstance(this,
-                EntityAttributes.GENERIC_MAX_HEALTH);
+                EntityAttributes.MAX_HEALTH);
         EntityAttributeInstance attackDamageAttribute = EntityUtil.getRequiredAttributeInstance(
-                this, EntityAttributes.GENERIC_ATTACK_DAMAGE);
+                this, EntityAttributes.ATTACK_DAMAGE);
 
         if (morph == null) {
             movementSpeedAttribute.setBaseValue(0.0);
@@ -737,52 +753,51 @@ public class MidnightCreatureEntity extends ShapeshiftingEntity implements
     }
 
     @Override
-    public void writeCustomDataToNbt(NbtCompound nbt) {
-        super.writeCustomDataToNbt(nbt);
+    public void writeCustomData(WriteView view) {
+        super.writeCustomData(view);
         if (this.getMorph() == null) {
-            nbt.putInt(MIDNIGHT_ESSENCE_AMOUNT_KEY, midnightEssenceAmount);
+            view.putInt(MIDNIGHT_ESSENCE_AMOUNT_KEY, midnightEssenceAmount);
         }
+
         UUID controllerUuid = getControllerUuid();
         if (controllerUuid != null) {
-            nbt.putUuid(CONTROLLER_KEY, controllerUuid);
+            view.put(CONTROLLER_KEY, Uuids.INT_STREAM_CODEC, controllerUuid);
         }
-        if (!waterBribes.isEmpty()) {
-            NbtList waterBribesList = new NbtList();
-            waterBribes.object2IntEntrySet().forEach(uuidEntry -> {
-                NbtCompound nbtEntry = new NbtCompound();
-                nbtEntry.putUuid(UUID_KEY, uuidEntry.getKey());
-                nbtEntry.putInt(BRIBE_KEY, uuidEntry.getIntValue());
-                waterBribesList.add(nbtEntry);
-            });
-            nbt.put(BRIBES_KEY, waterBribesList);
+
+        WriteView.ListView listView = view.getList(BRIBES_KEY);
+        waterBribes.object2IntEntrySet().forEach(uuidEntry -> {
+            WriteView itemView = listView.add();
+            itemView.put(UUID_KEY, Uuids.INT_STREAM_CODEC, uuidEntry.getKey());
+            itemView.putInt(BRIBE_KEY, uuidEntry.getIntValue());
+        });
+        if (listView.isEmpty()) {
+            view.remove(BRIBES_KEY);
         }
     }
 
     @Override
-    public void readCustomDataFromNbt(NbtCompound nbt) {
-        super.readCustomDataFromNbt(nbt);
+    public void readCustomData(ReadView view) {
+        super.readCustomData(view);
         if (this.getMorph() == null) {
-            this.midnightEssenceAmount = nbt.getInt(MIDNIGHT_ESSENCE_AMOUNT_KEY);
+            this.midnightEssenceAmount = view.getInt(MIDNIGHT_ESSENCE_AMOUNT_KEY, 0);
         }
-        if (nbt.contains(CONTROLLER_KEY, NbtElement.INT_ARRAY_TYPE)) {
-            UUID controllerUuid = nbt.getUuid(CONTROLLER_KEY);
-            setControllerUuid(controllerUuid);
-            PlayerEntity player = getController();
-            if (player != null) {
-                setController(player);
-            }
-        } else {
-            setControllerUuid(null);
+
+        UUID controllerUuid = view.read(CONTROLLER_KEY, Uuids.INT_STREAM_CODEC).orElse(null);
+        setControllerUuid(controllerUuid);
+        PlayerEntity player = getController();
+        if (player != null) {
+            setController(player);
         }
 
         waterBribes.clear();
-        if (nbt.contains(BRIBES_KEY, NbtElement.LIST_TYPE)) {
-            NbtList list = nbt.getList(BRIBES_KEY, NbtElement.COMPOUND_TYPE);
-            for (NbtElement item : list) {
-                NbtCompound entry = (NbtCompound) item;
-                waterBribes.put(entry.getUuid(UUID_KEY), entry.getInt(BRIBE_KEY));
-            }
-        }
+        // TODO: Make this typed?
+        view.getOptionalListReadView(BRIBES_KEY).ifPresent(list -> {
+            list.forEach(item -> {
+                item.read(UUID_KEY, Uuids.INT_STREAM_CODEC).ifPresent(uuid -> {
+                    waterBribes.put(uuid, item.getInt(BRIBE_KEY, 0));
+                });
+            });
+        });
     }
 
     public void setMidnightEssenceAmount(int midnightEssenceAmount) {
@@ -838,10 +853,10 @@ public class MidnightCreatureEntity extends ShapeshiftingEntity implements
 
     @Override
     public void onStartControlling() {
-        BrainUtils.clearMemory(this, MemoryModuleType.LOOK_TARGET);
-        BrainUtils.clearMemory(this, MemoryModuleType.WALK_TARGET);
-        BrainUtils.clearMemory(this, MemoryModuleType.PATH);
-        BrainUtils.clearMemory(this, MemoryModuleType.ATTACK_TARGET);
+        BrainUtil.clearMemory(this, MemoryModuleType.LOOK_TARGET);
+        BrainUtil.clearMemory(this, MemoryModuleType.WALK_TARGET);
+        BrainUtil.clearMemory(this, MemoryModuleType.PATH);
+        BrainUtil.clearMemory(this, MemoryModuleType.ATTACK_TARGET);
         this.setForwardSpeed(0.0f);
         this.stopMovement();
     }
@@ -852,10 +867,10 @@ public class MidnightCreatureEntity extends ShapeshiftingEntity implements
             possessor.playSoundToPlayer(ModSoundEvents.ENTITY_MIDNIGHT_CREATURE_POSSESS,
                     SoundCategory.PLAYERS, 0.5f, 0.5f);
         } else {
-            BrainUtils.clearMemory(this, MemoryModuleType.LOOK_TARGET);
-            BrainUtils.clearMemory(this, MemoryModuleType.WALK_TARGET);
-            BrainUtils.clearMemory(this, MemoryModuleType.PATH);
-            BrainUtils.clearMemory(this, MemoryModuleType.ATTACK_TARGET);
+            BrainUtil.clearMemory(this, MemoryModuleType.LOOK_TARGET);
+            BrainUtil.clearMemory(this, MemoryModuleType.WALK_TARGET);
+            BrainUtil.clearMemory(this, MemoryModuleType.PATH);
+            BrainUtil.clearMemory(this, MemoryModuleType.ATTACK_TARGET);
             this.setForwardSpeed(0.0f);
             this.stopMovement();
         }
@@ -961,14 +976,9 @@ public class MidnightCreatureEntity extends ShapeshiftingEntity implements
     }
 
     @Override
-    public LivingEntity.FallSounds getFallSounds() {
-        return new LivingEntity.FallSounds(SoundEvents.ENTITY_HOSTILE_SMALL_FALL,
+    public FallSounds getFallSounds() {
+        return new FallSounds(SoundEvents.ENTITY_HOSTILE_SMALL_FALL,
                 SoundEvents.ENTITY_HOSTILE_BIG_FALL);
-    }
-
-    @Override
-    public boolean shouldDropXp() {
-        return true;
     }
 
     @Override

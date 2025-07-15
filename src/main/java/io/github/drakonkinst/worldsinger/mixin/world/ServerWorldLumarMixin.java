@@ -30,11 +30,11 @@ import io.github.drakonkinst.worldsinger.cosmere.CosmerePlanet;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.AetherSpores;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarLunagreeGenerator;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarManager;
-import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarRainlineManager;
+import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarRainlineSpawner;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarSeetheManager;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LunagreeGenerator;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LunagreeLocation;
-import io.github.drakonkinst.worldsinger.cosmere.lumar.RainlineManager;
+import io.github.drakonkinst.worldsinger.cosmere.lumar.RainlineSpawner;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.SeetheManager;
 import io.github.drakonkinst.worldsinger.network.packet.SeetheUpdatePayload;
 import java.util.List;
@@ -91,15 +91,12 @@ public abstract class ServerWorldLumarMixin extends WorldLumarMixin implements
         if (CosmerePlanet.getPlanetFromKey(worldKey).equals(CosmerePlanet.LUMAR)) {
             // Create LumarManager
             SeetheManager seetheManager = this.getPersistentStateManager()
-                    .getOrCreate(LumarSeetheManager.getPersistentStateType(),
-                            LumarSeetheManager.NAME);
+                    .getOrCreate(LumarSeetheManager.STATE_TYPE);
             LunagreeGenerator lunagreeGenerator = this.getPersistentStateManager()
-                    .getOrCreate(LumarLunagreeGenerator.getPersistentStateType(
-                            (ServerWorld) (Object) (this)), LumarLunagreeGenerator.NAME);
-            RainlineManager rainlineManager = this.getPersistentStateManager()
-                    .getOrCreate(LumarRainlineManager.getPersistentStateType(lunagreeGenerator),
-                            LumarRainlineManager.NAME);
-            lumarManager = new LumarManager(seetheManager, lunagreeGenerator, rainlineManager);
+                    .getOrCreate(LumarLunagreeGenerator.STATE_TYPE);
+            RainlineSpawner rainlineSpawner = this.getPersistentStateManager()
+                    .getOrCreate(LumarRainlineSpawner.STATE_TYPE);
+            lumarManager = new LumarManager(seetheManager, lunagreeGenerator, rainlineSpawner);
 
             // Enable Wandering Traders, maybe?
             // If you ever find a better way to do this, let me know
@@ -113,7 +110,8 @@ public abstract class ServerWorldLumarMixin extends WorldLumarMixin implements
     @Inject(method = "tickIceAndSnow", at = @At("RETURN"))
     private void rainSporeBlocksUnderSporeFall(BlockPos xzPos, CallbackInfo ci,
             @Local(ordinal = 1) BlockPos pos, @Local(ordinal = 2) BlockPos belowPos) {
-        if (!CosmerePlanet.isLumar((ServerWorld) (Object) this)) {
+        ServerWorld world = (ServerWorld) (Object) this;
+        if (!CosmerePlanet.isLumar(world)) {
             return;
         }
         int x = pos.getX();
@@ -122,7 +120,7 @@ public abstract class ServerWorldLumarMixin extends WorldLumarMixin implements
             return;
         }
         LunagreeLocation nearestLocation = lumarManager.getLunagreeGenerator()
-                .getNearestLunagree(x, z, LumarLunagreeGenerator.SPORE_FALL_RADIUS);
+                .getNearestLunagree(world, x, z, LumarLunagreeGenerator.SPORE_FALL_RADIUS);
         if (nearestLocation == null) {
             return;
         }
@@ -168,8 +166,9 @@ public abstract class ServerWorldLumarMixin extends WorldLumarMixin implements
 
     @Unique
     private boolean canPlaceSporeBlock(BlockPos pos, BlockPos belowPos) {
-        return pos.getY() >= this.getBottomY() && pos.getY() < this.getTopY() && this.isSkyVisible(
-                pos) && this.getBlockState(pos).isAir() && Block.isFaceFullSquare(
+        return pos.getY() >= this.getBottomY() && pos.getY() < this.getTopYInclusive()
+                && this.isSkyVisible(pos) && this.getBlockState(pos).isAir()
+                && Block.isFaceFullSquare(
                 this.getBlockState(belowPos).getCollisionShape(this, belowPos), Direction.UP);
     }
 }

@@ -54,11 +54,13 @@ import net.minecraft.entity.projectile.thrown.ThrownItemEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ItemStackParticleEffect;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
+import net.minecraft.storage.ReadView;
+import net.minecraft.storage.WriteView;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.Vec3d;
@@ -77,7 +79,7 @@ public class CannonballEntity extends ThrownItemEntity implements FlyingItemEnti
     private static final CannonballBehavior EMPTY_CANNONBALL_BEHAVIOR = new EmptyCannonballBehavior();
     private static final CannonballBehavior WATER_CANNONBALL_BEHAVIOR = new WaterCannonballBehavior();
     private static final LoadingCache<CannonballComponent, CannonballBehavior> CACHED_CANNONBALL_BEHAVIORS = CacheBuilder.newBuilder()
-            // .recordStats() // FIXME: Turn off for release build
+            // .recordStats() // TODO: Turn off for release build
             .maximumSize(12) // 12 Aethers :P no other reason
             .expireAfterWrite(10, TimeUnit.MINUTES).build(new CacheLoader<>() {
                 @Override
@@ -114,12 +116,12 @@ public class CannonballEntity extends ThrownItemEntity implements FlyingItemEnti
         super(entityType, world);
     }
 
-    public CannonballEntity(World world, LivingEntity owner) {
-        super(ModEntityTypes.CANNONBALL, owner, world);
+    public CannonballEntity(World world, LivingEntity owner, ItemStack stack) {
+        super(ModEntityTypes.CANNONBALL, owner, world, stack);
     }
 
-    public CannonballEntity(World world, double x, double y, double z) {
-        super(ModEntityTypes.CANNONBALL, x, y, z, world);
+    public CannonballEntity(World world, double x, double y, double z, ItemStack stack) {
+        super(ModEntityTypes.CANNONBALL, x, y, z, world, stack);
     }
 
     @Override
@@ -155,34 +157,42 @@ public class CannonballEntity extends ThrownItemEntity implements FlyingItemEnti
     }
 
     @Override
-    public void writeCustomDataToNbt(NbtCompound nbt) {
-        super.writeCustomDataToNbt(nbt);
-        nbt.putShort(FUSE_NBT_KEY, (short) this.getFuse());
+    public void writeCustomData(WriteView view) {
+        super.writeCustomData(view);
+        view.putShort(FUSE_NBT_KEY, (short) this.getFuse());
     }
 
     @Override
-    public void readCustomDataFromNbt(NbtCompound nbt) {
-        super.readCustomDataFromNbt(nbt);
-        this.setFuse(nbt.getShort(FUSE_NBT_KEY));
+    public void readCustomData(ReadView view) {
+        super.readCustomData(view);
+        this.setFuse(view.getShort(FUSE_NBT_KEY, (short) 0));
     }
 
     @Override
     public void handleStatus(byte status) {
         if (status == EntityStatuses.PLAY_DEATH_SOUND_OR_ADD_PROJECTILE_HIT_PARTICLES) {
             // TODO: Make a custom particle effect for this?
-            ItemStack stack = this.getStack();
-            if (stack.isOf(ModItems.CERAMIC_CANNONBALL)) {
-                stack = Items.BRICK.getDefaultStack();
+            ItemStack particleStack = this.getStack();
+            if (particleStack.isOf(ModItems.CERAMIC_CANNONBALL)) {
+                particleStack = Items.BRICK.getDefaultStack();
             }
-            ParticleEffect particleEffect = new ItemStackParticleEffect(ParticleTypes.ITEM, stack);
+            ParticleEffect particleEffect = new ItemStackParticleEffect(ParticleTypes.ITEM,
+                    particleStack);
 
             for (int i = 0; i < 8; i++) {
                 float velocityX = this.random.nextFloat() * PARTICLE_SPEED * 2.0f - PARTICLE_SPEED;
                 float velocityY = this.random.nextFloat() * PARTICLE_SPEED * 2.0f - PARTICLE_SPEED;
                 float velocityZ = this.random.nextFloat() * PARTICLE_SPEED * 2.0f - PARTICLE_SPEED;
                 this.getWorld()
-                        .addParticle(particleEffect, this.getX(), this.getY(), this.getZ(),
+                        .addParticleClient(particleEffect, this.getX(), this.getY(), this.getZ(),
                                 velocityX, velocityY, velocityZ);
+            }
+
+            // TODO: Can make this into another CannonballBehavior method
+            CannonballComponent cannonballComponent = this.getStack()
+                    .get(ModDataComponentTypes.CANNONBALL);
+            if (cannonballComponent != null && cannonballComponent.core() == CannonballCore.WATER) {
+                WaterCannonballBehavior.spawnWaterParticlesClient(this);
             }
         }
     }
@@ -191,8 +201,10 @@ public class CannonballEntity extends ThrownItemEntity implements FlyingItemEnti
     protected void onEntityHit(EntityHitResult entityHitResult) {
         super.onEntityHit(entityHitResult);
         Entity entity = entityHitResult.getEntity();
-        entity.damage(this.getDamageSources().thrown(this, this.getOwner()),
-                ENTITY_COLLISION_DAMAGE);
+        if (entity.getWorld() instanceof ServerWorld serverWorld) {
+            entity.damage(serverWorld, this.getDamageSources().thrown(this, this.getOwner()),
+                    ENTITY_COLLISION_DAMAGE);
+        }
     }
 
     @Override
@@ -208,11 +220,11 @@ public class CannonballEntity extends ThrownItemEntity implements FlyingItemEnti
                 .get(ModDataComponentTypes.CANNONBALL);
         CannonballBehavior behavior = getCannonballBehavior(cannonballComponent);
 
-        if (world.isClient) {
+        if (world.isClient()) {
+            // TODO: For some reason the client side is called inconsistently, so moving some logic away from it
             behavior.onCollisionClient(this, hitPos);
         } else {
             behavior.onCollisionServer(this, hitPos);
-            // TODO: This should probably be client-side
             world.playSound(null, hitPos.getX(), hitPos.getY(), hitPos.getZ(),
                     ModSoundEvents.ENTITY_CANNONBALL_BREAK, SoundCategory.PLAYERS, 1.0f,
                     random.nextFloat() * 0.1f + 1.25f, world.getRandom().nextLong());

@@ -40,18 +40,16 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockRenderView;
-import net.minecraft.world.BlockView;
 import org.jetbrains.annotations.Nullable;
 
 public class StillFluidRenderHandler implements FluidRenderHandler {
 
     private static final float Z_FIGHTING_BUFFER = 0.001f;
 
-    private static boolean isSideCovered(BlockView world, BlockPos pos, Direction direction,
-            BlockState state) {
+    private static boolean isSideCovered(Direction direction, BlockState state) {
         if (state.isOpaque()) {
             VoxelShape voxelShape = VoxelShapes.fullCube();
-            VoxelShape neighborVoxelShape = state.getCullingShape(world, pos.offset(direction));
+            VoxelShape neighborVoxelShape = state.getCullingShape();
             return VoxelShapes.isSideCovered(voxelShape, neighborVoxelShape, direction);
         }
         return false;
@@ -81,6 +79,7 @@ public class StillFluidRenderHandler implements FluidRenderHandler {
     }
 
     @Override
+    // Based on FluidRenderer
     // Since these fluids only have one sprite and are always full blocks, we can skip a lot of rendering logic
     public void renderFluid(BlockPos pos, BlockRenderView world, VertexConsumer vertexConsumer,
             BlockState blockState, FluidState fluidState) {
@@ -103,21 +102,20 @@ public class StillFluidRenderHandler implements FluidRenderHandler {
         BlockState blockStateEast = world.getBlockState(pos.offset(Direction.EAST));
         FluidState fluidStateEast = blockStateEast.getFluidState();
         boolean shouldRenderUp =
-                FluidRenderer.shouldRenderSide(world, pos, fluidState, blockState, Direction.UP,
-                        fluidStateUp) && !StillFluidRenderHandler.isSideCovered(world, pos,
-                        Direction.UP, blockStateUp);
+                FluidRenderer.shouldRenderSide(fluidState, blockState, Direction.UP, fluidStateUp)
+                        && !StillFluidRenderHandler.isSideCovered(Direction.UP, blockStateUp);
         boolean shouldRenderDown =
-                FluidRenderer.shouldRenderSide(world, pos, fluidState, blockState, Direction.DOWN,
-                        fluidStateDown) && !StillFluidRenderHandler.isSideCovered(world, pos,
-                        Direction.DOWN, blockStateDown);
-        boolean shouldRenderNorth = FluidRenderer.shouldRenderSide(world, pos, fluidState,
-                blockState, Direction.NORTH, fluidStateNorth);
-        boolean shouldRenderSouth = FluidRenderer.shouldRenderSide(world, pos, fluidState,
-                blockState, Direction.SOUTH, fluidStateSouth);
-        boolean shouldRenderWest = FluidRenderer.shouldRenderSide(world, pos, fluidState,
-                blockState, Direction.WEST, fluidStateWest);
-        boolean shouldRenderEast = FluidRenderer.shouldRenderSide(world, pos, fluidState,
-                blockState, Direction.EAST, fluidStateEast);
+                FluidRenderer.shouldRenderSide(fluidState, blockState, Direction.DOWN,
+                        fluidStateDown) && !StillFluidRenderHandler.isSideCovered(Direction.DOWN,
+                        blockStateDown);
+        boolean shouldRenderNorth = FluidRenderer.shouldRenderSide(fluidState, blockState,
+                Direction.NORTH, fluidStateNorth);
+        boolean shouldRenderSouth = FluidRenderer.shouldRenderSide(fluidState, blockState,
+                Direction.SOUTH, fluidStateSouth);
+        boolean shouldRenderWest = FluidRenderer.shouldRenderSide(fluidState, blockState,
+                Direction.WEST, fluidStateWest);
+        boolean shouldRenderEast = FluidRenderer.shouldRenderSide(fluidState, blockState,
+                Direction.EAST, fluidStateEast);
         if (!(shouldRenderUp || shouldRenderDown || shouldRenderEast || shouldRenderWest
                 || shouldRenderNorth || shouldRenderSouth)) {
             return;
@@ -143,7 +141,7 @@ public class StillFluidRenderHandler implements FluidRenderHandler {
             float v4 = v3;
             float midV = (v1 + v3) / 2.0f;
 
-            float frameDelta = sprite.getAnimationFrameDelta();
+            float frameDelta = sprite.getUvScaleDelta();
             u1 = MathHelper.lerp(frameDelta, u1, midU);
             u2 = MathHelper.lerp(frameDelta, u2, midU);
             u3 = MathHelper.lerp(frameDelta, u3, midU);
@@ -220,7 +218,7 @@ public class StillFluidRenderHandler implements FluidRenderHandler {
                     maxZ = z + 1.0f;
                     yield shouldRenderEast;
                 }
-            }) || StillFluidRenderHandler.isSideCovered(world, pos, direction,
+            }) || StillFluidRenderHandler.isSideCovered(direction,
                     world.getBlockState(pos.offset(direction)))) {
                 continue;
             }

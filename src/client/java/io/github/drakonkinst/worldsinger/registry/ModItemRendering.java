@@ -25,31 +25,25 @@
 package io.github.drakonkinst.worldsinger.registry;
 
 import io.github.drakonkinst.worldsinger.Worldsinger;
-import io.github.drakonkinst.worldsinger.cosmere.lumar.AetherSpores;
-import io.github.drakonkinst.worldsinger.item.ModItems;
-import io.github.drakonkinst.worldsinger.util.LayeredBakedModel;
-import io.github.drakonkinst.worldsinger.util.LayeredBakedModelCache;
+import io.github.drakonkinst.worldsinger.item.ItemOverlay;
+import java.util.Collections;
 import java.util.List;
+import net.fabricmc.fabric.api.client.model.loading.v1.ExtraModelKey;
 import net.fabricmc.fabric.api.client.model.loading.v1.ModelLoadingPlugin;
-import net.fabricmc.fabric.api.client.rendering.v1.ColorProviderRegistry;
-import net.minecraft.client.render.model.BakedModel;
-import net.minecraft.client.render.model.BakedModelManager;
+import net.fabricmc.fabric.api.client.model.loading.v1.SimpleUnbakedExtraModel;
+import net.minecraft.client.render.item.model.BasicItemModel;
+import net.minecraft.client.render.item.model.ItemModel;
+import net.minecraft.client.render.model.BakedQuad;
+import net.minecraft.client.render.model.ModelRotation;
+import net.minecraft.client.render.model.ModelSettings;
+import net.minecraft.client.render.model.ModelTextures;
+import net.minecraft.client.render.model.json.ModelTransformation;
+import net.minecraft.client.render.model.json.Transformation;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.ColorHelper.Argb;
+import org.joml.Vector3f;
 
 public final class ModItemRendering {
 
-    public static final Identifier SALT_OVERLAY = Worldsinger.id("item/salted_overlay");
-    public static final Identifier SILVER_LINED_AXE_OVERLAY = Worldsinger.id(
-            "item/silver_lined_axe_overlay");
-    public static final Identifier SILVER_LINED_BOAT_OVERLAY = Worldsinger.id(
-            "item/silver_lined_boat_overlay");
-    public static final Identifier SILVER_LINED_CHEST_BOAT_OVERLAY = Worldsinger.id(
-            "item/silver_lined_chest_boat_overlay");
-    public static final Identifier SILVER_LINED_RAFT_OVERLAY = Worldsinger.id(
-            "item/silver_lined_raft_overlay");
-    public static final Identifier SILVER_LINED_CHEST_RAFT_OVERLAY = Worldsinger.id(
-            "item/silver_lined_chest_raft_overlay");
     public static final Identifier CANNONBALL_CORE_ROSEITE = Worldsinger.id(
             "item/cannonball/core_roseite");
     public static final Identifier CANNONBALL_CORE_WATER = Worldsinger.id(
@@ -57,48 +51,55 @@ public final class ModItemRendering {
     public static final Identifier CANNONBALL_FUSE_1 = Worldsinger.id("item/cannonball/fuse_1");
     public static final Identifier CANNONBALL_FUSE_2 = Worldsinger.id("item/cannonball/fuse_2");
     public static final Identifier CANNONBALL_FUSE_3 = Worldsinger.id("item/cannonball/fuse_3");
-
-    public static final LayeredBakedModelCache SALT_OVERLAY_CACHE = LayeredBakedModel.registerCache(
-            new LayeredBakedModelCache());
-    public static final LayeredBakedModelCache SILVER_LINED_CACHE = LayeredBakedModel.registerCache(
-            new LayeredBakedModelCache());
-    public static final LayeredBakedModelCache CERAMIC_CANNONBALL_CACHE = LayeredBakedModel.registerCache(
-            new LayeredBakedModelCache());
+    public static final Identifier BLANK = Worldsinger.id("item/blank");
+    private static final float Z_FIGHTING_SCALE_MODIFIER = 0.001f;
 
     public static void register() {
-        ColorProviderRegistry.ITEM.register((stack, tintIndex) -> tintIndex > 0 ? -1
-                        : Argb.fullAlpha(AetherSpores.getBottleColor(stack)), ModItems.DEAD_SPORES_BOTTLE,
-                ModItems.VERDANT_SPORES_BOTTLE, ModItems.CRIMSON_SPORES_BOTTLE,
-                ModItems.ZEPHYR_SPORES_BOTTLE, ModItems.SUNLIGHT_SPORES_BOTTLE,
-                ModItems.ROSEITE_SPORES_BOTTLE, ModItems.MIDNIGHT_SPORES_BOTTLE,
-                ModItems.DEAD_SPORES_SPLASH_BOTTLE, ModItems.VERDANT_SPORES_SPLASH_BOTTLE,
-                ModItems.CRIMSON_SPORES_SPLASH_BOTTLE, ModItems.ZEPHYR_SPORES_SPLASH_BOTTLE,
-                ModItems.SUNLIGHT_SPORES_SPLASH_BOTTLE, ModItems.ROSEITE_SPORES_SPLASH_BOTTLE,
-                ModItems.MIDNIGHT_SPORES_SPLASH_BOTTLE);
-        final Identifier[] newModels = new Identifier[] {
-                ModItemRendering.SALT_OVERLAY,
-                ModItemRendering.SILVER_LINED_AXE_OVERLAY,
-                ModItemRendering.SILVER_LINED_BOAT_OVERLAY,
-                ModItemRendering.SILVER_LINED_CHEST_BOAT_OVERLAY,
-                ModItemRendering.SILVER_LINED_RAFT_OVERLAY,
-                ModItemRendering.SILVER_LINED_CHEST_RAFT_OVERLAY,
-                ModItemRendering.CANNONBALL_CORE_ROSEITE,
-                ModItemRendering.CANNONBALL_CORE_WATER,
-                ModItemRendering.CANNONBALL_FUSE_1,
-                ModItemRendering.CANNONBALL_FUSE_2,
-                ModItemRendering.CANNONBALL_FUSE_3,
-        };
-        ModelLoadingPlugin.register(pluginContext -> pluginContext.addModels(newModels));
+        ModelLoadingPlugin.register(pluginContext -> {
+            for (ItemOverlay itemOverlay : ItemOverlay.VALUES) {
+                registerItemOverlay(pluginContext, itemOverlay.getModelKey(), itemOverlay.getId());
+            }
+        });
     }
 
-    public static boolean attemptAddModel(List<BakedModel> modelList, BakedModelManager manager,
-            Identifier modelId) {
-        BakedModel model = manager.getModel(modelId);
-        if (model == null || model.equals(manager.getMissingModel())) {
-            return false;
-        }
-        modelList.add(model);
-        return true;
+    private static void registerItemOverlay(ModelLoadingPlugin.Context pluginContext,
+            ExtraModelKey<ItemModel> model, Identifier id) {
+        pluginContext.addModel(model,
+                new SimpleUnbakedExtraModel<>(id, ((bakedSimpleModel, baker) -> {
+                    ModelTextures modelTextures = bakedSimpleModel.getTextures();
+                    List<BakedQuad> list = bakedSimpleModel.bakeGeometry(modelTextures, baker,
+                            ModelRotation.X0_Y0).getAllQuads();
+                    // Modifies ModelSettings.resolveSettings()
+                    // Sprite sprite = bakedSimpleModel.getParticleTexture(modelTextures, baker);
+                    // ModelSettings modelSettings = new ModelSettings(
+                    //         bakedSimpleModel.getGuiLight().isSide(), sprite,
+                    //         fixZFighting(bakedSimpleModel.getTransformations()));
+                    ModelSettings modelSettings = ModelSettings.resolveSettings(baker,
+                            bakedSimpleModel, modelTextures);
+                    return new BasicItemModel(Collections.emptyList(), list, modelSettings);
+                })));
+    }
+
+    private static ModelTransformation fixZFighting(ModelTransformation model) {
+        Transformation firstPersonLeftHand = fixZFighting(model.firstPersonLeftHand());
+        Transformation firstPersonRightHand = fixZFighting(model.firstPersonRightHand());
+        Transformation thirdPersonLeftHand = fixZFighting(model.thirdPersonLeftHand());
+        Transformation thirdPersonRightHand = fixZFighting(model.thirdPersonRightHand());
+        Transformation head = model.head();
+        Transformation gui = model.gui();
+        Transformation ground = model.ground();
+        Transformation fixed = model.fixed();
+        return new ModelTransformation(thirdPersonLeftHand, thirdPersonRightHand,
+                firstPersonLeftHand, firstPersonRightHand, head, gui, ground, fixed);
+    }
+
+    private static Transformation fixZFighting(Transformation transformation) {
+        Vector3f resultVector = new Vector3f();
+        transformation.scale()
+                .add(Z_FIGHTING_SCALE_MODIFIER, Z_FIGHTING_SCALE_MODIFIER,
+                        Z_FIGHTING_SCALE_MODIFIER, resultVector);
+        return new Transformation(transformation.rotation(), transformation.translation(),
+                resultVector);
     }
 
     private ModItemRendering() {}

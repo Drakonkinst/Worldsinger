@@ -25,7 +25,7 @@ package io.github.drakonkinst.worldsinger.mixin.block;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import io.github.drakonkinst.datatables.DataTable;
-import io.github.drakonkinst.datatables.DataTableRegistry;
+import io.github.drakonkinst.datatables.DataTables;
 import io.github.drakonkinst.worldsinger.block.SporeKillable;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.SporeKillingUtil;
 import io.github.drakonkinst.worldsinger.fluid.FluidShapes;
@@ -46,11 +46,13 @@ import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldAccess;
+import net.minecraft.world.WorldView;
+import net.minecraft.world.tick.ScheduledTickView;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -87,13 +89,13 @@ public abstract class AbstractBlockStateMixin {
     }
 
     @Inject(method = "getStateForNeighborUpdate", at = @At("HEAD"))
-    private void makeCustomFluidTickable(Direction direction, BlockState neighborState,
-            WorldAccess world, BlockPos pos, BlockPos neighborPos,
+    private void makeCustomFluidTickable(WorldView world, ScheduledTickView tickView, BlockPos pos,
+            Direction direction, BlockPos neighborPos, BlockState neighborState, Random random,
             CallbackInfoReturnable<BlockState> cir) {
         Fluid fluid = Fluidlogged.getFluid(this.asBlockState());
         boolean noFluid = (fluid == null) || Fluids.EMPTY.equals(fluid);
         if (!noFluid) {
-            world.scheduleFluidTick(pos, fluid, fluid.getTickRate(world));
+            tickView.scheduleFluidTick(pos, fluid, fluid.getTickRate(world));
         }
     }
 
@@ -150,11 +152,11 @@ public abstract class AbstractBlockStateMixin {
         return state;
     }
 
-    @Inject(method = "onStateReplaced", at = @At("TAIL"))
-    private void addBlockPlaceBehaviors(World world, BlockPos pos, BlockState state, boolean moved,
+    @Inject(method = "onBlockAdded", at = @At("TAIL"))
+    private void addBlockPlaceBehaviors(World world, BlockPos pos, BlockState state, boolean notify,
             CallbackInfo ci) {
-        checkSporeKillingBehavior(world, pos, state);
-        checkSporeKilledOnPlace(world, pos, state);
+        checkSporeKillingBehavior(world, pos, this.asBlockState());
+        checkSporeKilledOnPlace(world, pos, this.asBlockState());
     }
 
     @Unique
@@ -162,8 +164,8 @@ public abstract class AbstractBlockStateMixin {
         if (!state.isIn(ModBlockTags.KILLS_SPORES)) {
             return;
         }
-        DataTable dataTable = DataTableRegistry.INSTANCE.get(ModDataTables.SPORE_KILLING_RADIUS);
-        int radius = dataTable.getIntForBlock(state);
+        DataTable dataTable = DataTables.get(ModDataTables.SPORE_KILLING_RADIUS);
+        int radius = dataTable.query(state);
         if (radius <= 0) {
             return;
         }

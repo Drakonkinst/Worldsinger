@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "id": "worldsinger-test",
+  "version": "1.0.0",
+  "name": "Worldsinger Test Mod",
+  "environment": "*",
+  "entrypoints": {
+    "fabric-gametest": [
+      "io.github.drakonkinst.worldsinger.WorldsingerGameTest"
+    ],
+    "fabric-client-gametest": [
+      "io.github.drakonkinst.worldsinger.WorldsingerClientGameTest"
+    ]
+  }
+}

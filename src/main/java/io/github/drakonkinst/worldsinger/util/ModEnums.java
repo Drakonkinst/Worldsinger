@@ -44,5 +44,7 @@ public final class ModEnums {
 
         public static final net.minecraft.block.enums.CameraSubmersionType SPORE_SEA = ClassTinkerers.getEnum(
                 net.minecraft.block.enums.CameraSubmersionType.class, "SPORE_SEA");
+        public static final net.minecraft.block.enums.CameraSubmersionType SUNLIGHT = ClassTinkerers.getEnum(
+                net.minecraft.block.enums.CameraSubmersionType.class, "SUNLIGHT");
     }
 }

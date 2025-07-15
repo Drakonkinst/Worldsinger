@@ -52,6 +52,6 @@ public abstract class SilverLinedEntityData implements SilverLined, SyncableAtta
 
     @Override
     public void syncFromNbt(NbtCompound nbt) {
-        silverDurability = nbt.getInt(KEY_SILVER_LINED);
+        silverDurability = nbt.getInt(KEY_SILVER_LINED, 0);
     }
 }

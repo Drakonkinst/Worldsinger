@@ -30,15 +30,16 @@ import io.github.drakonkinst.worldsinger.cosmere.lumar.SeetheManager;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.SporeParticleManager;
 import io.github.drakonkinst.worldsinger.mixin.accessor.FlowableFluidInvoker;
 import io.github.drakonkinst.worldsinger.registry.ModSoundEvents;
-import io.github.drakonkinst.worldsinger.util.ColorUtil;
 import java.util.Optional;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Waterloggable;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.fluid.FlowableFluid;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.math.BlockPos;
@@ -62,18 +63,10 @@ public abstract class AetherSporeFluid extends FlowableFluid implements SporeEmi
     public static final double FLUID_SPEED = 0.012;
 
     private final AetherSpores sporeType;
-    private final float fogRed;
-    private final float fogGreen;
-    private final float fogBlue;
 
     public AetherSporeFluid(AetherSpores sporeType) {
         super();
         this.sporeType = sporeType;
-
-        int color = sporeType.getColor();
-        this.fogRed = ColorUtil.getNormalizedRed(color);
-        this.fogGreen = ColorUtil.getNormalizedGreen(color);
-        this.fogBlue = ColorUtil.getNormalizedBlue(color);
     }
 
     @Override
@@ -87,13 +80,13 @@ public abstract class AetherSporeFluid extends FlowableFluid implements SporeEmi
     }
 
     @Override
-    public void onScheduledTick(World world, BlockPos pos, FluidState state) {
-        if (this.isStill(state) && !AetherSporeFluidBlock.shouldFluidize(
+    public void onScheduledTick(ServerWorld world, BlockPos pos, BlockState blockState,
+            FluidState fluidState) {
+        if (this.isStill(fluidState) && !AetherSporeFluidBlock.shouldFluidize(
                 world.getBlockState(pos.down()))) {
-            AetherSporeFluidBlock.updateFluidizationForBlock(world, pos, state.getBlockState(),
-                    false);
+            AetherSporeFluidBlock.updateFluidizationForBlock(world, pos, blockState, false);
         }
-        super.onScheduledTick(world, pos, state);
+        super.onScheduledTick(world, pos, blockState, fluidState);
     }
 
     @Override
@@ -106,16 +99,8 @@ public abstract class AetherSporeFluid extends FlowableFluid implements SporeEmi
         return 5;
     }
 
-    public float getFogRed() {
-        return fogRed;
-    }
-
-    public float getFogGreen() {
-        return fogGreen;
-    }
-
-    public float getFogBlue() {
-        return fogBlue;
+    public int getFogColor() {
+        return sporeType.getColor();
     }
 
     public AetherSpores getSporeType() {
@@ -138,7 +123,7 @@ public abstract class AetherSporeFluid extends FlowableFluid implements SporeEmi
         // Play particles and sounds during seething only
         BlockPos posAbove = pos.up();
         if (world.getBlockState(posAbove).isAir() && !world.getBlockState(posAbove)
-                .isOpaqueFullCube(world, posAbove)) {
+                .isOpaqueFullCube()) {
             if (random.nextInt(100) == 0) {
                 double spawnX = (double) pos.getX() + random.nextDouble();
                 double spawnY = (double) pos.getY() + 1.0 + random.nextDouble();
@@ -147,7 +132,7 @@ public abstract class AetherSporeFluid extends FlowableFluid implements SporeEmi
                         spawnZ, 1.0f, true, random);
             }
             if (random.nextInt(200) == 0) {
-                world.playSound(pos.getX(), pos.getY(), pos.getZ(),
+                world.playSoundClient(pos.getX(), pos.getY(), pos.getZ(),
                         ModSoundEvents.BLOCK_SPORE_SEA_AMBIENT, SoundCategory.BLOCKS,
                         0.2f + random.nextFloat() * 0.2f, 0.9f + random.nextFloat() * 0.15f, false);
             }
@@ -161,16 +146,17 @@ public abstract class AetherSporeFluid extends FlowableFluid implements SporeEmi
     }
 
     @Override
-    protected FluidState getUpdatedState(World world, BlockPos pos, BlockState state) {
+    protected FluidState getUpdatedState(ServerWorld world, BlockPos pos, BlockState state) {
         int maxNeighboringFluidLevel = 0;
         int neighboringSourceBlocks = 0;
         for (Direction direction : Direction.Type.HORIZONTAL) {
             BlockPos currPos = pos.offset(direction);
             BlockState currBlockState = world.getBlockState(currPos);
             FluidState currFluidState = currBlockState.getFluidState();
+            // noinspection ConstantValue
             if (!(currFluidState.getFluid() instanceof AetherSporeFluid)
-                    || !((FlowableFluidInvoker) this).worldsinger$receivesFlow(direction, world,
-                    pos, state, currPos, currBlockState)) {
+                    || !FlowableFluidInvoker.worldsinger$receivesFlow(direction, world, pos, state,
+                    currPos, currBlockState)) {
                 continue;
             }
             if (currFluidState.isStill()) {
@@ -183,19 +169,24 @@ public abstract class AetherSporeFluid extends FlowableFluid implements SporeEmi
         if (this.isInfinite(world) && neighboringSourceBlocks >= 2) {
             BlockState belowBlockState = world.getBlockState(pos.down());
             FluidState belowFluidState = belowBlockState.getFluidState();
-            if (belowBlockState.isSolid()
-                    || ((FlowableFluidInvoker) this).worldsinger$isMatchingAndStill(
-                    belowFluidState)) {
-                return this.getStill(false);
+            // Don't automatically fill in waterloggable blocks unless we know they won't immediately dissipate
+            if (!(state.getBlock() instanceof Waterloggable)
+                    || AetherSporeFluidBlock.shouldFluidize(belowBlockState)) {
+                if (belowBlockState.isSolid()
+                        || ((FlowableFluidInvoker) this).worldsinger$isMatchingAndStill(
+                        belowFluidState)) {
+                    return this.getStill(false);
+                }
             }
         }
 
         BlockPos posAbove = pos.up();
         BlockState stateAbove = world.getBlockState(posAbove);
         FluidState aboveFluidState = stateAbove.getFluidState();
+        // noinspection ConstantValue
         if (!aboveFluidState.isEmpty() && aboveFluidState.getFluid() instanceof AetherSporeFluid
-                && ((FlowableFluidInvoker) this).worldsinger$receivesFlow(Direction.UP, world, pos,
-                state, posAbove, stateAbove)) {
+                && FlowableFluidInvoker.worldsinger$receivesFlow(Direction.UP, world, pos, state,
+                posAbove, stateAbove)) {
             return this.getFlowing(AetherSporeFluid.MAX_LEVEL, true);
         }
         int updatedFluidLevel = maxNeighboringFluidLevel - this.getLevelDecreasePerBlock(world);
@@ -206,7 +197,7 @@ public abstract class AetherSporeFluid extends FlowableFluid implements SporeEmi
     }
 
     @Override
-    protected boolean isInfinite(World world) {
+    protected boolean isInfinite(ServerWorld world) {
         return true;
     }
 

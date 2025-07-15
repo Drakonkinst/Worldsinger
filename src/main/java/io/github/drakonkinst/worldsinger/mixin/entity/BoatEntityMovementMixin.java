@@ -23,10 +23,12 @@
  */
 package io.github.drakonkinst.worldsinger.mixin.entity;
 
-import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
-import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import io.github.drakonkinst.worldsinger.api.ModAttachmentTypes;
+import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
+import io.github.drakonkinst.worldsinger.advancement.ModCriteria;
+import io.github.drakonkinst.worldsinger.entity.attachments.ModAttachmentTypes;
 import io.github.drakonkinst.worldsinger.cosmere.SilverLined;
+import io.github.drakonkinst.worldsinger.cosmere.lumar.AetherSpores;
+import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarManagerAccess;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.SeetheManager;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.SporeKillingUtil;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.SporeParticleSpawner;
@@ -35,11 +37,13 @@ import io.github.drakonkinst.worldsinger.fluid.ModFluidTags;
 import io.github.drakonkinst.worldsinger.registry.ModSoundEvents;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ShapeContext;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.vehicle.BoatEntity;
-import net.minecraft.entity.vehicle.BoatEntity.Location;
+import net.minecraft.entity.vehicle.AbstractBoatEntity;
+import net.minecraft.entity.vehicle.AbstractBoatEntity.Location;
 import net.minecraft.entity.vehicle.VehicleEntity;
 import net.minecraft.fluid.FluidState;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.math.BlockPos;
@@ -49,7 +53,6 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
-import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -57,12 +60,11 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
-import org.spongepowered.asm.mixin.injection.Slice;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @SuppressWarnings("UnstableApiUsage")
-@Mixin(BoatEntity.class)
+@Mixin(AbstractBoatEntity.class)
 public abstract class BoatEntityMovementMixin extends VehicleEntity {
 
     @Unique
@@ -79,8 +81,6 @@ public abstract class BoatEntityMovementMixin extends VehicleEntity {
     @Shadow
     private double waterLevel;
     @Shadow
-    private float velocityDecay;
-    @Shadow
     private Location location;
     @Shadow
     @Final
@@ -92,6 +92,9 @@ public abstract class BoatEntityMovementMixin extends VehicleEntity {
 
     @Shadow
     public abstract boolean isPaddleMoving(int paddle);
+
+    @Shadow
+    private float yawVelocity;
 
     @Inject(method = "tick", at = @At("TAIL"))
     private void injectTick(CallbackInfo ci) {
@@ -146,8 +149,18 @@ public abstract class BoatEntityMovementMixin extends VehicleEntity {
                 double xOffset = paddleIndex == 1 ? -vec3d.z : vec3d.z;
                 double zOffset = paddleIndex == 1 ? vec3d.x : -vec3d.x;
                 Vec3d pos = new Vec3d(this.getX() + xOffset, this.getY(), this.getZ() + zOffset);
-                SporeParticleSpawner.spawnRowingParticles(world,
-                        lastAetherSporeFluid.getSporeType(), pos);
+                AetherSpores sporeType = lastAetherSporeFluid.getSporeType();
+                int sporeId = sporeType.getId();
+                boolean isSeetheActive = ((LumarManagerAccess) world).worldsinger$getLumarManager()
+                        .getSeetheManager()
+                        .isSeething();
+                SporeParticleSpawner.spawnRowingParticles(world, sporeType, pos);
+                for (Entity entity : this.getPassengerList()) {
+                    if (entity instanceof ServerPlayerEntity playerEntity) {
+                        ModCriteria.SAILED_IN_SPORE_SEA.trigger(playerEntity, sporeId,
+                                isSeetheActive);
+                    }
+                }
             }
         }
     }
@@ -159,14 +172,14 @@ public abstract class BoatEntityMovementMixin extends VehicleEntity {
                 && (paddlePhase + (Math.PI / 8)) % (Math.PI * 2) >= Math.PI / 4;
     }
 
-    @Inject(method = "getPaddleSoundEvent", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "getPaddleSound", at = @At("HEAD"), cancellable = true)
     private void addSporeSeaPaddleSound(CallbackInfoReturnable<SoundEvent> cir) {
         if (this.inSporeSea) {
             cir.setReturnValue(ModSoundEvents.ENTITY_BOAT_PADDLE_SPORE_SEA);
         }
     }
 
-    @Inject(method = "checkLocation", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/vehicle/BoatEntity;getNearbySlipperiness()F"), cancellable = true)
+    @Inject(method = "checkLocation", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/vehicle/AbstractBoatEntity;getNearbySlipperiness()F"), cancellable = true)
     private void checkSporeSeaLocation(CallbackInfoReturnable<Location> cir) {
         this.inSporeSea = false;
         this.lastAetherSporeFluid = null;
@@ -262,30 +275,35 @@ public abstract class BoatEntityMovementMixin extends VehicleEntity {
         return inSporeSea;
     }
 
-    @Inject(method = "updateVelocity", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/vehicle/BoatEntity;setVelocity(DDD)V"), slice = @Slice(to = @At(value = "FIELD", opcode = Opcodes.PUTFIELD, target = "Lnet/minecraft/entity/vehicle/BoatEntity;yawVelocity:F")))
-    private void addSporeSeaVelocityLogic(CallbackInfo ci) {
+    @Inject(method = "updateVelocity", at = @At(value = "TAIL"))
+    private void freezeBoatDuringStilling(CallbackInfo ci) {
         if (this.inSporeSea && !SeetheManager.areSporesFluidized(this.getWorld())) {
-            this.velocityDecay = 0.0f;
+            this.yawVelocity = 0.0f;
+            this.setVelocity(Vec3d.ZERO);
         }
     }
 
-    @WrapOperation(method = "updatePaddles", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/vehicle/BoatEntity;setVelocity(Lnet/minecraft/util/math/Vec3d;)V"))
-    private void restrictMovementInSporeSea(BoatEntity instance, Vec3d velocity,
-            Operation<Void> original) {
-        if (this.inSporeSea && this.location != Location.ON_LAND
-                && !SeetheManager.areSporesFluidized(this.getWorld())) {
-            return;
-        }
-        original.call(instance, velocity);
+    @WrapWithCondition(method = "updatePaddles", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/vehicle/AbstractBoatEntity;setVelocity(Lnet/minecraft/util/math/Vec3d;)V"))
+    private boolean cancelMovementInSporeSea(AbstractBoatEntity instance, Vec3d vec3d) {
+        return !this.inSporeSea || this.location == Location.ON_LAND
+                || SeetheManager.areSporesFluidized(this.getWorld());
     }
 
+    // Prevent all passengers in the boat from turning based on boat movement that is not happening
     @Inject(method = "updatePassengerPosition", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;setYaw(F)V"), cancellable = true)
     private void restrictMovementInSporeSeaPassenger(CallbackInfo ci) {
-        if (this.inSporeSea && this.location != Location.ON_LAND) {
-            World world = this.getWorld();
-            if (!SeetheManager.areSporesFluidized(world)) {
-                ci.cancel();
-            }
+        if (this.inSporeSea && this.location != Location.ON_LAND
+                && !SeetheManager.areSporesFluidized(this.getWorld())) {
+            ci.cancel();
+        }
+    }
+
+    // Cannot turn for any reason while spore-locked
+    @Override
+    public void setYaw(float yaw) {
+        if (!this.inSporeSea || this.location == Location.ON_LAND
+                || SeetheManager.areSporesFluidized(this.getWorld())) {
+            super.setYaw(yaw);
         }
     }
 
@@ -296,5 +314,4 @@ public abstract class BoatEntityMovementMixin extends VehicleEntity {
             BlockPos blockPos) {
         return instance.getCollisionShape(blockView, blockPos, ShapeContext.of(this));
     }
-
 }

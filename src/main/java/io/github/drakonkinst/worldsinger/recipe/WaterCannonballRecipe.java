@@ -51,10 +51,13 @@ public class WaterCannonballRecipe extends SpecialCraftingRecipe {
 
     @Override
     public boolean matches(CraftingRecipeInput input, World world) {
+        if (input.getStackCount() < 2) {
+            return false;
+        }
         int numCannonballs = 0;
         ItemStack cannonballStack = ItemStack.EMPTY;
         boolean hasWaterBucket = false;
-        for (int i = 0; i < input.getSize(); ++i) {
+        for (int i = 0; i < input.size(); ++i) {
             ItemStack stack = input.getStackInSlot(i);
             if (stack.isEmpty()) {
                 continue;
@@ -84,7 +87,7 @@ public class WaterCannonballRecipe extends SpecialCraftingRecipe {
         int numCannonballs = 0;
         ItemStack cannonballStack = ItemStack.EMPTY;
         boolean hasWaterBucket = false;
-        for (int i = 0; i < input.getSize(); ++i) {
+        for (int i = 0; i < input.size(); ++i) {
             ItemStack stack = input.getStackInSlot(i);
             if (stack.isEmpty()) {
                 continue;
@@ -120,12 +123,7 @@ public class WaterCannonballRecipe extends SpecialCraftingRecipe {
     }
 
     @Override
-    public boolean fits(int width, int height) {
-        return width * height >= 2;
-    }
-
-    @Override
-    public RecipeSerializer<?> getSerializer() {
+    public RecipeSerializer<WaterCannonballRecipe> getSerializer() {
         return ModRecipeSerializer.WATER_CANNONBALL;
     }
 }

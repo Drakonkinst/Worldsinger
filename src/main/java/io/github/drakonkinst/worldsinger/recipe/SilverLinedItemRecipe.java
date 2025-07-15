@@ -24,9 +24,7 @@
 
 package io.github.drakonkinst.worldsinger.recipe;
 
-import io.github.drakonkinst.worldsinger.api.ModApi;
 import io.github.drakonkinst.worldsinger.cosmere.SilverLined;
-import io.github.drakonkinst.worldsinger.cosmere.SilverLinedUtil;
 import io.github.drakonkinst.worldsinger.registry.tag.ModConventionalItemTags;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.RecipeSerializer;
@@ -42,18 +40,22 @@ public class SilverLinedItemRecipe extends SpecialCraftingRecipe {
         super(category);
     }
 
+    // TODO: Should maybe stop the player from crafting if there are too many ingots?
     @Override
     public boolean matches(CraftingRecipeInput input, World world) {
+        if (input.getStackCount() < 2) {
+            return false;
+        }
         ItemStack silverLinedItem = ItemStack.EMPTY;
         int numSilverIngots = 0;
-        for (int i = 0; i < input.getSize(); ++i) {
+        for (int i = 0; i < input.size(); ++i) {
             ItemStack stack = input.getStackInSlot(i);
             if (stack.isEmpty()) {
                 continue;
             }
             if (stack.isIn(ModConventionalItemTags.SILVER_INGOTS)) {
                 numSilverIngots += 1;
-            } else if (SilverLinedUtil.canBeSilverLined(stack)) {
+            } else if (SilverLined.canBeSilverLined(stack)) {
                 if (!silverLinedItem.isEmpty()) {
                     // Cannot have more than one silver lined slot
                     return false;
@@ -71,14 +73,14 @@ public class SilverLinedItemRecipe extends SpecialCraftingRecipe {
     public ItemStack craft(CraftingRecipeInput input, RegistryWrapper.WrapperLookup lookup) {
         ItemStack silverLinedItem = ItemStack.EMPTY;
         int numSilverIngots = 0;
-        for (int i = 0; i < input.getSize(); ++i) {
+        for (int i = 0; i < input.size(); ++i) {
             ItemStack stack = input.getStackInSlot(i);
             if (stack.isEmpty()) {
                 continue;
             }
             if (stack.isIn(ModConventionalItemTags.SILVER_INGOTS)) {
                 numSilverIngots += 1;
-            } else if (SilverLinedUtil.canBeSilverLined(stack)) {
+            } else if (SilverLined.canBeSilverLined(stack)) {
                 if (!silverLinedItem.isEmpty()) {
                     // Cannot have more than one silver lined slot
                     return ItemStack.EMPTY;
@@ -90,23 +92,11 @@ public class SilverLinedItemRecipe extends SpecialCraftingRecipe {
             }
         }
 
-        ItemStack result = silverLinedItem.copy();
-        SilverLined silverData = ModApi.SILVER_LINED_ITEM.find(result, null);
-        if (silverData == null) {
-            return ItemStack.EMPTY;
-        }
-        silverData.setSilverDurability(
-                silverData.getSilverDurability() + numSilverIngots * silverData.getRepairAmount());
-        return result;
+        return SilverLined.repairSilverDurability(silverLinedItem.copy(), numSilverIngots);
     }
 
     @Override
-    public boolean fits(int width, int height) {
-        return width * height >= 2;
-    }
-
-    @Override
-    public RecipeSerializer<?> getSerializer() {
+    public RecipeSerializer<SilverLinedItemRecipe> getSerializer() {
         return ModRecipeSerializer.SILVER_LINED_ITEM;
     }
 }

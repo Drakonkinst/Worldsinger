@@ -25,19 +25,17 @@
 package io.github.drakonkinst.worldsinger.mixin.client.world;
 
 import com.llamalad7.mixinextras.sugar.Local;
+import io.github.drakonkinst.worldsinger.api.ClientLunagreeData;
 import io.github.drakonkinst.worldsinger.cosmere.CosmerePlanet;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.AetherSpores;
-import io.github.drakonkinst.worldsinger.cosmere.lumar.ClientLunagreeData;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarLunagreeGenerator;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarManager;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarSeetheManager;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LunagreeGenerator;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LunagreeLocation;
-import io.github.drakonkinst.worldsinger.cosmere.lumar.RainlineManager;
+import io.github.drakonkinst.worldsinger.cosmere.lumar.RainlineSpawner;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.SporeParticleManager;
-import io.github.drakonkinst.worldsinger.entity.ClientLunagreeDataAccess;
 import io.github.drakonkinst.worldsinger.mixin.world.WorldLumarMixin;
-import java.util.function.Supplier;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
@@ -46,18 +44,15 @@ import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.client.world.ClientWorld.Properties;
-import net.minecraft.particle.ParticleEffect;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockPos.Mutable;
 import net.minecraft.util.math.random.Random;
-import net.minecraft.util.profiler.Profiler;
 import net.minecraft.world.Heightmap.Type;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -66,18 +61,14 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(ClientWorld.class)
 public abstract class ClientWorldLumarMixin extends WorldLumarMixin {
 
-    @Shadow
-    public abstract void addParticle(ParticleEffect parameters, double x, double y, double z,
-            double velocityX, double velocityY, double velocityZ);
-
     @Inject(method = "<init>", at = @At("TAIL"))
     private void initialize(ClientPlayNetworkHandler networkHandler, Properties properties,
-            RegistryKey<World> registryRef, RegistryEntry<DimensionType> dimensionTypeEntry,
-            int loadDistance, int simulationDistance, Supplier<Profiler> profiler,
-            WorldRenderer worldRenderer, boolean debugWorld, long seed, CallbackInfo ci) {
+            RegistryKey<World> registryRef, RegistryEntry<DimensionType> dimensionType,
+            int loadDistance, int simulationDistance, WorldRenderer worldRenderer,
+            boolean debugWorld, long seed, int seaLevel, CallbackInfo ci) {
         if (CosmerePlanet.getPlanetFromKey(registryRef).equals(CosmerePlanet.LUMAR)) {
             lumarManager = new LumarManager(new LumarSeetheManager(), LunagreeGenerator.NULL,
-                    RainlineManager.NULL);
+                    RainlineSpawner.NULL);
         }
     }
 
@@ -86,12 +77,13 @@ public abstract class ClientWorldLumarMixin extends WorldLumarMixin {
             Random random, Block block, Mutable pos, CallbackInfo ci,
             @Local BlockState blockState) {
         ClientPlayerEntity player = MinecraftClient.getInstance().player;
+        ClientWorld world = (ClientWorld) (Object) this;
         // Only occurs on Lumar
-        if (player == null || !CosmerePlanet.isLumar((ClientWorld) (Object) this)) {
+        if (player == null || !CosmerePlanet.isLumar(world)) {
             return;
         }
 
-        ClientLunagreeData data = ((ClientLunagreeDataAccess) player).worldsinger$getLunagreeData();
+        ClientLunagreeData data = ClientLunagreeData.get(world);
         // We want a larger radius than the biome particles if not under lunagree
         // But keep particle spawn rates proportional
         int radiusMultiplier = data.isUnderLunagree() ? ClientLunagreeData.SPORE_FALL_RADIUS_CLOSE
@@ -124,7 +116,7 @@ public abstract class ClientWorldLumarMixin extends WorldLumarMixin {
         double spawnX = (double) x + random.nextDouble();
         double spawnY = (double) y + 1.0 + random.nextDouble();
         double spawnZ = (double) z + random.nextDouble();
-        SporeParticleManager.addClientDisplayParticle((ClientWorld) (Object) this,
+        SporeParticleManager.addClientDisplayParticle(world,
                 AetherSpores.getAetherSporeTypeById(location.sporeId()), spawnX, spawnY, spawnZ,
                 ClientLunagreeData.SPORE_FALL_PARTICLE_SIZE, false, random);
     }

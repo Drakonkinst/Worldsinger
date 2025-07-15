@@ -48,7 +48,7 @@ public abstract class PotionEntityMixin extends ThrownItemEntity {
         super(entityType, world);
     }
 
-    @Inject(method = "applyWater", at = @At("TAIL"))
+    @Inject(method = "explodeWaterPotion", at = @At("TAIL"))
     private void addSporeReaction(CallbackInfo ci) {
         WaterReactionManager.catalyzeAroundWaterEffect(this.getWorld(), this.getBlockPos(),
                 HORIZONTAL_RADIUS, VERTICAL_RADIUS, WATER_AMOUNT);

@@ -23,36 +23,105 @@
  */
 package io.github.drakonkinst.worldsinger.cosmere;
 
-import io.github.drakonkinst.worldsinger.Worldsinger;
-import io.github.drakonkinst.worldsinger.api.ModApi;
-import io.github.drakonkinst.worldsinger.api.ModAttachmentTypes;
+import io.github.drakonkinst.worldsinger.entity.attachments.ModAttachmentTypes;
+import io.github.drakonkinst.worldsinger.item.component.SilverLinedComponent;
+import io.github.drakonkinst.worldsinger.registry.ModDataComponentTypes;
+import io.github.drakonkinst.worldsinger.registry.tag.ModItemTags;
+import net.minecraft.component.ComponentsAccess;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.vehicle.BoatEntity;
+import net.minecraft.entity.vehicle.AbstractBoatEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.registry.tag.ItemTags;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.World;
 
 @SuppressWarnings("UnstableApiUsage")
 public interface SilverLined {
 
+    int SILVER_METER_COLOR = 0xC1D5D5;
+    int SILVER_TEXT_COLOR = 0xC1D5D5;
+    int BOAT_MAX_DURABILITY = 45000;
+    float BOAT_VISUAL_SCALE_FACTOR = 1.0f / 100.0f;
+
     static void transferDataFromEntityToItemStack(Entity entity, ItemStack itemStack) {
         SilverLined silverEntityData = entity.getAttached(ModAttachmentTypes.SILVER_LINED_BOAT);
-        if (silverEntityData != null && silverEntityData.getSilverDurability() > 0) {
-            SilverLined silverItemData = ModApi.SILVER_LINED_ITEM.find(itemStack, null);
-            if (silverItemData != null) {
-                silverItemData.setSilverDurability(silverEntityData.getSilverDurability());
-            } else {
-                Worldsinger.LOGGER.error("Expected to find silver data for new boat item");
-            }
+        if (silverEntityData != null) {
+            SilverLined.setSilverDurability(itemStack, silverEntityData.getSilverDurability());
         }
     }
 
-    static void transferDataFromItemStackToEntity(ItemStack itemStack, BoatEntity entity) {
-        SilverLined silverItemData = ModApi.SILVER_LINED_ITEM.find(itemStack, null);
-        if (silverItemData == null || silverItemData.getSilverDurability() <= 0) {
-            return;
+    static void transferDataFromItemStackToEntity(ItemStack itemStack, AbstractBoatEntity entity) {
+        entity.copyComponentsFrom(itemStack);
+    }
+
+    static boolean canBeSilverLined(ItemStack stack) {
+        return stack.contains(ModDataComponentTypes.MAX_SILVER_DURABILITY) && !stack.isIn(
+                ModItemTags.EXCLUDE_SILVER_LINED);
+    }
+
+    static boolean isSilverLined(ItemStack stack) {
+        return SilverLined.canBeSilverLined(stack) && SilverLined.getSilverDurability(stack) > 0;
+    }
+
+    static int getMaxSilverDurability(ComponentsAccess stack, int defaultValue) {
+        return stack.getOrDefault(ModDataComponentTypes.MAX_SILVER_DURABILITY, defaultValue);
+    }
+
+    static int getSilverDurability(ComponentsAccess stack) {
+        SilverLinedComponent silverLinedComponent = stack.get(
+                ModDataComponentTypes.SILVER_DURABILITY);
+        if (silverLinedComponent != null) {
+            return silverLinedComponent.value();
         }
-        SilverLined silverEntityData = entity.getAttachedOrCreate(
-                ModAttachmentTypes.SILVER_LINED_BOAT);
-        silverEntityData.setSilverDurability(silverItemData.getSilverDurability());
+        return 0;
+    }
+
+    static int setSilverDurability(ItemStack stack, int value) {
+        int maxDurability = stack.getOrDefault(ModDataComponentTypes.MAX_SILVER_DURABILITY, -1);
+        if (maxDurability <= 0) {
+            return 0;
+        }
+        int newValue = Math.clamp(value, 0, maxDurability);
+        stack.set(ModDataComponentTypes.SILVER_DURABILITY, new SilverLinedComponent(newValue));
+        return newValue;
+    }
+
+    static ItemStack repairSilverDurability(ItemStack stack, int times) {
+        int silverDurability = SilverLined.getSilverDurability(stack);
+        int maxSilverDurability = SilverLined.getMaxSilverDurability(stack, 0);
+        if (maxSilverDurability <= 0) {
+            return ItemStack.EMPTY;
+        }
+        // Hardcoding this for now, we can make it more extensible later
+        int repairAmount;
+        if (stack.isIn(ItemTags.BOATS) || stack.isIn(ItemTags.BOATS)) {
+            repairAmount = MathHelper.ceil(maxSilverDurability / 4.0f);
+        } else {
+            repairAmount = maxSilverDurability;
+        }
+        SilverLined.setSilverDurability(stack, silverDurability + repairAmount * times);
+        return stack;
+    }
+
+    static boolean damageSilverDurability(ItemStack stack) {
+        return damageSilverDurability(stack, 1);
+    }
+
+    // Return true if it's broken
+    static boolean damageSilverDurability(ItemStack stack, int amount) {
+        SilverLinedComponent silverLinedComponent = stack.get(
+                ModDataComponentTypes.SILVER_DURABILITY);
+        if (silverLinedComponent == null) {
+            return true;
+        }
+        int silverDurability = silverLinedComponent.value();
+        return SilverLined.setSilverDurability(stack, silverDurability - amount) == 0;
+    }
+
+    static void onSilverLinedItemBreak(World world, Entity entity) {
+        if (!world.isClient()) {
+            // TODO: Play sound and particles
+        }
     }
 
     void setSilverDurability(int durability);

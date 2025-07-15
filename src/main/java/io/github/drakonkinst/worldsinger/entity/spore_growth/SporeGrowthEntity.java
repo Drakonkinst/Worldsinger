@@ -38,13 +38,14 @@ import java.util.List;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.particle.BlockStateParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
+import net.minecraft.storage.ReadView;
+import net.minecraft.storage.WriteView;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockPos.Mutable;
 import net.minecraft.util.math.Direction;
@@ -96,7 +97,7 @@ public abstract class SporeGrowthEntity extends ServerSideEntity {
     // NBT data
     private int waterRemaining;
     private int sporesRemaining;
-    private short stage = 0;
+    private int stage = 0;
     private boolean isInitialGrowth;
     private BlockPos origin;
 
@@ -151,29 +152,28 @@ public abstract class SporeGrowthEntity extends ServerSideEntity {
     /* Internal Methods */
 
     @Override
-    protected void readCustomDataFromNbt(NbtCompound nbt) {
-        this.waterRemaining = nbt.getInt(WATER_REMAINING_KEY);
-        this.sporesRemaining = nbt.getInt(SPORES_REMAINING_KEY);
-        this.isInitialGrowth = nbt.getBoolean(INITIAL_GROWTH_KEY);
-        this.stage = nbt.getShort(STAGE_KEY);
-        if (nbt.contains(ORIGIN_X_KEY, NbtElement.INT_TYPE)) {
-            int x = nbt.getInt(ORIGIN_X_KEY);
-            int y = nbt.getInt(ORIGIN_Y_KEY);
-            int z = nbt.getInt(ORIGIN_Z_KEY);
+    protected void readCustomData(ReadView view) {
+        this.waterRemaining = view.getInt(WATER_REMAINING_KEY, 0);
+        this.sporesRemaining = view.getInt(SPORES_REMAINING_KEY, 0);
+        this.isInitialGrowth = view.getBoolean(INITIAL_GROWTH_KEY, false);
+        this.stage = view.getShort(STAGE_KEY, (short) 0);
+        view.getOptionalInt(ORIGIN_X_KEY).ifPresent(x -> {
+            int y = view.getInt(ORIGIN_Y_KEY, 0);
+            int z = view.getInt(ORIGIN_Z_KEY, 0);
             this.origin = new BlockPos(x, y, z);
-        }
+        });
     }
 
     @Override
-    protected void writeCustomDataToNbt(NbtCompound nbt) {
-        nbt.putInt(WATER_REMAINING_KEY, this.waterRemaining);
-        nbt.putInt(SPORES_REMAINING_KEY, this.sporesRemaining);
-        nbt.putBoolean(INITIAL_GROWTH_KEY, this.isInitialGrowth);
-        nbt.putShort(STAGE_KEY, this.stage);
+    protected void writeCustomData(WriteView view) {
+        view.putInt(WATER_REMAINING_KEY, this.waterRemaining);
+        view.putInt(SPORES_REMAINING_KEY, this.sporesRemaining);
+        view.putBoolean(INITIAL_GROWTH_KEY, this.isInitialGrowth);
+        view.putShort(STAGE_KEY, (short) this.stage);
         if (this.origin != null) {
-            nbt.putInt(ORIGIN_X_KEY, this.origin.getX());
-            nbt.putInt(ORIGIN_Y_KEY, this.origin.getY());
-            nbt.putInt(ORIGIN_Z_KEY, this.origin.getZ());
+            view.putInt(ORIGIN_X_KEY, this.origin.getX());
+            view.putInt(ORIGIN_Y_KEY, this.origin.getY());
+            view.putInt(ORIGIN_Z_KEY, this.origin.getZ());
         }
     }
 
@@ -195,10 +195,15 @@ public abstract class SporeGrowthEntity extends ServerSideEntity {
         }
     }
 
+    @Override
+    public final boolean damage(ServerWorld world, DamageSource source, float amount) {
+        return false;
+    }
+
     // Called if entity was killed but still has spores remaining
     private void onEarlyDiscard() {
         BlockPos pos = this.getBlockPos();
-        BlockPos.Mutable mutable = pos.mutableCopy();
+        Mutable mutable = pos.mutableCopy();
         World world = this.getWorld();
         // Reset CATALYZED state for self and all neighboring blocks
         SporeGrowthEntity.resetCatalyzed(world, pos);
@@ -459,7 +464,7 @@ public abstract class SporeGrowthEntity extends ServerSideEntity {
 
         List<Direction> validDirections = new ArrayList<>(6);
         BlockPos pos = this.getBlockPos();
-        BlockPos.Mutable mutable = new BlockPos.Mutable();
+        Mutable mutable = new Mutable();
         for (Direction direction : ModConstants.CARDINAL_DIRECTIONS) {
             mutable.set(pos.offset(direction));
             if (this.canPlaceDecorator(world.getBlockState(mutable))) {

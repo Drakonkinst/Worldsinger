@@ -32,8 +32,8 @@ import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.BucketItem;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -66,7 +66,7 @@ public abstract class BucketItemMixin {
             "Lnet/minecraft/block/FluidDrainable;"
                     + "getBucketFillSound()Ljava/util/Optional;", shift = At.Shift.BEFORE), locals = LocalCapture.CAPTURE_FAILSOFT)
     private void playRightSound(World world, PlayerEntity user, Hand hand,
-            CallbackInfoReturnable<TypedActionResult<ItemStack>> cir, ItemStack itemStack,
+            CallbackInfoReturnable<ActionResult> cir, ItemStack itemStack,
             BlockHitResult blockHitResult, BlockPos blockPos, Direction direction,
             BlockPos blockPos2, BlockState blockState, FluidDrainable fluidDrainable,
             ItemStack itemStack2) {

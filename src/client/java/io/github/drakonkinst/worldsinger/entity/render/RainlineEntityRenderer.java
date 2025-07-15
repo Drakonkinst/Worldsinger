@@ -26,30 +26,14 @@ package io.github.drakonkinst.worldsinger.entity.render;
 
 import io.github.drakonkinst.worldsinger.entity.model.RainlineEntityModel;
 import io.github.drakonkinst.worldsinger.entity.rainline.RainlineEntity;
-import net.minecraft.client.render.VertexConsumerProvider;
+import io.github.drakonkinst.worldsinger.entity.state.RainlineEntityRenderState;
 import net.minecraft.client.render.entity.EntityRendererFactory;
-import net.minecraft.client.util.math.MatrixStack;
 import software.bernie.geckolib.renderer.GeoEntityRenderer;
 
-public class RainlineEntityRenderer extends GeoEntityRenderer<RainlineEntity> {
+public class RainlineEntityRenderer extends
+        GeoEntityRenderer<RainlineEntity, RainlineEntityRenderState> {
 
     public RainlineEntityRenderer(EntityRendererFactory.Context ctx) {
         super(ctx, new RainlineEntityModel());
-    }
-
-    @Override
-    public void render(RainlineEntity entity, float entityYaw, float partialTick,
-            MatrixStack poseStack, VertexConsumerProvider bufferSource, int packedLight) {
-        // My feeble attempt to make interpolation work has gone horribly wrong
-        double deltaX = entity.getX() - entity.prevX;
-        double deltaZ = entity.getZ() - entity.prevZ;
-        double adjustY = RainlineEntity.getTargetHeight(entity.getWorld()) - entity.getY();
-        poseStack.push();
-        double t = partialTick - 1;
-        double adjustX = t * deltaX;
-        double adjustZ = t * deltaZ;
-        poseStack.translate(adjustX, adjustY, adjustZ);
-        super.render(entity, entityYaw, partialTick, poseStack, bufferSource, packedLight);
-        poseStack.pop();
     }
 }

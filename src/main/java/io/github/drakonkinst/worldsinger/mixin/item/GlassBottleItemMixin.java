@@ -37,8 +37,8 @@ import net.minecraft.item.GlassBottleItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.sound.SoundCategory;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
@@ -64,7 +64,7 @@ public abstract class GlassBottleItemMixin extends Item {
 
     @Inject(method = "use", at = @At(value = "INVOKE", target = "Lnet/minecraft/fluid/FluidState;isIn(Lnet/minecraft/registry/tag/TagKey;)Z"), cancellable = true)
     private void fillSporeBottles(World world, PlayerEntity user, Hand hand,
-            CallbackInfoReturnable<TypedActionResult<ItemStack>> cir) {
+            CallbackInfoReturnable<ActionResult> cir) {
         ItemStack itemStack = user.getStackInHand(hand);
         BlockHitResult blockHitResult = Item.raycast(world, user,
                 RaycastContext.FluidHandling.SOURCE_ONLY);
@@ -100,13 +100,11 @@ public abstract class GlassBottleItemMixin extends Item {
 
     @Unique
     private void fillWithSporeBottle(World world, PlayerEntity user, ItemStack itemStack,
-            BlockPos blockPos, AetherSpores sporeType,
-            CallbackInfoReturnable<TypedActionResult<ItemStack>> cir) {
+            BlockPos blockPos, AetherSpores sporeType, CallbackInfoReturnable<ActionResult> cir) {
         world.playSound(user, user.getX(), user.getY(), user.getZ(),
                 ModSoundEvents.ITEM_BOTTLE_FILL_AETHER_SPORE, SoundCategory.NEUTRAL, 1.0f, 1.0f);
         world.emitGameEvent(user, GameEvent.FLUID_PICKUP, blockPos);
-        cir.setReturnValue(TypedActionResult.success(
-                this.fill(itemStack, user, sporeType.getBottledItem().getDefaultStack()),
-                world.isClient()));
+        cir.setReturnValue(ActionResult.SUCCESS.withNewHandStack(
+                this.fill(itemStack, user, sporeType.getBottledItem().getDefaultStack())));
     }
 }

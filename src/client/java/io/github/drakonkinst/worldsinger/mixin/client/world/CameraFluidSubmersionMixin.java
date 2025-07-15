@@ -69,7 +69,7 @@ public abstract class CameraFluidSubmersionMixin implements CameraPosAccess {
 
         BlockState blockState = this.area.getBlockState(this.blockPos);
         if (blockState.isOf(ModBlocks.SUNLIGHT)) {
-            cir.setReturnValue(ModEnums.CameraSubmersionType.SPORE_SEA);
+            cir.setReturnValue(ModEnums.CameraSubmersionType.SUNLIGHT);
             return;
         }
 

@@ -32,6 +32,7 @@ import io.github.drakonkinst.worldsinger.util.math.Int3;
 import java.util.List;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
@@ -64,7 +65,7 @@ public abstract class GrowableAetherSpores<T extends SporeGrowthEntity> extends 
             return;
         }
 
-        T entity = this.getSporeGrowthEntityType().create(world);
+        T entity = this.getSporeGrowthEntityType().create(world, SpawnReason.TRIGGERED);
         if (entity == null) {
             return;
         }

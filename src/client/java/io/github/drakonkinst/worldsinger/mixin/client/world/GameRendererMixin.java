@@ -26,8 +26,7 @@ package io.github.drakonkinst.worldsinger.mixin.client.world;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import io.github.drakonkinst.worldsinger.Worldsinger;
 import io.github.drakonkinst.worldsinger.entity.MidnightCreatureEntity;
-import io.github.drakonkinst.worldsinger.util.PossessionClientUtil;
-import net.minecraft.client.gl.PostEffectProcessor;
+import io.github.drakonkinst.worldsinger.entity.PossessionClientUtil;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.Identifier;
@@ -45,14 +44,13 @@ public abstract class GameRendererMixin {
 
     @Unique
     private static final Identifier MIDNIGHT_CREATURE_OVERLAY = Worldsinger.id(
-            "shaders/post/midnight_creature_overlay.json");
+            "midnight_creature_overlay");
 
     @Shadow
-    @Nullable
-    PostEffectProcessor postProcessor;
+    private @Nullable Identifier postProcessorId;
 
     @Shadow
-    abstract void loadPostProcessor(Identifier id);
+    protected abstract void setPostProcessor(Identifier id);
 
     @ModifyExpressionValue(method = "renderHand", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/option/Perspective;isFirstPerson()Z"), slice = @Slice(to = @At(value = "INVOKE", target = "Lnet/minecraft/client/util/math/MatrixStack;pop()V")))
     private boolean disableHandRenderWhenPossessing(boolean original) {
@@ -61,12 +59,12 @@ public abstract class GameRendererMixin {
 
     @Inject(method = "onCameraEntitySet", at = @At("TAIL"))
     private void addCustomMobVisionTypes(@Nullable Entity entity, CallbackInfo ci) {
-        if (this.postProcessor != null) {
+        if (this.postProcessorId != null) {
             return;
         }
 
         if (entity instanceof MidnightCreatureEntity) {
-            this.loadPostProcessor(MIDNIGHT_CREATURE_OVERLAY);
+            this.setPostProcessor(MIDNIGHT_CREATURE_OVERLAY);
         }
     }
 }

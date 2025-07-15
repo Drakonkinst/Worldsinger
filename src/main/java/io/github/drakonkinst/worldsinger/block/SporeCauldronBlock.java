@@ -32,12 +32,10 @@ import net.minecraft.block.LeveledCauldronBlock;
 import net.minecraft.block.cauldron.CauldronBehavior;
 import net.minecraft.block.cauldron.CauldronBehavior.CauldronBehaviorMap;
 import net.minecraft.entity.Entity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
+import net.minecraft.fluid.Fluid;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldView;
 import net.minecraft.world.biome.Biome.Precipitation;
 
 public class SporeCauldronBlock extends LeveledCauldronBlock implements SporeEmitting {
@@ -49,28 +47,31 @@ public class SporeCauldronBlock extends LeveledCauldronBlock implements SporeEmi
                                     .forGetter(block -> block.behaviorMap),
                             AetherSpores.CODEC.fieldOf("sporeType")
                                     .forGetter(SporeCauldronBlock::getSporeType))
-                    .apply(instance, SporeCauldronBlock::new));
+                    .apply(instance,
+                            (settings1, behaviorMap1, sporeType1) -> new SporeCauldronBlock(
+                                    behaviorMap1, sporeType1, settings1)));
 
     protected final AetherSpores sporeType;
 
-    public SporeCauldronBlock(Settings settings, CauldronBehaviorMap behaviorMap,
-            AetherSpores sporeType) {
+    public SporeCauldronBlock(CauldronBehaviorMap behaviorMap, AetherSpores sporeType,
+            Settings settings) {
         super(Precipitation.NONE, behaviorMap, settings);
         this.sporeType = sporeType;
     }
 
     @Override
-    public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
-        if (!world.isClient() && this.isEntityTouchingFluid(state, pos, entity)) {
-            if (entity.isOnFire()) {
-                entity.extinguish();
-            }
-        }
+    protected boolean canBeFilledByDripstone(Fluid fluid) {
+        return false;
+    }
+
+    protected boolean isEntityTouchingFluid(BlockState state, BlockPos pos, Entity entity) {
+        return entity.getY() < (double) pos.getY() + this.getFluidHeight(state)
+                && entity.getBoundingBox().maxY > (double) pos.getY() + 0.25D;
     }
 
     @Override
     public void onLandedUpon(World world, BlockState state, BlockPos pos, Entity entity,
-            float fallDistance) {
+            double fallDistance) {
         super.onLandedUpon(world, state, pos, entity, fallDistance);
         if (!world.isClient() && this.isEntityTouchingFluid(state, pos, entity)) {
             if (world instanceof ServerWorld serverWorld) {

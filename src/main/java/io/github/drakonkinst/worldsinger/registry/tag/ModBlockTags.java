@@ -87,6 +87,12 @@ public final class ModBlockTags {
     public static final TagKey<Block> VINES = ModBlockTags.of("vines");
     public static final TagKey<Block> WOOD_TYPE = ModBlockTags.of("wood_type");
 
+    // Tools
+    public static final TagKey<Block> INCORRECT_FOR_STEEL_TOOL = ModBlockTags.of(
+            "incorrect_for_steel_tool");
+    public static final TagKey<Block> INCORRECT_FOR_SILVER_TOOL = ModBlockTags.of(
+            "incorrect_for_silver_tool");
+
     private static TagKey<Block> of(String id) {
         return TagKey.of(RegistryKeys.BLOCK, Worldsinger.id(id));
     }

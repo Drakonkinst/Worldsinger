@@ -24,15 +24,16 @@
 package io.github.drakonkinst.worldsinger.entity;
 
 import io.github.drakonkinst.worldsinger.cosmere.ShapeshiftingManager;
-import java.util.Collections;
 import java.util.UUID;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.storage.ReadView;
+import net.minecraft.storage.WriteView;
 import net.minecraft.text.Text;
 import net.minecraft.util.Arm;
+import net.minecraft.util.Uuids;
 import net.minecraft.world.World;
 
 public class PlayerMorphDummy extends LivingEntity {
@@ -49,35 +50,29 @@ public class PlayerMorphDummy extends LivingEntity {
     }
 
     @Override
-    public void readNbt(NbtCompound nbt) {
-        super.readNbt(nbt);
-        playerUUID = nbt.getUuid(KEY_PLAYER);
-        playerName = nbt.getString(KEY_PLAYER_NAME);
+    public void readCustomData(ReadView view) {
+        super.readCustomData(view);
+        playerUUID = view.read(KEY_PLAYER, Uuids.INT_STREAM_CODEC).orElse(null);
+        playerName = view.getString(KEY_PLAYER_NAME, null);
     }
 
     @Override
-    public NbtCompound writeNbt(NbtCompound nbt) {
-        super.writeNbt(nbt);
-        nbt.putUuid(KEY_PLAYER, playerUUID);
-        nbt.putString(KEY_PLAYER_NAME, playerName);
-        return nbt;
+    public void writeCustomData(WriteView view) {
+        super.writeCustomData(view);
+        view.put(KEY_PLAYER, Uuids.INT_STREAM_CODEC, playerUUID);
+        view.putString(KEY_PLAYER_NAME, playerName);
     }
 
     @Override
-    public boolean saveSelfNbt(NbtCompound nbt) {
-        nbt.putString("id", ShapeshiftingManager.ID_PLAYER);
-        writeNbt(nbt);
+    public boolean saveSelfData(WriteView view) {
+        view.putString("id", ShapeshiftingManager.ID_PLAYER);
+        writeCustomData(view);
         return true;
     }
 
     @Override
     protected Text getDefaultName() {
         return Text.literal(playerName);
-    }
-
-    @Override
-    public Iterable<ItemStack> getArmorItems() {
-        return Collections.emptyList();
     }
 
     @Override

@@ -38,6 +38,7 @@ import net.minecraft.block.Waterloggable;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.enums.DoubleBlockHalf;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityCollisionHandler;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -60,6 +61,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldEvents;
 import net.minecraft.world.WorldView;
+import net.minecraft.world.tick.ScheduledTickView;
 import org.jetbrains.annotations.Nullable;
 
 public class TallCrimsonSpinesBlock extends Block implements Waterloggable, SporeGrowthBlock {
@@ -101,10 +103,11 @@ public class TallCrimsonSpinesBlock extends Block implements Waterloggable, Spor
     }
 
     @Override
-    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction,
-            BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
+    public BlockState getStateForNeighborUpdate(BlockState state, WorldView world,
+            ScheduledTickView tickView, BlockPos pos, Direction direction, BlockPos neighborPos,
+            BlockState neighborState, Random random) {
         if (state.get(Properties.WATERLOGGED)) {
-            world.scheduleFluidTick(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
+            tickView.scheduleFluidTick(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
         }
         DoubleBlockHalf half = state.get(Properties.DOUBLE_BLOCK_HALF);
         if (!(direction.getAxis() != Direction.Axis.Y || half == DoubleBlockHalf.LOWER != (direction
@@ -116,8 +119,8 @@ public class TallCrimsonSpinesBlock extends Block implements Waterloggable, Spor
                 pos)) {
             return Blocks.AIR.getDefaultState();
         }
-        return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos,
-                neighborPos);
+        return super.getStateForNeighborUpdate(state, world, tickView, pos, direction, neighborPos,
+                neighborState, random);
     }
 
     @Override
@@ -130,7 +133,11 @@ public class TallCrimsonSpinesBlock extends Block implements Waterloggable, Spor
     }
 
     @Override
-    public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
+    public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity,
+            EntityCollisionHandler handler) {
+        if (!(world instanceof ServerWorld serverWorld)) {
+            return;
+        }
         // Spikes do not destroy items
         if (entity instanceof ItemEntity) {
             return;
@@ -153,7 +160,7 @@ public class TallCrimsonSpinesBlock extends Block implements Waterloggable, Spor
                 || !VoxelShapes.matchesAnywhere(entityShape, DAMAGE_SHAPE, BooleanBiFunction.AND)) {
             return;
         }
-        entity.damage(ModDamageTypes.createSource(world, ModDamageTypes.SPIKE), 2.0f);
+        entity.damage(serverWorld, ModDamageTypes.createSource(world, ModDamageTypes.SPIKE), 2.0f);
     }
 
     @Nullable
@@ -161,7 +168,8 @@ public class TallCrimsonSpinesBlock extends Block implements Waterloggable, Spor
     public BlockState getPlacementState(ItemPlacementContext ctx) {
         BlockPos pos = ctx.getBlockPos();
         World world = ctx.getWorld();
-        if (pos.getY() >= world.getTopY() - 1 || !world.getBlockState(pos.up()).canReplace(ctx)) {
+        if (pos.getY() >= world.getTopYInclusive() - 1 || !world.getBlockState(pos.up())
+                .canReplace(ctx)) {
             return null;
         }
         return this.getDefaultState()
@@ -228,7 +236,7 @@ public class TallCrimsonSpinesBlock extends Block implements Waterloggable, Spor
 
     @Override
     public void onLandedUpon(World world, BlockState state, BlockPos pos, Entity entity,
-            float fallDistance) {
+            double fallDistance) {
         if (state.get(Properties.DOUBLE_BLOCK_HALF) == DoubleBlockHalf.UPPER) {
             entity.handleFallDamage(fallDistance + 1.0f, 1.5f,
                     ModDamageTypes.createSource(world, ModDamageTypes.SPIKE_FALL));

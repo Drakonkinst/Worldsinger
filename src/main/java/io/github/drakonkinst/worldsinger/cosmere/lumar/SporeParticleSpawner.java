@@ -31,7 +31,6 @@ import net.minecraft.util.math.Vec3d;
 // Spawns various kinds of spore particles
 public final class SporeParticleSpawner {
 
-    // TODO: Should tune these values later
     // Splashing when landing on block or in a fluid
     private static final double SPLASH_RADIUS_MULTIPLIER = 0.75;
     private static final double SPLASH_HEIGHT_PER_BLOCK = 0.3;
@@ -82,7 +81,7 @@ public final class SporeParticleSpawner {
     private static final int CANNONBALL_PARTICLE_COUNT = 10;
 
     public static void spawnSplashParticles(ServerWorld world, AetherSpores sporeType,
-            Entity entity, float fallDistance, boolean fluid) {
+            Entity entity, double fallDistance, boolean fluid) {
         double height = fallDistance * SPLASH_HEIGHT_PER_BLOCK;
         int particleCount = fluid ? SPLASH_PARTICLE_COUNT_FLUID : SPLASH_PARTICLE_COUNT_BLOCK;
         SporeParticleManager.createRandomSporeParticlesForEntity(world, sporeType, entity,
@@ -151,6 +150,9 @@ public final class SporeParticleSpawner {
         } else {
             radius = CANNONBALL_STRENGTH_1_RADIUS;
         }
+        double height = radius * 0.75;
+        // Allow it to hit a little underneath the collision point
+        pos = pos.add(0, -height / 2, 0.0);
         SporeParticleManager.createRandomSporeParticles(world, sporeType, pos, radius, 0.0,
                 radius * 0.75, 0.0, CANNONBALL_PARTICLE_SIZE, CANNONBALL_PARTICLE_COUNT, true);
 

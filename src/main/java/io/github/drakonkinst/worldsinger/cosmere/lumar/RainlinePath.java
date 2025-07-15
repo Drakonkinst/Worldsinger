@@ -24,11 +24,14 @@
 
 package io.github.drakonkinst.worldsinger.cosmere.lumar;
 
-import io.github.drakonkinst.worldsinger.item.map.CustomMapDecoration;
-import io.github.drakonkinst.worldsinger.item.map.CustomMapDecorationsComponent.Decoration;
+import io.github.drakonkinst.worldsinger.registry.ModMapDecorationTypes;
 import io.github.drakonkinst.worldsinger.util.math.Int2;
 import io.github.drakonkinst.worldsinger.worldgen.lumar.LumarChunkGenerator;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
+import net.minecraft.component.type.MapDecorationsComponent.Decoration;
 import net.minecraft.item.map.MapState;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.MathHelper;
@@ -126,15 +129,15 @@ public class RainlinePath {
     }
 
     // https://stackoverflow.com/a/22157217
-    public static Int2[] generateRainlineNodes(int lunagreeX, int lunagreeZ, Random random) {
-        Int2[] rainlineNodes = new Int2[RAINLINE_NODE_COUNT];
+    public static List<Int2> generateRainlineNodes(int lunagreeX, int lunagreeZ, Random random) {
+        List<Int2> rainlineNodes = new ArrayList<>(Collections.nCopies(RAINLINE_NODE_COUNT, null));
         for (int i = 0; i < RAINLINE_NODE_COUNT; ++i) {
             float angle =
                     i * ANGLE_INCREMENT + random.nextFloat() * 2.0f * ANGLE_OFFSET - ANGLE_OFFSET;
             int radius = random.nextBetween(MIN_RADIUS, MAX_RADIUS);
             int x = lunagreeX + Math.round(radius * MathHelper.cos(angle));
             int y = lunagreeZ + Math.round(radius * MathHelper.sin(angle));
-            rainlineNodes[i] = new Int2(x, y);
+            rainlineNodes.set(i, new Int2(x, y));
         }
         return rainlineNodes;
     }
@@ -142,7 +145,7 @@ public class RainlinePath {
     private final Spline[] splines;
     private final float totalLength;
 
-    public RainlinePath(Int2[] rainlineNodes) {
+    public RainlinePath(List<Int2> rainlineNodes) {
         this.splines = new Spline[RAINLINE_NODE_COUNT];
         this.totalLength = this.generateAllSplines(rainlineNodes);
     }
@@ -161,10 +164,10 @@ public class RainlinePath {
 
     // Gets the stepProgress offset for the rainline at provided index, or -1 if bad index
     public int getStepOffset(int index) {
-        if (index < 0 || index >= RainlineManager.NUM_RAINLINES_PER_LUNAGREE) {
+        if (index < 0 || index >= RainlineSpawner.NUM_RAINLINES_PER_LUNAGREE) {
             return -1;
         }
-        float percentageOffset = index * 1.0f / RainlineManager.NUM_RAINLINES_PER_LUNAGREE;
+        float percentageOffset = index * 1.0f / RainlineSpawner.NUM_RAINLINES_PER_LUNAGREE;
         return Math.round(percentageOffset * getMaxSteps());
     }
 
@@ -194,7 +197,7 @@ public class RainlinePath {
                         * MathHelper.DEGREES_PER_RADIAN;
                 ++numAdded;
                 decorations.put("rainline-" + cellNeighborIndex + "-" + (++nextIconId),
-                        new Decoration(CustomMapDecoration.Type.RAINLINE, x, z, rotation));
+                        new Decoration(ModMapDecorationTypes.RAINLINE, x, z, rotation));
             }
             prevX = x;
             prevZ = z;
@@ -206,15 +209,17 @@ public class RainlinePath {
         float scaleModifier = 1 << mapState.scale;
         float mapX = (x - mapState.centerX) / scaleModifier;
         float mapY = (z - mapState.centerZ) / scaleModifier;
-        return mapX >= -CustomMapDecoration.MAP_LIMITS && mapY >= -CustomMapDecoration.MAP_LIMITS
-                && mapX <= CustomMapDecoration.MAP_LIMITS && mapY <= CustomMapDecoration.MAP_LIMITS;
+        return mapX >= -ModMapDecorationTypes.MAP_LIMITS
+                && mapY >= -ModMapDecorationTypes.MAP_LIMITS
+                && mapX <= ModMapDecorationTypes.MAP_LIMITS
+                && mapY <= ModMapDecorationTypes.MAP_LIMITS;
     }
 
-    private Spline calculateSpline(int i, Int2[] rainlineNodes) {
-        Int2 p0 = rainlineNodes[(i + RAINLINE_NODE_COUNT - 1) % RAINLINE_NODE_COUNT];
-        Int2 p1 = rainlineNodes[i];
-        Int2 p2 = rainlineNodes[(i + 1) % RAINLINE_NODE_COUNT];
-        Int2 p3 = rainlineNodes[(i + 2) % RAINLINE_NODE_COUNT];
+    private Spline calculateSpline(int i, List<Int2> rainlineNodes) {
+        Int2 p0 = rainlineNodes.get((i + RAINLINE_NODE_COUNT - 1) % RAINLINE_NODE_COUNT);
+        Int2 p1 = rainlineNodes.get(i);
+        Int2 p2 = rainlineNodes.get((i + 1) % RAINLINE_NODE_COUNT);
+        Int2 p3 = rainlineNodes.get((i + 2) % RAINLINE_NODE_COUNT);
         Spline spline = RainlinePath.generateSpline(p0, p1, p2, p3);
         // Worldsinger.LOGGER.info(
         //         "Between " + p1 + " and " + p2 + ": linear = " + Int2.distance(p1, p2)
@@ -222,7 +227,7 @@ public class RainlinePath {
         return spline;
     }
 
-    private float generateAllSplines(Int2[] rainlineNodes) {
+    private float generateAllSplines(List<Int2> rainlineNodes) {
         float totalLength = 0.0f;
         for (int i = 0; i < RAINLINE_NODE_COUNT; ++i) {
             Spline spline = calculateSpline(i, rainlineNodes);

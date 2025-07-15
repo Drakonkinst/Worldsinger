@@ -49,12 +49,14 @@ public class LivingSporeCauldronBlock extends SporeCauldronBlock implements Spor
                                     .forGetter(block -> block.behaviorMap),
                             AetherSpores.CODEC.fieldOf("sporeType")
                                     .forGetter(LivingSporeCauldronBlock::getSporeType))
-                    .apply(instance, LivingSporeCauldronBlock::new));
+                    .apply(instance,
+                            (settings1, behaviorMap1, sporeType1) -> new LivingSporeCauldronBlock(
+                                    behaviorMap1, sporeType1, settings1)));
     private static final int CATALYZE_VALUE_PER_LEVEL = 80;
 
-    public LivingSporeCauldronBlock(Settings settings, CauldronBehaviorMap behaviorMap,
-            AetherSpores sporeType) {
-        super(settings, behaviorMap, sporeType);
+    public LivingSporeCauldronBlock(CauldronBehaviorMap behaviorMap, AetherSpores sporeType,
+            Settings settings) {
+        super(behaviorMap, sporeType, settings);
     }
 
     @Override

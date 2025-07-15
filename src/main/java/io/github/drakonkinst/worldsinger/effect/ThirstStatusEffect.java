@@ -23,11 +23,12 @@
  */
 package io.github.drakonkinst.worldsinger.effect;
 
-import io.github.drakonkinst.worldsinger.api.ModAttachmentTypes;
+import io.github.drakonkinst.worldsinger.entity.attachments.ModAttachmentTypes;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectCategory;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 
 public class ThirstStatusEffect extends StatusEffect {
 
@@ -38,8 +39,9 @@ public class ThirstStatusEffect extends StatusEffect {
         this.drainMultiplier = drainMultiplier;
     }
 
+    @SuppressWarnings("UnstableApiUsage")
     @Override
-    public boolean applyUpdateEffect(LivingEntity entity, int amplifier) {
+    public boolean applyUpdateEffect(ServerWorld world, LivingEntity entity, int amplifier) {
         if (entity instanceof PlayerEntity) {
             entity.getAttachedOrCreate(ModAttachmentTypes.THIRST)
                     .addDehydration(drainMultiplier * (float) (amplifier + 1));

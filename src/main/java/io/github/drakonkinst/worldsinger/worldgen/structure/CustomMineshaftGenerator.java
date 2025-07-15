@@ -38,10 +38,10 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.MobSpawnerBlockEntity;
 import net.minecraft.block.enums.RailShape;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.vehicle.ChestMinecartEntity;
 import net.minecraft.loot.LootTable;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.tag.BiomeTags;
@@ -68,9 +68,8 @@ public class CustomMineshaftGenerator {
     private static final int MAX_CHAIN_LENGTH = 8;
     private static final int MAX_DISTANCE_FROM_CENTER = 80;
 
-    private static CustomMineshaftGenerator.MineshaftPart pieceGenerator(StructurePiece start,
-            StructurePiecesHolder holder, Random random, int x, int y, int z, Direction orientation,
-            int chainLength) {
+    private static MineshaftPart pieceGenerator(StructurePiece start, StructurePiecesHolder holder,
+            Random random, int x, int y, int z, Direction orientation, int chainLength) {
         if (chainLength > MAX_CHAIN_LENGTH) {
             return null;
         }
@@ -78,9 +77,9 @@ public class CustomMineshaftGenerator {
                 || Math.abs(z - start.getBoundingBox().getMinZ()) > MAX_DISTANCE_FROM_CENTER) {
             return null;
         }
-        CustomMineshaftStructure.Type type = ((CustomMineshaftGenerator.MineshaftPart) start).mineshaftType;
-        CustomMineshaftGenerator.MineshaftPart mineshaftPart = CustomMineshaftGenerator.pickPiece(
-                holder, random, x, y, z, orientation, chainLength + 1, type);
+        CustomMineshaftStructure.Type type = ((MineshaftPart) start).mineshaftType;
+        MineshaftPart mineshaftPart = CustomMineshaftGenerator.pickPiece(holder, random, x, y, z,
+                orientation, chainLength + 1, type);
         if (mineshaftPart != null) {
             holder.addPiece(mineshaftPart);
             mineshaftPart.fillOpenings(start, holder, random);
@@ -88,37 +87,34 @@ public class CustomMineshaftGenerator {
         return mineshaftPart;
     }
 
-    private static CustomMineshaftGenerator.MineshaftPart pickPiece(StructurePiecesHolder holder,
-            Random random, int x, int y, int z, @Nullable Direction orientation, int chainLength,
+    private static MineshaftPart pickPiece(StructurePiecesHolder holder, Random random, int x,
+            int y, int z, @Nullable Direction orientation, int chainLength,
             CustomMineshaftStructure.Type type) {
         // Generate crossing, stairs, or corridor with different weights
         int randomIndex = random.nextInt(100);
         if (randomIndex >= 80) {
-            BlockBox blockBox = CustomMineshaftGenerator.MineshaftCrossing.getBoundingBox(holder,
-                    random, x, y, z, orientation);
+            BlockBox blockBox = MineshaftCrossing.getBoundingBox(holder, random, x, y, z,
+                    orientation);
             if (blockBox != null) {
-                return new CustomMineshaftGenerator.MineshaftCrossing(chainLength, blockBox,
-                        orientation, type);
+                return new MineshaftCrossing(chainLength, blockBox, orientation, type);
             }
         } else if (randomIndex >= 70) {
-            BlockBox blockBox = CustomMineshaftGenerator.MineshaftStairs.getBoundingBox(holder,
-                    random, x, y, z, orientation);
+            BlockBox blockBox = MineshaftStairs.getBoundingBox(holder, random, x, y, z,
+                    orientation);
             if (blockBox != null) {
-                return new CustomMineshaftGenerator.MineshaftStairs(chainLength, blockBox,
-                        orientation, type);
+                return new MineshaftStairs(chainLength, blockBox, orientation, type);
             }
         } else {
-            BlockBox blockBox = CustomMineshaftGenerator.MineshaftCorridor.getBoundingBox(holder,
-                    random, x, y, z, orientation);
+            BlockBox blockBox = MineshaftCorridor.getBoundingBox(holder, random, x, y, z,
+                    orientation);
             if (blockBox != null) {
-                return new CustomMineshaftGenerator.MineshaftCorridor(chainLength, random, blockBox,
-                        orientation, type);
+                return new MineshaftCorridor(chainLength, random, blockBox, orientation, type);
             }
         }
         return null;
     }
 
-    public static class MineshaftCrossing extends CustomMineshaftGenerator.MineshaftPart {
+    public static class MineshaftCrossing extends MineshaftPart {
 
         @Nullable
         public static BlockBox getBoundingBox(StructurePiecesHolder holder, Random random, int x,
@@ -145,8 +141,8 @@ public class CustomMineshaftGenerator {
 
         public MineshaftCrossing(StructureContext structureContext, NbtCompound nbt) {
             super(ModStructurePieceTypes.CUSTOM_MINESHAFT_CROSSING, nbt);
-            this.twoFloors = nbt.getBoolean("tf");
-            this.direction = Direction.fromHorizontal(nbt.getInt("D"));
+            this.twoFloors = nbt.getBoolean("tf", false);
+            this.direction = Direction.fromHorizontalQuarterTurns(nbt.getInt("D", 0));
         }
 
         public MineshaftCrossing(int chainLength, BlockBox boundingBox,
@@ -301,11 +297,11 @@ public class CustomMineshaftGenerator {
         protected void writeNbt(StructureContext context, NbtCompound nbt) {
             super.writeNbt(context, nbt);
             nbt.putBoolean("tf", this.twoFloors);
-            nbt.putInt("D", this.direction.getHorizontal());
+            nbt.putInt("D", this.direction.getHorizontalQuarterTurns());
         }
     }
 
-    public static class MineshaftStairs extends CustomMineshaftGenerator.MineshaftPart {
+    public static class MineshaftStairs extends MineshaftPart {
 
         @Nullable
         public static BlockBox getBoundingBox(StructurePiecesHolder holder, Random random, int x,
@@ -375,7 +371,7 @@ public class CustomMineshaftGenerator {
         }
     }
 
-    public static class MineshaftCorridor extends CustomMineshaftGenerator.MineshaftPart {
+    public static class MineshaftCorridor extends MineshaftPart {
 
         @Nullable
         public static BlockBox getBoundingBox(StructurePiecesHolder holder, Random random, int x,
@@ -412,10 +408,10 @@ public class CustomMineshaftGenerator {
 
         public MineshaftCorridor(StructureContext structureContext, NbtCompound nbt) {
             super(ModStructurePieceTypes.CUSTOM_MINESHAFT_CORRIDOR, nbt);
-            this.hasRails = nbt.getBoolean("hr");
-            this.hasCobwebs = nbt.getBoolean("sc");
-            this.hasSpawner = nbt.getBoolean("hps");
-            this.length = nbt.getInt("Num");
+            this.hasRails = nbt.getBoolean("hr", false);
+            this.hasCobwebs = nbt.getBoolean("sc", false);
+            this.hasSpawner = nbt.getBoolean("hps", false);
+            this.length = nbt.getInt("Num", 0);
         }
 
         public MineshaftCorridor(int chainLength, Random random, BlockBox boundingBox,
@@ -424,9 +420,8 @@ public class CustomMineshaftGenerator {
             this.setOrientation(orientation);
             this.hasRails = type.canHaveRails() && random.nextInt(3) == 0;
             this.hasCobwebs = type.canHaveCobwebs() && !this.hasRails && random.nextInt(23) == 0;
-            Axis facingAxis =
-                    this.getFacing() != null ? this.getFacing().getAxis() : Direction.Axis.Z;
-            this.length = (facingAxis == Direction.Axis.Z ? boundingBox.getBlockCountZ()
+            Axis facingAxis = this.getFacing() != null ? this.getFacing().getAxis() : Axis.Z;
+            this.length = (facingAxis == Axis.Z ? boundingBox.getBlockCountZ()
                     : boundingBox.getBlockCountX()) / 5;
         }
 
@@ -628,8 +623,7 @@ public class CustomMineshaftGenerator {
                         .with(RailBlock.SHAPE, RailShape.NORTH_SOUTH);
                 for (int z = 0; z <= maxZ; ++z) {
                     BlockState blockState3 = this.getBlockAt(world, 1, -1, z, chunkBox);
-                    if (blockState3.isAir() || !blockState3.isOpaqueFullCube(world,
-                            this.offsetPos(1, -1, z))) {
+                    if (blockState3.isAir() || !blockState3.isOpaqueFullCube()) {
                         continue;
                     }
                     float f = this.isUnderSeaLevel(world, 1, 0, z, chunkBox) ? 0.7f : 0.9f;
@@ -685,11 +679,14 @@ public class CustomMineshaftGenerator {
                         .with(RailBlock.SHAPE,
                                 random.nextBoolean() ? RailShape.NORTH_SOUTH : RailShape.EAST_WEST);
                 this.addBlock(world, blockState, x, y, z, boundingBox);
-                ChestMinecartEntity chestMinecartEntity = new ChestMinecartEntity(
-                        world.toServerWorld(), (double) blockPos.getX() + 0.5,
-                        (double) blockPos.getY() + 0.5, (double) blockPos.getZ() + 0.5);
-                chestMinecartEntity.setLootTable(lootTable, random.nextLong());
-                world.spawnEntity(chestMinecartEntity);
+                ChestMinecartEntity chestMinecartEntity = EntityType.CHEST_MINECART.create(
+                        world.toServerWorld(), SpawnReason.CHUNK_GENERATION);
+                if (chestMinecartEntity != null) {
+                    chestMinecartEntity.initPosition((double) blockPos.getX() + 0.5,
+                            (double) blockPos.getY() + 0.5, (double) blockPos.getZ() + 0.5);
+                    chestMinecartEntity.setLootTable(lootTable, random.nextLong());
+                    world.spawnEntity(chestMinecartEntity);
+                }
                 return true;
             }
             return false;
@@ -741,8 +738,8 @@ public class CustomMineshaftGenerator {
                     blockState = world.getBlockState(mutable);
                     canReplace = this.canReplace(blockState) && !blockState.isOf(Blocks.LAVA);
                     if (!canReplace && this.isUpsideSolidFullSquare(world, mutable, blockState)) {
-                        CustomMineshaftGenerator.MineshaftCorridor.fillColumn(world, state, mutable,
-                                startY - yOffset + 1, startY);
+                        MineshaftCorridor.fillColumn(world, state, mutable, startY - yOffset + 1,
+                                startY);
                         return;
                     }
                     aboveWorldBottom =
@@ -755,13 +752,12 @@ public class CustomMineshaftGenerator {
                     if (!canReplace && this.sideCoversSmallSquare(world, mutable, blockState)) {
                         world.setBlockState(mutable.setY(startY + 1), this.mineshaftType.getFence(),
                                 Block.NOTIFY_LISTENERS);
-                        CustomMineshaftGenerator.MineshaftCorridor.fillColumn(world,
-                                Blocks.CHAIN.getDefaultState(), mutable, startY + 2,
-                                startY + yOffset);
+                        MineshaftCorridor.fillColumn(world, Blocks.CHAIN.getDefaultState(), mutable,
+                                startY + 2, startY + yOffset);
                         return;
                     }
-                    belowWorldTop =
-                            yOffset <= 50 && canReplace && mutable.getY() < world.getTopY() - 1;
+                    belowWorldTop = yOffset <= 50 && canReplace
+                            && mutable.getY() < world.getTopYInclusive() - 1;
                 }
                 ++yOffset;
             }
@@ -819,7 +815,7 @@ public class CustomMineshaftGenerator {
 
         public MineshaftPart(StructurePieceType structurePieceType, NbtCompound nbtCompound) {
             super(structurePieceType, nbtCompound);
-            this.mineshaftType = CustomMineshaftStructure.Type.byId(nbtCompound.getInt("MST"));
+            this.mineshaftType = CustomMineshaftStructure.Type.byId(nbtCompound.getInt("MST", 0));
         }
 
         @Override
@@ -908,7 +904,7 @@ public class CustomMineshaftGenerator {
         }
     }
 
-    public static class MineshaftRoom extends CustomMineshaftGenerator.MineshaftPart {
+    public static class MineshaftRoom extends MineshaftPart {
 
         private final List<BlockBox> entrances = Lists.newLinkedList();
 
@@ -922,17 +918,14 @@ public class CustomMineshaftGenerator {
 
         public MineshaftRoom(StructureContext structureContext, NbtCompound nbt) {
             super(ModStructurePieceTypes.CUSTOM_MINESHAFT_ROOM, nbt);
-            BlockBox.CODEC.listOf()
-                    .parse(NbtOps.INSTANCE, nbt.getList("Entrances", NbtElement.INT_ARRAY_TYPE))
-                    .resultOrPartial(Worldsinger.LOGGER::error)
-                    .ifPresent(this.entrances::addAll);
+            this.entrances.addAll(nbt.get("Entrances", BlockBox.CODEC.listOf()).orElse(List.of()));
         }
 
         @Override
         public void fillOpenings(StructurePiece start, StructurePiecesHolder holder,
                 Random random) {
             BlockBox blockBox;
-            CustomMineshaftGenerator.MineshaftPart mineshaftPart;
+            MineshaftPart mineshaftPart;
             int chainLength = this.getChainLength();
             int maxYRange = this.boundingBox.getBlockCountY() - 3 - 1;
             if (maxYRange <= 0) {
@@ -986,8 +979,8 @@ public class CustomMineshaftGenerator {
             for (int z = 0; z < this.boundingBox.getBlockCountZ()
                     && (z += random.nextInt(this.boundingBox.getBlockCountZ())) + 3
                     <= this.boundingBox.getBlockCountZ(); z += 4) {
-                CustomMineshaftGenerator.MineshaftPart structurePiece = CustomMineshaftGenerator.pieceGenerator(
-                        start, holder, random, this.boundingBox.getMaxX() + 1,
+                MineshaftPart structurePiece = CustomMineshaftGenerator.pieceGenerator(start,
+                        holder, random, this.boundingBox.getMaxX() + 1,
                         this.boundingBox.getMinY() + random.nextInt(maxYRange) + 1,
                         this.boundingBox.getMinZ() + z, Direction.EAST, chainLength);
                 if (structurePiece == null) {

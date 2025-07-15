@@ -32,6 +32,7 @@ import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.FluidFillable;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FlowableFluid;
 import net.minecraft.fluid.FluidState;
@@ -47,7 +48,6 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult.Type;
 import net.minecraft.util.math.BlockPos;
@@ -77,18 +77,18 @@ public class AetherSporeBucketItem extends BlockItem implements FluidModificatio
     }
 
     @Override
-    public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
+    public ActionResult use(World world, PlayerEntity user, Hand hand) {
         ItemStack handStack = user.getStackInHand(hand);
         BlockHitResult blockHitResult = Item.raycast(world, user, FluidHandling.NONE);
         if (blockHitResult.getType() != Type.BLOCK) {
-            return TypedActionResult.pass(handStack);
+            return ActionResult.PASS;
         }
         BlockPos blockPos = blockHitResult.getBlockPos();
         Direction direction = blockHitResult.getSide();
         BlockPos adjacentBlock = blockPos.offset(direction);
-        if (!world.canPlayerModifyAt(user, blockPos) || !user.canPlaceOn(adjacentBlock, direction,
+        if (!world.canEntityModifyAt(user, blockPos) || !user.canPlaceOn(adjacentBlock, direction,
                 handStack)) {
-            return TypedActionResult.fail(handStack);
+            return ActionResult.FAIL;
         }
         BlockState blockState = world.getBlockState(blockPos);
 
@@ -112,18 +112,18 @@ public class AetherSporeBucketItem extends BlockItem implements FluidModificatio
 
             user.incrementStat(Stats.USED.getOrCreateStat(this));
             // We don't need to exchange the stack here because it gets consumed later
-            return TypedActionResult.success(handStack, world.isClient());
+            return ActionResult.SUCCESS;
         }
 
         // Writing in some hacks to be able to place a bucket in the same fluid, not sure why this isn't working normally
         FluidState fluidState = world.getFluidState(placementBlockPos);
         if (fluidState.isOf(fluid) && fluidState.isStill()) {
             playEmptyingSound(world, user, placementBlockPos);
-            return TypedActionResult.success(handStack, world.isClient());
+            return ActionResult.SUCCESS;
         }
 
         // Try placing as a normal block
-        return TypedActionResult.pass(handStack);
+        return ActionResult.PASS;
     }
 
     @Override
@@ -142,8 +142,7 @@ public class AetherSporeBucketItem extends BlockItem implements FluidModificatio
     }
 
     private ActionResult attemptUse(ItemUsageContext context, PlayerEntity player) {
-        ActionResult fluidPlaceResult = this.use(context.getWorld(), player, context.getHand())
-                .getResult();
+        ActionResult fluidPlaceResult = this.use(context.getWorld(), player, context.getHand());
         if (fluidPlaceResult.isAccepted()) {
             return fluidPlaceResult;
         }
@@ -151,12 +150,7 @@ public class AetherSporeBucketItem extends BlockItem implements FluidModificatio
     }
 
     @Override
-    public String getTranslationKey() {
-        return this.getOrCreateTranslationKey();
-    }
-
-    @Override
-    public boolean placeFluid(@Nullable PlayerEntity player, World world, BlockPos pos,
+    public boolean placeFluid(@Nullable LivingEntity entity, World world, BlockPos pos,
             @Nullable BlockHitResult hitResult) {
         if (!world.isInBuildLimit(pos)) {
             return false;
@@ -169,7 +163,7 @@ public class AetherSporeBucketItem extends BlockItem implements FluidModificatio
             if (!world.isClient()) {
                 world.setBlockState(pos, blockToPlace.getDefaultState(), Block.NOTIFY_ALL);
             }
-            playEmptyingSound(world, player, pos);
+            playEmptyingSound(world, entity, pos);
             return true;
         } else if (fluidized && currentState.getBlock() instanceof FluidFillable fluidFillable) {
             FluidState state = fluid.getStill(false);
@@ -178,14 +172,14 @@ public class AetherSporeBucketItem extends BlockItem implements FluidModificatio
                 state = ModFluids.DEAD_SPORES.getStill(false);
             }
             fluidFillable.tryFillWithFluid(world, pos, currentState, state);
-            playEmptyingSound(world, player, pos);
+            playEmptyingSound(world, entity, pos);
             return true;
         }
         return false;
     }
 
-    private void playEmptyingSound(World world, PlayerEntity player, BlockPos pos) {
-        world.playSound(player, pos, this.placeSound, SoundCategory.BLOCKS, 1.0f, 1.0f);
-        world.emitGameEvent(player, GameEvent.FLUID_PLACE, pos);
+    private void playEmptyingSound(World world, LivingEntity entity, BlockPos pos) {
+        world.playSound(entity, pos, this.placeSound, SoundCategory.BLOCKS, 1.0f, 1.0f);
+        world.emitGameEvent(entity, GameEvent.FLUID_PLACE, pos);
     }
 }

@@ -23,32 +23,96 @@
  */
 package io.github.drakonkinst.worldsinger.event;
 
-import io.github.drakonkinst.worldsinger.api.ModAttachmentTypes;
 import io.github.drakonkinst.worldsinger.api.sync.AttachmentSync;
 import io.github.drakonkinst.worldsinger.block.LivingSporeGrowthBlock;
+import io.github.drakonkinst.worldsinger.cosmere.PossessionManager;
+import io.github.drakonkinst.worldsinger.cosmere.SilverLined;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarManagerAccess;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.MidnightAetherBondManager;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.SporeKillingUtil;
 import io.github.drakonkinst.worldsinger.effect.ModStatusEffects;
+import io.github.drakonkinst.worldsinger.entity.CameraPossessable;
+import io.github.drakonkinst.worldsinger.entity.attachments.ModAttachmentTypes;
+import io.github.drakonkinst.worldsinger.item.ModItems;
+import io.github.drakonkinst.worldsinger.registry.ModDataComponentTypes;
 import io.github.drakonkinst.worldsinger.registry.tag.ModItemTags;
+import java.util.List;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.player.AttackBlockCallback;
+import net.fabricmc.fabric.api.event.player.PlayerPickItemEvents;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
+import net.fabricmc.fabric.api.item.v1.DefaultItemComponentEvents;
+import net.fabricmc.fabric.api.registry.CompostingChanceRegistry;
+import net.fabricmc.fabric.api.registry.FuelRegistryEvents;
 import net.minecraft.block.BlockState;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
 
 public final class ModEventHandlers {
 
+    private static void registerRegistryHandlers() {
+        // Furnace fuels
+        FuelRegistryEvents.BUILD.register((builder, context) -> {
+            // // Using the time required to cook most items
+            int numItemsToTicks = 20 * 10;
+            builder.add(ModItems.SUNLIGHT_SPORES_BOTTLE, 8 * numItemsToTicks);
+            builder.add(ModItems.SUNLIGHT_SPORES_BUCKET, 100 * numItemsToTicks);
+        });
+
+        CompostingChanceRegistry.INSTANCE.add(ModItems.VERDANT_VINE, 0.3f);
+
+        // TODO: Move this to item_components, but hopefully add some datagen first
+        // Modify default item components
+        DefaultItemComponentEvents.MODIFY.register(context -> {
+            // TODO: I'd like to make this properly data-driven one day, but tags are not supported here
+            List<Item> boats = List.of(Items.ACACIA_BOAT, Items.BIRCH_BOAT, Items.CHERRY_BOAT,
+                    Items.DARK_OAK_BOAT, Items.JUNGLE_BOAT, Items.MANGROVE_BOAT, Items.OAK_BOAT,
+                    Items.SPRUCE_BOAT, Items.BAMBOO_RAFT, Items.ACACIA_CHEST_BOAT,
+                    Items.BIRCH_CHEST_BOAT, Items.CHERRY_CHEST_BOAT, Items.DARK_OAK_CHEST_BOAT,
+                    Items.JUNGLE_CHEST_BOAT, Items.MANGROVE_CHEST_BOAT, Items.OAK_CHEST_BOAT,
+                    Items.SPRUCE_CHEST_BOAT, Items.BAMBOO_CHEST_RAFT, Items.PALE_OAK_BOAT,
+                    Items.PALE_OAK_CHEST_BOAT);
+            List<Item> axes = List.of(Items.WOODEN_AXE, Items.GOLDEN_AXE, Items.STONE_AXE,
+                    Items.IRON_AXE, ModItems.STEEL_AXE, Items.DIAMOND_AXE, Items.NETHERITE_AXE);
+            List<Item> pickaxes = List.of(Items.WOODEN_PICKAXE, Items.GOLDEN_PICKAXE,
+                    Items.STONE_PICKAXE, Items.IRON_PICKAXE, ModItems.STEEL_PICKAXE,
+                    Items.DIAMOND_PICKAXE, Items.NETHERITE_PICKAXE);
+
+            // Add silver-lined to boats
+            context.modify(boats, (builder, item) -> {
+                builder.add(ModDataComponentTypes.MAX_SILVER_DURABILITY,
+                        SilverLined.BOAT_MAX_DURABILITY);
+                builder.add(ModDataComponentTypes.SILVER_DURABILITY_DISPLAY_FACTOR,
+                        SilverLined.BOAT_VISUAL_SCALE_FACTOR);
+            });
+
+            // Add silver-lined to axes
+            context.modify(axes, ((builder, item) -> {
+                int maxDurability = builder.getOrDefault(DataComponentTypes.MAX_DAMAGE, 1);
+                builder.add(ModDataComponentTypes.MAX_SILVER_DURABILITY, maxDurability);
+            }));
+
+            // Add silver-lined to pickaxes
+            context.modify(pickaxes, ((builder, item) -> {
+                int maxDurability = builder.getOrDefault(DataComponentTypes.MAX_DAMAGE, 1);
+                builder.add(ModDataComponentTypes.MAX_SILVER_DURABILITY, maxDurability);
+            }));
+        });
+
+    }
+
     @SuppressWarnings("UnstableApiUsage")
-    public static void initialize() {
+    private static void registerThirstHandlers() {
         // Add Thirst-related effects when consuming an item
-        FinishConsumingItemCallback.EVENT.register((entity, stack, foodComponent) -> {
+        FinishConsumingItemCallback.EVENT.register((entity, stack) -> {
             if (entity instanceof PlayerEntity player) {
                 player.getAttachedOrCreate(ModAttachmentTypes.THIRST).drink(stack.getItem(), stack);
 
@@ -66,7 +130,9 @@ public final class ModEventHandlers {
                 }
             }
         });
+    }
 
+    private static void registerBlockInteractionEvents() {
         // Kill spore growth blocks when first mining them with a silver tool
         AttackBlockCallback.EVENT.register((player, world, hand, pos, direction) -> {
             if (player.isSpectator()) {
@@ -79,7 +145,7 @@ public final class ModEventHandlers {
 
             if (SporeKillingUtil.killSporeGrowthUsingTool(world, sporeGrowth, state, pos, player,
                     hand)) {
-                return ActionResult.success(true);
+                return ActionResult.SUCCESS;
             }
             return ActionResult.PASS;
         });
@@ -98,11 +164,44 @@ public final class ModEventHandlers {
             // This automatically checks the item too
             if (SporeKillingUtil.killSporeGrowthUsingTool(world, sporeGrowth, state, pos, player,
                     hand)) {
-                return ActionResult.success(true);
+                return ActionResult.SUCCESS;
             }
             return ActionResult.PASS;
         });
+    }
 
+    private static void registerPossessionHandlers() {
+        // Prevent entity/block picking while possessing an entity
+        PlayerPickItemEvents.BLOCK.register((player, pos, state, requestIncludeData) -> {
+            PossessionManager possessionManager = player.getAttached(ModAttachmentTypes.POSSESSION);
+            if (possessionManager == null) {
+                return null;
+            }
+            CameraPossessable possessedEntity = possessionManager.getPossessionTarget();
+            if (possessedEntity != null && !possessedEntity.canPickBlock()) {
+                // Prevent picking block
+                return ItemStack.EMPTY;
+            }
+            // Use default behavior
+            return null;
+        });
+
+        PlayerPickItemEvents.ENTITY.register((player, pos, requestIncludeData) -> {
+            PossessionManager possessionManager = player.getAttached(ModAttachmentTypes.POSSESSION);
+            if (possessionManager == null) {
+                return null;
+            }
+            CameraPossessable possessedEntity = possessionManager.getPossessionTarget();
+            if (possessedEntity != null && !possessedEntity.canPickBlock()) {
+                // Prevent picking entity
+                return ItemStack.EMPTY;
+            }
+            // Use default behavior
+            return null;
+        });
+    }
+
+    private static void registerEntityHandlers() {
         // When a player takes a successful melee attack from a silver tool, dispel their Midnight/
         // Luhel bonds.
         ServerPlayerHurtCallback.EVENT.register(
@@ -128,10 +227,21 @@ public final class ModEventHandlers {
         StartTrackingEntityCallback.EVENT.register(AttachmentSync::syncEntityAttachments);
         PlayerSyncCallback.EVENT.register(
                 (player -> AttachmentSync.syncEntityAttachments(player, player)));
+    }
 
+    private static void registerWorldHandlers() {
         ServerTickEvents.END_WORLD_TICK.register(world -> {
             ((LumarManagerAccess) world).worldsinger$getLumarManager().serverTick(world);
         });
+    }
+
+    public static void initialize() {
+        registerRegistryHandlers();
+        registerThirstHandlers();
+        registerBlockInteractionEvents();
+        registerPossessionHandlers();
+        registerEntityHandlers();
+        registerWorldHandlers();
     }
 
     private ModEventHandlers() {}

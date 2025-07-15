@@ -31,17 +31,20 @@ import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.network.packet.CustomPayload;
 
-public record CosmereTimeUpdatePayload(byte cosmereWorldId, long timeOfDay) implements
-        CustomPayload {
+public record CosmereTimeUpdatePayload(byte cosmereWorldId, long time, long timeOfDay,
+                                       boolean tickDayTime) implements CustomPayload {
 
-    public static final Id<CosmereTimeUpdatePayload> ID = new CustomPayload.Id<>(
+    public static final Id<CosmereTimeUpdatePayload> ID = new Id<>(
             Worldsinger.id("cosmere_time_update"));
     public static final PacketCodec<RegistryByteBuf, CosmereTimeUpdatePayload> CODEC = PacketCodec.tuple(
             PacketCodecs.BYTE, CosmereTimeUpdatePayload::cosmereWorldId, PacketCodecs.VAR_LONG,
-            CosmereTimeUpdatePayload::timeOfDay, CosmereTimeUpdatePayload::new);
+            CosmereTimeUpdatePayload::time, PacketCodecs.VAR_LONG,
+            CosmereTimeUpdatePayload::timeOfDay, PacketCodecs.BOOLEAN,
+            CosmereTimeUpdatePayload::tickDayTime, CosmereTimeUpdatePayload::new);
 
-    public CosmereTimeUpdatePayload(CosmerePlanet cosmerePlanet, long timeOfDay) {
-        this((byte) cosmerePlanet.getId(), timeOfDay);
+    public CosmereTimeUpdatePayload(CosmerePlanet cosmerePlanet, long time, long timeOfDay,
+            boolean tickDayTime) {
+        this((byte) cosmerePlanet.getId(), time, timeOfDay, tickDayTime);
     }
 
     @Override

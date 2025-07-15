@@ -88,7 +88,7 @@ public abstract class SnowballEntityMixin extends ThrownItemEntity {
     }
 
     // Fixing https://bugs.mojang.com/browse/MC-121885
-    @ModifyArg(method = "onEntityHit", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;damage(Lnet/minecraft/entity/damage/DamageSource;F)Z"), index = 1)
+    @ModifyArg(method = "onEntityHit", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;serverDamage(Lnet/minecraft/entity/damage/DamageSource;F)V"), index = 1)
     private float make(float amount) {
         if (amount == 0.0F) {
             return Float.MIN_NORMAL;

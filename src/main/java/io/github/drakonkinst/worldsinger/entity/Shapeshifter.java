@@ -50,9 +50,15 @@ public interface Shapeshifter {
         return true;
     }
 
-    @Nullable LivingEntity getMorph();
+    default boolean shouldMorphReplaceSelf() {
+        return true;
+    }
+
+    @Nullable
+    LivingEntity getMorph();
 
     default LivingEntity toEntity() {
         return (LivingEntity) this;
     }
+
 }

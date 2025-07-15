@@ -24,7 +24,7 @@
 package io.github.drakonkinst.worldsinger.block;
 
 import io.github.drakonkinst.worldsinger.Worldsinger;
-import io.github.drakonkinst.worldsinger.api.ModAttachmentTypes;
+import io.github.drakonkinst.worldsinger.entity.attachments.ModAttachmentTypes;
 import io.github.drakonkinst.worldsinger.cosmere.ThirstManager;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.MidnightSpores;
 import io.github.drakonkinst.worldsinger.entity.MidnightCreatureEntity;
@@ -113,12 +113,12 @@ public class MidnightEssenceBlock extends Block {
         // Cannot be interacted with on peaceful
         if (difficulty == Difficulty.PEACEFUL) {
             // Still swing hand to indicate it can be interacted with, but not on this difficulty
-            return ActionResult.success(true);
+            return ActionResult.SUCCESS;
         }
         ThirstManager thirstManager = player.getAttachedOrCreate(ModAttachmentTypes.THIRST);
         if (!player.isCreative() && thirstManager.get() < WATER_COST) {
             // Not enough water to summon anything, but should still swing hand
-            return ActionResult.success(true);
+            return ActionResult.SUCCESS;
         }
         if (!player.isCreative()) {
             thirstManager.remove(WATER_COST);
@@ -137,6 +137,6 @@ public class MidnightEssenceBlock extends Block {
         }
         world.playSound(null, pos, ModSoundEvents.ENTITY_MIDNIGHT_CREATURE_AMBIENT,
                 SoundCategory.BLOCKS, 1.0f, 1.0f);
-        return ActionResult.success(true);
+        return ActionResult.SUCCESS;
     }
 }

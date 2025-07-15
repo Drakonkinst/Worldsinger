@@ -8,8 +8,7 @@ import net.minecraft.network.packet.CustomPayload;
 
 public record PossessSetPayload(int entityId) implements CustomPayload {
 
-    public static final CustomPayload.Id<PossessSetPayload> ID = ModPayloadRegistry.id(
-            "possess_set");
+    public static final Id<PossessSetPayload> ID = ModPayloadRegistry.id("possess_set");
     public static final PacketCodec<RegistryByteBuf, PossessSetPayload> CODEC = PacketCodecs.VAR_INT.xmap(
             PossessSetPayload::new, PossessSetPayload::entityId).cast();
 

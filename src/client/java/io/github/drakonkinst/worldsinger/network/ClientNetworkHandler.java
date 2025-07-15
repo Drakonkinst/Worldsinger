@@ -24,38 +24,32 @@
 package io.github.drakonkinst.worldsinger.network;
 
 import io.github.drakonkinst.worldsinger.Worldsinger;
-import io.github.drakonkinst.worldsinger.api.ModAttachmentTypes;
+import io.github.drakonkinst.worldsinger.api.ClientLunagreeData;
+import io.github.drakonkinst.worldsinger.entity.attachments.ModAttachmentTypes;
 import io.github.drakonkinst.worldsinger.api.sync.SyncableAttachment;
 import io.github.drakonkinst.worldsinger.cosmere.CosmerePlanet;
 import io.github.drakonkinst.worldsinger.cosmere.PossessionManager;
 import io.github.drakonkinst.worldsinger.cosmere.ShapeshiftingManager;
-import io.github.drakonkinst.worldsinger.cosmere.lumar.ClientLunagreeData;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarManagerAccess;
 import io.github.drakonkinst.worldsinger.entity.CameraPossessable;
-import io.github.drakonkinst.worldsinger.entity.ClientLunagreeDataAccess;
+import io.github.drakonkinst.worldsinger.entity.PossessionClientUtil;
 import io.github.drakonkinst.worldsinger.entity.Shapeshifter;
-import io.github.drakonkinst.worldsinger.entity.data.PlayerPossessionManager;
-import io.github.drakonkinst.worldsinger.item.map.CustomMapStateAccess;
+import io.github.drakonkinst.worldsinger.entity.attachments.player.PlayerPossessionManager;
 import io.github.drakonkinst.worldsinger.network.packet.AttachmentEntitySyncPayload;
 import io.github.drakonkinst.worldsinger.network.packet.CosmereTimeUpdatePayload;
-import io.github.drakonkinst.worldsinger.network.packet.CustomMapUpdatePayload;
 import io.github.drakonkinst.worldsinger.network.packet.LunagreeSyncPayload;
 import io.github.drakonkinst.worldsinger.network.packet.PossessSetPayload;
 import io.github.drakonkinst.worldsinger.network.packet.SeetheUpdatePayload;
 import io.github.drakonkinst.worldsinger.network.packet.ShapeshiftAttackPayload;
 import io.github.drakonkinst.worldsinger.network.packet.ShapeshiftSyncPayload;
-import io.github.drakonkinst.worldsinger.util.PossessionClientUtil;
 import net.fabricmc.fabric.api.attachment.v1.AttachmentType;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.impl.attachment.AttachmentRegistryImpl;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
-import net.minecraft.item.map.MapState;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.network.packet.s2c.play.MapUpdateS2CPacket;
 import net.minecraft.world.World;
 
 @SuppressWarnings({ "UnqualifiedStaticUsage", "UnstableApiUsage", "resource" })
@@ -81,7 +75,7 @@ public final class ClientNetworkHandler {
 
                     CosmerePlanet currentPlanet = CosmerePlanet.getPlanet(world);
                     if (currentPlanet.getId() == payload.cosmereWorldId()) {
-                        world.setTimeOfDay(payload.timeOfDay());
+                        world.setTime(payload.time(), payload.timeOfDay(), payload.tickDayTime());
                     }
                 });
 
@@ -142,35 +136,9 @@ public final class ClientNetworkHandler {
                         "Could not process lunagree sync packet because player is null");
                 return;
             }
-            ClientLunagreeData data = ((ClientLunagreeDataAccess) player).worldsinger$getLunagreeData();
+            ClientLunagreeData data = ClientLunagreeData.get(player.getWorld());
             data.setLunagreeLocations(payload.locations());
         });
-
-        ClientPlayNetworking.registerGlobalReceiver(CustomMapUpdatePayload.ID,
-                ((payload, context) -> {
-                    MinecraftClient client = context.client();
-                    ClientPlayNetworkHandler networkHandler = client.getNetworkHandler();
-                    if (networkHandler == null || client.world == null) {
-                        return;
-                    }
-                    // First, process the normal map update if needed
-                    if (payload.decorations().isPresent() || payload.updateData().isPresent()) {
-                        MapUpdateS2CPacket simulatedMapUpdatePacket = new MapUpdateS2CPacket(
-                                payload.mapId(), payload.scale(), payload.locked(),
-                                payload.decorations(), payload.updateData());
-                        networkHandler.onMapUpdate(simulatedMapUpdatePacket);
-                    }
-
-                    // Then the custom stuff
-                    payload.customDecorations().ifPresent(customMapIcons -> {
-                        MapState mapState = client.world.getMapState(payload.mapId());
-                        if (mapState == null) {
-                            return;
-                        }
-                        CustomMapStateAccess customMapState = (CustomMapStateAccess) mapState;
-                        customMapState.worldsinger$replaceCustomMapIcons(customMapIcons);
-                    });
-                }));
     }
 
     private static void registerShapeshiftingPacketHandlers() {

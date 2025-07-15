@@ -41,6 +41,7 @@ import net.minecraft.entity.passive.AnimalEntity;
 import net.minecraft.entity.passive.ChickenEntity;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
@@ -54,47 +55,40 @@ public final class ModEntityTypes {
             "verdant_spore_growth",
             EntityType.Builder.create(VerdantSporeGrowthEntity::new, SpawnGroup.MISC)
                     .dimensions(0.0f, 0.0f)
-                    .maxTrackingRange(0)
-                    .build());
+                    .maxTrackingRange(0));
     public static final EntityType<CrimsonSporeGrowthEntity> CRIMSON_SPORE_GROWTH = register(
             "crimson_spore_growth",
             EntityType.Builder.create(CrimsonSporeGrowthEntity::new, SpawnGroup.MISC)
                     .dimensions(0.0f, 0.0f)
-                    .maxTrackingRange(0)
-                    .build());
+                    .maxTrackingRange(0));
     public static final EntityType<RoseiteSporeGrowthEntity> ROSEITE_SPORE_GROWTH = register(
             "roseite_spore_growth",
             EntityType.Builder.create(RoseiteSporeGrowthEntity::new, SpawnGroup.MISC)
                     .dimensions(0.0f, 0.0f)
-                    .maxTrackingRange(0)
-                    .build());
+                    .maxTrackingRange(0));
     public static final EntityType<MidnightSporeGrowthEntity> MIDNIGHT_SPORE_GROWTH = register(
             "midnight_spore_growth",
             EntityType.Builder.create(MidnightSporeGrowthEntity::new, SpawnGroup.MISC)
                     .dimensions(0.0f, 0.0f)
-                    .maxTrackingRange(0)
-                    .build());
+                    .maxTrackingRange(0));
     public static final EntityType<SporeBottleEntity> SPORE_BOTTLE = register("spore_bottle",
             EntityType.Builder.<SporeBottleEntity>create(SporeBottleEntity::new, SpawnGroup.MISC)
                     .dimensions(0.25f, 0.25f)
                     .maxTrackingRange(4)
-                    .trackingTickInterval(10)
-                    .build());
+                    .trackingTickInterval(10));
     public static final EntityType<CannonballEntity> CANNONBALL = register("cannonball",
             EntityType.Builder.<CannonballEntity>create(CannonballEntity::new, SpawnGroup.MISC)
                     .dimensions(0.25f, 0.25f)
                     .maxTrackingRange(4)
-                    .trackingTickInterval(10)
-                    .build());
+                    .trackingTickInterval(10));
     public static final EntityType<MidnightCreatureEntity> MIDNIGHT_CREATURE = register(
             "midnight_creature",
             EntityType.Builder.<MidnightCreatureEntity>create(MidnightCreatureEntity::new,
-                    SpawnGroup.CREATURE).dimensions(0.98f, 0.98f).maxTrackingRange(10).build());
+                    SpawnGroup.CREATURE).dimensions(0.98f, 0.98f).maxTrackingRange(10));
     public static final EntityType<RainlineEntity> RAINLINE = register("rainline",
             EntityType.Builder.create(RainlineEntity::new, SpawnGroup.MISC)
                     .dimensions(16.0f, 2.0f)
-                    .maxTrackingRange(30)
-                    .build());
+                    .maxTrackingRange(30));
 
     public static void initialize() {
         // Register attributes
@@ -105,7 +99,7 @@ public final class ModEntityTypes {
     public static boolean canSeagullSpawn(EntityType<ChickenEntity> type, WorldAccess world,
             SpawnReason spawnReason, BlockPos pos, Random random) {
         DimensionType lumarDimension = world.getRegistryManager()
-                .get(RegistryKeys.DIMENSION_TYPE)
+                .getOrThrow(RegistryKeys.DIMENSION_TYPE)
                 .get(ModDimensions.DIMENSION_TYPE_LUMAR);
         if (lumarDimension != null && lumarDimension.equals(world.getDimension())) {
             return world.getBlockState(pos.down()).isIn(ModBlockTags.SEAGULLS_SPAWNABLE_ON)
@@ -114,8 +108,18 @@ public final class ModEntityTypes {
         return AnimalEntity.isValidNaturalSpawn(type, world, spawnReason, pos, random);
     }
 
-    private static <T extends Entity> EntityType<T> register(String id, EntityType<T> entityType) {
-        return Registry.register(Registries.ENTITY_TYPE, Worldsinger.id(id), entityType);
+    private static <T extends Entity> EntityType<T> register(RegistryKey<EntityType<?>> key,
+            EntityType.Builder<T> type) {
+        return Registry.register(Registries.ENTITY_TYPE, key, type.build(key));
+    }
+
+    private static RegistryKey<EntityType<?>> keyOf(String id) {
+        return RegistryKey.of(RegistryKeys.ENTITY_TYPE, Worldsinger.id(id));
+    }
+
+    private static <T extends Entity> EntityType<T> register(String id,
+            EntityType.Builder<T> type) {
+        return register(keyOf(id), type);
     }
 
     private ModEntityTypes() {}

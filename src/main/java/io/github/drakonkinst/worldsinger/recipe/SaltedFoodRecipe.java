@@ -43,11 +43,14 @@ public class SaltedFoodRecipe extends SpecialCraftingRecipe {
 
     @Override
     public boolean matches(CraftingRecipeInput input, World world) {
-
+        if (input.getStackCount() < 2) {
+            return false;
+        }
+        
         ItemStack foodItem = ItemStack.EMPTY;
         boolean hasSalt = false;
 
-        for (int i = 0; i < input.getSize(); ++i) {
+        for (int i = 0; i < input.size(); ++i) {
             ItemStack stack = input.getStackInSlot(i);
             if (stack.isEmpty()) {
                 continue;
@@ -78,7 +81,7 @@ public class SaltedFoodRecipe extends SpecialCraftingRecipe {
         ItemStack foodItem = ItemStack.EMPTY;
         boolean hasSalt = false;
 
-        for (int i = 0; i < input.getSize(); ++i) {
+        for (int i = 0; i < input.size(); ++i) {
             ItemStack stack = input.getStackInSlot(i);
             if (stack.isEmpty()) {
                 continue;
@@ -111,12 +114,7 @@ public class SaltedFoodRecipe extends SpecialCraftingRecipe {
     }
 
     @Override
-    public boolean fits(int width, int height) {
-        return width * height >= 2;
-    }
-
-    @Override
-    public RecipeSerializer<?> getSerializer() {
+    public RecipeSerializer<SaltedFoodRecipe> getSerializer() {
         return ModRecipeSerializer.SALTED_FOOD;
     }
 }

@@ -28,8 +28,6 @@ import com.mojang.serialization.DataResult;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.drakonkinst.worldsinger.fluid.StillFluid;
-import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
@@ -37,11 +35,10 @@ import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.FluidDrainable;
 import net.minecraft.block.ShapeContext;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.pathing.NavigationType;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.item.ItemStack;
-import net.minecraft.loot.context.LootContextParameterSet;
 import net.minecraft.registry.Registries;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
@@ -75,7 +72,7 @@ public class StillFluidBlock extends Block implements FluidDrainable {
                     StillFluidBlock.createSettingsCodec()).apply(instance, StillFluidBlock::new));
     protected final StillFluid fluid;
 
-    public StillFluidBlock(StillFluid fluid, AbstractBlock.Settings settings) {
+    public StillFluidBlock(StillFluid fluid, Settings settings) {
         super(settings);
         this.fluid = fluid;
         this.setDefaultState(this.stateManager.getDefaultState());
@@ -98,7 +95,7 @@ public class StillFluidBlock extends Block implements FluidDrainable {
     }
 
     @Override
-    public boolean isTransparent(BlockState state, BlockView world, BlockPos pos) {
+    public boolean isTransparent(BlockState state) {
         return false;
     }
 
@@ -118,19 +115,13 @@ public class StillFluidBlock extends Block implements FluidDrainable {
     }
 
     @Override
-    public List<ItemStack> getDroppedStacks(BlockState state,
-            LootContextParameterSet.Builder builder) {
-        return Collections.emptyList();
-    }
-
-    @Override
     public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos,
             ShapeContext context) {
         return VoxelShapes.empty();
     }
 
     @Override
-    public ItemStack tryDrainFluid(@Nullable PlayerEntity player, WorldAccess world, BlockPos pos,
+    public ItemStack tryDrainFluid(@Nullable LivingEntity entity, WorldAccess world, BlockPos pos,
             BlockState state) {
         return ItemStack.EMPTY;
     }

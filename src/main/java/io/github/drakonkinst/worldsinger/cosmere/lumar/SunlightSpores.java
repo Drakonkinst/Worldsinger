@@ -98,7 +98,7 @@ public class SunlightSpores extends AetherSpores {
         if (this.canFirstSunlightBlockReplace(world.getBlockState(center))) {
             return center;
         }
-        BlockPos.Mutable mutable = new BlockPos.Mutable();
+        Mutable mutable = new Mutable();
         for (Direction offset : ModConstants.CARDINAL_DIRECTIONS) {
             mutable.set(center).move(offset);
             if (this.canFirstSunlightBlockReplace(world.getBlockState(mutable))) {
@@ -229,7 +229,9 @@ public class SunlightSpores extends AetherSpores {
         List<LivingEntity> affectedEntities = world.getNonSpectatingEntities(LivingEntity.class,
                 box);
         for (LivingEntity entity : affectedEntities) {
-            entity.damage(entity.getDamageSources().inFire(), 3.0f);
+            if (world instanceof ServerWorld serverWorld) {
+                entity.damage(serverWorld, entity.getDamageSources().inFire(), 3.0f);
+            }
             entity.setOnFireFor(5);
         }
     }

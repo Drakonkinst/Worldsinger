@@ -23,25 +23,21 @@
  */
 package io.github.drakonkinst.worldsinger.mixin.client.gui;
 
-import com.llamalad7.mixinextras.injector.ModifyReturnValue;
-import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.blaze3d.systems.RenderSystem;
+import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import io.github.drakonkinst.worldsinger.entity.CameraPossessable;
 import io.github.drakonkinst.worldsinger.entity.MidnightCreatureEntity;
-import io.github.drakonkinst.worldsinger.gui.ThirstStatusBar;
-import io.github.drakonkinst.worldsinger.util.PossessionClientUtil;
-import net.minecraft.client.MinecraftClient;
+import io.github.drakonkinst.worldsinger.entity.PossessionClientUtil;
+import io.github.drakonkinst.worldsinger.gui.thirst.ThirstStatusBar;
+import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Identifier;
-import org.jetbrains.annotations.Nullable;
+import net.minecraft.util.math.ColorHelper;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -60,32 +56,17 @@ public abstract class InGameHudMixin {
     @Final
     private static Identifier POWDER_SNOW_OUTLINE;
 
-    @Inject(method = "renderStatusBars", at = @At("TAIL"))
-    private void renderThirstStatusBar(DrawContext context, CallbackInfo ci) {
-        PlayerEntity player = this.getCameraPlayer();
-        if (player == null) {
-            return;
-        }
-        if (ThirstStatusBar.shouldRenderThirstBar(player)) {
-            this.client.getProfiler().push("thirst");
-            ThirstStatusBar.renderThirstStatusBar(client, context, player);
-            this.client.getProfiler().pop();
-        }
-    }
-
-    // Currently, this method is only used to get the number of health rows the player's mount has,
-    // so it knows where to render the air meter.
     // Add an extra row to give space for the thirst meter, if it should render.
-    @ModifyReturnValue(method = "getHeartRows", at = @At("RETURN"))
+    @ModifyExpressionValue(method = "getAirBubbleY", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/InGameHud;getHeartRows(I)I"))
     private int adjustAirStatusMeter(int original) {
-        if (ThirstStatusBar.shouldRenderThirstBar(this.getCameraPlayer())) {
+        if (ThirstStatusBar.isThirstBarVisible()) {
             return original + 1;
         }
         return original;
     }
 
     // Occurs after the vignette based on graphics mode
-    @Inject(method = "renderMiscOverlays", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/RenderTickCounter;getLastFrameDuration()F"), cancellable = true)
+    @Inject(method = "renderMiscOverlays", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/RenderTickCounter;getDynamicDeltaTicks()F"), cancellable = true)
     private void renderPossessionOverlays(DrawContext context, RenderTickCounter tickCounter,
             CallbackInfo ci) {
         CameraPossessable possessionTarget = PossessionClientUtil.getPossessedEntity();
@@ -95,45 +76,18 @@ public abstract class InGameHudMixin {
         LivingEntity possessedEntity = possessionTarget.toEntity();
 
         if (possessedEntity instanceof MidnightCreatureEntity) {
-            renderMidnightEssencePossessionVignette(context);
+            context.drawTexture(RenderPipelines.VIGNETTE, VIGNETTE_TEXTURE, 0, 0, 0.0F, 0.0F,
+                    context.getScaledWindowWidth(), context.getScaledWindowHeight(),
+                    context.getScaledWindowWidth(), context.getScaledWindowHeight(),
+                    ColorHelper.fromFloats(1.0f, 1.0f, 1.0f, 1.0f));
         }
 
         // Don't render anything except the frozen overlay, from the possessed entity's perspective
+        // TODO: Probably a better way to do this
         if (possessedEntity.getFrozenTicks() > 0) {
             this.renderOverlay(context, POWDER_SNOW_OUTLINE, possessedEntity.getFreezingScale());
         }
 
         ci.cancel();
     }
-
-    @Unique
-    private void renderMidnightEssencePossessionVignette(DrawContext context) {
-        // Prepare
-        RenderSystem.disableDepthTest();
-        RenderSystem.depthMask(false);
-        RenderSystem.enableBlend();
-        RenderSystem.blendFuncSeparate(GlStateManager.SrcFactor.ZERO,
-                GlStateManager.DstFactor.ONE_MINUS_SRC_COLOR, GlStateManager.SrcFactor.ONE,
-                GlStateManager.DstFactor.ZERO);
-
-        // Use darkness = 1.0f, so no changes needed
-        final int scaledWidth = context.getScaledWindowWidth();
-        final int scaledHeight = context.getScaledWindowHeight();
-        context.drawTexture(VIGNETTE_TEXTURE, 0, 0, -90, 0.0f, 0.0f, scaledWidth, scaledHeight,
-                scaledWidth, scaledHeight);
-
-        // Reset
-        RenderSystem.depthMask(true);
-        RenderSystem.enableDepthTest();
-        RenderSystem.defaultBlendFunc();
-        RenderSystem.disableBlend();
-    }
-
-    @Shadow
-    @Nullable
-    protected abstract PlayerEntity getCameraPlayer();
-
-    @Shadow
-    @Final
-    private MinecraftClient client;
 }

@@ -36,6 +36,7 @@ import io.github.drakonkinst.worldsinger.item.SporeBottleItem;
 import io.github.drakonkinst.worldsinger.registry.ModDamageTypes;
 import io.github.drakonkinst.worldsinger.registry.tag.ModBlockTags;
 import io.github.drakonkinst.worldsinger.util.BlockPosUtil;
+import io.github.drakonkinst.worldsinger.util.EntityUtil;
 import io.netty.buffer.ByteBuf;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 import java.util.Map;
@@ -66,6 +67,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
+import net.minecraft.world.Heightmap.Type;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -167,6 +169,16 @@ public abstract class AetherSpores implements StringIdentifiable, Comparable<Aet
         }
     }
 
+    public static void checkApplySporeSeaEffectsOnTick(LivingEntity entity) {
+        if (EntityUtil.isSubmergedInSporeSea(entity)) {
+            if (entity instanceof PlayerEntity playerEntity && (playerEntity.isCreative()
+                    || playerEntity.isSpectator())) {
+                return;
+            }
+            AetherSpores.applySporeSeaEffects(entity);
+        }
+    }
+
     public static void applySporeSeaEffects(LivingEntity entity) {
         if (AetherSpores.sporesCanAffect(entity)) {
             for (Map.Entry<TagKey<Fluid>, RegistryEntry<StatusEffect>> entry : FLUID_TO_STATUS_EFFECT.entrySet()) {
@@ -177,9 +189,10 @@ public abstract class AetherSpores implements StringIdentifiable, Comparable<Aet
             }
         }
 
-        if (!entity.getType().isIn(ModEntityTypeTags.SPORES_NEVER_SUFFOCATE)) {
+        if (!entity.getType().isIn(ModEntityTypeTags.SPORES_NEVER_SUFFOCATE)
+                && entity.getWorld() instanceof ServerWorld serverWorld) {
             // Also take suffocation damage, mainly for dead spores
-            entity.damage(
+            entity.damage(serverWorld,
                     ModDamageTypes.createSource(entity.getWorld(), ModDamageTypes.DROWN_SPORE),
                     1.0f);
         }
@@ -226,7 +239,8 @@ public abstract class AetherSpores implements StringIdentifiable, Comparable<Aet
             TagKey<Fluid> fluidTag) {
         BlockPos.Mutable mutable = entity.getBlockPos().mutableCopy();
 
-        while (world.getFluidState(mutable).isIn(fluidTag) && mutable.getY() < world.getTopY()) {
+        while (world.getFluidState(mutable).isIn(fluidTag) && mutable.getY() < world.getTopY(
+                Type.WORLD_SURFACE, mutable.getX(), mutable.getY())) {
             mutable.move(Direction.UP);
         }
 

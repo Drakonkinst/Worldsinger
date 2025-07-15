@@ -48,7 +48,7 @@ public final class ModSoundEvents {
     public static final SoundEvent ENTITY_MIDNIGHT_CREATURE_AMBIENT = SoundEvents.ENTITY_BREEZE_IDLE_GROUND;
     public static final SoundEvent ENTITY_MIDNIGHT_CREATURE_HURT = SoundEvents.ENTITY_BREEZE_HURT;
     public static final SoundEvent ENTITY_MIDNIGHT_CREATURE_DEATH = SoundEvents.ENTITY_BREEZE_DEATH;
-    public static final SoundEvent ENTITY_MIDNIGHT_CREATURE_DRINK = SoundEvents.ENTITY_GENERIC_DRINK;
+    public static final RegistryEntry.Reference<SoundEvent> ENTITY_MIDNIGHT_CREATURE_DRINK = SoundEvents.ENTITY_GENERIC_DRINK;
     public static final SoundEvent ENTITY_MIDNIGHT_CREATURE_BOND = SoundEvents.ENTITY_BREEZE_LAND;
     public static final SoundEvent ENTITY_MIDNIGHT_CREATURE_TRANSFORM = SoundEvents.ENTITY_BREEZE_SLIDE;
     public static final SoundEvent ENTITY_MIDNIGHT_CREATURE_BOND_BREAK = SoundEvents.ENTITY_BREEZE_JUMP;    // Play at ~0.5 pitch

@@ -109,40 +109,40 @@ public final class EntityUtil {
 
     // On server-side, entity yaw and pitch are typically wrapped to [-180, 180) which reflects
     // in their NBT. On client-side, they are NOT wrapped for better interpolation. This code
-    // runs in a LivingEntity's tick() method to make the "previous" values get as close as possible
+    // runs in a LivingEntity's tick() method to make the "lastious" values get as close as possible
     // to the unwrapped yaw and pitch so no weird snapping and jitter occurs. Sometimes, we need to
     // update it faster than a tick on the rendering side, so we use this method here.
     public static void fixYawAndPitch(LivingEntity entity) {
-        while (entity.getYaw() - entity.prevYaw < MIN_ROTATION) {
-            entity.prevYaw -= FULL_DEGREE;
+        while (entity.getYaw() - entity.lastYaw < MIN_ROTATION) {
+            entity.lastYaw -= FULL_DEGREE;
         }
 
-        while (entity.getYaw() - entity.prevYaw >= MAX_ROTATION) {
-            entity.prevYaw += FULL_DEGREE;
+        while (entity.getYaw() - entity.lastYaw >= MAX_ROTATION) {
+            entity.lastYaw += FULL_DEGREE;
         }
 
-        while (entity.bodyYaw - entity.prevBodyYaw < MIN_ROTATION) {
-            entity.prevBodyYaw -= FULL_DEGREE;
+        while (entity.bodyYaw - entity.lastBodyYaw < MIN_ROTATION) {
+            entity.lastBodyYaw -= FULL_DEGREE;
         }
 
-        while (entity.bodyYaw - entity.prevBodyYaw >= MAX_ROTATION) {
-            entity.prevBodyYaw += FULL_DEGREE;
+        while (entity.bodyYaw - entity.lastBodyYaw >= MAX_ROTATION) {
+            entity.lastBodyYaw += FULL_DEGREE;
         }
 
-        while (entity.getPitch() - entity.prevPitch < MIN_ROTATION) {
-            entity.prevPitch -= FULL_DEGREE;
+        while (entity.getPitch() - entity.lastPitch < MIN_ROTATION) {
+            entity.lastPitch -= FULL_DEGREE;
         }
 
-        while (entity.getPitch() - entity.prevPitch >= MAX_ROTATION) {
-            entity.prevPitch += FULL_DEGREE;
+        while (entity.getPitch() - entity.lastPitch >= MAX_ROTATION) {
+            entity.lastPitch += FULL_DEGREE;
         }
 
-        while (entity.headYaw - entity.prevHeadYaw < MIN_ROTATION) {
-            entity.prevHeadYaw -= FULL_DEGREE;
+        while (entity.headYaw - entity.lastHeadYaw < MIN_ROTATION) {
+            entity.lastHeadYaw -= FULL_DEGREE;
         }
 
-        while (entity.headYaw - entity.prevHeadYaw >= MAX_ROTATION) {
-            entity.prevHeadYaw += FULL_DEGREE;
+        while (entity.headYaw - entity.lastHeadYaw >= MAX_ROTATION) {
+            entity.lastHeadYaw += FULL_DEGREE;
         }
     }
 

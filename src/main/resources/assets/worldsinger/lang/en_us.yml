@@ -2,9 +2,21 @@
 modmenu:
   nameTranslation.worldsinger: Worldsinger
   descriptionTranslation.worldsinger: A Cosmere mod for Minecraft.
-gamerule:
-  worldsinger_startOnLumar: Start on Lumar, the world of Tress and the Emerald Sea
+menu.worldsinger:
+  worldhop:
+    title: Worldhop
+    description: Select a travel destination.
+planet.worldsinger:
+  overworld: Overworld
+  lumar: Lumar
 cosmere.worldsinger:
+  planet:
+    overworld:
+      name: Overworld
+      description: The original world
+    lumar:
+      name: Lumar
+      description: The world of §oTress and the Emerald Sea§r
   spore_sea:
     verdant: Emerald Sea
     crimson: Crimson Sea
@@ -202,6 +214,7 @@ block.worldsinger:
   roseite_spore_cauldron: Roseite Spore Cauldron
   midnight_spore_cauldron: Midnight Spore Cauldron
 action.worldsinger.possess.on_start: Press %1$s to Exit
+action.worldsinger.choose_origin_planet.already_selected: You have already chosen a planet of origin
 commands:
   locate.spore_sea.not_found: Could not find %s within reasonable distance
   locate.spore_sea.unknown: 'Unknown spore sea: %s'
@@ -215,6 +228,11 @@ commands:
   seethe.off.duration: Set seethe to Inactive for %s ticks
   seethe.on.query: Seethe is Active for the next %s ticks, or %s seconds
   seethe.off.query: Seethe is Inactive for the next %s ticks, or %s seconds
+  worldhop.teleport.success: Worldhopped to %s
+  worldhop.teleport.must_be_player: Only players may run this command
+  worldhop.teleport.teleport_failed: Teleportation failed, world not found
+  resetorigin.success: Reset origin for %s
+  resetorigin.info: Your origin has been reset. Rejoin the server to select your origin.
 config.worldsinger:
   yacl:
     missing: Yet Another Config Lib is not installed
@@ -227,4 +245,104 @@ config.worldsinger:
     category:
       interface:
         title: Interface
+advancements.worldsinger:
+  cosmere:
+    root:
+      title: Cosmere
+      description: Wander across worlds connected by magic
+    obtain_full_steel:
+      title: Shining Armor
+      description: Craft a full set of Steel Armor
+    obtain_salted_food:
+      title: Lightly Seasoned
+      description: Add salt to your food to make it taste better
+  lumar:
+    enter_lumar:
+      title: Under the Twelve Moons
+      description: Travel to the aether spore seas of Lumar
+    use_silver_lined_boat:
+      title: Safety on the Seas
+      description: Sail in a Boat lined with silver
+    kill_spores:
+      title: Salt and Silver
+      description: Use salt or silver to protect yourself from spores
+    obtain_magma_vent:
+      title: The Power of Fluidization
+      description: Obtain a Magma Vent
+    obtain_saltstone:
+      title: A Barren Rock
+      description: Gather Saltstone from a Saltstone Island
+    find_lunagree:
+      title: A Deadly Fountain
+      description: Reach a lunagree
+    loot_shipwreck:
+      title: Lonely Wreckage
+      description: Loot a shipwreck on the spore sea
+    obtain_all_spore_buckets:
+      title: Apprentice Sprouter
+      description: Collect a bucket of every spore type
+    obtain_spore_cannonball:
+      title: Spore Crafter
+      description: Craft a Cannonball with a Roseite Core and some spores
+    brew_spore_splash_bottle:
+      title: Spore Brewer
+      description: Brew a splash bottle of spores using Zephyr Spores for the ingredient and Sunlight Spores as the fuel
+    tame_midnight_creature:
+      title: A Dangerous Trade
+      description: Bond with Midnight Essence
+    obtain_all_spore_growths:
+      title: Spore Decor
+      description: Gather all the spore growth blocks with Silk Touch
+    explore_lumar:
+      title: Lumar Adventurer
+      description: Explore every ocean and biome on Lumar
+    enter_crimson_sea:
+      title: Unpredictable Rains
+      description: Enter the Crimson Sea. Beware of rogue Rainlines...
+    enter_midnight_sea:
+      title: The Domain of the Sorceress
+      description: Enter the Midnight Sea
+    find_rainline:
+      title: Ribbons of Death
+      description: Chart the path of a Rainline with a Map
+    sail_in_spores:
+      title: Sporelocked!
+      description: Try to sail a Boat during a stilling
+    walk_on_spore_sea:
+      title: Just Keep Moving
+      description: Walk on the spore sea during a stilling
+tag.item:
+  worldsinger:
+    flint_and_steel_variants: Flint and Steel variants
+    has_steel: Items that contain steel
+    has_iron: Items that contain iron
+    brewing_stand_fuels: Items that can be used as fuel on a brewing stand
+    kills_spore_growths: Items that kill spore growths
+    tempts_midnight_creatures: Items that Midnight Creatures are attracted to
+    can_be_salted: Items that can be crafted with Salt to become salted
+    always_give_thirst: Items that always inflict the Thirst effect when consumed
+    chance_to_give_thirst: Items that have a chance to inflict the Thirst effect when consumed
+    exclude_silver_lined: Items that cannot be silver-lined which usually would be
+    all_cooked_meat: All cooked meat items
+    all_raw_meat: All raw meat items
+    all_cauldrons: All cauldron items and variants
+  c:
+    salt: Salt items
+    ingots.steel: Steel ingots
+    ingots.silver: Silver ingots
+    ingots.aluminum: Aluminum ingots
+    nuggets.steel: Steel nuggets
+    nuggets.silver: Silver nuggets
+    nuggets.aluminum: Aluminum nuggets
+    ores.silver: Silver ores
+    ores.salt: Salt ores
+    storage_blocks.steel: Steel storage blocks
+    storage_blocks.silver: Silver storage blocks
+    storage_blocks.aluminum: Aluminum storage blocks
+    storage_blocks.salt: Salt storage blocks
+    storage_blocks.raw_silver: Raw silver storage blocks
+    raw_materials.silver: Silver raw materials
+    steel_tool_materials: Steel tool materials
+    silver_tool_materials: Silver tool materials
+
 ...

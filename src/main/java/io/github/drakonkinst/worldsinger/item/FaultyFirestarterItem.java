@@ -69,7 +69,7 @@ public class FaultyFirestarterItem extends FlintAndSteelItem {
                             world.getRandom().nextFloat() * 0.4f + 1.5f);
                 }
             }
-            return ActionResult.success(world.isClient());
+            return ActionResult.SUCCESS;
         }
         return ActionResult.FAIL;
     }

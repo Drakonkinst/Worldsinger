@@ -34,6 +34,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityCollisionHandler;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.server.world.ServerWorld;
@@ -45,6 +46,8 @@ import net.minecraft.util.math.random.Random;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldEvents;
+import net.minecraft.world.block.WireOrientation;
+import org.jetbrains.annotations.Nullable;
 
 public class SunlightBlock extends StillFluidBlock {
 
@@ -113,8 +116,8 @@ public class SunlightBlock extends StillFluidBlock {
 
     @Override
     protected void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock,
-            BlockPos sourcePos, boolean notify) {
-        super.neighborUpdate(state, world, pos, sourceBlock, sourcePos, notify);
+            @Nullable WireOrientation wireOrientation, boolean notify) {
+        super.neighborUpdate(state, world, pos, sourceBlock, wireOrientation, notify);
         if (SunlightBlock.isTouchingAnyWater(world, pos)) {
             world.setBlockState(pos, Blocks.AIR.getDefaultState());
             world.syncWorldEvent(WorldEvents.LAVA_EXTINGUISHED, pos, 0);
@@ -122,19 +125,20 @@ public class SunlightBlock extends StillFluidBlock {
     }
 
     @Override
-    public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
+    public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity,
+            EntityCollisionHandler handler) {
         // Same damage and SFX as lava
         if (!entity.isFireImmune()) {
             entity.setOnFireFor(15);
         }
 
-        if (entity.damage(ModDamageTypes.createSource(world, ModDamageTypes.SUNLIGHT),
-                DAMAGE_PER_TICK)) {
+        if (world instanceof ServerWorld serverWorld && entity.damage(serverWorld,
+                ModDamageTypes.createSource(world, ModDamageTypes.SUNLIGHT), DAMAGE_PER_TICK)) {
             entity.playSound(SoundEvents.ENTITY_GENERIC_BURN, 0.4f,
                     2.0f + world.getRandom().nextFloat() * 0.4f);
         }
 
-        super.onEntityCollision(state, world, pos, entity);
+        super.onEntityCollision(state, world, pos, entity, handler);
     }
 
     @Override

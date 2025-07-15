@@ -51,6 +51,7 @@ public abstract class SetWorldSpawnCommandMixin {
         CosmereWorldData worldAccess = ((CosmereWorldAccess) world).worldsinger$getCosmereWorldData();
         Worldsinger.LOGGER.info("Setting spawn point for cosmere world");
         worldAccess.setSpawnPos(pos);
+        worldAccess.setSpawnAngle(angle);
         source.sendFeedback(
                 () -> Text.translatable("commands.setworldspawn.success", pos.getX(), pos.getY(),
                         pos.getZ(), angle), true);

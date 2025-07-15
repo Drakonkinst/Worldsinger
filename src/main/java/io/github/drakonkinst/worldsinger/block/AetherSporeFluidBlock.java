@@ -53,6 +53,8 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
+import net.minecraft.world.WorldView;
+import net.minecraft.world.tick.ScheduledTickView;
 
 public class AetherSporeFluidBlock extends FluidBlock implements SporeEmitting {
 
@@ -79,7 +81,8 @@ public class AetherSporeFluidBlock extends FluidBlock implements SporeEmitting {
 
         // Iterate upwards and update fluidization
         while (AetherSporeFluidBlock.updateFluidizationForBlock(world, mutable,
-                world.getBlockState(mutable), fluidized) && mutable.getY() < world.getTopY()) {
+                world.getBlockState(mutable), fluidized)
+                && mutable.getY() < world.getTopYInclusive()) {
             mutable.move(Direction.UP);
         }
     }
@@ -94,8 +97,7 @@ public class AetherSporeFluidBlock extends FluidBlock implements SporeEmitting {
     // generally the block underneath it
     public static boolean shouldFluidize(BlockState fluidizeSource) {
         return fluidizeSource.isOf(Blocks.MAGMA_BLOCK) || fluidizeSource.isOf(ModBlocks.MAGMA_VENT)
-                || AetherSporeFluidBlock.isFluidSourceSpores(fluidizeSource)
-                || AetherSporeFluidBlock.isFluidloggedInSpores(fluidizeSource);
+                || AetherSporeFluidBlock.isFluidSourceSpores(fluidizeSource);
     }
 
     // Update fluidization for a single block. Returns false if obstructed
@@ -185,14 +187,15 @@ public class AetherSporeFluidBlock extends FluidBlock implements SporeEmitting {
     }
 
     @Override
-    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction,
-            BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
+    public BlockState getStateForNeighborUpdate(BlockState state, WorldView world,
+            ScheduledTickView tickView, BlockPos pos, Direction direction, BlockPos neighborPos,
+            BlockState neighborState, Random random) {
         if (direction == Direction.DOWN) {
             // If the block beneath is changed, update fluidization
-            world.scheduleBlockTick(pos, this, 5);
+            tickView.scheduleBlockTick(pos, this, 5);
         }
-        return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos,
-                neighborPos);
+        return super.getStateForNeighborUpdate(state, world, tickView, pos, direction, neighborPos,
+                neighborState, random);
     }
 
     @Override
@@ -206,7 +209,7 @@ public class AetherSporeFluidBlock extends FluidBlock implements SporeEmitting {
 
     @Override
     public void onLandedUpon(World world, BlockState state, BlockPos pos, Entity entity,
-            float fallDistance) {
+            double fallDistance) {
         // Spawn splash particles upon landing (during stilling)
         if (fallDistance > 0.25f && world instanceof ServerWorld serverWorld) {
             SporeParticleSpawner.spawnSplashParticles(serverWorld, sporeType, entity, fallDistance,

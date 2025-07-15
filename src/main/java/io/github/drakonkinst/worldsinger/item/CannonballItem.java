@@ -25,21 +25,17 @@
 package io.github.drakonkinst.worldsinger.item;
 
 import io.github.drakonkinst.worldsinger.entity.CannonballEntity;
-import io.github.drakonkinst.worldsinger.item.component.CannonballComponent;
-import io.github.drakonkinst.worldsinger.registry.ModDataComponentTypes;
 import io.github.drakonkinst.worldsinger.registry.ModSoundEvents;
-import java.util.List;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ProjectileItem;
-import net.minecraft.item.tooltip.TooltipType;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.stat.Stats;
-import net.minecraft.text.Text;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Position;
 import net.minecraft.world.World;
@@ -51,38 +47,27 @@ public class CannonballItem extends Item implements ProjectileItem {
     }
 
     @Override
-    public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
+    public ActionResult use(World world, PlayerEntity user, Hand hand) {
         ItemStack itemStack = user.getStackInHand(hand);
         world.playSound(null, user.getX(), user.getY(), user.getZ(),
                 ModSoundEvents.ENTITY_CANNONBALL_THROW, SoundCategory.NEUTRAL, 0.5F,
                 0.4F / (world.getRandom().nextFloat() * 0.4F + 0.8F));
-        if (!world.isClient) {
-            CannonballEntity cannonballEntity = new CannonballEntity(world, user);
-            cannonballEntity.setItem(itemStack);
-            cannonballEntity.setVelocity(user, user.getPitch(), user.getYaw(), -20.0F, 0.5F, 1.0F);
-            world.spawnEntity(cannonballEntity);
+        if (world instanceof ServerWorld serverWorld) {
+            ProjectileEntity.spawnWithVelocity(CannonballEntity::new, serverWorld, itemStack, user,
+                    -20.0F, 0.5F, 1.0F);
         }
 
         user.incrementStat(Stats.USED.getOrCreateStat(this));
         itemStack.decrementUnlessCreative(1, user);
-        return TypedActionResult.success(itemStack, world.isClient());
+        return ActionResult.SUCCESS;
     }
 
     @Override
     public ProjectileEntity createEntity(World world, Position pos, ItemStack stack,
             Direction direction) {
         CannonballEntity cannonballEntity = new CannonballEntity(world, pos.getX(), pos.getY(),
-                pos.getZ());
+                pos.getZ(), stack);
         cannonballEntity.setItem(stack);
         return cannonballEntity;
-    }
-
-    @Override
-    public void appendTooltip(ItemStack stack, Item.TooltipContext context, List<Text> tooltip,
-            TooltipType type) {
-        CannonballComponent cannonballComponent = stack.get(ModDataComponentTypes.CANNONBALL);
-        if (cannonballComponent != null) {
-            cannonballComponent.appendTooltip(context, tooltip::add, type);
-        }
     }
 }

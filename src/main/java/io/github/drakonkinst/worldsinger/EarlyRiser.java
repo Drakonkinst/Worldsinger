@@ -38,7 +38,10 @@ public class EarlyRiser implements Runnable {
 
         String cameraSubmersionTypeEnum = remapper.mapClassName(INTERMEDIARY,
                 "net.minecraft.class_5636");
-        ClassTinkerers.enumBuilder(cameraSubmersionTypeEnum).addEnum("SPORE_SEA").build();
+        ClassTinkerers.enumBuilder(cameraSubmersionTypeEnum)
+                .addEnum("SPORE_SEA")
+                .addEnum("SUNLIGHT")
+                .build();
     }
 
     private static void loadServer(MappingResolver remapper) {

@@ -24,7 +24,6 @@
 package io.github.drakonkinst.worldsinger.item;
 
 import io.github.drakonkinst.worldsinger.cosmere.SilverLined;
-import io.github.drakonkinst.worldsinger.registry.ModDataComponentTypes;
 import net.minecraft.item.ItemStack;
 
 public abstract class SilverLinedItemData implements SilverLined {
@@ -33,17 +32,6 @@ public abstract class SilverLinedItemData implements SilverLined {
 
     public SilverLinedItemData(ItemStack stack) {
         this.stack = stack;
-    }
-
-    @Override
-    public void setSilverDurability(int durability) {
-        durability = Math.max(0, Math.min(durability, this.getMaxSilverDurability()));
-        stack.set(ModDataComponentTypes.SILVER_DURABILITY, durability);
-    }
-
-    @Override
-    public int getSilverDurability() {
-        return stack.getOrDefault(ModDataComponentTypes.SILVER_DURABILITY, 0);
     }
 
     public ItemStack getStack() {

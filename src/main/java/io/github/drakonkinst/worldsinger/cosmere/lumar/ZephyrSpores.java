@@ -46,14 +46,12 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
-import net.minecraft.world.explosion.ExplosionBehavior;
 import org.jetbrains.annotations.Nullable;
 
 public class ZephyrSpores extends AetherSpores {
 
     public static final String NAME = "zephyr";
     public static final int ID = 4;
-    public static final ExplosionBehavior EXPLOSION_BEHAVIOR = WindChargeEntityAccessor.getExplosionBehavior();
 
     private static final ZephyrSpores INSTANCE = new ZephyrSpores();
     private static final int COLOR = 0x4b9bb7;
@@ -83,10 +81,10 @@ public class ZephyrSpores extends AetherSpores {
         // Push the explosion to the top of the block, so that it is not obstructed by itself
         Vec3d centerPos = new Vec3d(pos.getX(), Math.ceil(pos.getY()), pos.getZ());
 
-        world.createExplosion(null, null, EXPLOSION_BEHAVIOR, centerPos.getX(), centerPos.getY(),
-                centerPos.getZ(), power, false, World.ExplosionSourceType.TRIGGER,
-                ParticleTypes.GUST_EMITTER_SMALL, ParticleTypes.GUST_EMITTER_LARGE,
-                SoundEvents.ENTITY_WIND_CHARGE_WIND_BURST);
+        world.createExplosion(null, null, WindChargeEntityAccessor.getExplosionBehavior(),
+                centerPos.getX(), centerPos.getY(), centerPos.getZ(), power, false,
+                World.ExplosionSourceType.TRIGGER, ParticleTypes.GUST_EMITTER_SMALL,
+                ParticleTypes.GUST_EMITTER_LARGE, SoundEvents.ENTITY_WIND_CHARGE_WIND_BURST);
 
         // Also spawn some spore particles
         if (world instanceof ServerWorld serverWorld) {

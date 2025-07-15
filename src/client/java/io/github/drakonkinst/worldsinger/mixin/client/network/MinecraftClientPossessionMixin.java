@@ -23,11 +23,11 @@
  */
 package io.github.drakonkinst.worldsinger.mixin.client.network;
 
-import com.llamalad7.mixinextras.injector.WrapWithCondition;
+import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import io.github.drakonkinst.worldsinger.entity.CameraPossessable;
-import io.github.drakonkinst.worldsinger.util.PossessionClientUtil;
+import io.github.drakonkinst.worldsinger.entity.PossessionClientUtil;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.ClientPlayerEntity;
@@ -43,7 +43,7 @@ import org.spongepowered.asm.mixin.injection.Slice;
 @Mixin(MinecraftClient.class)
 public abstract class MinecraftClientPossessionMixin {
 
-    @WrapWithCondition(method = "handleInputEvents", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/player/PlayerInventory;selectedSlot:I", opcode = Opcodes.PUTFIELD))
+    @WrapWithCondition(method = "handleInputEvents", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerInventory;setSelectedSlot(I)V", opcode = Opcodes.PUTFIELD))
     private boolean preventHotbarSwitchWithNumKeysIfPossessing(PlayerInventory instance,
             int value) {
         CameraPossessable possessedEntity = PossessionClientUtil.getPossessedEntity();
@@ -84,6 +84,6 @@ public abstract class MinecraftClientPossessionMixin {
             CameraPossessable possessedEntity = PossessionClientUtil.getPossessedEntity();
             return possessedEntity == null || possessedEntity.canModifyInventory();
         }
-        return originalValue;
+        return true;
     }
 }

@@ -27,23 +27,23 @@ package io.github.drakonkinst.worldsinger.mixin.client.world;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import io.github.drakonkinst.worldsinger.api.ClientRainlineData;
 import io.github.drakonkinst.worldsinger.cosmere.CosmerePlanet;
-import io.github.drakonkinst.worldsinger.cosmere.lumar.RainlineManager;
 import io.github.drakonkinst.worldsinger.mixin.world.WorldCosmereMixin;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.client.world.ClientWorld.Properties;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.MutableWorldProperties;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 
 @Mixin(ClientWorld.class)
 public abstract class ClientWorldCosmereMixin extends WorldCosmereMixin {
 
-    @WrapOperation(method = "setTimeOfDay", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/world/ClientWorld$Properties;setTimeOfDay(J)V"))
+    @WrapOperation(method = "setTime", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/world/ClientWorld$Properties;setTimeOfDay(J)V"))
     private void setCosmereTimeOfDay(Properties instance, long timeOfDay,
             Operation<Void> original) {
         if (CosmerePlanet.isCosmerePlanet((ClientWorld) (Object) this)) {
@@ -53,8 +53,8 @@ public abstract class ClientWorldCosmereMixin extends WorldCosmereMixin {
         }
     }
 
-    @WrapOperation(method = "tickTime", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/MutableWorldProperties;getTimeOfDay()J"))
-    private long tickCosmereTime(MutableWorldProperties instance, Operation<Long> original) {
+    @WrapOperation(method = "tickTime", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/world/ClientWorld$Properties;getTimeOfDay()J"))
+    private long tickCosmereTime(Properties instance, Operation<Long> original) {
         if (CosmerePlanet.isCosmerePlanet((World) (Object) this)) {
             return cosmereWorldData.getTimeOfDay();
         }
@@ -67,14 +67,12 @@ public abstract class ClientWorldCosmereMixin extends WorldCosmereMixin {
         if (cameraEntity == null) {
             return original;
         }
-        return Math.max(original, RainlineManager.getRainlineGradient((ClientWorld) (Object) this,
-                cameraEntity.getPos(), true));
+        return Math.max(original, this.getRainlineData().getRainlineGradient(true));
     }
 
     @ModifyExpressionValue(method = "getSkyColor", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/world/ClientWorld;getRainGradient(F)F"))
     private float renderRainlines2(float original, Vec3d cameraPos, float tickDelta) {
-        return Math.max(original,
-                RainlineManager.getRainlineGradient((ClientWorld) (Object) this, cameraPos, true));
+        return Math.max(original, this.getRainlineData().getRainlineGradient(true));
     }
 
     @ModifyExpressionValue(method = "getCloudsColor", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/world/ClientWorld;getRainGradient(F)F"))
@@ -83,7 +81,11 @@ public abstract class ClientWorldCosmereMixin extends WorldCosmereMixin {
         if (cameraEntity == null) {
             return original;
         }
-        return Math.max(original, RainlineManager.getRainlineGradient((ClientWorld) (Object) this,
-                cameraEntity.getPos(), true));
+        return Math.max(original, this.getRainlineData().getRainlineGradient(true));
+    }
+
+    @Unique
+    private ClientRainlineData getRainlineData() {
+        return ClientRainlineData.get((ClientWorld) (Object) this);
     }
 }

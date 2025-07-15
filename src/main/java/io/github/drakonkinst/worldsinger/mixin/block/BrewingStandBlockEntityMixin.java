@@ -31,7 +31,6 @@ import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.entity.BrewingStandBlockEntity;
 import net.minecraft.block.entity.LockableContainerBlockEntity;
 import net.minecraft.inventory.SidedInventory;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ItemScatterer;
 import net.minecraft.util.collection.DefaultedList;
@@ -68,10 +67,9 @@ public abstract class BrewingStandBlockEntityMixin extends LockableContainerBloc
             ((BrewingStandBlockEntityAccessor) blockEntity).worldsinger$setFuel(
                     BREWING_FUEL_AMOUNT);
 
-            Item remainderItem = itemStack.getItem().getRecipeRemainder();
+            ItemStack remainderStack = itemStack.getItem().getRecipeRemainder();
             itemStack.decrement(1);
-            if (remainderItem != null) {
-                ItemStack remainderStack = remainderItem.getDefaultStack();
+            if (!remainderStack.isEmpty()) {
                 if (itemStack.isEmpty()) {
                     itemStack = remainderStack;
                 } else {
@@ -89,10 +87,9 @@ public abstract class BrewingStandBlockEntityMixin extends LockableContainerBloc
     private static void craftCorrectly(World world, BlockPos pos, DefaultedList<ItemStack> slots,
             CallbackInfo ci) {
         ItemStack itemStack = slots.get(INGREDIENT_SLOT);
-        Item remainderItem = itemStack.getItem().getRecipeRemainder();
+        ItemStack remainderStack = itemStack.getItem().getRecipeRemainder();
         itemStack.decrement(1);
-        if (remainderItem != null) {
-            ItemStack remainderStack = remainderItem.getDefaultStack();
+        if (!remainderStack.isEmpty()) {
             if (itemStack.isEmpty()) {
                 itemStack = remainderStack;
             } else {

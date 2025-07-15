@@ -25,11 +25,11 @@ package io.github.drakonkinst.worldsinger.mixin.client.entity;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.mojang.authlib.GameProfile;
-import io.github.drakonkinst.worldsinger.api.ModAttachmentTypes;
+import io.github.drakonkinst.worldsinger.entity.attachments.ModAttachmentTypes;
 import io.github.drakonkinst.worldsinger.cosmere.PossessionManager;
 import io.github.drakonkinst.worldsinger.entity.CameraPossessable;
 import io.github.drakonkinst.worldsinger.entity.CameraPossessable.AttackOrigin;
-import io.github.drakonkinst.worldsinger.util.PossessionClientUtil;
+import io.github.drakonkinst.worldsinger.entity.PossessionClientUtil;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.world.ClientWorld;
@@ -58,7 +58,7 @@ public abstract class ClientPlayerEntityPossessionMixin extends AbstractClientPl
     // Player drifts on the client side when they start possessing, since in vanilla cases if
     // the camera entity is not the player, the player doesn't exist in the world
     // But since it does for our purposes, we need to stop their movement.
-    @Inject(method = "tickNewAi", at = @At("TAIL"))
+    @Inject(method = "tickMovementInput", at = @At("TAIL"))
     private void stopMovementInputWhenStartPossessing(CallbackInfo ci) {
         // This is a better check than isCamera() because it doesn't interfere with other
         // uses of camera, and also if this is true then the camera should be set properly anyway

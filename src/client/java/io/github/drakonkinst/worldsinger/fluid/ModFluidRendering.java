@@ -24,10 +24,10 @@
 package io.github.drakonkinst.worldsinger.fluid;
 
 import io.github.drakonkinst.worldsinger.Worldsinger;
-import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.client.render.fluid.v1.FluidRenderHandlerRegistry;
 import net.fabricmc.fabric.api.client.render.fluid.v1.SimpleFluidRenderHandler;
-import net.minecraft.client.render.RenderLayer;
+import net.fabricmc.fabric.api.client.rendering.v1.BlockRenderLayerMap;
+import net.minecraft.client.render.BlockRenderLayer;
 import net.minecraft.fluid.Fluid;
 
 @SuppressWarnings("UnqualifiedStaticUsage")
@@ -59,7 +59,7 @@ public final class ModFluidRendering {
                         Worldsinger.id(flowTexturePath)));
 
         // Register fluid render layer as translucent (needed to make boats cull properly)
-        BlockRenderLayerMap.INSTANCE.putFluids(RenderLayer.getTranslucent(), still, flow);
+        BlockRenderLayerMap.putFluids(BlockRenderLayer.TRANSLUCENT, still, flow);
     }
 
     private static void registerFluidRenderer(Fluid fluid, String texturePath, boolean shaded) {

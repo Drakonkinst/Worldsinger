@@ -33,6 +33,7 @@ import io.github.drakonkinst.worldsinger.mixin.accessor.IronGolemEntityAccessor;
 import io.github.drakonkinst.worldsinger.mixin.accessor.LivingEntityAccessor;
 import io.github.drakonkinst.worldsinger.mixin.accessor.RavagerEntityAccessor;
 import io.github.drakonkinst.worldsinger.mixin.accessor.ShulkerEntityAccessor;
+import io.github.drakonkinst.worldsinger.mixin.accessor.TropicalFishEntityInvoker;
 import io.github.drakonkinst.worldsinger.network.packet.ShapeshiftAttackPayload;
 import io.github.drakonkinst.worldsinger.network.packet.ShapeshiftSyncPayload;
 import java.util.Optional;
@@ -41,6 +42,7 @@ import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.mob.GuardianEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.PhantomEntity;
@@ -60,6 +62,11 @@ import net.minecraft.network.packet.Packet;
 import net.minecraft.registry.Registries;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.storage.NbtReadView;
+import net.minecraft.storage.NbtWriteView;
+import net.minecraft.storage.ReadView;
+import net.minecraft.util.ErrorReporter;
+import net.minecraft.util.Uuids;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
@@ -93,10 +100,15 @@ public final class ShapeshiftingManager {
 
     private static ShapeshiftSyncPayload createSyncPacket(Shapeshifter shapeshifter) {
         NbtCompound entityData = new NbtCompound();
-
         LivingEntity morph = shapeshifter.getMorph();
         if (morph != null) {
-            morph.writeNbt(entityData);
+            try (ErrorReporter.Logging logging = new ErrorReporter.Logging(
+                    morph.getErrorReporterContext(), Worldsinger.LOGGER)) {
+                NbtWriteView nbtWriteView = NbtWriteView.create(logging,
+                        morph.getRegistryManager());
+                morph.writeData(nbtWriteView);
+                entityData = nbtWriteView.getNbt();
+            }
         }
 
         LivingEntity shapeshifterEntity = shapeshifter.toEntity();
@@ -116,31 +128,38 @@ public final class ShapeshiftingManager {
 
     public static void createMorphFromNbt(Shapeshifter shapeshifter, NbtCompound morphNbt,
             boolean showTransformEffects) {
-        Optional<EntityType<?>> optionalType = EntityType.fromNbt(morphNbt);
-        if (optionalType.isEmpty()) {
-            return;
-        }
-        EntityType<?> type = optionalType.get();
-
-        LivingEntity morph = shapeshifter.getMorph();
-        if (morph == null || !type.equals(morph.getType())) {
-            World world = shapeshifter.toEntity().getWorld();
-            if (type.equals(EntityType.PLAYER)) {
-                UUID playerUuid = morphNbt.getUuid(PlayerMorphDummy.KEY_PLAYER);
-                String playerName = morphNbt.getString(PlayerMorphDummy.KEY_PLAYER_NAME);
-                morph = Worldsinger.PROXY.createPlayerMorph(world, playerUuid, playerName);
-            } else {
-                morph = (LivingEntity) type.create(world);
+        World world = shapeshifter.toEntity().getWorld();
+        // TODO: Make a more helpful context
+        try (ErrorReporter.Logging logging = new ErrorReporter.Logging(
+                () -> "shapeshifting_manager", Worldsinger.LOGGER)) {
+            ReadView readView = NbtReadView.create(logging, world.getRegistryManager(), morphNbt);
+            Optional<EntityType<?>> optionalType = EntityType.fromData(readView);
+            if (optionalType.isEmpty()) {
+                return;
             }
-        }
+            EntityType<?> type = optionalType.get();
 
-        if (morph != null) {
-            ShapeshiftingManager.onMorphEntitySpawn(shapeshifter, morph);
-            morph.readNbt(morphNbt);
-            shapeshifter.updateMorph(morph);
-            shapeshifter.afterMorphEntitySpawn(morph, showTransformEffects);
-        } else {
-            Worldsinger.LOGGER.warn("Failed to create morph for type " + type);
+            LivingEntity morph = shapeshifter.getMorph();
+            if (morph == null || !type.equals(morph.getType())) {
+                if (type.equals(EntityType.PLAYER)) {
+                    UUID playerUuid = morphNbt.get(PlayerMorphDummy.KEY_PLAYER,
+                            Uuids.INT_STREAM_CODEC).orElse(null);
+                    String playerName = morphNbt.getString(PlayerMorphDummy.KEY_PLAYER_NAME)
+                            .orElse(null);
+                    morph = Worldsinger.PROXY.createPlayerMorph(world, playerUuid, playerName);
+                } else {
+                    morph = (LivingEntity) type.create(world, SpawnReason.LOAD);
+                }
+            }
+
+            if (morph != null) {
+                ShapeshiftingManager.onMorphEntitySpawn(shapeshifter, morph);
+                morph.readData(readView);
+                shapeshifter.updateMorph(morph);
+                shapeshifter.afterMorphEntitySpawn(morph, showTransformEffects);
+            } else {
+                Worldsinger.LOGGER.warn("Failed to create morph for type " + type);
+            }
         }
     }
 
@@ -153,7 +172,7 @@ public final class ShapeshiftingManager {
                 morph = Worldsinger.PROXY.createPlayerMorph(world, toCopy.getUuid(),
                         toCopy.getName().getString());
             } else {
-                morph = (LivingEntity) toCopy.getType().create(world);
+                morph = (LivingEntity) toCopy.getType().create(world, SpawnReason.LOAD);
             }
         }
         if (morph != null) {
@@ -198,7 +217,8 @@ public final class ShapeshiftingManager {
         // Tropical Fish
         if (morph instanceof TropicalFishEntity tropicalFishMorph
                 && toCopy instanceof TropicalFishEntity tropicalFishToCopy) {
-            tropicalFishMorph.setVariant(tropicalFishToCopy.getVariant());
+            ((TropicalFishEntityInvoker) tropicalFishMorph).worldsinger$setTropicalFishVariant(
+                    ((TropicalFishEntityInvoker) tropicalFishToCopy).worldsinger$getTropicalFishVariant());
         }
 
         // TODO: Other entity variants (Villager, Parrot, Cat, Axolotl)
@@ -253,8 +273,8 @@ public final class ShapeshiftingManager {
             tameableEntity.setSitting(entity.isSneaking());
         }
 
-        ((EntityAccessor) morph).worldsinger$setFlag(
-                EntityAccessor.worldsinger$getFallFlyingIndex(), entity.isFallFlying());
+        ((EntityAccessor) morph).worldsinger$setFlag(EntityAccessor.worldsinger$getGlidingIndex(),
+                entity.isGliding());
         ((LivingEntityAccessor) morph).worldsinger$tickActiveItemStack();
     }
 
@@ -281,8 +301,8 @@ public final class ShapeshiftingManager {
     // Why is getting the squid to work so much work? I have no idea
     // Simulates squid movement for the client
     private static void tickSquidMorphClient(SquidEntity squidEntity, Random random) {
-        squidEntity.prevTiltAngle = squidEntity.tiltAngle;
-        squidEntity.prevTentacleAngle = squidEntity.tentacleAngle;
+        squidEntity.lastTiltAngle = squidEntity.tiltAngle;
+        squidEntity.lastTentacleAngle = squidEntity.tentacleAngle;
         squidEntity.thrustTimer += 1.0f / (random.nextFloat() + 1.0f) * SQUID_THRUST_SPEED;
         if (squidEntity.thrustTimer > 2.0f * MathHelper.PI) {
             squidEntity.thrustTimer = 0.0f;
@@ -297,13 +317,13 @@ public final class ShapeshiftingManager {
         // Always extend spikes
         GuardianEntityAccessor accessor = (GuardianEntityAccessor) guardianEntity;
         float spikesExtension = accessor.worldsinger$getSpikesExtension();
-        accessor.worldsinger$setPrevSpikesExtension(spikesExtension);
+        accessor.worldsinger$setLastSpikesExtension(spikesExtension);
         accessor.worldsinger$setSpikesExtension(
                 spikesExtension + (1.0f - spikesExtension) * GUARDIAN_SPIKE_SPEED);
 
         // Wag tail at the same speed as on land
         float tailAngle = accessor.worldsinger$getTailAngle();
-        accessor.worldsinger$setPrevTailAngle(tailAngle);
+        accessor.worldsinger$setLastTailAngle(tailAngle);
         accessor.worldsinger$setTailAngle(tailAngle + GUARDIAN_TAIL_SPEED);
     }
 

@@ -1,7 +1,0 @@
-{
-  "parent": "minecraft:block/cube_column",
-  "textures": {
-    "end": "worldsinger:block/verdant_vine_block",
-    "side": "worldsinger:block/verdant_vine_block"
-  }
-}

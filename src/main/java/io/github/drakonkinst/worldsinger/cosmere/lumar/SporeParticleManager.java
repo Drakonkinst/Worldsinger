@@ -278,7 +278,7 @@ public final class SporeParticleManager {
         double velocityX = random.nextDouble() * DISPLAY_PARTICLE_SPEED;
         double velocityY = random.nextDouble() * DISPLAY_PARTICLE_SPEED;
         double velocityZ = random.nextDouble() * DISPLAY_PARTICLE_SPEED;
-        world.addParticle(particleEffect, x, y, z, velocityX, velocityY, velocityZ);
+        world.addParticleClient(particleEffect, x, y, z, velocityX, velocityY, velocityZ);
     }
 
     // Apply spore effect to entities within a specific block

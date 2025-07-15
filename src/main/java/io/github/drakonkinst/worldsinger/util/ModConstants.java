@@ -48,6 +48,7 @@ public final class ModConstants {
 
     // Other
     public static final int ITEM_DURABILITY_METER_MAX_STEPS = 13;
+    public static final int MAX_LIGHT_LEVEL = 15; // TODO: Does this exist elsewhere?
 
     private ModConstants() {}
 }

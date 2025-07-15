@@ -29,7 +29,6 @@ import io.github.drakonkinst.worldsinger.registry.ModDataComponentTypes;
 import io.github.drakonkinst.worldsinger.registry.tag.ModItemTags;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.FoodComponent;
 import net.minecraft.item.ItemStack;
@@ -55,8 +54,7 @@ public final class SaltedFoodUtil {
         return CACHE.computeIfAbsent(component,
                 foodComponent -> new FoodComponent(foodComponent.nutrition() + HUNGER_MODIFIER,
                         foodComponent.saturation() + SATURATION_MODIFIER,
-                        foodComponent.canAlwaysEat(), foodComponent.eatSeconds(), Optional.empty(),
-                        foodComponent.effects()));
+                        foodComponent.canAlwaysEat()));
     }
 
     public static ItemStack makeSalted(ItemStack stack) {

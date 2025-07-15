@@ -24,16 +24,15 @@
 
 package io.github.drakonkinst.worldsinger.mixin.world;
 
+import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import io.github.drakonkinst.worldsinger.cosmere.CosmerePlanet;
 import io.github.drakonkinst.worldsinger.cosmere.CosmereWorldAccess;
 import io.github.drakonkinst.worldsinger.cosmere.CosmereWorldData;
-import java.util.function.Supplier;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.profiler.Profiler;
 import net.minecraft.world.MutableWorldProperties;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
@@ -45,7 +44,6 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(World.class)
 public abstract class WorldCosmereMixin implements WorldAccess, AutoCloseable, CosmereWorldAccess {
@@ -66,11 +64,18 @@ public abstract class WorldCosmereMixin implements WorldAccess, AutoCloseable, C
     @Inject(method = "<init>", at = @At("TAIL"))
     private void initializeCosmereWorld(MutableWorldProperties properties,
             RegistryKey<World> registryRef, DynamicRegistryManager registryManager,
-            RegistryEntry<DimensionType> dimensionEntry, Supplier<Profiler> profiler,
-            boolean isClient, boolean debugWorld, long biomeAccess, int maxChainedNeighborUpdates,
-            CallbackInfo ci) {
+            RegistryEntry<DimensionType> dimensionEntry, boolean isClient, boolean debugWorld,
+            long seed, int maxChainedNeighborUpdates, CallbackInfo ci) {
         planet = CosmerePlanet.getPlanetFromKey(registryRef);
-        cosmereWorldData = new CosmereWorldData();
+        if (planet != CosmerePlanet.NONE) {
+            initCosmereWorldData();
+        }
+    }
+
+    @Unique
+    protected void initCosmereWorldData() {
+        // This is client-side so no persistent data here.
+        this.cosmereWorldData = new CosmereWorldData();
     }
 
     @Override
@@ -83,21 +88,31 @@ public abstract class WorldCosmereMixin implements WorldAccess, AutoCloseable, C
         return cosmereWorldData;
     }
 
-    @Inject(method = "getTimeOfDay", at = @At("HEAD"), cancellable = true)
-    private void getCosmereTimeOfDay(CallbackInfoReturnable<Long> cir) {
+    @ModifyReturnValue(method = "getTimeOfDay", at = @At("RETURN"))
+    private long getCosmereTimeOfDay(long original) {
         if (CosmerePlanet.isCosmerePlanet((World) (Object) this)) {
-            cir.setReturnValue(cosmereWorldData.getTimeOfDay());
+            return cosmereWorldData.getTimeOfDay();
         }
+        return original;
     }
 
-    @Inject(method = "getSpawnPos", at = @At("HEAD"), cancellable = true)
-    private void getCosmereSpawnPos(CallbackInfoReturnable<BlockPos> cir) {
+    @ModifyReturnValue(method = "getSpawnPos", at = @At("RETURN"))
+    private BlockPos getWorldSpecificSpawnPos(BlockPos original) {
         if (CosmerePlanet.isCosmerePlanet((World) (Object) this)) {
             BlockPos spawnPos = cosmereWorldData.getSpawnPos();
             if (spawnPos != null) {
-                cir.setReturnValue(spawnPos);
+                return spawnPos;
             }
         }
+        return original;
+    }
+
+    @ModifyReturnValue(method = "getSpawnAngle", at = @At("RETURN"))
+    private float getWorldSpecificSpawnAngle(float original) {
+        if (CosmerePlanet.isCosmerePlanet((World) (Object) this)) {
+            return cosmereWorldData.getSpawnAngle();
+        }
+        return original;
     }
 
     @Override

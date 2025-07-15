@@ -35,7 +35,7 @@ public record SeetheUpdatePayload(boolean isSeething) implements CustomPayload {
     public static final SeetheUpdatePayload SEETHE_START = new SeetheUpdatePayload(true);
     public static final SeetheUpdatePayload SEETHE_STOP = new SeetheUpdatePayload(false);
     public static final Id<SeetheUpdatePayload> ID = ModPayloadRegistry.id("seethe_update");
-    public static final PacketCodec<ByteBuf, SeetheUpdatePayload> CODEC = PacketCodecs.BOOL.xmap(
+    public static final PacketCodec<ByteBuf, SeetheUpdatePayload> CODEC = PacketCodecs.BOOLEAN.xmap(
             SeetheUpdatePayload::new, SeetheUpdatePayload::isSeething);
 
     @Override

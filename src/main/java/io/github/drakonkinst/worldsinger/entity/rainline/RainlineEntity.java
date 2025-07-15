@@ -27,27 +27,30 @@ package io.github.drakonkinst.worldsinger.entity.rainline;
 import io.github.drakonkinst.worldsinger.block.WaterReactiveBlock;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarManager;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarManagerAccess;
-import io.github.drakonkinst.worldsinger.cosmere.lumar.RainlineManager;
+import io.github.drakonkinst.worldsinger.cosmere.lumar.RainlineSpawner;
 import io.github.drakonkinst.worldsinger.fluid.WaterReactiveFluid;
 import io.github.drakonkinst.worldsinger.registry.tag.ModBlockTags;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker.Builder;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.storage.ReadView;
+import net.minecraft.storage.WriteView;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockPos.Mutable;
 import net.minecraft.util.profiler.Profiler;
+import net.minecraft.util.profiler.Profilers;
 import net.minecraft.world.Heightmap.Type;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome.Precipitation;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.animation.AnimatableManager.ControllerRegistrar;
+import software.bernie.geckolib.animatable.manager.AnimatableManager.ControllerRegistrar;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 public class RainlineEntity extends Entity implements GeoEntity {
@@ -57,7 +60,7 @@ public class RainlineEntity extends Entity implements GeoEntity {
     private static final String KEY_FOLLOWING_PATH = "following_path";
 
     public static int getTargetHeight(World world) {
-        return world.getTopY() + HEIGHT_OFFSET;
+        return world.getTopYInclusive() + HEIGHT_OFFSET;
     }
 
     public RainlineEntity(EntityType<? extends RainlineEntity> type, World world) {
@@ -70,9 +73,9 @@ public class RainlineEntity extends Entity implements GeoEntity {
     @Override
     public void tick() {
         super.tick();
-        this.prevX = this.getX();
-        this.prevY = this.getY();
-        this.prevZ = this.getZ();
+        this.lastX = this.getX();
+        this.lastY = this.getY();
+        this.lastZ = this.getZ();
         if (!this.getWorld().isClient()) {
             doServerTick();
         }
@@ -95,15 +98,15 @@ public class RainlineEntity extends Entity implements GeoEntity {
     private void doWaterReactiveTick(ServerWorld world) {
         // Note: This is a square radius rather than the circular radius used for rendering,
         // which will be slightly larger
-        int x = this.getBlockX() - RainlineManager.RAINLINE_EFFECT_RADIUS + this.random.nextInt(
-                RainlineManager.RAINLINE_EFFECT_RADIUS * 2);
-        int z = this.getBlockZ() - RainlineManager.RAINLINE_EFFECT_RADIUS + this.random.nextInt(
-                RainlineManager.RAINLINE_EFFECT_RADIUS * 2);
+        int x = this.getBlockX() - RainlineSpawner.RAINLINE_EFFECT_RADIUS + this.random.nextInt(
+                RainlineSpawner.RAINLINE_EFFECT_RADIUS * 2);
+        int z = this.getBlockZ() - RainlineSpawner.RAINLINE_EFFECT_RADIUS + this.random.nextInt(
+                RainlineSpawner.RAINLINE_EFFECT_RADIUS * 2);
         int y = world.getTopY(Type.MOTION_BLOCKING, x, z) - 1;
         if (y > RainlineEntity.getTargetHeight(world)) {
             return;
         }
-        BlockPos.Mutable mutable = new Mutable();
+        Mutable mutable = new Mutable();
         mutable.set(x, y, z);
         BlockState blockState = world.getBlockState(mutable);
         Block block = blockState.getBlock();
@@ -114,7 +117,7 @@ public class RainlineEntity extends Entity implements GeoEntity {
         // Cauldrons use Block#precipitationTick
         // Fluids use FluidState#doRandomTick
         // Blocks use BlockState#randomTick
-        Profiler profiler = world.getProfiler();
+        Profiler profiler = Profilers.get();
         profiler.push("randomTick");
         block.precipitationTick(blockState, world, mutable, Precipitation.RAIN);
         if (fluidState.hasRandomTicks() && fluid instanceof WaterReactiveFluid) {
@@ -132,25 +135,25 @@ public class RainlineEntity extends Entity implements GeoEntity {
     }
 
     @Override
-    protected void readCustomDataFromNbt(NbtCompound nbt) {
+    protected void readCustomData(ReadView view) {
         if (!(this.getWorld() instanceof ServerWorld world)) {
             return;
         }
 
         LumarManager lumarManager = ((LumarManagerAccess) world).worldsinger$getLumarManager();
-        boolean isFollowingPath = nbt.getBoolean(KEY_FOLLOWING_PATH);
+        boolean isFollowingPath = view.getBoolean(KEY_FOLLOWING_PATH, false);
         if (isFollowingPath) {
-            rainlineBehavior = RainlineFollowPathBehavior.readFromNbt(lumarManager, nbt);
+            rainlineBehavior = RainlineFollowPathBehavior.readCustomData(lumarManager, view);
         }
         if (rainlineBehavior == null) {
-            rainlineBehavior = RainlineWanderBehavior.readFromNbt(nbt, this.getRandom());
+            rainlineBehavior = RainlineWanderBehavior.readCustomData(view, this.getRandom());
         }
     }
 
     @Override
-    protected void writeCustomDataToNbt(NbtCompound nbt) {
-        nbt.putBoolean(KEY_FOLLOWING_PATH, rainlineBehavior.isFollowingPath());
-        rainlineBehavior.writeCustomDataToNbt(nbt);
+    protected void writeCustomData(WriteView view) {
+        view.putBoolean(KEY_FOLLOWING_PATH, rainlineBehavior.isFollowingPath());
+        rainlineBehavior.writeCustomData(view);
     }
 
     public RainlineBehavior getRainlineBehavior() {
@@ -169,5 +172,10 @@ public class RainlineEntity extends Entity implements GeoEntity {
     @Override
     public AnimatableInstanceCache getAnimatableInstanceCache() {
         return geoCache;
+    }
+
+    @Override
+    public final boolean damage(ServerWorld world, DamageSource source, float amount) {
+        return false;
     }
 }

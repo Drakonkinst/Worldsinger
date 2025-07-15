@@ -16,6 +16,7 @@
   "respawn_anchor_works": false,
   "has_raids": false,
   "logical_height": 320,
+  "cloud_height": 384,
   "min_y": 0,
   "height": 320,
   "infiniburn": "#worldsinger:infiniburn_lumar",

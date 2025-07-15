@@ -146,9 +146,11 @@ public class VerdantSporeGrowthEntity extends SporeGrowthEntity {
                 this.getDistanceFromOrigin(pos) - this.getDistanceFromOrigin(this.getBlockPos());
         weight += 10 * bonusDistanceFromOrigin;
 
-        // Massive bonus for going along with external force
-        double forceModifier = this.getExternalForceModifier(direction);
-        weight += MathHelper.floor(FORCE_MODIFIER_MULTIPLIER * forceModifier);
+        if (!allowPassthrough) {
+            // Massive bonus for going along with external force
+            double forceModifier = this.getExternalForceModifier(direction);
+            weight += MathHelper.floor(FORCE_MODIFIER_MULTIPLIER * forceModifier);
+        }
 
         // Always have some weight, so it is an options if no other options are good
         weight = Math.max(1, weight);

@@ -1,7 +1,8 @@
 plugins {
-    id 'fabric-loom' version '1.8-SNAPSHOT'
+    id 'fabric-loom' version "${loom_version}"
     id 'maven-publish'
-    id "me.fallenbreath.yamlang" version "1.4.0"
+    // https://github.com/Fallen-Breath/yamlang
+    id "me.fallenbreath.yamlang" version "1.4.1"
 }
 
 version = project.mod_version
@@ -12,6 +13,7 @@ base {
 }
 
 repositories {
+    mavenLocal()
     maven {
         name = "Jitpack"
         url = "https://jitpack.io/"
@@ -28,11 +30,27 @@ repositories {
         name = "SmartBrainLib (SBL) Maven Repo"
         url = "https://dl.cloudsmith.io/public/tslat/sbl/maven/"
     }
-    maven {
-        name = 'GeckoLib'
-        url 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/'
-        content {
-            includeGroup("software.bernie.geckolib")
+    maven { url = "https://maven.bawnorton.com/releases" }
+    exclusiveContent {
+        forRepository {
+            maven {
+                name = 'GeckoLib'
+                url = 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/'
+            }
+        }
+        filter {
+            includeGroup('software.bernie.geckolib')
+        }
+    }
+    exclusiveContent {
+        forRepository {
+            maven {
+                name = "Modrinth"
+                url = "https://api.modrinth.com/maven"
+            }
+        }
+        filter {
+            includeGroup "maven.modrinth"
         }
     }
 }
@@ -47,19 +65,19 @@ loom {
         }
     }
 
-    runs {
-        datagen {
-            inherit server
-            name "Data Generation"
-            vmArg "-Dfabric-api.datagen"
-            vmArg "-Dfabric-api.datagen.output-dir=${file("src/main/generated")}"
-            vmArg "-Dfabric-api.datagen.modid=${modid}"
-
-            runDir "build/datagen"
-        }
-    }
-
     accessWidenerPath = file("src/main/resources/worldsinger.accesswidener")
+}
+
+fabricApi {
+    configureDataGeneration() {
+        client = true
+    }
+    // FIXME: Add in later
+//    configureTests {
+//        createSourceSet = true
+//        modId = "gametest-${project.name}"
+//        eula = true
+//    }
 }
 
 dependencies {
@@ -68,8 +86,18 @@ dependencies {
     modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
     include(implementation("com.github.Chocohead:Fabric-ASM:${project.fabric_asm_version}"))
-    include(modImplementation("com.github.Drakonkinst:DataTables:${project.data_tables_version}")) {
-        exclude(group: "net.fabricmc.fabric-api")
+    testImplementation "net.fabricmc:fabric-loader-junit:${project.loader_version}"
+    include(implementation(annotationProcessor("com.github.bawnorton.mixinsquared:mixinsquared-fabric:${project.mixinsquared_version}")))
+
+    // Use maven local for local builds
+    if (rootProject.file('local.gradle').exists()) {
+        include(modImplementation("io.github.drakonkinst.datatables:DataTables:${project.data_tables_version}")) {
+            exclude(group: "net.fabricmc.fabric-api")
+        }
+    } else {
+        include(modImplementation("com.github.Drakonkinst:DataTables:v${project.data_tables_version}")) {
+            exclude(group: "net.fabricmc.fabric-api")
+        }
     }
 
     modImplementation("net.tslat.smartbrainlib:SmartBrainLib-fabric-${project.sbl_version}") {
@@ -77,7 +105,7 @@ dependencies {
     }
 
     // Mod Menu Integration (Optional)
-    modApi("com.terraformersmc:modmenu:${project.modmenu_version}") {
+    modCompileOnly("com.terraformersmc:modmenu:${project.modmenu_version}") {
         exclude(group: "net.fabricmc.fabric-api")
     }
 
@@ -87,7 +115,10 @@ dependencies {
     }
 
     // GeckoLib
-    modImplementation "software.bernie.geckolib:geckolib-fabric-${minecraft_version}:${project.geckolib_version}"
+    modImplementation "software.bernie.geckolib:geckolib-fabric-${project.geckolib_version}"
+
+    // Item Components
+    modImplementation "maven.modrinth:item-components:${project.itemcomponents_version}"
 }
 
 processResources {
@@ -110,6 +141,10 @@ java {
 
     sourceCompatibility = JavaVersion.VERSION_21
     targetCompatibility = JavaVersion.VERSION_21
+}
+
+test {
+    useJUnitPlatform()
 }
 
 jar {
@@ -135,17 +170,8 @@ publishing {
     }
 }
 
-sourceSets {
-    main {
-        resources {
-            srcDirs += [
-                    'src/main/generated'
-            ]
-        }
-    }
-}
-
 yamlang {
     targetSourceSets = [sourceSets.main]
     inputDir = 'assets/worldsinger/lang'
+    outputDir = 'assets/worldsinger/lang'
 }

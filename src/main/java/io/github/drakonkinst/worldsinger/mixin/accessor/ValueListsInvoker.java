@@ -33,8 +33,8 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 @Mixin(ValueLists.class)
 public interface ValueListsInvoker {
 
-    @Invoker("createIdToValueFunction")
-    static <T> IntFunction<T> createIdToValueFunction(ToIntFunction<T> valueToIdFunction,
+    @Invoker("createIndexToValueFunction")
+    static <T> IntFunction<T> createIndexToValueFunction(ToIntFunction<T> valueToIndexFunction,
             T[] values) {
         throw new AssertionError();
     }

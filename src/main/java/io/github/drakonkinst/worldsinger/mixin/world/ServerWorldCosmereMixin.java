@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2023-2024 Drakonkinst
+ * Copyright (c) 2023-2025 Drakonkinst
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -55,17 +55,18 @@ public abstract class ServerWorldCosmereMixin extends WorldCosmereMixin {
     @Shadow
     public abstract PersistentStateManager getPersistentStateManager();
 
+    @Shadow
+    public abstract GameRules getGameRules();
+
     @Inject(method = "<init>", at = @At("TAIL"))
-    private void initializeCosmereData(MinecraftServer server, Executor workerExecutor,
+    private void initCosmereWorldData(MinecraftServer server, Executor workerExecutor,
             Session session, ServerWorldProperties properties, RegistryKey<World> worldKey,
             DimensionOptions dimensionOptions,
             WorldGenerationProgressListener worldGenerationProgressListener, boolean debugWorld,
             long seed, List<SpecialSpawner> spawners, boolean shouldTickTime,
             RandomSequencesState randomSequencesState, CallbackInfo ci) {
-        if (CosmerePlanet.getPlanetFromKey(worldKey) != CosmerePlanet.NONE) {
-            cosmereWorldData = this.getPersistentStateManager()
-                    .getOrCreate(CosmereWorldData.getPersistentStateType(), CosmereWorldData.NAME);
-        }
+        this.cosmereWorldData = this.getPersistentStateManager()
+                .getOrCreate(CosmereWorldData.STATE_TYPE);
     }
 
     @ModifyConstant(method = "tick", constant = @Constant(longValue = 24000L), slice = @Slice(from = @At(value = "INVOKE", target = "Lnet/minecraft/server/world/SleepManager;canSkipNight(I)Z"), to = @At(value = "INVOKE", target = "Lnet/minecraft/server/world/ServerWorld;calculateAmbientDarkness()V")))
@@ -87,7 +88,7 @@ public abstract class ServerWorldCosmereMixin extends WorldCosmereMixin {
 
     @Inject(method = "tickTime", at = @At("RETURN"))
     private void tickCosmereTime(CallbackInfo ci) {
-        if (CosmerePlanet.isCosmerePlanet((World) (Object) this) && this.properties.getGameRules()
+        if (CosmerePlanet.isCosmerePlanet((World) (Object) this) && this.getGameRules()
                 .getBoolean(GameRules.DO_DAYLIGHT_CYCLE)) {
             cosmereWorldData.setTimeOfDay(cosmereWorldData.getTimeOfDay() + 1L);
             cosmereWorldData.markDirty();

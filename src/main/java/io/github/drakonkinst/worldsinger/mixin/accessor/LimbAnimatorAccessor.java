@@ -30,12 +30,12 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 @Mixin(LimbAnimator.class)
 public interface LimbAnimatorAccessor {
 
-    @Accessor("prevSpeed")
-    float worldsinger$getPrevSpeed();
+    @Accessor("lastSpeed")
+    float worldsinger$getLastSpeed();
 
-    @Accessor("prevSpeed")
-    void worldsinger$setPrevSpeed(float prevSpeed);
+    @Accessor("lastSpeed")
+    void worldsinger$setLastSpeed(float lastSpeed);
 
-    @Accessor("pos")
-    void worldsinger$setPos(float pos);
+    @Accessor("animationProgress")
+    void worldsinger$setAnimationProgress(float animationProgress);
 }

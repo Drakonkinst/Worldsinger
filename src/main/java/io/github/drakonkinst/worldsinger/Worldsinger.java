@@ -23,31 +23,39 @@
  */
 package io.github.drakonkinst.worldsinger;
 
+import io.github.drakonkinst.worldsinger.advancement.ModCriteria;
 import io.github.drakonkinst.worldsinger.api.ModApi;
 import io.github.drakonkinst.worldsinger.block.ModBlocks;
 import io.github.drakonkinst.worldsinger.block.ModCauldronBehaviors;
 import io.github.drakonkinst.worldsinger.command.ModCommands;
+import io.github.drakonkinst.worldsinger.command.argument.ModArgumentTypes;
 import io.github.drakonkinst.worldsinger.entity.ModEntityTypes;
 import io.github.drakonkinst.worldsinger.entity.ai.ModActivities;
 import io.github.drakonkinst.worldsinger.entity.ai.ModMemoryModuleTypes;
 import io.github.drakonkinst.worldsinger.entity.ai.sensor.ModSensors;
+import io.github.drakonkinst.worldsinger.entity.attachments.ModAttachmentTypes;
 import io.github.drakonkinst.worldsinger.event.ModEventHandlers;
 import io.github.drakonkinst.worldsinger.fluid.Fluidlogged;
 import io.github.drakonkinst.worldsinger.fluid.ModFluids;
 import io.github.drakonkinst.worldsinger.item.ModItems;
+import io.github.drakonkinst.worldsinger.loot.condition.ModLootConditionTypes;
 import io.github.drakonkinst.worldsinger.network.CommonProxy;
 import io.github.drakonkinst.worldsinger.network.ModPayloadRegistry;
 import io.github.drakonkinst.worldsinger.network.ServerNetworkHandler;
 import io.github.drakonkinst.worldsinger.particle.ModParticleTypes;
+import io.github.drakonkinst.worldsinger.predicate.component.ModComponentPredicateTypes;
 import io.github.drakonkinst.worldsinger.recipe.ModRecipeSerializer;
 import io.github.drakonkinst.worldsinger.registry.ModDataComponentTypes;
 import io.github.drakonkinst.worldsinger.registry.ModDispenserBehaviors;
 import io.github.drakonkinst.worldsinger.registry.ModGameRules;
+import io.github.drakonkinst.worldsinger.registry.ModMapDecorationTypes;
 import io.github.drakonkinst.worldsinger.registry.ModPotions;
 import io.github.drakonkinst.worldsinger.registry.ModSoundEvents;
 import io.github.drakonkinst.worldsinger.util.ModConstants;
 import io.github.drakonkinst.worldsinger.util.ModProperties;
 import io.github.drakonkinst.worldsinger.worldgen.dimension.ModDimensions;
+import io.github.drakonkinst.worldsinger.worldgen.feature.ModConfiguredFeatures;
+import io.github.drakonkinst.worldsinger.worldgen.feature.ModPlacedFeatures;
 import io.github.drakonkinst.worldsinger.worldgen.structure.ModStructurePieceTypes;
 import io.github.drakonkinst.worldsinger.worldgen.structure.ModStructureTypes;
 import net.fabricmc.api.ModInitializer;
@@ -77,17 +85,18 @@ public class Worldsinger implements ModInitializer {
         // I'll figure out the proper order for these...one day
         Fluidlogged.initialize();
 
+        ModAttachmentTypes.initialize();
         ModProperties.initialize();
         ModGameRules.initialize();
         ModParticleTypes.initialize();
         ModSoundEvents.initialize();
         ModFluids.initialize();
-        ModBlocks.initialize();
         ModItems.initialize();
+        ModBlocks.initialize();
         ModRecipeSerializer.initialize();
         ModEntityTypes.initialize();
-        ModCommands.initialize();
         ModPotions.initialize();
+        ModMapDecorationTypes.initialize();
         ModCauldronBehaviors.initialize();
         ModDispenserBehaviors.register();
         ModDimensions.initialize();
@@ -95,6 +104,15 @@ public class Worldsinger implements ModInitializer {
         ModStructureTypes.initialize();
         ModEventHandlers.initialize();
         ModDataComponentTypes.initialize();
+        ModComponentPredicateTypes.initialize();
+        ModLootConditionTypes.initialize();
+        ModCriteria.initialize();
+        ModPlacedFeatures.initialize();
+        ModConfiguredFeatures.initialize();
+
+        // Commands
+        ModArgumentTypes.register();
+        ModCommands.initialize();
 
         // AI
         ModMemoryModuleTypes.initialize();

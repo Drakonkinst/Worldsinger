@@ -26,9 +26,7 @@ package io.github.drakonkinst.worldsinger.item;
 import io.github.drakonkinst.worldsinger.block.SporeEmitting;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.AetherSpores;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.SporeParticleManager;
-import io.github.drakonkinst.worldsinger.event.FinishConsumingItemCallback;
 import io.github.drakonkinst.worldsinger.registry.ModDamageTypes;
-import java.util.List;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.LivingEntity;
@@ -38,9 +36,10 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.item.Items;
 import net.minecraft.item.PotionItem;
-import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.screen.ScreenTexts;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.stat.Stats;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
@@ -60,17 +59,15 @@ public class SporeBottleItem extends PotionItem implements SporeEmitting {
 
     @Override
     public ItemStack finishUsing(ItemStack stack, World world, LivingEntity user) {
-        FinishConsumingItemCallback.EVENT.invoker()
-                .onConsume(user, stack, stack.get(DataComponentTypes.FOOD));
-
         PlayerEntity playerEntity = user instanceof PlayerEntity ? (PlayerEntity) user : null;
         if (playerEntity instanceof ServerPlayerEntity serverPlayerEntity) {
             Criteria.CONSUME_ITEM.trigger(serverPlayerEntity, stack);
         }
-        if (!world.isClient) {
+        if (world instanceof ServerWorld serverWorld) {
             RegistryEntry<StatusEffect> statusEffect = sporeType.getStatusEffect();
             if (statusEffect == null) {
-                user.damage(ModDamageTypes.createSource(world, ModDamageTypes.DROWN_SPORE),
+                user.damage(serverWorld,
+                        ModDamageTypes.createSource(world, ModDamageTypes.DROWN_SPORE),
                         SPORE_DEFAULT_DAMAGE);
             } else {
                 SporeParticleManager.applySporeEffect(user, statusEffect,
@@ -107,15 +104,9 @@ public class SporeBottleItem extends PotionItem implements SporeEmitting {
     // All code below used to overwrite potion behavior & hopefully avoid crashes.
 
     @Override
-    public String getTranslationKey(ItemStack stack) {
+    public Text getName(ItemStack stack) {
         // Reset to default
-        return this.getTranslationKey();
-    }
-
-    @Override
-    public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip,
-            TooltipType type) {
-        // Reset to default
+        return stack.getComponents().getOrDefault(DataComponentTypes.ITEM_NAME, ScreenTexts.EMPTY);
     }
 
     @Override

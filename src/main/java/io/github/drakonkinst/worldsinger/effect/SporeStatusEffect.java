@@ -33,6 +33,7 @@ import net.minecraft.entity.damage.DamageType;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectCategory;
 import net.minecraft.registry.RegistryKey;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -64,7 +65,7 @@ public class SporeStatusEffect extends StatusEffect implements SporeEmitting {
     }
 
     @Override
-    public boolean applyUpdateEffect(LivingEntity entity, int amplifier) {
+    public boolean applyUpdateEffect(ServerWorld world, LivingEntity entity, int amplifier) {
         if (!AetherSpores.sporesCanAffect(entity)) {
             return false;
         }
@@ -83,7 +84,7 @@ public class SporeStatusEffect extends StatusEffect implements SporeEmitting {
             }
         }
 
-        boolean wasDamaged = entity.damage(
+        boolean wasDamaged = entity.damage(world,
                 ModDamageTypes.createSource(entity.getWorld(), damageType), damageAmount);
         if (wasDamaged && sporeType.getId() == SunlightSpores.ID) {
             // Play lava damage sound

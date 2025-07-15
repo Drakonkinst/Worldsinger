@@ -23,25 +23,19 @@
  */
 package io.github.drakonkinst.worldsinger.mixin.item;
 
-import com.llamalad7.mixinextras.sugar.Local;
-import io.github.drakonkinst.worldsinger.api.ModApi;
+import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import io.github.drakonkinst.worldsinger.cosmere.SilverLined;
-import io.github.drakonkinst.worldsinger.cosmere.SilverLinedUtil;
-import io.github.drakonkinst.worldsinger.item.SilverLinedBoatItemData;
-import io.github.drakonkinst.worldsinger.registry.tag.ModItemTags;
+import io.github.drakonkinst.worldsinger.registry.ModDataComponentTypes;
 import io.github.drakonkinst.worldsinger.util.ModConstants;
-import java.util.List;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.vehicle.BoatEntity;
+import net.minecraft.entity.vehicle.AbstractBoatEntity;
 import net.minecraft.item.BoatItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.tooltip.TooltipType;
-import net.minecraft.text.Text;
-import net.minecraft.util.Hand;
+import net.minecraft.util.hit.HitResult;
+import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
 @Mixin(BoatItem.class)
 public abstract class BoatItemMixin extends Item {
@@ -51,46 +45,26 @@ public abstract class BoatItemMixin extends Item {
     }
 
     @Override
-    public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip,
-            TooltipType type) {
-        super.appendTooltip(stack, context, tooltip, type);
-        if (!stack.isIn(ModItemTags.EXCLUDE_SILVER_LINED)) {
-            SilverLinedUtil.appendSilverDurabilityTooltip(stack, context, tooltip, type,
-                    SilverLinedBoatItemData.VISUAL_SCALE_FACTOR);
-        }
-    }
-
-    @Override
-    public boolean isItemBarVisible(ItemStack stack) {
-        return super.isItemBarVisible(stack) || SilverLinedUtil.isSilverLined(stack);
-    }
-
-    @Override
-    public int getItemBarColor(ItemStack stack) {
-        if (SilverLinedUtil.isSilverLined(stack)) {
-            return SilverLinedUtil.SILVER_METER_COLOR;
-        }
-        return super.getItemBarColor(stack);
-    }
-
-    @Override
     public int getItemBarStep(ItemStack stack) {
-        SilverLined silverItemData = ModApi.SILVER_LINED_ITEM.find(stack, null);
-        if (silverItemData == null || silverItemData.getSilverDurability() <= 0) {
+        int silverDurability = SilverLined.getSilverDurability(stack);
+        if (silverDurability <= 0) {
             return super.getItemBarStep(stack);
         }
-        int step = Math.min(Math.round((float) silverItemData.getSilverDurability()
-                        * ModConstants.ITEM_DURABILITY_METER_MAX_STEPS
-                        / silverItemData.getMaxSilverDurability()),
-                ModConstants.ITEM_DURABILITY_METER_MAX_STEPS);
-        return step;
+        int maxSilverDurability = stack.getOrDefault(ModDataComponentTypes.MAX_SILVER_DURABILITY,
+                1);
+        int step = Math.round(
+                (float) silverDurability * ModConstants.ITEM_DURABILITY_METER_MAX_STEPS
+                        / maxSilverDurability);
+        return Math.min(step, ModConstants.ITEM_DURABILITY_METER_MAX_STEPS);
     }
 
-    @ModifyVariable(method = "use", at = @At(value = "STORE"))
-    private BoatEntity addDataToEntity(BoatEntity entity, @Local PlayerEntity user,
-            @Local Hand hand) {
-        ItemStack itemStack = user.getStackInHand(hand);
-        SilverLined.transferDataFromItemStackToEntity(itemStack, entity);
-        return entity;
+    @ModifyReturnValue(method = "createEntity", at = @At("RETURN"))
+    private AbstractBoatEntity addDataToEntity(AbstractBoatEntity original, World world,
+            HitResult hitResult, ItemStack stack, PlayerEntity player) {
+        if (original == null) {
+            return null;
+        }
+        SilverLined.transferDataFromItemStackToEntity(stack, original);
+        return original;
     }
 }

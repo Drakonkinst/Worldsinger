@@ -25,6 +25,7 @@
 package io.github.drakonkinst.worldsinger.cosmere.lumar;
 
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 
 public class NullLunagreeGenerator implements LunagreeGenerator {
 
@@ -39,7 +40,7 @@ public class NullLunagreeGenerator implements LunagreeGenerator {
     }
 
     @Override
-    public LunagreeLocation getLunagreeForKey(long key, boolean shouldCreate) {
+    public LunagreeLocation getLunagreeForKey(ServerWorld world, long key, boolean shouldCreate) {
         return null;
     }
 

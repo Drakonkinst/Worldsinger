@@ -33,7 +33,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.tslat.smartbrainlib.api.core.sensor.ExtendedSensor;
 import net.tslat.smartbrainlib.api.core.sensor.PredicateSensor;
 import net.tslat.smartbrainlib.registry.SBLSensors;
-import net.tslat.smartbrainlib.util.BrainUtils;
+import net.tslat.smartbrainlib.util.BrainUtil;
 import org.jetbrains.annotations.Nullable;
 
 // GenericAttackTargetSensor doesn't properly support custom predicates, so we're making our own
@@ -42,7 +42,7 @@ public class NearestAttackableSensor<E extends LivingEntity> extends
 
     @Override
     protected void sense(ServerWorld level, E entity) {
-        BrainUtils.setMemory(entity, MemoryModuleType.NEAREST_ATTACKABLE, testForEntity(entity));
+        BrainUtil.setMemory(entity, MemoryModuleType.NEAREST_ATTACKABLE, testForEntity(entity));
     }
 
     @Override
@@ -51,7 +51,7 @@ public class NearestAttackableSensor<E extends LivingEntity> extends
     }
 
     protected LivingEntity testForEntity(E entity) {
-        LivingTargetCache matcher = BrainUtils.getMemory(entity, MemoryModuleType.VISIBLE_MOBS);
+        LivingTargetCache matcher = BrainUtil.getMemory(entity, MemoryModuleType.VISIBLE_MOBS);
 
         if (matcher == null) {
             return null;

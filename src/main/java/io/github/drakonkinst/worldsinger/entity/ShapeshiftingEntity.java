@@ -31,11 +31,17 @@ import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.data.DataTracker;
+import net.minecraft.entity.data.DataTracker.Builder;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.storage.NbtWriteView;
+import net.minecraft.storage.ReadView;
+import net.minecraft.storage.WriteView;
+import net.minecraft.util.ErrorReporter;
+import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -56,6 +62,12 @@ public abstract class ShapeshiftingEntity extends PathAwareEntity implements Sha
 
     protected ShapeshiftingEntity(EntityType<? extends PathAwareEntity> entityType, World world) {
         super(entityType, world);
+    }
+
+    @Override
+    protected void initDataTracker(Builder builder) {
+        super.initDataTracker(builder);
+        builder.add(MORPH, new NbtCompound());
     }
 
     @Override
@@ -85,12 +97,9 @@ public abstract class ShapeshiftingEntity extends PathAwareEntity implements Sha
 
     // Make attacking animations play for entities that don't use the arms
     @Override
-    public boolean tryAttack(Entity target) {
-        // Should always be true
-        if (this.getWorld() instanceof ServerWorld world) {
-            ShapeshiftingManager.onAttackServer(world, this);
-        }
-        return super.tryAttack(target);
+    public boolean tryAttack(ServerWorld world, Entity target) {
+        ShapeshiftingManager.onAttackServer(world, this);
+        return super.tryAttack(world, target);
     }
 
     private void checkMorphOnLoad() {
@@ -103,21 +112,15 @@ public abstract class ShapeshiftingEntity extends PathAwareEntity implements Sha
     }
 
     @Override
-    protected void initDataTracker(DataTracker.Builder builder) {
-        super.initDataTracker(builder);
-        builder.add(MORPH, new NbtCompound());
+    public void writeCustomData(WriteView view) {
+        super.writeCustomData(view);
+        view.put(MORPH_KEY, NbtCompound.CODEC, this.getMorphData());
     }
 
     @Override
-    public void writeCustomDataToNbt(NbtCompound nbt) {
-        super.writeCustomDataToNbt(nbt);
-        nbt.put(MORPH_KEY, this.getMorphData());
-    }
-
-    @Override
-    public void readCustomDataFromNbt(NbtCompound nbt) {
-        super.readCustomDataFromNbt(nbt);
-        this.setMorphData(nbt.getCompound(MORPH_KEY));
+    public void readCustomData(ReadView view) {
+        super.readCustomData(view);
+        view.read(MORPH_KEY, NbtCompound.CODEC).ifPresent(this::setMorphData);
         this.setMorphFromData();
     }
 
@@ -126,14 +129,18 @@ public abstract class ShapeshiftingEntity extends PathAwareEntity implements Sha
     }
 
     private void setMorphDataFromEntity(LivingEntity morph) {
-        NbtCompound nbtCompound = new NbtCompound();
-        if (morph != null) {
-            boolean saved = morph.saveSelfNbt(nbtCompound);
-            if (!saved) {
-                Worldsinger.LOGGER.warn("Unable to save data for morph");
-            }
+        if (morph == null) {
+            this.setMorphData(new NbtCompound());
+            return;
         }
-        this.setMorphData(nbtCompound);
+        try (ErrorReporter.Logging logging = new ErrorReporter.Logging(
+                this.getErrorReporterContext(), Worldsinger.LOGGER)) {
+            NbtWriteView nbtWriteView = NbtWriteView.create(logging, this.getRegistryManager());
+            morph.writeData(nbtWriteView);
+            Identifier entityId = EntityType.getId(morph.getType());
+            nbtWriteView.putString("id", entityId == null ? "unknown" : entityId.toString());
+            this.setMorphData(nbtWriteView.getNbt());
+        }
     }
 
     private void setMorphFromData() {

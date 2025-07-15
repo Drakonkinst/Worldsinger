@@ -43,13 +43,13 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.BlockView;
-import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
+import net.minecraft.world.tick.ScheduledTickView;
 
 public class VerdantVineBranchBlock extends ConnectingBlock implements Waterloggable,
         SporeGrowthBlock {
 
-    private static final float RADIUS = 0.25f;
+    private static final float RADIUS = 8.0f;
     public static final MapCodec<VerdantVineBranchBlock> CODEC = AbstractBlock.createCodec(
             VerdantVineBranchBlock::new);
     private static final BooleanProperty[] DIRECTION_PROPERTIES = {
@@ -156,14 +156,15 @@ public class VerdantVineBranchBlock extends ConnectingBlock implements Waterlogg
     }
 
     @Override
-    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction,
-            BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
+    public BlockState getStateForNeighborUpdate(BlockState state, WorldView world,
+            ScheduledTickView tickView, BlockPos pos, Direction direction, BlockPos neighborPos,
+            BlockState neighborState, Random random) {
         if (!state.canPlaceAt(world, pos)) {
-            world.scheduleBlockTick(pos, this, 1);
+            tickView.scheduleBlockTick(pos, this, 1);
         }
 
         if (state.get(Properties.WATERLOGGED)) {
-            world.scheduleFluidTick(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
+            tickView.scheduleFluidTick(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
         }
 
         boolean canConnect = VerdantVineBranchBlock.canConnect(world, neighborPos, neighborState,

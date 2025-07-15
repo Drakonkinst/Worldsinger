@@ -24,76 +24,32 @@
 
 package io.github.drakonkinst.worldsinger.cosmere.lumar;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.drakonkinst.worldsinger.util.math.Int2;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtIntArray;
-import net.minecraft.nbt.NbtList;
-import net.minecraft.network.PacketByteBuf;
+import java.util.Collections;
+import java.util.List;
+import net.minecraft.network.RegistryByteBuf;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
+import net.minecraft.util.dynamic.Codecs;
 
-public record LunagreeLocation(int blockX, int blockZ, int sporeId, Int2[] rainlineNodes) {
+public record LunagreeLocation(int blockX, int blockZ, int sporeId, List<Int2> rainlineNodes) {
 
-    private static final String KEY_X = "blockX";
-    private static final String KEY_Z = "blockZ";
-    private static final String KEY_ID = "id";
-    private static final String KEY_RAINLINE = "rainlinePath";
-
-    public static LunagreeLocation fromPacket(PacketByteBuf buf) {
-        int blockX = buf.readVarInt();
-        int blockZ = buf.readVarInt();
-        byte sporeId = buf.readByte();
-        Int2[] rainlineNodes = new Int2[RainlinePath.RAINLINE_NODE_COUNT];
-        for (int i = 0; i < RainlinePath.RAINLINE_NODE_COUNT; ++i) {
-            int x = buf.readVarInt();
-            int y = buf.readVarInt();
-            rainlineNodes[i] = new Int2(x, y);
-        }
-        return new LunagreeLocation(blockX, blockZ, sporeId, rainlineNodes);
-    }
-
-    public static void writePacket(LunagreeLocation location, PacketByteBuf buf) {
-        buf.writeVarInt(location.blockX);
-        buf.writeVarInt(location.blockZ);
-        buf.writeByte(location.sporeId);
-        for (int i = 0; i < RainlinePath.RAINLINE_NODE_COUNT; ++i) {
-            Int2 rainlineNode = location.rainlineNodes[i];
-            buf.writeVarInt(rainlineNode.x());
-            buf.writeVarInt(rainlineNode.y());
-        }
-    }
-
-    public static LunagreeLocation fromNbt(NbtCompound nbt) {
-        int sporeId = nbt.getInt(KEY_ID);
-        int x = nbt.getInt(KEY_X);
-        int z = nbt.getInt(KEY_Z);
-        NbtList rainlineNodeData = nbt.getList(KEY_RAINLINE, NbtElement.INT_ARRAY_TYPE);
-        Int2[] rainlineNodes = new Int2[RainlinePath.RAINLINE_NODE_COUNT];
-        if (rainlineNodeData.size() == RainlinePath.RAINLINE_NODE_COUNT) {
-            for (int i = 0; i < RainlinePath.RAINLINE_NODE_COUNT; ++i) {
-                int[] coords = rainlineNodeData.getIntArray(i);
-                rainlineNodes[i] = new Int2(coords[0], coords[1]);
-            }
-        }
-        return new LunagreeLocation(x, z, sporeId, rainlineNodes);
-    }
-
-    public void writeNbt(NbtCompound nbt) {
-        nbt.putInt(KEY_ID, sporeId);
-        nbt.putInt(KEY_X, blockX);
-        nbt.putInt(KEY_Z, blockZ);
-        NbtList rainlineNodeData = new NbtList();
-        for (int i = 0; i < RainlinePath.RAINLINE_NODE_COUNT; ++i) {
-            rainlineNodeData.add(
-                    new NbtIntArray(new int[] { rainlineNodes[i].x(), rainlineNodes[i].y() }));
-        }
-        nbt.put(KEY_RAINLINE, rainlineNodeData);
-    }
-
-    public void setRainlineNodes(Int2[] rainlineNodes) {
-        for (int i = 0; i < RainlinePath.RAINLINE_NODE_COUNT; ++i) {
-            this.rainlineNodes[i] = rainlineNodes[i];
-        }
-    }
+    public static final Codec<LunagreeLocation> CODEC = RecordCodecBuilder.create(
+            instance -> instance.group(
+                            Codec.INT.fieldOf("block_x").forGetter(LunagreeLocation::blockX),
+                            Codec.INT.fieldOf("block_z").forGetter(LunagreeLocation::blockZ),
+                            Codecs.NON_NEGATIVE_INT.fieldOf("spore_id")
+                                    .forGetter(LunagreeLocation::sporeId), Int2.CODEC.listOf()
+                                    .optionalFieldOf("rainline_path", Collections.emptyList())
+                                    .forGetter(LunagreeLocation::rainlineNodes))
+                    .apply(instance, LunagreeLocation::new));
+    public static final PacketCodec<RegistryByteBuf, LunagreeLocation> PACKET_CODEC = PacketCodec.tuple(
+            PacketCodecs.VAR_INT, LunagreeLocation::blockX, PacketCodecs.VAR_INT,
+            LunagreeLocation::blockZ, PacketCodecs.VAR_INT, LunagreeLocation::sporeId,
+            Int2.PACKET_CODEC.collect(PacketCodecs.toList()), LunagreeLocation::rainlineNodes,
+            LunagreeLocation::new);
 
     public double distSqTo(double x, double z) {
         final double deltaX = blockX - x;

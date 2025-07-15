@@ -31,6 +31,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.StateManager;
@@ -51,20 +52,20 @@ public class SunlightFluid extends StillFluid {
     public void randomDisplayTick(World world, BlockPos pos, FluidState state, Random random) {
         BlockPos blockPos = pos.up();
         if (world.getBlockState(blockPos).isAir() && !world.getBlockState(blockPos)
-                .isOpaqueFullCube(world, blockPos)) {
+                .isOpaqueFullCube()) {
             if (random.nextInt(100) == 0) {
                 double d = (double) pos.getX() + random.nextDouble();
                 double e = (double) pos.getY() + 1.0;
                 double f = (double) pos.getZ() + random.nextDouble();
-                world.addParticle(ParticleTypes.LAVA, d, e, f, 0.0, 0.0, 0.0);
-                world.playSound(d, e, f, SoundEvents.BLOCK_LAVA_POP, SoundCategory.BLOCKS,
+                world.addParticleClient(ParticleTypes.LAVA, d, e, f, 0.0, 0.0, 0.0);
+                world.playSoundClient(d, e, f, SoundEvents.BLOCK_LAVA_POP, SoundCategory.BLOCKS,
                         0.2f + random.nextFloat() * 0.2f, 0.9f + random.nextFloat() * 0.15f, false);
             }
         }
     }
 
     @Override
-    public void onRandomTick(World world, BlockPos pos, FluidState state, Random random) {
+    public void onRandomTick(ServerWorld world, BlockPos pos, FluidState state, Random random) {
         if (!world.getGameRules().getBoolean(GameRules.DO_FIRE_TICK)) {
             return;
         }
@@ -74,7 +75,7 @@ public class SunlightFluid extends StillFluid {
             BlockPos currentPos = pos;
             for (int i = 0; i < numFireAttempts; ++i) {
                 currentPos = currentPos.add(random.nextInt(3) - 1, 1, random.nextInt(3) - 1);
-                if (!world.canSetBlock(currentPos)) {
+                if (!world.isPosLoaded(currentPos)) {
                     return;
                 }
                 BlockState blockState = world.getBlockState(currentPos);
@@ -91,7 +92,7 @@ public class SunlightFluid extends StillFluid {
         } else {
             for (int i = 0; i < 3; ++i) {
                 BlockPos candidatePos = pos.add(random.nextInt(3) - 1, 0, random.nextInt(3) - 1);
-                if (!world.canSetBlock(candidatePos)) {
+                if (!world.isPosLoaded(candidatePos)) {
                     return;
                 }
                 BlockPos abovePos = candidatePos.up();
@@ -113,7 +114,7 @@ public class SunlightFluid extends StillFluid {
 
     @SuppressWarnings("deprecation")
     private boolean hasBurnableBlock(WorldView world, BlockPos pos) {
-        if (pos.getY() >= world.getBottomY() && pos.getY() < world.getTopY()
+        if (pos.getY() >= world.getBottomY() && pos.getY() < world.getTopYInclusive()
                 && !world.isChunkLoaded(pos)) {
             return false;
         }

@@ -36,6 +36,7 @@ import net.minecraft.entity.passive.AxolotlEntity;
 import net.minecraft.entity.projectile.thrown.PotionEntity;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.tag.BlockTags;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
@@ -49,20 +50,24 @@ public class WaterCannonballBehavior implements CannonballBehavior {
     private static final int WATER_SPLASH_RADIUS_HORIZONTAL = 4;
     private static final int WATER_SPLASH_RADIUS_VERTICAL = 2;
 
-    @Override
-    public void onCollisionClient(CannonballEntity entity, Vec3d hitPos) {
+    public static void spawnWaterParticlesClient(CannonballEntity entity) {
         double width = entity.getWidth();
         double radius = width * 0.5;
         Random random = entity.getRandom();
         World world = entity.getWorld();
-        // TODO: This happens inconsistently for some reason
         for (int i = 0; i < 20; i++) {
             double offsetX = random.nextDouble() * width - radius;
             double offsetY = random.nextDouble() * width - radius;
             double offsetZ = random.nextDouble() * width - radius;
-            world.addParticle(ParticleTypes.SPLASH, entity.getX() + offsetX,
+            world.addParticleClient(ParticleTypes.SPLASH, entity.getX() + offsetX,
                     entity.getY() + offsetY, entity.getZ() + offsetZ, 0.0f, 0.0f, 0.0f);
         }
+    }
+
+    @Override
+    public void onCollisionClient(CannonballEntity entity, Vec3d hitPos) {
+        // Since this is called inconsistently, moving it somewhere else
+        // spawnWaterParticlesClient(entity);
     }
 
     @Override
@@ -84,8 +89,9 @@ public class WaterCannonballBehavior implements CannonballBehavior {
                 PotionEntity.AFFECTED_BY_WATER)) {
             double distSq = entity.squaredDistanceTo(otherEntity);
             if (distSq < WATER_SPLASH_RADIUS_HORIZONTAL * WATER_SPLASH_RADIUS_HORIZONTAL) {
-                if (otherEntity.hurtByWater()) {
-                    otherEntity.damage(
+                if (otherEntity.hurtByWater()
+                        && entity.getWorld() instanceof ServerWorld serverWorld) {
+                    otherEntity.damage(serverWorld,
                             entity.getDamageSources().indirectMagic(entity, entity.getOwner()),
                             1.0F);
                 }

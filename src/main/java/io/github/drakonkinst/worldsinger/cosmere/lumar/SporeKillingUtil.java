@@ -24,21 +24,18 @@
 package io.github.drakonkinst.worldsinger.cosmere.lumar;
 
 import io.github.drakonkinst.datatables.DataTable;
-import io.github.drakonkinst.datatables.DataTableRegistry;
-import io.github.drakonkinst.worldsinger.api.ModApi;
-import io.github.drakonkinst.worldsinger.api.ModAttachmentTypes;
+import io.github.drakonkinst.datatables.DataTables;
 import io.github.drakonkinst.worldsinger.api.sync.AttachmentSync;
 import io.github.drakonkinst.worldsinger.block.LivingSporeGrowthBlock;
 import io.github.drakonkinst.worldsinger.block.SporeKillable;
 import io.github.drakonkinst.worldsinger.cosmere.SilverLined;
-import io.github.drakonkinst.worldsinger.cosmere.SilverLinedUtil;
 import io.github.drakonkinst.worldsinger.entity.SilverLinedEntityData;
+import io.github.drakonkinst.worldsinger.entity.attachments.ModAttachmentTypes;
 import io.github.drakonkinst.worldsinger.fluid.Fluidlogged;
 import io.github.drakonkinst.worldsinger.fluid.ModFluidTags;
 import io.github.drakonkinst.worldsinger.fluid.ModFluids;
 import io.github.drakonkinst.worldsinger.registry.ModDataTables;
 import io.github.drakonkinst.worldsinger.registry.tag.ModBlockTags;
-import io.github.drakonkinst.worldsinger.registry.tag.ModItemTags;
 import io.github.drakonkinst.worldsinger.util.BlockPosUtil;
 import io.github.drakonkinst.worldsinger.util.ModProperties;
 import java.util.List;
@@ -48,7 +45,7 @@ import net.minecraft.block.Waterloggable;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.vehicle.BoatEntity;
+import net.minecraft.entity.vehicle.AbstractBoatEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Hand;
@@ -68,29 +65,22 @@ public final class SporeKillingUtil {
             BlockState state, BlockPos pos, PlayerEntity player, Hand hand) {
         // Always mine with mainhand, so check if is the right item
         ItemStack stack = player.getStackInHand(hand);
-        if (stack.isIn(ModItemTags.KILLS_SPORE_GROWTHS)) {
-            // Damage the tool
-            SilverLined silverLinedData = ModApi.SILVER_LINED_ITEM.find(stack, null);
-            if (silverLinedData != null) {
-                if (silverLinedData.getSilverDurability() <= 0) {
-                    return false;
-                }
-                if (!player.isCreative()) {
-                    // It is silver-lined, so decrement the silver durability
-                    if (!silverLinedData.decrementDurability()) {
-                        SilverLinedUtil.onSilverLinedItemBreak(world, player);
-                    }
-                }
-            } else if (!player.isCreative()) {
-                // Assume it is a tool and damage its durability
-                stack.damage(1, player,
-                        hand == Hand.MAIN_HAND ? EquipmentSlot.MAINHAND : EquipmentSlot.OFFHAND);
-            }
-            // Kill the block
-            world.setBlockState(pos, SporeKillingUtil.convertToDeadVariant(sporeGrowth, state));
-            return true;
+        int silverDurability = SilverLined.getSilverDurability(stack);
+        if (silverDurability <= 0) {
+            return false;
         }
-        return false;
+        if (!player.isCreative()) {
+            // It is silver-lined, so decrement the silver durability
+            if (!SilverLined.damageSilverDurability(stack)) {
+                SilverLined.onSilverLinedItemBreak(world, player);
+            }
+            // Assume it is a tool and damage its durability
+            stack.damage(1, player,
+                    hand == Hand.MAIN_HAND ? EquipmentSlot.MAINHAND : EquipmentSlot.OFFHAND);
+        }
+        // Kill the block
+        world.setBlockState(pos, SporeKillingUtil.convertToDeadVariant(sporeGrowth, state));
+        return true;
     }
 
     public static int killNearbySpores(World world, BlockPos pos, int radius,
@@ -163,7 +153,7 @@ public final class SporeKillingUtil {
     }
 
     public static boolean isSporeKillingBlockNearby(World world, BlockPos pos) {
-        DataTable dataTable = DataTableRegistry.INSTANCE.get(ModDataTables.SPORE_KILLING_RADIUS);
+        DataTable dataTable = DataTables.get(ModDataTables.SPORE_KILLING_RADIUS);
         for (BlockPos currentPos : BlockPos.iterateOutwards(pos, MAX_BLOCK_RADIUS, MAX_BLOCK_RADIUS,
                 MAX_BLOCK_RADIUS)) {
             BlockState blockState = world.getBlockState(currentPos);
@@ -172,7 +162,7 @@ public final class SporeKillingUtil {
             }
 
             int distance = BlockPosUtil.getDistance(pos, currentPos);
-            if (dataTable.getIntForBlock(blockState) < distance) {
+            if (dataTable.query(blockState) < distance) {
                 continue;
             }
 
@@ -190,8 +180,8 @@ public final class SporeKillingUtil {
     }
 
     private static boolean checkNearbyEntitiesInBox(World world, Box box) {
-        List<BoatEntity> entitiesInRange = world.getEntitiesByClass(BoatEntity.class, box,
-                boatEntity -> {
+        List<AbstractBoatEntity> entitiesInRange = world.getEntitiesByClass(
+                AbstractBoatEntity.class, box, boatEntity -> {
                     SilverLinedEntityData silverData = boatEntity.getAttached(
                             ModAttachmentTypes.SILVER_LINED_BOAT);
                     boolean hasSilver = silverData != null && silverData.getSilverDurability() > 0;
@@ -223,7 +213,7 @@ public final class SporeKillingUtil {
 
     public static boolean isSporeKillingBlockNearbyForRange(World world, int minX, int minY,
             int minZ, int maxX, int maxY, int maxZ) {
-        DataTable dataTable = DataTableRegistry.INSTANCE.get(ModDataTables.SPORE_KILLING_RADIUS);
+        DataTable dataTable = DataTables.get(ModDataTables.SPORE_KILLING_RADIUS);
 
         int searchMinX = minX - MAX_BLOCK_RADIUS;
         int searchMinY = minY - MAX_BLOCK_RADIUS;
@@ -243,7 +233,7 @@ public final class SporeKillingUtil {
             SporeKillingUtil.calcClosestPointOnCuboid(searchPos.getX(), searchPos.getY(),
                     searchPos.getZ(), minX, minY, minZ, maxX, maxY, maxZ, closestPos);
             int distance = BlockPosUtil.getDistance(searchPos, closestPos);
-            if (dataTable.getIntForBlock(blockState) < distance) {
+            if (dataTable.query(blockState) < distance) {
                 continue;
             }
 

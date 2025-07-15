@@ -24,20 +24,23 @@
 package io.github.drakonkinst.worldsinger.mixin.item;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
+import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
-import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import io.github.drakonkinst.worldsinger.api.ModAttachmentTypes;
 import io.github.drakonkinst.worldsinger.cosmere.SaltedFoodUtil;
-import io.github.drakonkinst.worldsinger.cosmere.ThirstManager;
-import net.minecraft.entity.player.PlayerEntity;
+import io.github.drakonkinst.worldsinger.cosmere.SilverLined;
+import io.github.drakonkinst.worldsinger.util.EntityUtil;
+import net.minecraft.block.BlockState;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
-import net.minecraft.util.Hand;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(Item.class)
 public abstract class ItemMixin {
@@ -45,24 +48,36 @@ public abstract class ItemMixin {
     @Unique
     private static final String SALTED_FOOD_NAME_KEY = "item.worldsinger.salted_food";
 
-    @WrapOperation(method = "use", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerEntity;canConsume(Z)Z"))
-    private boolean allowEatingIfAffectsThirst(PlayerEntity instance, boolean ignoreHunger,
-            Operation<Boolean> original, World world, PlayerEntity user, Hand hand) {
-        if (original.call(instance, ignoreHunger)) {
-            return true;
-        }
-        Item item = (Item) (Object) this;
-        ItemStack stack = user.getStackInHand(hand);
-        int thirstModifier = ThirstManager.getThirst(item, stack);
-        ThirstManager thirstManager = instance.getAttachedOrCreate(ModAttachmentTypes.THIRST);
-        return thirstModifier < 0 || (thirstModifier > 0 && !thirstManager.isFull());
-    }
-
     @ModifyReturnValue(method = "getName(Lnet/minecraft/item/ItemStack;)Lnet/minecraft/text/Text;", at = @At(value = "RETURN"))
     private Text addSaltedDescriptor(Text original, ItemStack stack) {
         if (SaltedFoodUtil.canBeSalted(stack) && SaltedFoodUtil.isSalted(stack)) {
             return Text.translatable(SALTED_FOOD_NAME_KEY, original);
         }
         return original;
+    }
+
+    @Inject(method = "postMine", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;damage(ILnet/minecraft/entity/LivingEntity;Lnet/minecraft/entity/EquipmentSlot;)V"))
+    private void damageSilverDurability(ItemStack stack, World world, BlockState state,
+            BlockPos pos, LivingEntity miner, CallbackInfoReturnable<Boolean> cir) {
+        int silverDurability = SilverLined.getSilverDurability(stack);
+        // TODO: There are some edge cases here where silver durability can fall out of sync
+        if (silverDurability > 0 && EntityUtil.isNotCreativePlayer(miner)) {
+            SilverLined.damageSilverDurability(stack);
+        }
+    }
+
+    // Note: The item bar value will still be whatever the durability value is, by default
+    // Make sure to override it for things like boats if we want to show a different value
+    @WrapMethod(method = "isItemBarVisible")
+    public boolean makeSilverLinedBarVisible(ItemStack stack, Operation<Boolean> original) {
+        return original.call(stack) || SilverLined.isSilverLined(stack);
+    }
+
+    @WrapMethod(method = "getItemBarColor")
+    private int addSilverLinedBar(ItemStack stack, Operation<Integer> original) {
+        if (SilverLined.isSilverLined(stack)) {
+            return SilverLined.SILVER_METER_COLOR;
+        }
+        return original.call(stack);
     }
 }

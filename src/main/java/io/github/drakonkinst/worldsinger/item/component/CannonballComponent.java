@@ -34,6 +34,7 @@ import io.github.drakonkinst.worldsinger.cosmere.lumar.RoseiteSpores;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.SunlightSpores;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.VerdantSpores;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.ZephyrSpores;
+import io.github.drakonkinst.worldsinger.registry.ModDataComponentTypes;
 import io.netty.buffer.ByteBuf;
 import it.unimi.dsi.fastutil.objects.Object2IntArrayMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
@@ -41,7 +42,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.IntFunction;
-import net.minecraft.item.Item;
+import net.minecraft.component.ComponentsAccess;
+import net.minecraft.item.Item.TooltipContext;
 import net.minecraft.item.tooltip.TooltipAppender;
 import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.network.codec.PacketCodec;
@@ -94,7 +96,7 @@ public record CannonballComponent(CannonballShell shell, CannonballCore core, in
         ROSEITE(1, "roseite", true, true, false),
         WATER(2, "water", false, false, false);
 
-        private static final IntFunction<CannonballCore> BY_ID = ValueLists.createIdToValueFunction(
+        private static final IntFunction<CannonballCore> BY_ID = ValueLists.createIndexToValueFunction(
                 CannonballCore::getId, values(), ValueLists.OutOfBoundsHandling.ZERO);
         public static final PacketCodec<ByteBuf, CannonballCore> PACKET_CODEC = PacketCodecs.indexed(
                 BY_ID, CannonballCore::getId);
@@ -154,7 +156,7 @@ public record CannonballComponent(CannonballShell shell, CannonballCore core, in
         MIDNIGHT_SPORES(MidnightSpores.ID, "midnight_spores", 0x444444,
                 MidnightSpores.getInstance().getColor());
 
-        private static final IntFunction<CannonballContent> BY_ID = ValueLists.createIdToValueFunction(
+        private static final IntFunction<CannonballContent> BY_ID = ValueLists.createIndexToValueFunction(
                 CannonballContent::getId, values(), ValueLists.OutOfBoundsHandling.ZERO);
         public static final PacketCodec<ByteBuf, CannonballContent> PACKET_CODEC = PacketCodecs.indexed(
                 BY_ID, CannonballContent::getId);
@@ -200,7 +202,7 @@ public record CannonballComponent(CannonballShell shell, CannonballCore core, in
     public enum CannonballShell implements StringIdentifiable {
         CERAMIC(0, "ceramic");
 
-        private static final IntFunction<CannonballShell> BY_ID = ValueLists.createIdToValueFunction(
+        private static final IntFunction<CannonballShell> BY_ID = ValueLists.createIndexToValueFunction(
                 CannonballShell::getId, values(), ValueLists.OutOfBoundsHandling.ZERO);
         public static final PacketCodec<ByteBuf, CannonballShell> PACKET_CODEC = PacketCodecs.indexed(
                 BY_ID, CannonballShell::getId);
@@ -225,32 +227,24 @@ public record CannonballComponent(CannonballShell shell, CannonballCore core, in
         }
     }
 
-    // Simplified model string based on what can change currently
-    public String encodeModelString() {
-        // StringBuilder result = new StringBuilder();
-        // result.append(shell.id);
-        // result.append('_');
-        // result.append(core.id);
-        // result.append('_');
-        // result.append(fuse);
-        // result.append('_');
-        //
-        // IntList contentIds = new IntArrayList(3);
-        // for (CannonballContents content : contents) {
-        //     contentIds.add(content.id);
-        // }
-        // contentIds.sort((a, b) -> a - b);
-        // for (int id : contentIds) {
-        //     result.append(id);
-        //     result.append('-');
-        // }
-        // return result.toString();
-        return core.id + "_" + fuse;
+    public int getNumContents() {
+        if (contents == null) {
+            return 0;
+        }
+        return contents.size();
     }
 
     @Override
-    public void appendTooltip(Item.TooltipContext context, Consumer<Text> tooltip,
-            TooltipType type) {
+    public void appendTooltip(TooltipContext context, Consumer<Text> textConsumer, TooltipType type,
+            ComponentsAccess components) {
+        CannonballComponent component = components.get(ModDataComponentTypes.CANNONBALL);
+        if (component == null) {
+            return;
+        }
+        component.appendTooltip(textConsumer);
+    }
+
+    public void appendTooltip(Consumer<Text> tooltip) {
         appendCoreTooltip(tooltip);
         appendContentsTooltip(tooltip);
         appendFuseTooltip(tooltip);

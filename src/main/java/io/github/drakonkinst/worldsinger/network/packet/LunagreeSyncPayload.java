@@ -26,35 +26,19 @@ package io.github.drakonkinst.worldsinger.network.packet;
 
 import io.github.drakonkinst.worldsinger.Worldsinger;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LunagreeLocation;
-import java.util.ArrayList;
 import java.util.List;
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.network.packet.CustomPayload;
 
+// Server-to-client packet sending lunagree locations
 public record LunagreeSyncPayload(List<LunagreeLocation> locations) implements CustomPayload {
 
-    public static final Id<LunagreeSyncPayload> ID = new CustomPayload.Id<>(
-            Worldsinger.id("lunagree_sync"));
-    public static final PacketCodec<RegistryByteBuf, LunagreeSyncPayload> CODEC = CustomPayload.codecOf(
-            LunagreeSyncPayload::write, LunagreeSyncPayload::new);
-
-    private LunagreeSyncPayload(PacketByteBuf buf) {
-        this(new ArrayList<>());
-        int numLocations = buf.readVarInt();
-        for (int i = 0; i < numLocations; ++i) {
-            LunagreeLocation location = LunagreeLocation.fromPacket(buf);
-            locations.add(location);
-        }
-    }
-
-    private void write(PacketByteBuf buf) {
-        buf.writeVarInt(locations.size());
-        for (LunagreeLocation location : locations) {
-            LunagreeLocation.writePacket(location, buf);
-        }
-    }
+    public static final Id<LunagreeSyncPayload> ID = new Id<>(Worldsinger.id("lunagree_sync"));
+    public static final PacketCodec<RegistryByteBuf, LunagreeSyncPayload> CODEC = PacketCodec.tuple(
+            LunagreeLocation.PACKET_CODEC.collect(PacketCodecs.toList()),
+            LunagreeSyncPayload::locations, LunagreeSyncPayload::new);
 
     @Override
     public Id<? extends CustomPayload> getId() {

@@ -23,8 +23,6 @@
  */
 package io.github.drakonkinst.worldsinger.item;
 
-import static io.github.drakonkinst.worldsinger.registry.ModArmorMaterials.STEEL_DURABILITY_MULTIPLIER;
-
 import io.github.drakonkinst.worldsinger.Worldsinger;
 import io.github.drakonkinst.worldsinger.block.ModBlocks;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.AetherSpores;
@@ -38,32 +36,45 @@ import io.github.drakonkinst.worldsinger.cosmere.lumar.ZephyrSpores;
 import io.github.drakonkinst.worldsinger.entity.ModEntityTypes;
 import io.github.drakonkinst.worldsinger.fluid.ModFluids;
 import io.github.drakonkinst.worldsinger.item.component.CannonballComponent;
+import io.github.drakonkinst.worldsinger.item.component.CannonballComponent.CannonballContent;
+import io.github.drakonkinst.worldsinger.item.component.CannonballComponent.CannonballCore;
+import io.github.drakonkinst.worldsinger.item.component.CannonballComponent.CannonballShell;
 import io.github.drakonkinst.worldsinger.registry.ModArmorMaterials;
 import io.github.drakonkinst.worldsinger.registry.ModDataComponentTypes;
 import io.github.drakonkinst.worldsinger.registry.ModFoodComponents;
 import io.github.drakonkinst.worldsinger.registry.ModPotions;
 import io.github.drakonkinst.worldsinger.registry.ModSoundEvents;
 import io.github.drakonkinst.worldsinger.registry.ModToolMaterials;
+import it.unimi.dsi.fastutil.objects.ReferenceSortedSets;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.function.BiFunction;
+import java.util.function.Function;
+import java.util.function.UnaryOperator;
+import java.util.stream.Stream;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.ConsumableComponents;
+import net.minecraft.component.type.TooltipDisplayComponent;
 import net.minecraft.fluid.FlowableFluid;
-import net.minecraft.item.ArmorItem;
 import net.minecraft.item.AxeItem;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.FlintAndSteelItem;
 import net.minecraft.item.HoeItem;
 import net.minecraft.item.Item;
+import net.minecraft.item.Item.Settings;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemGroups;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.item.PickaxeItem;
 import net.minecraft.item.ShovelItem;
 import net.minecraft.item.SpawnEggItem;
-import net.minecraft.item.SwordItem;
+import net.minecraft.item.equipment.EquipmentType;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
@@ -77,129 +88,107 @@ public final class ModItems {
     // Items
 
     // Spore Buckets
-    public static final Item DEAD_SPORES_BUCKET = register("dead_spores_bucket",
-            createSporeBucketItem(ModBlocks.DEAD_SPORE_BLOCK, ModFluids.DEAD_SPORES));
-    public static final Item VERDANT_SPORES_BUCKET = register("verdant_spores_bucket",
-            createSporeBucketItem(ModBlocks.VERDANT_SPORE_BLOCK, ModFluids.VERDANT_SPORES));
-    public static final Item CRIMSON_SPORES_BUCKET = register("crimson_spores_bucket",
-            createSporeBucketItem(ModBlocks.CRIMSON_SPORE_BLOCK, ModFluids.CRIMSON_SPORES));
-    public static final Item ZEPHYR_SPORES_BUCKET = register("zephyr_spores_bucket",
-            createSporeBucketItem(ModBlocks.ZEPHYR_SPORE_BLOCK, ModFluids.ZEPHYR_SPORES));
-    public static final Item SUNLIGHT_SPORES_BUCKET = register("sunlight_spores_bucket",
-            createSporeBucketItem(ModBlocks.SUNLIGHT_SPORE_BLOCK, ModFluids.SUNLIGHT_SPORES));
-    public static final Item ROSEITE_SPORES_BUCKET = register("roseite_spores_bucket",
-            createSporeBucketItem(ModBlocks.ROSEITE_SPORE_BLOCK, ModFluids.ROSEITE_SPORES));
-    public static final Item MIDNIGHT_SPORES_BUCKET = register("midnight_spores_bucket",
-            createSporeBucketItem(ModBlocks.MIDNIGHT_SPORE_BLOCK, ModFluids.MIDNIGHT_SPORES));
+    public static final Item DEAD_SPORES_BUCKET = registerSporeBucketItem("dead_spores_bucket",
+            ModBlocks.DEAD_SPORE_BLOCK, ModFluids.DEAD_SPORES);
+    public static final Item VERDANT_SPORES_BUCKET = registerSporeBucketItem(
+            "verdant_spores_bucket", ModBlocks.VERDANT_SPORE_BLOCK, ModFluids.VERDANT_SPORES);
+    public static final Item CRIMSON_SPORES_BUCKET = registerSporeBucketItem(
+            "crimson_spores_bucket", ModBlocks.CRIMSON_SPORE_BLOCK, ModFluids.CRIMSON_SPORES);
+    public static final Item ZEPHYR_SPORES_BUCKET = registerSporeBucketItem("zephyr_spores_bucket",
+            ModBlocks.ZEPHYR_SPORE_BLOCK, ModFluids.ZEPHYR_SPORES);
+    public static final Item SUNLIGHT_SPORES_BUCKET = registerSporeBucketItem(
+            "sunlight_spores_bucket", ModBlocks.SUNLIGHT_SPORE_BLOCK, ModFluids.SUNLIGHT_SPORES);
+    public static final Item ROSEITE_SPORES_BUCKET = registerSporeBucketItem(
+            "roseite_spores_bucket", ModBlocks.ROSEITE_SPORE_BLOCK, ModFluids.ROSEITE_SPORES);
+    public static final Item MIDNIGHT_SPORES_BUCKET = registerSporeBucketItem(
+            "midnight_spores_bucket", ModBlocks.MIDNIGHT_SPORE_BLOCK, ModFluids.MIDNIGHT_SPORES);
 
     // Spore Bottles
-    public static final Item DEAD_SPORES_BOTTLE = register("dead_spores_bottle",
-            createSporeBottleItem(DeadSpores.getInstance()));
-    public static final Item VERDANT_SPORES_BOTTLE = register("verdant_spores_bottle",
-            createSporeBottleItem(VerdantSpores.getInstance()));
-    public static final Item CRIMSON_SPORES_BOTTLE = register("crimson_spores_bottle",
-            createSporeBottleItem(CrimsonSpores.getInstance()));
-    public static final Item ZEPHYR_SPORES_BOTTLE = register("zephyr_spores_bottle",
-            createSporeBottleItem(ZephyrSpores.getInstance()));
-    public static final Item SUNLIGHT_SPORES_BOTTLE = register("sunlight_spores_bottle",
-            createSporeBottleItem(SunlightSpores.getInstance()));
-    public static final Item ROSEITE_SPORES_BOTTLE = register("roseite_spores_bottle",
-            createSporeBottleItem(RoseiteSpores.getInstance()));
-    public static final Item MIDNIGHT_SPORES_BOTTLE = register("midnight_spores_bottle",
-            createSporeBottleItem(MidnightSpores.getInstance()));
-    public static final Item DEAD_SPORES_SPLASH_BOTTLE = register("dead_spores_splash_bottle",
-            createSporeSplashBottleItem(DeadSpores.getInstance()));
-    public static final Item VERDANT_SPORES_SPLASH_BOTTLE = register("verdant_spores_splash_bottle",
-            createSporeSplashBottleItem(VerdantSpores.getInstance()));
-    public static final Item CRIMSON_SPORES_SPLASH_BOTTLE = register("crimson_spores_splash_bottle",
-            createSporeSplashBottleItem(CrimsonSpores.getInstance()));
-    public static final Item ZEPHYR_SPORES_SPLASH_BOTTLE = register("zephyr_spores_splash_bottle",
-            createSporeSplashBottleItem(ZephyrSpores.getInstance()));
-    public static final Item SUNLIGHT_SPORES_SPLASH_BOTTLE = register(
-            "sunlight_spores_splash_bottle",
-            createSporeSplashBottleItem(SunlightSpores.getInstance()));
-    public static final Item ROSEITE_SPORES_SPLASH_BOTTLE = register("roseite_spores_splash_bottle",
-            createSporeSplashBottleItem(RoseiteSpores.getInstance()));
-    public static final Item MIDNIGHT_SPORES_SPLASH_BOTTLE = register(
-            "midnight_spores_splash_bottle",
-            createSporeSplashBottleItem(MidnightSpores.getInstance()));
+    public static final Item DEAD_SPORES_BOTTLE = registerSporeBottleItem("dead_spores_bottle",
+            DeadSpores.getInstance());
+    public static final Item VERDANT_SPORES_BOTTLE = registerSporeBottleItem(
+            "verdant_spores_bottle", VerdantSpores.getInstance());
+    public static final Item CRIMSON_SPORES_BOTTLE = registerSporeBottleItem(
+            "crimson_spores_bottle", CrimsonSpores.getInstance());
+    public static final Item ZEPHYR_SPORES_BOTTLE = registerSporeBottleItem("zephyr_spores_bottle",
+            ZephyrSpores.getInstance());
+    public static final Item SUNLIGHT_SPORES_BOTTLE = registerSporeBottleItem(
+            "sunlight_spores_bottle", SunlightSpores.getInstance());
+    public static final Item ROSEITE_SPORES_BOTTLE = registerSporeBottleItem(
+            "roseite_spores_bottle", RoseiteSpores.getInstance());
+    public static final Item MIDNIGHT_SPORES_BOTTLE = registerSporeBottleItem(
+            "midnight_spores_bottle", MidnightSpores.getInstance());
+    public static final Item DEAD_SPORES_SPLASH_BOTTLE = registerSporeSplashBottleItem(
+            "dead_spores_splash_bottle", DeadSpores.getInstance());
+    public static final Item VERDANT_SPORES_SPLASH_BOTTLE = registerSporeSplashBottleItem(
+            "verdant_spores_splash_bottle", VerdantSpores.getInstance());
+    public static final Item CRIMSON_SPORES_SPLASH_BOTTLE = registerSporeSplashBottleItem(
+            "crimson_spores_splash_bottle", CrimsonSpores.getInstance());
+    public static final Item ZEPHYR_SPORES_SPLASH_BOTTLE = registerSporeSplashBottleItem(
+            "zephyr_spores_splash_bottle", ZephyrSpores.getInstance());
+    public static final Item SUNLIGHT_SPORES_SPLASH_BOTTLE = registerSporeSplashBottleItem(
+            "sunlight_spores_splash_bottle", SunlightSpores.getInstance());
+    public static final Item ROSEITE_SPORES_SPLASH_BOTTLE = registerSporeSplashBottleItem(
+            "roseite_spores_splash_bottle", RoseiteSpores.getInstance());
+    public static final Item MIDNIGHT_SPORES_SPLASH_BOTTLE = registerSporeSplashBottleItem(
+            "midnight_spores_splash_bottle", MidnightSpores.getInstance());
 
     public static final Item VERDANT_VINE = register("verdant_vine",
-            new Item(new Item.Settings().food(ModFoodComponents.VERDANT_VINE)));
-    public static final Item CRIMSON_SPINE = register("crimson_spine",
-            new Item(new Item.Settings()));
-    public static final Item ROSEITE_CRYSTAL = register("roseite_crystal",
-            new Item(new Item.Settings()));
-    public static final Item ROSEITE_CORE = register("roseite_core", new Item(new Item.Settings()));
-    public static final Item SALT = register("salt",
-            new SaltItem(new Item.Settings().food(ModFoodComponents.SALT)));
+            new Settings().food(ModFoodComponents.VERDANT_VINE, ModFoodComponents.SNACK));
+    public static final Item CRIMSON_SPINE = register("crimson_spine");
+    public static final Item ROSEITE_CRYSTAL = register("roseite_crystal");
+    public static final Item ROSEITE_CORE = register("roseite_core");
+    public static final Item SALT = register("salt", SaltItem::new,
+            new Settings().food(ModFoodComponents.SALT, ModFoodComponents.SNACK));
 
     // Silver
-    public static final Item RAW_SILVER = register("raw_silver", new Item(new Item.Settings()));
-    public static final Item SILVER_INGOT = register("silver_ingot", new Item(new Item.Settings()));
-    public static final Item SILVER_NUGGET = register("silver_nugget",
-            new Item(new Item.Settings()));
+    public static final Item RAW_SILVER = register("raw_silver");
+    public static final Item SILVER_INGOT = register("silver_ingot");
+    public static final Item SILVER_NUGGET = register("silver_nugget");
 
     // Steel
-    public static final Item CRUDE_IRON = register("crude_iron", new Item(new Item.Settings()));
-    public static final Item STEEL_INGOT = register("steel_ingot", new Item(new Item.Settings()));
-    public static final Item STEEL_NUGGET = register("steel_nugget", new Item(new Item.Settings()));
+    public static final Item CRUDE_IRON = register("crude_iron");
+    public static final Item STEEL_INGOT = register("steel_ingot");
+    public static final Item STEEL_NUGGET = register("steel_nugget");
     public static final Item STEEL_HELMET = register("steel_helmet",
-            new ArmorItem(ModArmorMaterials.STEEL, ArmorItem.Type.HELMET,
-                    new Item.Settings().maxDamage(
-                            ArmorItem.Type.HELMET.getMaxDamage(STEEL_DURABILITY_MULTIPLIER))));
+            new Settings().armor(ModArmorMaterials.STEEL, EquipmentType.HELMET));
     public static final Item STEEL_CHESTPLATE = register("steel_chestplate",
-            new ArmorItem(ModArmorMaterials.STEEL, ArmorItem.Type.CHESTPLATE,
-                    new Item.Settings().maxDamage(
-                            ArmorItem.Type.CHESTPLATE.getMaxDamage(STEEL_DURABILITY_MULTIPLIER))));
+            new Settings().armor(ModArmorMaterials.STEEL, EquipmentType.CHESTPLATE));
     public static final Item STEEL_LEGGINGS = register("steel_leggings",
-            new ArmorItem(ModArmorMaterials.STEEL, ArmorItem.Type.LEGGINGS,
-                    new Item.Settings().maxDamage(
-                            ArmorItem.Type.LEGGINGS.getMaxDamage(STEEL_DURABILITY_MULTIPLIER))));
+            new Settings().armor(ModArmorMaterials.STEEL, EquipmentType.LEGGINGS));
     public static final Item STEEL_BOOTS = register("steel_boots",
-            new ArmorItem(ModArmorMaterials.STEEL, ArmorItem.Type.BOOTS,
-                    new Item.Settings().maxDamage(
-                            ArmorItem.Type.BOOTS.getMaxDamage(STEEL_DURABILITY_MULTIPLIER))));
+            new Settings().armor(ModArmorMaterials.STEEL, EquipmentType.BOOTS));
     public static final Item STEEL_SWORD = register("steel_sword",
-            new SwordItem(ModToolMaterials.STEEL, new Item.Settings().attributeModifiers(
-                    SwordItem.createAttributeModifiers(ModToolMaterials.STEEL, 3, -2.4f))));
+            new Settings().sword(ModToolMaterials.STEEL, 3.0f, -2.4f));
     public static final Item STEEL_PICKAXE = register("steel_pickaxe",
-            new PickaxeItem(ModToolMaterials.STEEL, new Item.Settings().attributeModifiers(
-                    PickaxeItem.createAttributeModifiers(ModToolMaterials.STEEL, 1.0f, -2.8f))));
-    public static final Item STEEL_AXE = register("steel_axe", new AxeItem(ModToolMaterials.STEEL,
-            new Item.Settings().attributeModifiers(
-                    AxeItem.createAttributeModifiers(ModToolMaterials.STEEL, 6.0f, -3.1f))));
+            new Settings().pickaxe(ModToolMaterials.STEEL, 1.0f, -2.8f));
+    public static final Item STEEL_AXE = register("steel_axe",
+            settings -> new AxeItem(ModToolMaterials.STEEL, 6.0f, -3.1f, settings));
     public static final Item STEEL_SHOVEL = register("steel_shovel",
-            new ShovelItem(ModToolMaterials.STEEL, new Item.Settings().attributeModifiers(
-                    ShovelItem.createAttributeModifiers(ModToolMaterials.STEEL, 1.5f, -3.0f))));
-    public static final Item STEEL_HOE = register("steel_hoe", new HoeItem(ModToolMaterials.STEEL,
-            new Item.Settings().attributeModifiers(
-                    HoeItem.createAttributeModifiers(ModToolMaterials.STEEL, -2.0f, -1.0f))));
+            settings -> new ShovelItem(ModToolMaterials.STEEL, 1.5f, -3.0f, settings));
+    public static final Item STEEL_HOE = register("steel_hoe",
+            settings -> new HoeItem(ModToolMaterials.STEEL, -2.0f, -1.0f, settings));
 
     // Aluminum
-    public static final Item ALUMINUM_INGOT = register("aluminum_ingot",
-            new Item(new Item.Settings()));
-    public static final Item ALUMINUM_NUGGET = register("aluminum_nugget",
-            new Item(new Item.Settings()));
+    public static final Item ALUMINUM_INGOT = register("aluminum_ingot");
+    public static final Item ALUMINUM_NUGGET = register("aluminum_nugget");
 
     // Tools
-    public static final Item QUARTZ_AND_STEEL = register("quartz_and_steel",
-            new FlintAndSteelItem(new Item.Settings().maxDamage(88)));
+    public static final Item QUARTZ_AND_STEEL = register("quartz_and_steel", FlintAndSteelItem::new,
+            new Settings().maxDamage(88));
     public static final Item FLINT_AND_IRON = register("flint_and_iron",
-            new FaultyFirestarterItem(0.33f, new Item.Settings().maxDamage(64)));
+            settings -> new FaultyFirestarterItem(0.33f, settings), new Settings().maxDamage(64));
     public static final Item QUARTZ_AND_IRON = register("quartz_and_iron",
-            new FaultyFirestarterItem(0.33f, new Item.Settings().maxDamage(88)));
-    public static final Item SILVER_KNIFE = register("silver_knife", new SilverKnifeItem(
-            new Item.Settings().attributeModifiers(
-                    KnifeItem.createAttributeModifiers(ModToolMaterials.SILVER, 1.0f, -2.0f))));
-    public static final Item CERAMIC_CANNONBALL = register("ceramic_cannonball", new CannonballItem(
-            new Item.Settings().maxCount(16)
-                    .component(ModDataComponentTypes.CANNONBALL, CannonballComponent.DEFAULT)));
+            settings -> new FaultyFirestarterItem(0.33f, settings), new Settings().maxDamage(88));
+    public static final Item SILVER_KNIFE = register("silver_knife",
+            settings -> new SilverKnifeItem(ModToolMaterials.SILVER, 1.0f, -2.0f, settings));
+    public static final Item CERAMIC_CANNONBALL = register("ceramic_cannonball",
+            CannonballItem::new, new Settings().maxCount(16)
+                    .component(ModDataComponentTypes.CANNONBALL, CannonballComponent.DEFAULT));
 
     // Admin
     public static final Item MIDNIGHT_CREATURE_SPAWN_EGG = register("midnight_creature_spawn_egg",
-            new SpawnEggItem(ModEntityTypes.MIDNIGHT_CREATURE, 0x000000, 0x111111,
-                    new Item.Settings()));
+            settings -> new SpawnEggItem(ModEntityTypes.MIDNIGHT_CREATURE, settings));
 
     // Item Groups
     private static final ItemGroup WORLDSINGER_ITEM_GROUP = FabricItemGroup.builder()
@@ -207,28 +196,109 @@ public final class ModItems {
             .displayName(Text.translatable("itemGroup.worldsinger.worldsinger"))
             .build();
 
-    private static Item createSporeBucketItem(Block sporeBlock, FlowableFluid sporeFluid) {
-        return new AetherSporeBucketItem(sporeBlock, sporeFluid,
-                ModSoundEvents.BLOCK_SPORE_BLOCK_PLACE,
-                new Item.Settings().recipeRemainder(Items.BUCKET).maxCount(1));
+    private static Item registerSporeBucketItem(String id, Block sporeBlock,
+            FlowableFluid sporeFluid) {
+        // TODO: Move to components?
+        return register(id, settings -> new AetherSporeBucketItem(sporeBlock, sporeFluid,
+                        ModSoundEvents.BLOCK_SPORE_BLOCK_PLACE, settings),
+                new Settings().recipeRemainder(Items.BUCKET).maxCount(1));
     }
 
-    private static Item createSporeBottleItem(AetherSpores sporeType) {
-        return new SporeBottleItem(sporeType,
-                new Item.Settings().recipeRemainder(Items.GLASS_BOTTLE)
+    private static Item registerSporeBottleItem(String id, AetherSpores sporeType) {
+        // TODO: Move to components?
+        return register(id, settings -> new SporeBottleItem(sporeType, settings),
+                new Settings().recipeRemainder(Items.GLASS_BOTTLE)
                         .maxCount(16)
                         .component(DataComponentTypes.POTION_CONTENTS,
-                                ModPotions.SPORE_POTIONS_COMPONENT));
+                                ModPotions.SPORE_POTIONS_COMPONENT)
+                        .component(DataComponentTypes.CONSUMABLE, ConsumableComponents.DRINK)
+                        .component(DataComponentTypes.TOOLTIP_DISPLAY,
+                                new TooltipDisplayComponent(false, ReferenceSortedSets.singleton(
+                                        DataComponentTypes.POTION_CONTENTS))));
     }
 
-    private static Item createSporeSplashBottleItem(AetherSpores sporeType) {
-        return new SplashSporeBottleItem(sporeType, new Item.Settings().maxCount(1)
-                .component(DataComponentTypes.POTION_CONTENTS, ModPotions.SPORE_POTIONS_COMPONENT));
+    private static Item registerSporeSplashBottleItem(String id, AetherSpores sporeType) {
+        // TODO: Move to components?
+        return register(id, settings -> new SplashSporeBottleItem(sporeType, settings),
+                new Settings().maxCount(1)
+                        .component(DataComponentTypes.POTION_CONTENTS,
+                                ModPotions.SPORE_POTIONS_COMPONENT)
+                        .component(DataComponentTypes.TOOLTIP_DISPLAY,
+                                new TooltipDisplayComponent(false, ReferenceSortedSets.singleton(
+                                        DataComponentTypes.POTION_CONTENTS))));
     }
 
-    public static <T extends Item> T register(String id, T item) {
-        Identifier itemId = Worldsinger.id(id);
-        return Registry.register(Registries.ITEM, itemId, item);
+    private static RegistryKey<Item> keyOf(String id) {
+        return RegistryKey.of(RegistryKeys.ITEM, Worldsinger.id(id));
+    }
+
+    private static RegistryKey<Item> keyOf(RegistryKey<Block> blockKey) {
+        return RegistryKey.of(RegistryKeys.ITEM, blockKey.getValue());
+    }
+
+    public static Item register(Block block) {
+        return register(block, BlockItem::new);
+    }
+
+    public static Item register(Block block, Settings settings) {
+        return register(block, BlockItem::new, settings);
+    }
+
+    public static Item register(Block block, UnaryOperator<Settings> settingsOperator) {
+        return register(block,
+                (blockx, settings) -> new BlockItem(blockx, settingsOperator.apply(settings)));
+    }
+
+    public static Item register(Block block, Block... blocks) {
+        Item item = register(block);
+
+        for (Block block2 : blocks) {
+            Item.BLOCK_ITEMS.put(block2, item);
+        }
+
+        return item;
+    }
+
+    public static Item register(Block block, BiFunction<Block, Settings, Item> factory) {
+        return register(block, factory, new Settings());
+    }
+
+    @SuppressWarnings("deprecation")
+    public static Item register(Block block, BiFunction<Block, Settings, Item> factory,
+            Settings settings) {
+        return register(keyOf(block.getRegistryEntry().registryKey()),
+                itemSettings -> factory.apply(block, itemSettings),
+                settings.useBlockPrefixedTranslationKey());
+    }
+
+    public static Item register(String id, Function<Settings, Item> factory) {
+        return register(keyOf(id), factory, new Settings());
+    }
+
+    public static Item register(String id, Function<Settings, Item> factory, Settings settings) {
+        return register(keyOf(id), factory, settings);
+    }
+
+    public static Item register(String id, Settings settings) {
+        return register(keyOf(id), Item::new, settings);
+    }
+
+    public static Item register(String id) {
+        return register(keyOf(id), Item::new, new Settings());
+    }
+
+    public static Item register(RegistryKey<Item> key, Function<Settings, Item> factory) {
+        return register(key, factory, new Settings());
+    }
+
+    public static Item register(RegistryKey<Item> key, Function<Settings, Item> factory,
+            Settings settings) {
+        Item item = factory.apply(settings.registryKey(key));
+        if (item instanceof BlockItem blockItem) {
+            blockItem.appendBlocks(Item.BLOCK_ITEMS, item);
+        }
+
+        return Registry.register(Registries.ITEM, key, item);
     }
 
     public static void initialize() {
@@ -333,15 +403,7 @@ public final class ModItems {
             itemGroup.addAfter(Items.FLINT_AND_STEEL, ModItems.QUARTZ_AND_STEEL,
                     ModItems.FLINT_AND_IRON, ModItems.QUARTZ_AND_IRON);
             // Spore Buckets
-            itemGroup.addAfter(Items.MILK_BUCKET, new ItemConvertible[] {
-                    ModItems.VERDANT_SPORES_BUCKET,
-                    ModItems.CRIMSON_SPORES_BUCKET,
-                    ModItems.ZEPHYR_SPORES_BUCKET,
-                    ModItems.SUNLIGHT_SPORES_BUCKET,
-                    ModItems.ROSEITE_SPORES_BUCKET,
-                    ModItems.MIDNIGHT_SPORES_BUCKET,
-                    ModItems.DEAD_SPORES_BUCKET
-            });
+            itemGroup.addAfter(Items.MILK_BUCKET, getAllSporeBuckets());
             itemGroup.addAfter(Items.FISHING_ROD, ModItems.SILVER_KNIFE);
         });
 
@@ -355,6 +417,7 @@ public final class ModItems {
                     ModItems.STEEL_BOOTS
             });
             itemGroup.addAfter(Items.TRIDENT, ModItems.SILVER_KNIFE);
+            itemGroup.addAfter(Items.WIND_CHARGE, createCannonballExamples());
         });
 
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.FOOD_AND_DRINK).register((itemGroup) -> {
@@ -399,13 +462,7 @@ public final class ModItems {
             // For now, this item group should only contain important items
 
             // Spore Buckets
-            itemGroup.add(ModItems.VERDANT_SPORES_BUCKET);
-            itemGroup.add(ModItems.CRIMSON_SPORES_BUCKET);
-            itemGroup.add(ModItems.ZEPHYR_SPORES_BUCKET);
-            itemGroup.add(ModItems.SUNLIGHT_SPORES_BUCKET);
-            itemGroup.add(ModItems.ROSEITE_SPORES_BUCKET);
-            itemGroup.add(ModItems.MIDNIGHT_SPORES_BUCKET);
-            itemGroup.add(ModItems.DEAD_SPORES_BUCKET);
+            itemGroup.addAll(getAllSporeBuckets());
 
             // Spore Growth Blocks
             itemGroup.add(ModBlocks.VERDANT_VINE_BLOCK);
@@ -438,8 +495,7 @@ public final class ModItems {
 
             // Tools
             itemGroup.add(ModItems.SILVER_KNIFE);
-            itemGroup.add(
-                    ModItems.CERAMIC_CANNONBALL); // FIXME: Should add this to normal tabs + pre-made variations
+            itemGroup.addAll(createCannonballExamples());
 
             // Ingredients
             itemGroup.add(ModItems.VERDANT_VINE);
@@ -470,6 +526,32 @@ public final class ModItems {
             // Spawn Eggs
             itemGroup.add(ModItems.MIDNIGHT_CREATURE_SPAWN_EGG);
         });
+    }
+
+    private static List<ItemStack> getAllSporeBuckets() {
+        return Stream.of(ModItems.VERDANT_SPORES_BUCKET, ModItems.CRIMSON_SPORES_BUCKET,
+                ModItems.ZEPHYR_SPORES_BUCKET, ModItems.SUNLIGHT_SPORES_BUCKET,
+                ModItems.ROSEITE_SPORES_BUCKET, ModItems.MIDNIGHT_SPORES_BUCKET,
+                ModItems.DEAD_SPORES_BUCKET).map(Item::getDefaultStack).toList();
+    }
+
+    private static List<ItemStack> createCannonballExamples() {
+        List<ItemStack> list = new ArrayList<>();
+        list.add(ModItems.CERAMIC_CANNONBALL.getDefaultStack());
+        list.add(createCannonball(CannonballCore.WATER, 0, null, 0));
+        list.add(createCannonball(CannonballCore.ROSEITE, 1, CannonballContent.SUNLIGHT_SPORES, 2));
+        list.add(createCannonball(CannonballCore.ROSEITE, 3, CannonballContent.VERDANT_SPORES, 3));
+        list.add(createCannonball(CannonballCore.ROSEITE, 3, CannonballContent.ROSEITE_SPORES, 3));
+        return list;
+    }
+
+    private static ItemStack createCannonball(CannonballCore core, int fuse,
+            CannonballContent content, int amount) {
+        ItemStack cannonball = ModItems.CERAMIC_CANNONBALL.getDefaultStack();
+        cannonball.set(ModDataComponentTypes.CANNONBALL,
+                new CannonballComponent(CannonballShell.CERAMIC, core, fuse,
+                        Collections.nCopies(amount, content)));
+        return cannonball;
     }
 
     private ModItems() {}

@@ -1,12 +1,10 @@
 package io.github.drakonkinst.worldsinger.mixin.world;
 
-import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import io.github.drakonkinst.worldsinger.cosmere.CosmerePlanet;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarManager;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarManagerAccess;
-import io.github.drakonkinst.worldsinger.cosmere.lumar.RainlineManager;
-import java.util.function.Supplier;
+import io.github.drakonkinst.worldsinger.cosmere.lumar.RainlineSpawner;
 import net.minecraft.block.BlockState;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.RegistryKey;
@@ -14,7 +12,7 @@ import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
-import net.minecraft.util.profiler.Profiler;
+import net.minecraft.world.Heightmap.Type;
 import net.minecraft.world.MutableWorldProperties;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
@@ -49,31 +47,22 @@ public abstract class WorldLumarMixin implements WorldAccess, AutoCloseable, Lum
     @Inject(method = "<init>", at = @At("TAIL"))
     private void initializeLumar(MutableWorldProperties properties, RegistryKey<World> registryRef,
             DynamicRegistryManager registryManager, RegistryEntry<DimensionType> dimensionEntry,
-            Supplier<Profiler> profiler, boolean isClient, boolean debugWorld, long biomeAccess,
-            int maxChainedNeighborUpdates, CallbackInfo ci) {
+            boolean isClient, boolean debugWorld, long seed, int maxChainedNeighborUpdates,
+            CallbackInfo ci) {
         lumarManager = LumarManager.NULL;
     }
 
-    @ModifyExpressionValue(method = "hasRain", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/World;isRaining()Z"))
-    private boolean considerRainlinesAsRaining(boolean original, BlockPos pos) {
-        if (original) {
+    @ModifyReturnValue(method = "getPrecipitation", at = @At(value = "RETURN"))
+    private Precipitation considerRainlinesAsRaining(Precipitation original, BlockPos pos) {
+        // If no other precipitation is present AND the location is not blocked
+        if (original != Precipitation.NONE
+                || this.getTopPosition(Type.MOTION_BLOCKING, pos).getY() > pos.getY()) {
             return original;
         }
         if ((Object) this instanceof ServerWorld serverWorld) {
-            return RainlineManager.shouldRainlineAffectBlocks(serverWorld, pos.toCenterPos());
-        }
-        return false;
-    }
-
-    // This approach isn't perfect, but is minimally invasive
-    // Rainlines won't work in biomes without precipitation outside Lumar
-    // Another approach would be to inject at HEAD, but this would require re-doing checks
-    // and be less compatible
-    // Another approach would be some kind of captured local, but trying to avoid this
-    @ModifyExpressionValue(method = "hasRain", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/biome/Biome;getPrecipitation(Lnet/minecraft/util/math/BlockPos;)Lnet/minecraft/world/biome/Biome$Precipitation;"))
-    private Precipitation makeLumarAlwaysRaining(Precipitation original) {
-        if (CosmerePlanet.isLumar((World) (Object) this)) {
-            return Precipitation.RAIN;
+            if (RainlineSpawner.shouldRainlineAffectBlocks(serverWorld, pos.toCenterPos())) {
+                return Precipitation.RAIN;
+            }
         }
         return original;
     }

@@ -24,14 +24,15 @@
 package io.github.drakonkinst.worldsinger.mixin.entity.player;
 
 import com.mojang.authlib.GameProfile;
+import io.github.drakonkinst.worldsinger.advancement.ModCriteria;
 import io.github.drakonkinst.worldsinger.cosmere.CosmerePlanet;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LumarManagerAccess;
 import io.github.drakonkinst.worldsinger.cosmere.lumar.LunagreeGenerator;
+import io.github.drakonkinst.worldsinger.cosmere.lumar.LunagreeLocation;
 import io.github.drakonkinst.worldsinger.world.LunagreeDataReceiver;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
@@ -45,6 +46,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class ServerPlayerEntityLunagreeDataMixin extends PlayerEntity implements
         LunagreeDataReceiver {
 
+    @Shadow
+    public abstract ServerWorld getWorld();
+
     @Unique
     private static final int UPDATE_DELAY = 20;
 
@@ -55,14 +59,13 @@ public abstract class ServerPlayerEntityLunagreeDataMixin extends PlayerEntity i
     @Unique
     private long currentCellKey = Long.MAX_VALUE;
 
-    public ServerPlayerEntityLunagreeDataMixin(World world, BlockPos pos, float yaw,
-            GameProfile gameProfile) {
-        super(world, pos, yaw, gameProfile);
+    public ServerPlayerEntityLunagreeDataMixin(World world, GameProfile gameProfile) {
+        super(world, gameProfile);
     }
 
     @Inject(method = "playerTick", at = @At(value = "FIELD", opcode = Opcodes.GETFIELD, target = "Lnet/minecraft/server/network/ServerPlayerEntity;age:I"))
     private void checkUpdateLunagreeData(CallbackInfo ci) {
-        ServerWorld world = this.getServerWorld();
+        ServerWorld world = this.getWorld();
         if (!CosmerePlanet.isLumar(world)) {
             return;
         }
@@ -81,11 +84,27 @@ public abstract class ServerPlayerEntityLunagreeDataMixin extends PlayerEntity i
         }
     }
 
+    @Inject(method = "playerTick", at = @At(value = "INVOKE", target = "Lnet/minecraft/advancement/criterion/TickCriterion;trigger(Lnet/minecraft/server/network/ServerPlayerEntity;)V"))
+    private void triggerNearLunagreeCriterion(CallbackInfo ci) {
+        ServerWorld world = this.getWorld();
+        if (!CosmerePlanet.isLumar(world)) {
+            return;
+        }
+        LunagreeGenerator lunagreeGenerator = ((LumarManagerAccess) world).worldsinger$getLumarManager()
+                .getLunagreeGenerator();
+        // We use MAX_VALUE here, but the implementation is naturally limited by the range of the neighboring lunagrees
+        LunagreeLocation nearestLocation = lunagreeGenerator.getNearestLunagree(world,
+                this.getBlockX(), this.getBlockZ(), Integer.MAX_VALUE);
+        if (nearestLocation != null) {
+            double distSq = nearestLocation.distSqTo(this.getX(), this.getZ());
+            int lunagreeSporeId = nearestLocation.sporeId();
+            ModCriteria.SAILED_NEAR_LUNAGREE.trigger((ServerPlayerEntity) (Object) this,
+                    lunagreeSporeId, distSq);
+        }
+    }
+
     @Override
     public void worldsinger$setShouldCheckPosition() {
         shouldCheckPosition = true;
     }
-
-    @Shadow
-    public abstract ServerWorld getServerWorld();
 }

@@ -54,6 +54,10 @@ public final class ModConventionalItemTags {
             "storage_blocks/raw_silver");
     public static final TagKey<Item> SILVER_RAW_MATERIALS = ModConventionalItemTags.of(
             "raw_materials/silver");
+    public static final TagKey<Item> STEEL_TOOL_MATERIALS = ModConventionalItemTags.of(
+            "steel_tool_materials");
+    public static final TagKey<Item> SILVER_TOOL_MATERIALS = ModConventionalItemTags.of(
+            "silver_tool_materials");
 
     private static TagKey<Item> of(String id) {
         return TagKey.of(RegistryKeys.ITEM, Identifier.of(ModConstants.COMMON_ID, id));

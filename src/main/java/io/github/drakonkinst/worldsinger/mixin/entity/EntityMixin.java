@@ -51,7 +51,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class EntityMixin {
 
     @Shadow
-    public float fallDistance;
+    public double fallDistance;
     @Unique
     private boolean wasTouchingSporeSea = false;
 

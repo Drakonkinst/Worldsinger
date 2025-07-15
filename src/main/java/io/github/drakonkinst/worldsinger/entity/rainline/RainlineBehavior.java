@@ -24,8 +24,8 @@
 
 package io.github.drakonkinst.worldsinger.entity.rainline;
 
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.storage.WriteView;
 
 public interface RainlineBehavior {
 
@@ -33,5 +33,5 @@ public interface RainlineBehavior {
 
     boolean isFollowingPath();
 
-    void writeCustomDataToNbt(NbtCompound nbt);
+    void writeCustomData(WriteView view);
 }

@@ -42,7 +42,7 @@ import net.minecraft.world.gen.feature.MiscConfiguredFeatures;
 public class LumarManager {
 
     public static final LumarManager NULL = new LumarManager(SeetheManager.NULL,
-            LunagreeGenerator.NULL, RainlineManager.NULL);
+            LunagreeGenerator.NULL, RainlineSpawner.NULL);
     private static final int SPAWN_SEARCH_RADIUS = 6400;
     private static final int SPAWN_SEARCH_INTERVAL = 64;
 
@@ -85,7 +85,7 @@ public class LumarManager {
                     Worldsinger.LOGGER.info("Spawning bonus chest!");
                     world.getRegistryManager()
                             .getOptional(RegistryKeys.CONFIGURED_FEATURE)
-                            .flatMap(featureRegistry -> featureRegistry.getEntry(
+                            .flatMap(featureRegistry -> featureRegistry.getOptional(
                                     MiscConfiguredFeatures.BONUS_CHEST))
                             .ifPresent(feature -> feature.value()
                                     .generate(world, world.getChunkManager().getChunkGenerator(),
@@ -110,13 +110,13 @@ public class LumarManager {
 
     private final SeetheManager seetheManager;
     private final LunagreeGenerator lunagreeGenerator;
-    private final RainlineManager rainlineManager;
+    private final RainlineSpawner rainlineManager;
 
     public LumarManager(SeetheManager seetheManager, LunagreeGenerator lunagreeGenerator,
-            RainlineManager rainlineManager) {
+            RainlineSpawner rainlineSpawner) {
         this.seetheManager = seetheManager;
         this.lunagreeGenerator = lunagreeGenerator;
-        this.rainlineManager = rainlineManager;
+        this.rainlineManager = rainlineSpawner;
     }
 
     public void serverTick(ServerWorld world) {
@@ -132,7 +132,7 @@ public class LumarManager {
         return lunagreeGenerator;
     }
 
-    public RainlineManager getRainlineManager() {
+    public RainlineSpawner getRainlineManager() {
         return rainlineManager;
     }
 }

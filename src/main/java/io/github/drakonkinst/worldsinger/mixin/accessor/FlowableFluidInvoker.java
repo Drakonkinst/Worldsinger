@@ -36,8 +36,10 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 public interface FlowableFluidInvoker {
 
     @Invoker("receivesFlow")
-    boolean worldsinger$receivesFlow(Direction face, BlockView world, BlockPos pos,
-            BlockState state, BlockPos fromPos, BlockState fromState);
+    static boolean worldsinger$receivesFlow(Direction face, BlockView world, BlockPos pos,
+            BlockState state, BlockPos fromPos, BlockState fromState) {
+        throw new UnsupportedOperationException();
+    }
 
     @Invoker("isMatchingAndStill")
     boolean worldsinger$isMatchingAndStill(FluidState state);

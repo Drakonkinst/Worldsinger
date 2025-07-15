@@ -24,11 +24,11 @@
 package io.github.drakonkinst.worldsinger.registry;
 
 import io.github.drakonkinst.worldsinger.block.ModBlocks;
-import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
+import net.fabricmc.fabric.api.client.rendering.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.client.rendering.v1.ColorProviderRegistry;
 import net.minecraft.block.Block;
 import net.minecraft.client.color.world.BiomeColors;
-import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.BlockRenderLayer;
 
 public final class ModBlockRendering {
 
@@ -57,12 +57,12 @@ public final class ModBlockRendering {
                 ModBlocks.POTTED_DEAD_VERDANT_VINE_SNARE,
                 ModBlocks.POTTED_VERDANT_VINE_SNARE
         };
-        BlockRenderLayerMap.INSTANCE.putBlocks(RenderLayer.getCutout(), cutoutBlocks);
+        BlockRenderLayerMap.putBlocks(BlockRenderLayer.CUTOUT, cutoutBlocks);
 
         final Block[] translucentBlocks = {
                 ModBlocks.ROSEITE_BLOCK, ModBlocks.ROSEITE_STAIRS, ModBlocks.ROSEITE_SLAB
         };
-        BlockRenderLayerMap.INSTANCE.putBlocks(RenderLayer.getTranslucent(), translucentBlocks);
+        BlockRenderLayerMap.putBlocks(BlockRenderLayer.TRANSLUCENT, translucentBlocks);
 
         ColorProviderRegistry.BLOCK.register((state, world, pos, tintIndex) -> {
             if (world == null || pos == null) {

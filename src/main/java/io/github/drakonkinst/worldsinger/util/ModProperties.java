@@ -23,7 +23,7 @@
  */
 package io.github.drakonkinst.worldsinger.util;
 
-import io.github.drakonkinst.worldsinger.fluid.FluidProperty;
+import io.github.drakonkinst.worldsinger.fluid.Fluidlogged;
 import net.minecraft.block.enums.Thickness;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.EnumProperty;
@@ -31,7 +31,9 @@ import net.minecraft.state.property.IntProperty;
 
 public final class ModProperties {
 
-    public static final FluidProperty FLUIDLOGGED = FluidProperty.of("fluidlogged");
+    // TODO: Change back to fluid property
+    public static final IntProperty FLUIDLOGGED = IntProperty.of("fluidlogged", 0,
+            Fluidlogged.WATERLOGGABLE_FLUIDS.size());
     public static final BooleanProperty CATALYZED = BooleanProperty.of("catalyzed");
     public static final EnumProperty<Thickness> DISCRETE_THICKNESS = EnumProperty.of("thickness",
             Thickness.class, thickness -> thickness != Thickness.TIP_MERGE);

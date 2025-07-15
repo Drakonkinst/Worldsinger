@@ -24,10 +24,10 @@
 package io.github.drakonkinst.worldsinger.mixin.client.entity;
 
 import com.mojang.authlib.GameProfile;
-import io.github.drakonkinst.worldsinger.api.ModAttachmentTypes;
+import io.github.drakonkinst.worldsinger.entity.attachments.ModAttachmentTypes;
 import io.github.drakonkinst.worldsinger.cosmere.PossessionManager;
 import io.github.drakonkinst.worldsinger.entity.CameraPossessable;
-import io.github.drakonkinst.worldsinger.entity.freelook.FreeLook;
+import io.github.drakonkinst.worldsinger.entity.FreeLook;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.world.ClientWorld;
