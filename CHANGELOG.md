@@ -1,3 +1,7 @@
+## 1.7.2
+
+* Fix gamebreaking bug which was causing crash on world creation
+
 ## 1.7.1
 
 * Updated to Minecraft 1.21.7
