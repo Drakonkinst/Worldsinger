@@ -1,7 +1,7 @@
 ## 1.7.1
 
 * Updated to Minecraft 1.21.7
-* Updated salt, silver, and aluminum textures (Thanks, Khuz!)
+* Updated salt, silver, aluminum, and flint & steel variant textures (Thanks, Khuz!)
 * Added a Cosmere advancements tab with 21 advancements
 * Added a recipe to craft Crimson Spines into Crimson Growths
 * Added a recipe to craft Verdant Vines into Verdant Vine Blocks

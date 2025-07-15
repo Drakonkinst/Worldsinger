@@ -1,6 +1,6 @@
 # Worldsinger
 
-[![Modrinth Downloads](https://img.shields.io/modrinth/dt/worldsinger?style=flat&logo=modrinth&logoColor=%23ffffff&label=Modrinth&color=%231bd96a)](https://modrinth.com/mod/worldsinger)
+[![Modrinth Downloads](https://img.shields.io/modrinth/dt/worldsinger?style=flat&logo=modrinth&logoColor=%231bd96a&label=Modrinth&color=%231bd96a)](https://modrinth.com/mod/worldsinger)
 
 A content mod for **Minecraft 1.21.7** that brings worlds of Brandon Sanderson's **Cosmere** to the
 game.
@@ -14,7 +14,7 @@ spore seas on the colorful and deadly world of **Lumar**, as seen in *Tress of t
 
 <p align="center">
   <a href="https://modrinth.com/mod/worldsinger" target="_blank">
-    <img src="https://github.com/user-attachments/assets/c33e0af5-14e1-4475-91f1-71435260c49f">
+    <img src="https://github.com/user-attachments/assets/c33e0af5-14e1-4475-91f1-71435260c49f" alt="Worldsinger">
   </a>
 </p>
 
@@ -27,7 +27,9 @@ spore seas on the colorful and deadly world of **Lumar**, as seen in *Tress of t
 * the_khuzdul1 - Many textures, including:
     * Silver
     * Salt
-* FurbyMom22 - Aether Spore Sea Texture
+    * Aluminum
+    * Flint and Steel Variants
+* Furby_Mom - Aether Spore Sea Texture
 * [u/SeiyoNoShogun](https://www.reddit.com/r/Minecraft/comments/sjnzd9/i_never_really_liked_the_look_of_the_default_iron) -
   Steel Block Texture
 * _trbz (SimplySteel)
@@ -35,10 +37,6 @@ spore seas on the colorful and deadly world of **Lumar**, as seen in *Tress of t
     * Crude Iron
     * Steel Armor
     * Steel Tools
-    * Flint and Steel Variants
-* mortuusars (The Salt)
-    * Salted Food Overlay
-    * Salt Ore
 
 ### Special Thanks
 
