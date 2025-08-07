@@ -427,7 +427,7 @@ public final class ModBlocks {
                     .strength(2.5f, 3.0f).sounds(ModSoundGroups.SALTSTONE), true);
     public static final Block SALT_BLOCK = register("salt_block", Settings.create().requiresTool()
             // Same strength as Calcite
-            .strength(0.75f).sounds(ModSoundGroups.SALT), true);
+            .strength(0.75f).nonOpaque().sounds(ModSoundGroups.SALT), true);
     public static final Block SILVER_ORE = register("silver_ore",
             settings -> new ExperienceDroppingBlock(ConstantIntProvider.create(0), settings),
             Settings.create().requiresTool()

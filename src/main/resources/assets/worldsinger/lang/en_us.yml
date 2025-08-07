@@ -326,6 +326,8 @@ tag.item:
     all_cooked_meat: All cooked meat items
     all_raw_meat: All raw meat items
     all_cauldrons: All cauldron items and variants
+    converts_to_dirt_when_salted: Converts to Dirt when salted
+    converts_to_coarse_dirt_when_salted: Converts to Coarse Dirt when salted
   c:
     salt: Salt items
     ingots.steel: Steel ingots
