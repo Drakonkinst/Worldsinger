@@ -55,6 +55,7 @@ public class ModDataGenerator implements DataGeneratorEntrypoint {
         pack.addProvider(ModChestLootTableGenerator::new);
         pack.addProvider(ModAdvancementGenerator::new);
         pack.addProvider(ModDataTableGenerator::new);
+        pack.addProvider(ModEquipmentAssetGenerator::new);
 
         // Dynamic Registries
         addDynamicProvider(pack, "Worldsinger Damage Types", RegistryKeys.DAMAGE_TYPE);
