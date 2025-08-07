@@ -31,6 +31,7 @@
     "block.CauldronBehaviorMixin",
     "block.CauldronBlockMixin",
     "block.EntityShapeContextMixin",
+    "block.FarmlandBlockMixin",
     "block.FirestarterInteractableBlockMixin",
     "block.FluidBlockMixin",
     "block.LeveledCauldronBlockMixin",
