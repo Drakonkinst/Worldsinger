@@ -86,6 +86,13 @@ public final class ModBlockTags {
     public static final TagKey<Block> VERDANT_VINE_SNARE = ModBlockTags.of("verdant_vine_snare");
     public static final TagKey<Block> VINES = ModBlockTags.of("vines");
     public static final TagKey<Block> WOOD_TYPE = ModBlockTags.of("wood_type");
+    public static final TagKey<Block> MELTABLE = ModBlockTags.of("meltable");
+    public static final TagKey<Block> MELTABLE_PLACES_WATER = ModBlockTags.of(
+            "meltable_places_water");
+    public static final TagKey<Block> CONVERTS_TO_DIRT_WHEN_SALTED = ModBlockTags.of(
+            "converts_to_dirt_when_salted");
+    public static final TagKey<Block> CONVERTS_TO_COARSE_DIRT_WHEN_SALTED = ModBlockTags.of(
+            "converts_to_coarse_dirt_when_salted");
 
     // Tools
     public static final TagKey<Block> INCORRECT_FOR_STEEL_TOOL = ModBlockTags.of(

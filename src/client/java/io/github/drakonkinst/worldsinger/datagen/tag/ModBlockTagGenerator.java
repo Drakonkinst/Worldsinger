@@ -395,6 +395,20 @@ public class ModBlockTagGenerator extends BlockTagProvider {
                 .addOptionalTag(BlockTags.WOODEN_PRESSURE_PLATES)
                 .addOptionalTag(BlockTags.WOODEN_BUTTONS)
                 .addOptionalTag(BlockTags.ALL_SIGNS);
+        valueLookupBuilder(ModBlockTags.MELTABLE).add(Blocks.ICE)
+                .add(Blocks.SNOW)
+                .add(Blocks.SNOW_BLOCK)
+                .add(Blocks.POWDER_SNOW);
+        valueLookupBuilder(ModBlockTags.MELTABLE_PLACES_WATER).add(Blocks.ICE)
+                .add(Blocks.SNOW_BLOCK)
+                .add(Blocks.POWDER_SNOW);
+        valueLookupBuilder(ModBlockTags.CONVERTS_TO_DIRT_WHEN_SALTED).add(Blocks.GRASS_BLOCK)
+                .add(Blocks.MYCELIUM)
+                .add(Blocks.DIRT_PATH)
+                .add(Blocks.FARMLAND)
+                .add(Blocks.PODZOL);
+        valueLookupBuilder(ModBlockTags.CONVERTS_TO_COARSE_DIRT_WHEN_SALTED).add(Blocks.DIRT)
+                .add(Blocks.ROOTED_DIRT);
 
         // Worldgen
         valueLookupBuilder(ModBlockTags.INFINIBURN_LUMAR).addOptionalTag(

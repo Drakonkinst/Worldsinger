@@ -35,6 +35,8 @@ import io.github.drakonkinst.worldsinger.entity.CameraPossessable;
 import io.github.drakonkinst.worldsinger.entity.attachments.ModAttachmentTypes;
 import io.github.drakonkinst.worldsinger.item.ModItems;
 import io.github.drakonkinst.worldsinger.registry.ModDataComponentTypes;
+import io.github.drakonkinst.worldsinger.registry.tag.ModBlockTags;
+import io.github.drakonkinst.worldsinger.registry.tag.ModConventionalItemTags;
 import io.github.drakonkinst.worldsinger.registry.tag.ModItemTags;
 import java.util.List;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
@@ -45,6 +47,7 @@ import net.fabricmc.fabric.api.item.v1.DefaultItemComponentEvents;
 import net.fabricmc.fabric.api.registry.CompostingChanceRegistry;
 import net.fabricmc.fabric.api.registry.FuelRegistryEvents;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -53,6 +56,8 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
 
@@ -166,6 +171,49 @@ public final class ModEventHandlers {
                     hand)) {
                 return ActionResult.SUCCESS;
             }
+            return ActionResult.PASS;
+        });
+
+        // Salt item interactions
+        UseBlockCallback.EVENT.register((player, world, hand, hitResult) -> {
+            if (player.isSpectator()) {
+                return ActionResult.PASS;
+            }
+            ItemStack heldItem = player.getStackInHand(hand);
+            if (!heldItem.isIn(ModConventionalItemTags.SALT)) {
+                return ActionResult.PASS;
+            }
+
+            BlockPos pos = hitResult.getBlockPos();
+            BlockState state = world.getBlockState(pos);
+
+            // Melt ice and snow
+            if (state.isIn(ModBlockTags.MELTABLE)) {
+                BlockState replaceWith = Blocks.AIR.getDefaultState();
+                if (state.isIn(ModBlockTags.MELTABLE_PLACES_WATER)) {
+                    replaceWith = Blocks.WATER.getDefaultState();
+                }
+                heldItem.decrementUnlessCreative(1, player);
+                world.setBlockState(pos, replaceWith);
+                return ActionResult.SUCCESS;
+            }
+
+            if (state.isIn(ModBlockTags.CONVERTS_TO_DIRT_WHEN_SALTED)) {
+                heldItem.decrementUnlessCreative(1, player);
+                world.setBlockState(pos, Blocks.DIRT.getDefaultState());
+                world.playSound(player, pos, SoundEvents.ITEM_HOE_TILL, SoundCategory.BLOCKS, 1.0F,
+                        1.0F);
+                return ActionResult.SUCCESS;
+            }
+
+            if (state.isIn(ModBlockTags.CONVERTS_TO_COARSE_DIRT_WHEN_SALTED)) {
+                heldItem.decrementUnlessCreative(1, player);
+                world.setBlockState(pos, Blocks.COARSE_DIRT.getDefaultState());
+                world.playSound(player, pos, SoundEvents.ITEM_HOE_TILL, SoundCategory.BLOCKS, 1.0F,
+                        1.0F);
+                return ActionResult.SUCCESS;
+            }
+
             return ActionResult.PASS;
         });
     }
