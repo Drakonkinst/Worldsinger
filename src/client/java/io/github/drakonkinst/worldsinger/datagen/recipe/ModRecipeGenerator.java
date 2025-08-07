@@ -33,6 +33,7 @@ import io.github.drakonkinst.worldsinger.recipe.SporeCannonballRecipe;
 import io.github.drakonkinst.worldsinger.recipe.WaterCannonballRecipe;
 import io.github.drakonkinst.worldsinger.registry.ModDataComponentTypes;
 import io.github.drakonkinst.worldsinger.registry.tag.ModConventionalItemTags;
+import io.github.drakonkinst.worldsinger.registry.tag.ModItemTags;
 import io.github.drakonkinst.worldsinger.util.ModConstants;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -324,6 +325,16 @@ public class ModRecipeGenerator extends FabricRecipeProvider {
                         .criterion(hasItem(Items.QUARTZ), this.conditionsFromItem(Items.QUARTZ))
                         .criterion(hasItem(Items.OBSIDIAN),
                                 this.conditionsFromItem(Blocks.OBSIDIAN))
+                        .offerTo(exporter);
+                this.createShapeless(RecipeCategory.MISC, Blocks.COARSE_DIRT)
+                        .input(ModItemTags.CONVERTS_TO_COARSE_DIRT_WHEN_SALTED)
+                        .input(ModConventionalItemTags.SALT)
+                        .criterion(hasItem(ModItems.SALT), this.conditionsFromItem(ModItems.SALT))
+                        .offerTo(exporter);
+                this.createShapeless(RecipeCategory.MISC, Blocks.DIRT)
+                        .input(ModItemTags.CONVERTS_TO_DIRT_WHEN_SALTED)
+                        .input(ModConventionalItemTags.SALT)
+                        .criterion(hasItem(ModItems.SALT), this.conditionsFromItem(ModItems.SALT))
                         .offerTo(exporter);
             }
 

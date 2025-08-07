@@ -189,5 +189,9 @@ public class ModItemTagGenerator extends ItemTagProvider {
                 .add(ModItems.STEEL_CHESTPLATE)
                 .add(ModItems.STEEL_LEGGINGS)
                 .add(ModItems.STEEL_BOOTS);
+
+        copy(ModBlockTags.CONVERTS_TO_COARSE_DIRT_WHEN_SALTED,
+                ModItemTags.CONVERTS_TO_COARSE_DIRT_WHEN_SALTED);
+        copy(ModBlockTags.CONVERTS_TO_DIRT_WHEN_SALTED, ModItemTags.CONVERTS_TO_DIRT_WHEN_SALTED);
     }
 }
