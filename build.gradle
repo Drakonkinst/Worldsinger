@@ -95,7 +95,7 @@ dependencies {
             exclude(group: "net.fabricmc.fabric-api")
         }
     } else {
-        include(modImplementation("com.github.Drakonkinst:DataTables:v${project.data_tables_version}")) {
+        include(modImplementation("maven.modrinth:data-tables:${project.data_tables_version}")) {
             exclude(group: "net.fabricmc.fabric-api")
         }
     }
