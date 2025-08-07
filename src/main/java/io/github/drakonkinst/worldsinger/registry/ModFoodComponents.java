@@ -23,19 +23,30 @@
  */
 package io.github.drakonkinst.worldsinger.registry;
 
+import io.github.drakonkinst.worldsinger.effect.ModStatusEffects;
 import net.minecraft.component.type.ConsumableComponent;
 import net.minecraft.component.type.ConsumableComponents;
 import net.minecraft.component.type.FoodComponent;
+import net.minecraft.item.consume.RemoveEffectsConsumeEffect;
 
 public final class ModFoodComponents {
 
-    public static final FoodComponent SALT = new FoodComponent.Builder().nutrition(1)
+    public static final FoodComponent SALT_FOOD = new FoodComponent.Builder().nutrition(1)
             .saturationModifier(0.1f)
             .alwaysEdible()
             .build();
     // Same as Dried Kelp
     public static final FoodComponent VERDANT_VINE = new FoodComponent.Builder().nutrition(1)
             .saturationModifier(0.3f)
+            .build();
+    public static final ConsumableComponent SALT_CONSUMABLE = ConsumableComponents.food()
+            .consumeSeconds(0.8F)
+            .consumeEffect(new RemoveEffectsConsumeEffect(ModStatusEffects.CRIMSON_SPORES))
+            .consumeEffect(new RemoveEffectsConsumeEffect(ModStatusEffects.SUNLIGHT_SPORES))
+            .consumeEffect(new RemoveEffectsConsumeEffect(ModStatusEffects.ZEPHYR_SPORES))
+            .consumeEffect(new RemoveEffectsConsumeEffect(ModStatusEffects.MIDNIGHT_SPORES))
+            .consumeEffect(new RemoveEffectsConsumeEffect(ModStatusEffects.VERDANT_SPORES))
+            .consumeEffect(new RemoveEffectsConsumeEffect(ModStatusEffects.ROSEITE_SPORES))
             .build();
     public static final ConsumableComponent SNACK = ConsumableComponents.food()
             .consumeSeconds(0.8F)

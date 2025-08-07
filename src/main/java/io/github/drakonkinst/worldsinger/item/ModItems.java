@@ -139,7 +139,7 @@ public final class ModItems {
     public static final Item ROSEITE_CRYSTAL = register("roseite_crystal");
     public static final Item ROSEITE_CORE = register("roseite_core");
     public static final Item SALT = register("salt", SaltItem::new,
-            new Settings().food(ModFoodComponents.SALT, ModFoodComponents.SNACK));
+            new Settings().food(ModFoodComponents.SALT_FOOD, ModFoodComponents.SALT_CONSUMABLE));
 
     // Silver
     public static final Item RAW_SILVER = register("raw_silver");
