@@ -56,6 +56,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
@@ -191,7 +192,22 @@ public final class ModEventHandlers {
             if (state.isIn(ModBlockTags.MELTABLE)) {
                 BlockState replaceWith = Blocks.AIR.getDefaultState();
                 if (state.isIn(ModBlockTags.MELTABLE_PLACES_WATER)) {
-                    replaceWith = Blocks.WATER.getDefaultState();
+                    if (world.getDimension().ultrawarm()) {
+                        int x = pos.getX();
+                        int y = pos.getY();
+                        int z = pos.getZ();
+                        world.playSound(player, pos, SoundEvents.BLOCK_FIRE_EXTINGUISH,
+                                SoundCategory.BLOCKS, 0.5F, 2.6F
+                                        + (world.random.nextFloat() - world.random.nextFloat())
+                                        * 0.8F);
+
+                        for (int l = 0; l < 8; l++) {
+                            world.addParticleClient(ParticleTypes.LARGE_SMOKE, x + Math.random(),
+                                    y + Math.random(), z + Math.random(), 0.0, 0.0, 0.0);
+                        }
+                    } else {
+                        replaceWith = Blocks.WATER.getDefaultState();
+                    }
                 }
                 heldItem.decrementUnlessCreative(1, player);
                 world.setBlockState(pos, replaceWith);
