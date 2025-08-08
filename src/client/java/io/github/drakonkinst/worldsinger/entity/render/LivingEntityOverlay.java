@@ -10,8 +10,12 @@ import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.client.texture.ResourceTexture;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.ColorHelper;
+import net.minecraft.util.math.random.Random;
 
 public final class LivingEntityOverlay {
+
+    private static final Random random = Random.create();
 
     // We can use this class to overwrite the texture of living entities and dynamically create new ones.
     public static Identifier applyLivingEntityOverlays(Identifier original,
@@ -37,12 +41,25 @@ public final class LivingEntityOverlay {
             return original;
         }
 
-        NativeImage midnightOverlayImage = copyImage(image);
+        // Determine dimensions of new image: it must be square and support animation frames
+        int newImageWidth = image.getWidth();
+        int newImageHeight = image.getHeight();
+        int maxDimension = Math.max(newImageWidth, newImageHeight);
+        newImageWidth = maxDimension;
+        newImageHeight = maxDimension;
+        // TODO: Use below texture (which is a GeckoLibAnimatedTexture) to animate the model
+        AbstractTexture midnightEssenceTexture = textureManager.getTexture(
+                MidnightCreatureEntityRenderer.TEXTURE);
+
+        NativeImage midnightOverlayImage = new NativeImage(newImageWidth, newImageHeight, true);
+        midnightOverlayImage.copyFrom(image);
         for (int x = 0; x < image.getWidth(); ++x) {
             for (int y = 0; y < image.getHeight(); ++y) {
                 // Overlay all non-transparent pixels
                 if (isNotTransparent(image, x, y)) {
-                    midnightOverlayImage.setColorArgb(x, y, 0xff000000);
+                    int randomGrayColor = random.nextBetween(0, 50);
+                    midnightOverlayImage.setColorArgb(x, y,
+                            ColorHelper.getArgb(randomGrayColor, randomGrayColor, randomGrayColor));
                 }
             }
         }
@@ -59,7 +76,9 @@ public final class LivingEntityOverlay {
     }
 
     private static NativeImage copyImage(NativeImage image) {
-        NativeImage newImage = new NativeImage(image.getWidth(), image.getHeight(), true);
+        int width = image.getWidth();
+        int height = image.getHeight();
+        NativeImage newImage = new NativeImage(width, height, true);
         newImage.copyFrom(image);
         return newImage;
     }
