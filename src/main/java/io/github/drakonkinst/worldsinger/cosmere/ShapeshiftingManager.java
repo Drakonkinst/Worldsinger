@@ -31,6 +31,7 @@ import io.github.drakonkinst.worldsinger.mixin.accessor.EntityAccessor;
 import io.github.drakonkinst.worldsinger.mixin.accessor.GuardianEntityAccessor;
 import io.github.drakonkinst.worldsinger.mixin.accessor.IronGolemEntityAccessor;
 import io.github.drakonkinst.worldsinger.mixin.accessor.LivingEntityAccessor;
+import io.github.drakonkinst.worldsinger.mixin.accessor.PigEntityInvoker;
 import io.github.drakonkinst.worldsinger.mixin.accessor.RavagerEntityAccessor;
 import io.github.drakonkinst.worldsinger.mixin.accessor.ShulkerEntityAccessor;
 import io.github.drakonkinst.worldsinger.mixin.accessor.TropicalFishEntityInvoker;
@@ -51,10 +52,14 @@ import net.minecraft.entity.mob.ShulkerEntity;
 import net.minecraft.entity.mob.SlimeEntity;
 import net.minecraft.entity.mob.WardenEntity;
 import net.minecraft.entity.passive.BatEntity;
+import net.minecraft.entity.passive.ChickenEntity;
+import net.minecraft.entity.passive.CowEntity;
 import net.minecraft.entity.passive.IronGolemEntity;
+import net.minecraft.entity.passive.PigEntity;
 import net.minecraft.entity.passive.SquidEntity;
 import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.passive.TropicalFishEntity;
+import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.listener.ClientCommonPacketListener;
@@ -221,7 +226,25 @@ public final class ShapeshiftingManager {
                     ((TropicalFishEntityInvoker) tropicalFishToCopy).worldsinger$getTropicalFishVariant());
         }
 
-        // TODO: Other entity variants (Villager, Parrot, Cat, Axolotl)
+        if (morph instanceof VillagerEntity villagerMorph
+                && toCopy instanceof VillagerEntity villagerToCopy) {
+            villagerMorph.setVillagerData(villagerToCopy.getVillagerData());
+        }
+
+        if (morph instanceof ChickenEntity chickenMorph
+                && toCopy instanceof ChickenEntity chickenToCopy) {
+            chickenMorph.setVariant(chickenToCopy.getVariant());
+        }
+
+        if (morph instanceof CowEntity cowMorph && toCopy instanceof CowEntity cowToCopy) {
+            cowMorph.setVariant(cowToCopy.getVariant());
+        }
+
+        if (morph instanceof PigEntity pigMorph && toCopy instanceof PigEntity pigToCopy) {
+            ((PigEntityInvoker) pigMorph).worldsinger$setVariant(pigToCopy.getVariant());
+        }
+
+        // TODO: Other entity variants (Parrot, Cat, Axolotl) which we don't care about rn since it's only midnight creatures
 
         if (shapeshifter.shouldCopyEquipmentVisuals()) {
             // Equipped items

@@ -16,6 +16,7 @@
     "accessor.IronGolemEntityAccessor",
     "accessor.LimbAnimatorAccessor",
     "accessor.LivingEntityAccessor",
+    "accessor.PigEntityInvoker",
     "accessor.PlayerEntityInvoker",
     "accessor.PlayerManagerAccessor",
     "accessor.RavagerEntityAccessor",

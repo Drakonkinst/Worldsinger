@@ -55,7 +55,7 @@ public final class LivingEntityOverlay {
     }
 
     private static boolean isNotTransparent(NativeImage image, int x, int y) {
-        return image.getColorArgb(x, y) != 0x00000000;
+        return (image.getColorArgb(x, y) | 0x00ffffff) != 0x00ffffff;
     }
 
     private static NativeImage copyImage(NativeImage image) {
@@ -67,7 +67,7 @@ public final class LivingEntityOverlay {
     // Make sure to close it once you're done!
     private static NativeImage getOriginalImage(TextureManager textureManager,
             Identifier original) {
-        NativeImage image = null;
+        NativeImage image;
         AbstractTexture originalTexture;
         try {
             originalTexture = textureManager.getTexture(original);
