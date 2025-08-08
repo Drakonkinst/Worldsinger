@@ -43,6 +43,7 @@ import net.minecraft.util.Identifier;
 public class MidnightCreatureEntityRenderer extends
         ShapeshiftingEntityRenderer<MidnightCreatureEntity, MidnightCreatureEntityRenderState, MidnightCreatureEntityModel> {
 
+    public static final Identifier TEXTURE = Worldsinger.id("textures/block/midnight_essence.png");
     private final BlockRenderManager blockRenderManager;
 
     public MidnightCreatureEntityRenderer(EntityRendererFactory.Context context) {
@@ -83,6 +84,6 @@ public class MidnightCreatureEntityRenderer extends
 
     @Override
     public Identifier getTexture(MidnightCreatureEntityRenderState state) {
-        return Worldsinger.id("textures/block/midnight_essence.png");
+        return TEXTURE;
     }
 }
