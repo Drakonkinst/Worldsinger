@@ -23,9 +23,8 @@
  */
 package io.github.drakonkinst.worldsinger.mixin.client.entity.render;
 
-import com.llamalad7.mixinextras.injector.ModifyReturnValue;
-import io.github.drakonkinst.worldsinger.entity.render.MidnightCreatureEntityRenderer;
-import io.github.drakonkinst.worldsinger.entity.render.state.ExtendedLivingEntityRenderState;
+import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
+import io.github.drakonkinst.worldsinger.entity.render.LivingEntityOverlay;
 import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.render.entity.EntityRendererFactory.Context;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
@@ -33,6 +32,7 @@ import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.render.entity.state.LivingEntityRenderState;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.util.Identifier;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
@@ -44,17 +44,9 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, S extend
         super(ctx);
     }
 
-    @ModifyReturnValue(method = "getOverlay", at = @At("RETURN"))
-    private static int renderModelWithMidnightOverlay(int original, LivingEntityRenderState state,
-            float whiteOverlayProgress) {
-        boolean hasMidnightOverlay = ((ExtendedLivingEntityRenderState) state).worldsinger$hasMidnightOverlay();
-        if (hasMidnightOverlay) {
-            boolean shouldFlashRed = state.hurt;
-            if (shouldFlashRed) {
-                return MidnightCreatureEntityRenderer.MIDNIGHT_OVERLAY_HURT_UV;
-            }
-            return MidnightCreatureEntityRenderer.MIDNIGHT_OVERLAY_UV;
-        }
-        return original;
+    @ModifyExpressionValue(method = "getRenderLayer", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/entity/LivingEntityRenderer;getTexture(Lnet/minecraft/client/render/entity/state/LivingEntityRenderState;)Lnet/minecraft/util/Identifier;"))
+    private Identifier replaceWithMidnightOverlay(Identifier original, S state, boolean showBody,
+            boolean translucent, boolean showOutline) {
+        return LivingEntityOverlay.applyLivingEntityOverlays(original, state);
     }
 }

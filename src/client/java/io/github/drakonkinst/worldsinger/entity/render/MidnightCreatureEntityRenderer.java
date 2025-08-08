@@ -28,8 +28,6 @@ import io.github.drakonkinst.worldsinger.block.ModBlocks;
 import io.github.drakonkinst.worldsinger.entity.MidnightCreatureEntity;
 import io.github.drakonkinst.worldsinger.entity.model.MidnightCreatureEntityModel;
 import io.github.drakonkinst.worldsinger.entity.render.state.MidnightCreatureEntityRenderState;
-import io.github.drakonkinst.worldsinger.util.ColorUtil;
-import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.BlockRenderManager;
 import net.minecraft.client.render.entity.EntityRendererFactory;
@@ -44,11 +42,6 @@ import net.minecraft.util.Identifier;
 
 public class MidnightCreatureEntityRenderer extends
         ShapeshiftingEntityRenderer<MidnightCreatureEntity, MidnightCreatureEntityRenderState, MidnightCreatureEntityModel> {
-
-    public static final int MIDNIGHT_OVERLAY_COLOR = ColorUtil.colorToInt(0, 0, 0, 251);
-    public static final int MIDNIGHT_OVERLAY_UV = OverlayTexture.packUv(0, 0);
-    public static final int MIDNIGHT_OVERLAY_HURT_COLOR = ColorUtil.colorToInt(150, 0, 0, 251);
-    public static final int MIDNIGHT_OVERLAY_HURT_UV = OverlayTexture.packUv(0, 1);
 
     private final BlockRenderManager blockRenderManager;
 

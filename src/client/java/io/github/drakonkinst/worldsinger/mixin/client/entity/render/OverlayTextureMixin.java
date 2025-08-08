@@ -23,7 +23,6 @@
  */
 package io.github.drakonkinst.worldsinger.mixin.client.entity.render;
 
-import io.github.drakonkinst.worldsinger.entity.render.MidnightCreatureEntityRenderer;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
@@ -42,8 +41,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  * break though, and we don't need more colors than current.
  *
  * Currently used colors should be documented here:
- * 0 = Midnight Overlay
- * 1 = Midnight Overlay Hurt
  * 3 = Red (default, used when LivingEntity entities are hurt)
  * 10 = White (default, used for TNTEntity flashing)
  */
@@ -57,9 +54,10 @@ public abstract class OverlayTextureMixin {
     @Inject(method = "<init>", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/texture/NativeImageBackedTexture;setClamp(Z)V"))
     private void populateUnusedRows(CallbackInfo ci) {
         NativeImage nativeImage = this.texture.getImage();
-        this.setRowColor(nativeImage, 0, MidnightCreatureEntityRenderer.MIDNIGHT_OVERLAY_COLOR);
-        this.setRowColor(nativeImage, 1,
-                MidnightCreatureEntityRenderer.MIDNIGHT_OVERLAY_HURT_COLOR);
+        // We don't actually need these anymore, but leaving it here in case we ever need other colors
+        // this.setRowColor(nativeImage, 0, MidnightCreatureEntityRenderer.MIDNIGHT_OVERLAY_COLOR);
+        // this.setRowColor(nativeImage, 1,
+        //         MidnightCreatureEntityRenderer.MIDNIGHT_OVERLAY_HURT_COLOR);
     }
 
     @Unique
