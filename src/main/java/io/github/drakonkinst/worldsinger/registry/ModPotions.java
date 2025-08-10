@@ -25,6 +25,7 @@ package io.github.drakonkinst.worldsinger.registry;
 
 import io.github.drakonkinst.worldsinger.Worldsinger;
 import io.github.drakonkinst.worldsinger.item.ModItems;
+import java.util.Set;
 import net.fabricmc.fabric.api.registry.FabricBrewingRecipeRegistryBuilder;
 import net.minecraft.component.type.PotionContentsComponent;
 import net.minecraft.item.Item;
@@ -41,6 +42,7 @@ public final class ModPotions {
     public static final RegistryEntry<Potion> SPORES = register("spores", new Potion("spores"));
     public static final PotionContentsComponent SPORE_POTIONS_COMPONENT = new PotionContentsComponent(
             ModPotions.SPORES);
+    public static final Set<RegistryEntry<Potion>> EXCLUDE_ITEMS = Set.of(SPORES);
 
     public static void initialize() {
         FabricBrewingRecipeRegistryBuilder.BUILD.register(builder -> {
