@@ -148,6 +148,9 @@ public class ModItemTagGenerator extends ItemTagProvider {
                 .addOptionalTag(ItemTags.AXES);
         valueLookupBuilder(ModItemTags.TEMPTS_MIDNIGHT_CREATURES).add(Items.POTION)
                 .addOptionalTag(ConventionalItemTags.WATER_BUCKETS);
+        valueLookupBuilder(ModItemTags.CAN_BE_QUIVERED).add(Items.ARROW)
+                .add(Items.SPECTRAL_ARROW)
+                .add(Items.TIPPED_ARROW);
 
         copy(ModBlockTags.HAS_IRON, ModItemTags.HAS_IRON);
         valueLookupBuilder(ModItemTags.HAS_IRON).add(Items.IRON_SHOVEL)

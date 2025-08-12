@@ -19,7 +19,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
 @Mixin(EmptyMapItem.class)
-public class EmptyMapItemMixin {
+public abstract class EmptyMapItemMixin {
 
     // Currently this only handles map icons that appear on creation
     // We only need it for the rainline advancement, so that'll do for now and it can be extended later

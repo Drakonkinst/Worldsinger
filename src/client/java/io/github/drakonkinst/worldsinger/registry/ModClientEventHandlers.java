@@ -26,7 +26,10 @@ package io.github.drakonkinst.worldsinger.registry;
 import io.github.drakonkinst.worldsinger.api.ClientLunagreeData;
 import io.github.drakonkinst.worldsinger.api.ClientRainlineData;
 import io.github.drakonkinst.worldsinger.entity.PossessionClientUtil;
+import io.github.drakonkinst.worldsinger.gui.tooltip.ItemContainerTooltipComponent;
+import io.github.drakonkinst.worldsinger.item.component.ItemContainerComponent;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.fabricmc.fabric.api.client.rendering.v1.TooltipComponentCallback;
 import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
 import net.fabricmc.fabric.api.event.player.UseEntityCallback;
 import net.minecraft.client.MinecraftClient;
@@ -40,6 +43,13 @@ public final class ModClientEventHandlers {
         ModClientEventHandlers.registerWorldTickEvents();
         PossessionClientUtil.registerPossessionEventHandlers();
         ModHudElements.registerHudEventHandlers();
+
+        TooltipComponentCallback.EVENT.register((tooltipData) -> {
+            if (tooltipData instanceof ItemContainerComponent itemContainerComponent) {
+                return new ItemContainerTooltipComponent(itemContainerComponent);
+            }
+            return null;
+        });
     }
 
     private static void registerWorldTickEvents() {

@@ -54,6 +54,8 @@ public final class ModItemTags {
     // A mirror of the block tag ALL_CAULDRONS, but only includes item forms
     public static final TagKey<Item> ALL_CAULDRONS = ModItemTags.of("all_cauldrons");
 
+    public static final TagKey<Item> CAN_BE_QUIVERED = ModItemTags.of("can_be_quivered");
+
     private static TagKey<Item> of(String id) {
         return TagKey.of(RegistryKeys.ITEM, Worldsinger.id(id));
     }

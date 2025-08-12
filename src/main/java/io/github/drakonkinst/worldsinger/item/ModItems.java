@@ -39,12 +39,15 @@ import io.github.drakonkinst.worldsinger.item.component.CannonballComponent;
 import io.github.drakonkinst.worldsinger.item.component.CannonballComponent.CannonballContent;
 import io.github.drakonkinst.worldsinger.item.component.CannonballComponent.CannonballCore;
 import io.github.drakonkinst.worldsinger.item.component.CannonballComponent.CannonballShell;
+import io.github.drakonkinst.worldsinger.item.component.ItemContainerComponent;
+import io.github.drakonkinst.worldsinger.item.component.ItemContainerComponent.ItemContainerSettings;
 import io.github.drakonkinst.worldsinger.registry.ModArmorMaterials;
 import io.github.drakonkinst.worldsinger.registry.ModDataComponentTypes;
 import io.github.drakonkinst.worldsinger.registry.ModFoodComponents;
 import io.github.drakonkinst.worldsinger.registry.ModPotions;
 import io.github.drakonkinst.worldsinger.registry.ModSoundEvents;
 import io.github.drakonkinst.worldsinger.registry.ModToolMaterials;
+import io.github.drakonkinst.worldsinger.registry.tag.ModItemTags;
 import it.unimi.dsi.fastutil.objects.ReferenceSortedSets;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -185,6 +188,12 @@ public final class ModItems {
     public static final Item CERAMIC_CANNONBALL = register("ceramic_cannonball",
             CannonballItem::new, new Settings().maxCount(16)
                     .component(ModDataComponentTypes.CANNONBALL, CannonballComponent.DEFAULT));
+
+    // Test Items
+    public static final Item QUIVER = register("quiver", new Settings().maxCount(1)
+            .component(ModDataComponentTypes.ITEM_CONTAINER,
+                    new ItemContainerComponent(256, ModItemTags.CAN_BE_QUIVERED,
+                            ItemContainerSettings.COLLECTION, Collections.emptyList())));
 
     // Admin
     public static final Item MIDNIGHT_CREATURE_SPAWN_EGG = register("midnight_creature_spawn_egg",
@@ -525,6 +534,9 @@ public final class ModItems {
 
             // Spawn Eggs
             itemGroup.add(ModItems.MIDNIGHT_CREATURE_SPAWN_EGG);
+
+            // Test Items
+            itemGroup.add(ModItems.QUIVER);
         });
     }
 

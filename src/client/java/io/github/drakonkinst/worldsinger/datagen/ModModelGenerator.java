@@ -388,7 +388,8 @@ public class ModModelGenerator extends FabricModelProvider {
                 ModItems.ROSEITE_CRYSTAL,
                 ModItems.ROSEITE_CORE,
                 ModItems.MIDNIGHT_CREATURE_SPAWN_EGG,
-                ModBlocks.ALUMINUM_SHEET
+                ModBlocks.ALUMINUM_SHEET,
+                ModItems.QUIVER,
         });
         registerHandheldItems(itemModelGenerator, new ItemConvertible[] {
                 ModItems.CRIMSON_SPINE,

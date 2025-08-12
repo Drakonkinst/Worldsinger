@@ -43,7 +43,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(Item.class)
-public abstract class ItemMixin {
+public abstract class ItemSaltSilverMixin {
 
     @Unique
     private static final String SALTED_FOOD_NAME_KEY = "item.worldsinger.salted_food";
@@ -69,7 +69,7 @@ public abstract class ItemMixin {
     // Note: The item bar value will still be whatever the durability value is, by default
     // Make sure to override it for things like boats if we want to show a different value
     @WrapMethod(method = "isItemBarVisible")
-    public boolean makeSilverLinedBarVisible(ItemStack stack, Operation<Boolean> original) {
+    private boolean makeSilverLinedBarVisible(ItemStack stack, Operation<Boolean> original) {
         return original.call(stack) || SilverLined.isSilverLined(stack);
     }
 

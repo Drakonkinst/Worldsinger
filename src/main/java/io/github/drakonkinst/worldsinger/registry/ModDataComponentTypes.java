@@ -27,6 +27,7 @@ package io.github.drakonkinst.worldsinger.registry;
 import com.mojang.serialization.Codec;
 import io.github.drakonkinst.worldsinger.Worldsinger;
 import io.github.drakonkinst.worldsinger.item.component.CannonballComponent;
+import io.github.drakonkinst.worldsinger.item.component.ItemContainerComponent;
 import io.github.drakonkinst.worldsinger.item.component.SilverLinedComponent;
 import java.util.function.UnaryOperator;
 import net.fabricmc.fabric.api.item.v1.ComponentTooltipAppenderRegistry;
@@ -55,6 +56,9 @@ public final class ModDataComponentTypes {
             builder -> builder.codec(CannonballComponent.CODEC)
                     .packetCodec(CannonballComponent.PACKET_CODEC)
                     .cache());
+    public static final ComponentType<ItemContainerComponent> ITEM_CONTAINER = register(
+            "item_container", builder -> builder.codec(ItemContainerComponent.CODEC)
+                    .packetCodec(ItemContainerComponent.PACKET_CODEC));
 
     public static void initialize() {
         ComponentTooltipAppenderRegistry.addAfter(DataComponentTypes.LORE, SILVER_DURABILITY);
