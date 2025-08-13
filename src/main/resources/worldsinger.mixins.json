@@ -71,6 +71,7 @@
     "entity.ai.MeleeAttackGoalFixMixin",
     "entity.ai.StayAboveWaterTaskMixin",
     "entity.ai.SwimGoalMixin",
+    "entity.player.ItemEntityPickupMixin",
     "entity.player.PlayerEntityThirstMixin",
     "entity.player.ServerPlayerEntityDeathMixin",
     "entity.player.ServerPlayerEntityLunagreeDataMixin",

@@ -173,6 +173,14 @@ public class ItemContainerComponent implements TooltipData {
         return selectedStackIndex;
     }
 
+    public boolean shouldAutoSort() {
+        return settings.shouldAutoSort();
+    }
+
+    public boolean canBeStored(ItemStack stack) {
+        return BundleContentsComponent.canBeBundled(stack) && stack.isIn(validItems);
+    }
+
     public static class Builder {
 
         private int maxItemCount;
