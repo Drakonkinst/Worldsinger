@@ -135,7 +135,9 @@ item:
     flint_and_iron: Flint and Iron
     ceramic_cannonball: Ceramic Cannonball
     midnight_creature_spawn_egg: Midnight Creature Spawn Egg
-    quiver: Quiver
+    quiver:
+      .: Quiver
+      empty.description: Can hold an assortment of arrows
 block.worldsinger:
   dead_spore_block: Dead Spore Sea
   verdant_spore_block: Verdant Spore Block

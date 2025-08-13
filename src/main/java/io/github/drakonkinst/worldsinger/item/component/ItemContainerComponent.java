@@ -4,10 +4,9 @@ import com.google.common.collect.Lists;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import io.netty.buffer.ByteBuf;
+import io.github.drakonkinst.worldsinger.item.itemcontainer.ItemContainerSettings;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.IntFunction;
 import java.util.stream.Stream;
 import net.minecraft.block.entity.BeehiveBlockEntity;
 import net.minecraft.component.DataComponentTypes;
@@ -23,9 +22,7 @@ import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.screen.slot.Slot;
-import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.dynamic.Codecs;
-import net.minecraft.util.function.ValueLists;
 import org.apache.commons.lang3.math.Fraction;
 
 public class ItemContainerComponent implements TooltipData {
@@ -295,42 +292,6 @@ public class ItemContainerComponent implements TooltipData {
         public ItemContainerComponent build() {
             return new ItemContainerComponent(this.maxItemCount, this.validItems, this.settings,
                     List.copyOf(this.stacks), this.weight, this.selectedStackIndex);
-        }
-    }
-
-    // Saves us the trouble of making everything a codec when really only a few options are possible
-    public enum ItemContainerSettings implements StringIdentifiable {
-        COLLECTION(0, "collection", true);
-
-        private static final IntFunction<ItemContainerSettings> BY_ID = ValueLists.createIndexToValueFunction(
-                ItemContainerSettings::getId, values(), ValueLists.OutOfBoundsHandling.ZERO);
-        public static final PacketCodec<ByteBuf, ItemContainerSettings> PACKET_CODEC = PacketCodecs.indexed(
-                BY_ID, ItemContainerSettings::getId);
-        public static final Codec<ItemContainerSettings> CODEC = StringIdentifiable.createBasicCodec(
-                ItemContainerSettings::values);
-
-        // TODO: Add more settings, like canBeNested, singleStackSlots, showAllEmptySlots
-        private final int id;
-        private final String name;
-        private final boolean autoSort;
-
-        ItemContainerSettings(int id, String name, boolean autoSort) {
-            this.id = id;
-            this.name = name;
-            this.autoSort = autoSort;
-        }
-
-        public int getId() {
-            return id;
-        }
-
-        public boolean shouldAutoSort() {
-            return autoSort;
-        }
-
-        @Override
-        public String asString() {
-            return name;
         }
     }
 

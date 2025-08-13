@@ -40,7 +40,7 @@ import io.github.drakonkinst.worldsinger.item.component.CannonballComponent.Cann
 import io.github.drakonkinst.worldsinger.item.component.CannonballComponent.CannonballCore;
 import io.github.drakonkinst.worldsinger.item.component.CannonballComponent.CannonballShell;
 import io.github.drakonkinst.worldsinger.item.component.ItemContainerComponent;
-import io.github.drakonkinst.worldsinger.item.component.ItemContainerComponent.ItemContainerSettings;
+import io.github.drakonkinst.worldsinger.item.itemcontainer.ItemContainerSettings;
 import io.github.drakonkinst.worldsinger.registry.ModArmorMaterials;
 import io.github.drakonkinst.worldsinger.registry.ModDataComponentTypes;
 import io.github.drakonkinst.worldsinger.registry.ModFoodComponents;
@@ -193,7 +193,7 @@ public final class ModItems {
     public static final Item QUIVER = register("quiver", new Settings().maxCount(1)
             .component(ModDataComponentTypes.ITEM_CONTAINER,
                     new ItemContainerComponent(256, ModItemTags.CAN_BE_QUIVERED,
-                            ItemContainerSettings.COLLECTION, Collections.emptyList())));
+                            ItemContainerSettings.QUIVER, Collections.emptyList())));
 
     // Admin
     public static final Item MIDNIGHT_CREATURE_SPAWN_EGG = register("midnight_creature_spawn_egg",

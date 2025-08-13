@@ -1,4 +1,4 @@
-package io.github.drakonkinst.worldsinger.item;
+package io.github.drakonkinst.worldsinger.item.itemcontainer;
 
 import io.github.drakonkinst.worldsinger.item.component.ItemContainerComponent;
 import io.github.drakonkinst.worldsinger.item.component.ItemContainerComponent.Builder;
@@ -10,7 +10,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ClickType;
 import net.minecraft.util.math.ColorHelper;
 import net.minecraft.world.World;
@@ -40,9 +39,9 @@ public final class ItemContainerInteractions {
         ItemContainerComponent.Builder builder = new ItemContainerComponent.Builder(component);
         if (clickType == ClickType.LEFT && !slotStack.isEmpty()) {
             if (builder.add(slot, player) > 0) {
-                playInsertSound(player);
+                playInsertSound(player, component);
             } else {
-                playInsertFailSound(player);
+                playInsertFailSound(player, component);
             }
 
             stack.set(ModDataComponentTypes.ITEM_CONTAINER, builder.build());
@@ -55,7 +54,7 @@ public final class ItemContainerInteractions {
                 if (insertedStack.getCount() > 0) {
                     builder.add(insertedStack);
                 } else {
-                    playRemoveOneSound(player);
+                    playRemoveOneSound(player, component);
                 }
             }
 
@@ -79,9 +78,9 @@ public final class ItemContainerInteractions {
         ItemContainerComponent.Builder builder = new ItemContainerComponent.Builder(component);
         if (clickType == ClickType.LEFT && !otherStack.isEmpty()) {
             if (slot.canTakePartial(player) && builder.add(otherStack) > 0) {
-                ItemContainerInteractions.playInsertSound(player);
+                ItemContainerInteractions.playInsertSound(player, component);
             } else {
-                ItemContainerInteractions.playInsertFailSound(player);
+                ItemContainerInteractions.playInsertFailSound(player, component);
             }
 
             stack.set(ModDataComponentTypes.ITEM_CONTAINER, builder.build());
@@ -91,7 +90,7 @@ public final class ItemContainerInteractions {
             if (slot.canTakePartial(player)) {
                 ItemStack removedStack = builder.removeSelected();
                 if (!removedStack.isEmpty()) {
-                    ItemContainerInteractions.playRemoveOneSound(player);
+                    ItemContainerInteractions.playRemoveOneSound(player, component);
                     cursorStackReference.set(removedStack);
                 }
             }
@@ -114,22 +113,23 @@ public final class ItemContainerInteractions {
         }
     }
 
-    private static void playRemoveOneSound(Entity entity) {
-        entity.playSound(SoundEvents.ITEM_BUNDLE_REMOVE_ONE, 0.8F,
+    private static void playRemoveOneSound(Entity entity, ItemContainerComponent component) {
+        entity.playSound(component.getSettings().getRemoveOneSound(), 0.8F,
                 0.8F + entity.getWorld().getRandom().nextFloat() * 0.4F);
     }
 
-    private static void playInsertSound(Entity entity) {
-        entity.playSound(SoundEvents.ITEM_BUNDLE_INSERT, 0.8F,
+    private static void playInsertSound(Entity entity, ItemContainerComponent component) {
+        entity.playSound(component.getSettings().getInsertSound(), 0.8F,
                 0.8F + entity.getWorld().getRandom().nextFloat() * 0.4F);
     }
 
-    private static void playInsertFailSound(Entity entity) {
-        entity.playSound(SoundEvents.ITEM_BUNDLE_INSERT_FAIL, 1.0F, 1.0F);
+    private static void playInsertFailSound(Entity entity, ItemContainerComponent component) {
+        entity.playSound(component.getSettings().getInsertFailSound(), 1.0F, 1.0F);
     }
 
-    private static void playDropContentsSound(World world, Entity entity) {
-        world.playSound(null, entity.getBlockPos(), SoundEvents.ITEM_BUNDLE_DROP_CONTENTS,
+    private static void playDropContentsSound(World world, Entity entity,
+            ItemContainerComponent component) {
+        world.playSound(null, entity.getBlockPos(), component.getSettings().getDropContentsSound(),
                 SoundCategory.PLAYERS, 0.8F,
                 0.8F + entity.getWorld().getRandom().nextFloat() * 0.4F);
     }

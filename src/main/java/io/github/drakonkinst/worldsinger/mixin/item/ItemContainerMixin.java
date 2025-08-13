@@ -2,8 +2,8 @@ package io.github.drakonkinst.worldsinger.mixin.item;
 
 import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
-import io.github.drakonkinst.worldsinger.item.ItemContainerInteractions;
 import io.github.drakonkinst.worldsinger.item.component.ItemContainerComponent;
+import io.github.drakonkinst.worldsinger.item.itemcontainer.ItemContainerInteractions;
 import io.github.drakonkinst.worldsinger.registry.ModDataComponentTypes;
 import java.util.Optional;
 import net.minecraft.component.DataComponentTypes;

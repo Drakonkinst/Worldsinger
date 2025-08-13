@@ -36,8 +36,6 @@ public class ItemContainerTooltipComponent implements TooltipComponent {
     private static final int PROGRESS_BAR_WIDTH = 94;
     private static final Text BUNDLE_FULL = Text.translatable("item.minecraft.bundle.full");
     private static final Text BUNDLE_EMPTY = Text.translatable("item.minecraft.bundle.empty");
-    private static final Text BUNDLE_EMPTY_DESCRIPTION = Text.translatable(
-            "item.minecraft.bundle.empty.description");
     private final ItemContainerComponent itemContainer;
 
     public ItemContainerTooltipComponent(ItemContainerComponent itemContainer) {
@@ -46,7 +44,8 @@ public class ItemContainerTooltipComponent implements TooltipComponent {
 
     @Override
     public int getHeight(TextRenderer textRenderer) {
-        return this.itemContainer.isEmpty() ? getHeightOfEmpty(textRenderer)
+        return this.itemContainer.isEmpty() ? getHeightOfEmpty(textRenderer,
+                this.itemContainer.getSettings().getEmptyDescription())
                 : this.getHeightOfNonEmpty();
     }
 
@@ -60,8 +59,8 @@ public class ItemContainerTooltipComponent implements TooltipComponent {
         return true;
     }
 
-    private static int getHeightOfEmpty(TextRenderer textRenderer) {
-        return getDescriptionHeight(textRenderer) + 13 + 8;
+    private static int getHeightOfEmpty(TextRenderer textRenderer, Text emptyDescription) {
+        return getDescriptionHeight(textRenderer, emptyDescription) + 13 + 8;
     }
 
     private int getHeightOfNonEmpty() {
@@ -96,9 +95,11 @@ public class ItemContainerTooltipComponent implements TooltipComponent {
 
     private void drawEmptyTooltip(TextRenderer textRenderer, int x, int y, int width, int height,
             DrawContext context) {
-        drawEmptyDescription(x + this.getXMargin(width), y, textRenderer, context);
-        this.drawProgressBar(x + this.getXMargin(width),
-                y + getDescriptionHeight(textRenderer) + SLOTS_PER_ROW, textRenderer, context);
+        drawEmptyDescription(x + this.getXMargin(width), y, textRenderer, context,
+                this.itemContainer.getSettings().getEmptyDescription());
+        this.drawProgressBar(x + this.getXMargin(width), y + getDescriptionHeight(textRenderer,
+                        this.itemContainer.getSettings().getEmptyDescription()) + SLOTS_PER_ROW,
+                textRenderer, context);
     }
 
     private void drawNonEmptyTooltip(TextRenderer textRenderer, int x, int y, int width, int height,
@@ -200,13 +201,13 @@ public class ItemContainerTooltipComponent implements TooltipComponent {
     }
 
     private static void drawEmptyDescription(int x, int y, TextRenderer textRenderer,
-            DrawContext drawContext) {
-        drawContext.drawWrappedTextWithShadow(textRenderer, BUNDLE_EMPTY_DESCRIPTION, x, y,
-                ROW_WIDTH, -5592406);
+            DrawContext drawContext, Text emptyDescription) {
+        drawContext.drawWrappedTextWithShadow(textRenderer, emptyDescription, x, y, ROW_WIDTH,
+                -5592406);
     }
 
-    private static int getDescriptionHeight(TextRenderer textRenderer) {
-        return textRenderer.wrapLines(BUNDLE_EMPTY_DESCRIPTION, ROW_WIDTH).size() * 9;
+    private static int getDescriptionHeight(TextRenderer textRenderer, Text emptyDescription) {
+        return textRenderer.wrapLines(emptyDescription, ROW_WIDTH).size() * 9;
     }
 
     private int getProgressBarFill() {
