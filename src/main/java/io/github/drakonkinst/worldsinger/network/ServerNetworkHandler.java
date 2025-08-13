@@ -33,7 +33,9 @@ import io.github.drakonkinst.worldsinger.entity.attachments.ModAttachmentTypes;
 import io.github.drakonkinst.worldsinger.entity.attachments.player.PlayerOrigin;
 import io.github.drakonkinst.worldsinger.event.CustomClickActionCallback;
 import io.github.drakonkinst.worldsinger.event.CustomClickConfigActionCallback;
+import io.github.drakonkinst.worldsinger.item.itemcontainer.ItemContainerInteractions;
 import io.github.drakonkinst.worldsinger.mixin.accessor.PlayerManagerAccessor;
+import io.github.drakonkinst.worldsinger.network.packet.ItemContainerItemSelectedPayload;
 import io.github.drakonkinst.worldsinger.network.packet.PossessAttackPayload;
 import io.github.drakonkinst.worldsinger.network.packet.PossessSetPayload;
 import io.github.drakonkinst.worldsinger.network.packet.PossessUpdatePayload;
@@ -43,11 +45,14 @@ import net.fabricmc.fabric.api.networking.v1.ServerConfigurationConnectionEvents
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.screen.slot.Slot;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
+import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.PlayerSaveHandler;
 import net.minecraft.world.TeleportTarget;
@@ -59,6 +64,7 @@ public final class ServerNetworkHandler {
     public static void initialize() {
         registerConfigurationHandlers();
         registerPossessionPacketHandlers();
+        registerItemHandlers();
     }
 
     private static void registerConfigurationHandlers() {
@@ -124,6 +130,21 @@ public final class ServerNetworkHandler {
                         playerOrigin.setStartingPlanet(targetPlanet));
             }
         });
+    }
+
+    private static void registerItemHandlers() {
+        // Client changes currently selected item in an item container
+        ServerPlayNetworking.registerGlobalReceiver(ItemContainerItemSelectedPayload.ID,
+                (payload, context) -> {
+                    ServerPlayerEntity player = context.player();
+                    DefaultedList<Slot> slots = player.currentScreenHandler.slots;
+                    int slot = payload.slot();
+                    int selectedStack = payload.selectedItemIndex();
+                    if (slot >= 0 && slot < slots.size()) {
+                        ItemStack stack = slots.get(slot).getStack();
+                        ItemContainerInteractions.setSelectedStackIndex(stack, selectedStack);
+                    }
+                });
     }
 
     private static void registerPossessionPacketHandlers() {

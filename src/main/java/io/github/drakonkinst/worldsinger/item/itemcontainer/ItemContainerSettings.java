@@ -31,19 +31,19 @@ public enum ItemContainerSettings implements StringIdentifiable {
     // TODO: Add more settings, like canBeNested, singleStackSlots, showAllEmptySlots
     private final int id;
     private final String name;
-    private final boolean autoSort;
+    private final boolean autoPickup;
     private final Text emptyDescription;
     private final Supplier<SoundEvent> insertSound;
     private final Supplier<SoundEvent> insertFailSound;
     private final Supplier<SoundEvent> removeOneSound;
     private final Supplier<SoundEvent> dropContentsSound;
 
-    ItemContainerSettings(int id, String name, boolean autoSort, Text emptyDescription,
+    ItemContainerSettings(int id, String name, boolean autoPickup, Text emptyDescription,
             Supplier<SoundEvent> insertSound, Supplier<SoundEvent> insertFailSound,
             Supplier<SoundEvent> removeOneSound, Supplier<SoundEvent> dropAllSound) {
         this.id = id;
         this.name = name;
-        this.autoSort = autoSort;
+        this.autoPickup = autoPickup;
         this.emptyDescription = emptyDescription;
         this.insertSound = insertSound;
         this.insertFailSound = insertFailSound;
@@ -55,8 +55,8 @@ public enum ItemContainerSettings implements StringIdentifiable {
         return id;
     }
 
-    public boolean shouldAutoSort() {
-        return autoSort;
+    public boolean shouldAutoPickup() {
+        return autoPickup;
     }
 
     public Text getEmptyDescription() {

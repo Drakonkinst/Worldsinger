@@ -192,7 +192,7 @@ public final class ModItems {
     // Test Items
     public static final Item QUIVER = register("quiver", new Settings().maxCount(1)
             .component(ModDataComponentTypes.ITEM_CONTAINER,
-                    new ItemContainerComponent(256, ModItemTags.CAN_BE_QUIVERED,
+                    new ItemContainerComponent(256, ModItemTags.CAN_BE_QUIVERED, false,
                             ItemContainerSettings.QUIVER, Collections.emptyList())));
 
     // Admin

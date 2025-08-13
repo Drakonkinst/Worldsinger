@@ -29,6 +29,22 @@ public final class ItemContainerInteractions {
         return 0.0f;
     }
 
+    public static int getSelectedStackIndex(ItemStack stack) {
+        ItemContainerComponent component = stack.get(ModDataComponentTypes.ITEM_CONTAINER);
+        if (component != null) {
+            return component.getSelectedStackIndex();
+        }
+        return -1;
+    }
+
+    public static int getNumberOfStacksShown(ItemStack stack) {
+        ItemContainerComponent component = stack.get(ModDataComponentTypes.ITEM_CONTAINER);
+        if (component != null) {
+            return component.getNumberOfStacksShown();
+        }
+        return 0;
+    }
+
     public static boolean onItemContainerStackClicked(ItemStack stack, Slot slot,
             ClickType clickType, PlayerEntity player) {
         ItemContainerComponent component = stack.get(ModDataComponentTypes.ITEM_CONTAINER);
@@ -104,7 +120,7 @@ public final class ItemContainerInteractions {
         }
     }
 
-    private static void setSelectedStackIndex(ItemStack stack, int selectedStackIndex) {
+    public static void setSelectedStackIndex(ItemStack stack, int selectedStackIndex) {
         ItemContainerComponent component = stack.get(ModDataComponentTypes.ITEM_CONTAINER);
         if (component != null) {
             ItemContainerComponent.Builder builder = new Builder(component);

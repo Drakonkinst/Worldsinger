@@ -23,6 +23,7 @@
     "entity.render.state.LivingEntityRenderStateMixin",
     "gui.CreateWorldScreenMixin",
     "gui.DebugHudMixin",
+    "gui.HandledScreenMixin",
     "gui.InGameHudMixin",
     "gui.InGameOverlayRendererPossessionMixin",
     "item.ItemModelManagerMixin",
