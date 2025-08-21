@@ -71,6 +71,9 @@ item:
     salted_food: Salted %s
     silver_lined: Silver-Lined
     silver_durability: 'Silver Durability: %s / %s'
+    item_container:
+      auto_pickup_enabled: 'Auto-Pickup: Enabled'
+      auto_pickup_disabled: 'Auto-Pickup: Disabled'
     cannonball:
       core:
         water: Water-Filled

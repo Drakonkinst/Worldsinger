@@ -33,7 +33,9 @@ public class ItemContainerTooltipComponent implements TooltipComponent {
     private static final int SLOTS_PER_ROW = 4;
     private static final int SLOT_DIMENSION = 24;
     private static final int ROW_WIDTH = 96;
+    private static final int ROW_HEIGHT = 9;
     private static final int PROGRESS_BAR_WIDTH = 94;
+    private static final int PROGRESS_BAR_HEIGHT = 13;
     private static final Text BUNDLE_FULL = Text.translatable("item.minecraft.bundle.full");
     private static final Text BUNDLE_EMPTY = Text.translatable("item.minecraft.bundle.empty");
     private final ItemContainerComponent itemContainer;
@@ -44,7 +46,7 @@ public class ItemContainerTooltipComponent implements TooltipComponent {
 
     @Override
     public int getHeight(TextRenderer textRenderer) {
-        return this.itemContainer.isEmpty() ? getHeightOfEmpty(textRenderer,
+        return this.itemContainer.isEmpty() ? this.getHeightOfEmpty(textRenderer,
                 this.itemContainer.getSettings().getEmptyDescription())
                 : this.getHeightOfNonEmpty();
     }
@@ -59,12 +61,18 @@ public class ItemContainerTooltipComponent implements TooltipComponent {
         return true;
     }
 
-    private static int getHeightOfEmpty(TextRenderer textRenderer, Text emptyDescription) {
-        return getDescriptionHeight(textRenderer, emptyDescription) + 13 + 8;
+    private int getHeightOfEmpty(TextRenderer textRenderer, Text emptyDescription) {
+        if (itemContainer.shouldShowItemBar()) {
+            return getDescriptionHeight(textRenderer, emptyDescription) + PROGRESS_BAR_HEIGHT + 8;
+        }
+        return getDescriptionHeight(textRenderer, emptyDescription) + 8;
     }
 
     private int getHeightOfNonEmpty() {
-        return this.getRowsHeight() + 13 + 8;
+        if (itemContainer.shouldShowItemBar()) {
+            return this.getRowsHeight() + PROGRESS_BAR_HEIGHT + 8;
+        }
+        return this.getRowsHeight() + 8;
     }
 
     private int getRowsHeight() {
@@ -126,8 +134,10 @@ public class ItemContainerTooltipComponent implements TooltipComponent {
         }
 
         this.drawSelectedItemTooltip(textRenderer, context, x, y, width);
-        this.drawProgressBar(x + this.getXMargin(width), y + this.getRowsHeight() + SLOTS_PER_ROW,
-                textRenderer, context);
+        if (itemContainer.shouldShowItemBar()) {
+            this.drawProgressBar(x + this.getXMargin(width),
+                    y + this.getRowsHeight() + SLOTS_PER_ROW, textRenderer, context);
+        }
     }
 
     private List<ItemStack> firstStacksInContents(int numberOfStacksShown) {
@@ -185,15 +195,15 @@ public class ItemContainerTooltipComponent implements TooltipComponent {
             TooltipComponent tooltipComponent = TooltipComponent.of(text.asOrderedText());
             drawContext.drawTooltipImmediately(textRenderer, List.of(tooltipComponent), j - i / 2,
                     y - 15, HoveredTooltipPositioner.INSTANCE,
-                    (Identifier) itemStack.get(DataComponentTypes.TOOLTIP_STYLE));
+                    itemStack.get(DataComponentTypes.TOOLTIP_STYLE));
         }
     }
 
     private void drawProgressBar(int x, int y, TextRenderer textRenderer, DrawContext drawContext) {
         drawContext.drawGuiTexture(RenderPipelines.GUI_TEXTURED, this.getProgressBarFillTexture(),
-                x + 1, y, this.getProgressBarFill(), 13);
+                x + 1, y, this.getProgressBarFill(), PROGRESS_BAR_HEIGHT);
         drawContext.drawGuiTexture(RenderPipelines.GUI_TEXTURED, BUNDLE_PROGRESS_BAR_BORDER_TEXTURE,
-                x, y, ROW_WIDTH, 13);
+                x, y, ROW_WIDTH, PROGRESS_BAR_HEIGHT);
         Text text = this.getProgressBarLabel();
         if (text != null) {
             drawContext.drawCenteredTextWithShadow(textRenderer, text, x + 48, y + 3, Colors.WHITE);
@@ -207,7 +217,7 @@ public class ItemContainerTooltipComponent implements TooltipComponent {
     }
 
     private static int getDescriptionHeight(TextRenderer textRenderer, Text emptyDescription) {
-        return textRenderer.wrapLines(emptyDescription, ROW_WIDTH).size() * 9;
+        return textRenderer.wrapLines(emptyDescription, ROW_WIDTH).size() * ROW_HEIGHT;
     }
 
     private int getProgressBarFill() {

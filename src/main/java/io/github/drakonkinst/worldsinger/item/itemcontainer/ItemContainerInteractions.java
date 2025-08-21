@@ -3,6 +3,7 @@ package io.github.drakonkinst.worldsinger.item.itemcontainer;
 import io.github.drakonkinst.worldsinger.item.component.ItemContainerComponent;
 import io.github.drakonkinst.worldsinger.item.component.ItemContainerComponent.Builder;
 import io.github.drakonkinst.worldsinger.registry.ModDataComponentTypes;
+import java.util.Optional;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.StackReference;
@@ -10,6 +11,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.sound.SoundCategory;
+import net.minecraft.text.Text;
 import net.minecraft.util.ClickType;
 import net.minecraft.util.math.ColorHelper;
 import net.minecraft.world.World;
@@ -18,8 +20,54 @@ public final class ItemContainerInteractions {
 
     public static final int FULL_ITEM_BAR_COLOR = ColorHelper.fromFloats(1.0F, 1.0F, 0.33F, 0.33F);
     public static final int ITEM_BAR_COLOR = ColorHelper.fromFloats(1.0F, 0.44F, 0.53F, 1.0F);
+    public static final int MAX_USE_TIME = 200;
 
     private ItemContainerInteractions() {}
+
+    public static boolean toggleAutoPickup(ItemStack stack, ItemContainerComponent component,
+            PlayerEntity player) {
+        if (component == null || !component.canToggleAutoPickup()) {
+            return false;
+        }
+        ItemContainerComponent.Builder builder = new ItemContainerComponent.Builder(component);
+        boolean isAutoPickupDisabled = builder.toggleAutoPickup();
+        if (isAutoPickupDisabled) {
+            player.sendMessage(
+                    Text.translatable("item.worldsinger.item_container.auto_pickup_disabled"),
+                    true);
+        } else {
+            player.sendMessage(
+                    Text.translatable("item.worldsinger.item_container.auto_pickup_enabled"), true);
+        }
+        stack.set(ModDataComponentTypes.ITEM_CONTAINER, builder.build());
+        return true;
+    }
+
+    public static boolean dropFirstContainerStack(ItemStack stack, PlayerEntity player,
+            ItemContainerComponent component) {
+        if (component != null && !component.isEmpty()) {
+            Optional<ItemStack> optional = popFirstContainerStack(stack, player, component);
+            if (optional.isPresent()) {
+                player.dropItem(optional.get(), true);
+                return true;
+            }
+            return false;
+        }
+        return false;
+    }
+
+    private static Optional<ItemStack> popFirstContainerStack(ItemStack stack, PlayerEntity player,
+            ItemContainerComponent component) {
+        ItemContainerComponent.Builder builder = new ItemContainerComponent.Builder(component);
+        ItemStack itemStack = builder.removeSelected();
+        if (itemStack != null) {
+            playRemoveOneSound(player, component);
+            stack.set(ModDataComponentTypes.ITEM_CONTAINER, builder.build());
+            return Optional.of(itemStack);
+        } else {
+            return Optional.empty();
+        }
+    }
 
     public static float getAmountFilled(ItemStack stack) {
         ItemContainerComponent component = stack.get(ModDataComponentTypes.ITEM_CONTAINER);
@@ -143,7 +191,7 @@ public final class ItemContainerInteractions {
         entity.playSound(component.getSettings().getInsertFailSound(), 1.0F, 1.0F);
     }
 
-    private static void playDropContentsSound(World world, Entity entity,
+    public static void playDropContentsSound(World world, Entity entity,
             ItemContainerComponent component) {
         world.playSound(null, entity.getBlockPos(), component.getSettings().getDropContentsSound(),
                 SoundCategory.PLAYERS, 0.8F,

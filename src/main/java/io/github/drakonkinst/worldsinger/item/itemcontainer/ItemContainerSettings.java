@@ -14,12 +14,16 @@ import net.minecraft.util.function.ValueLists;
 
 // Contains item container settings that we want to be available as presets, but not individually customizable
 public enum ItemContainerSettings implements StringIdentifiable {
-    POUCH(0, "pouch", true, Text.empty(), () -> SoundEvents.ITEM_BUNDLE_INSERT,
+    POUCH(0, "pouch", true, true, true, Text.empty(), () -> SoundEvents.ITEM_BUNDLE_INSERT,
             () -> SoundEvents.ITEM_BUNDLE_INSERT_FAIL, () -> SoundEvents.ITEM_BUNDLE_REMOVE_ONE,
             () -> SoundEvents.ITEM_BUNDLE_DROP_CONTENTS),
-    QUIVER(1, "quiver", true, Text.translatable("item.worldsinger.quiver.empty.description"),
+    QUIVER(1, "quiver", true, true, true,
+            Text.translatable("item.worldsinger.quiver.empty.description"),
             () -> SoundEvents.ITEM_BUNDLE_INSERT, () -> SoundEvents.ITEM_BUNDLE_INSERT_FAIL,
-            () -> SoundEvents.ITEM_BUNDLE_REMOVE_ONE, () -> SoundEvents.ITEM_BUNDLE_DROP_CONTENTS);
+            () -> SoundEvents.ITEM_BUNDLE_REMOVE_ONE, () -> SoundEvents.ITEM_BUNDLE_DROP_CONTENTS),
+    DEVICE(2, "device", false, false, false, Text.empty(), () -> SoundEvents.ITEM_BUNDLE_INSERT,
+            () -> SoundEvents.ITEM_BUNDLE_INSERT_FAIL, () -> SoundEvents.ITEM_BUNDLE_REMOVE_ONE,
+            () -> SoundEvents.ITEM_BUNDLE_DROP_CONTENTS);
 
     private static final IntFunction<ItemContainerSettings> BY_ID = ValueLists.createIndexToValueFunction(
             ItemContainerSettings::getId, values(), ValueLists.OutOfBoundsHandling.ZERO);
@@ -32,18 +36,23 @@ public enum ItemContainerSettings implements StringIdentifiable {
     private final int id;
     private final String name;
     private final boolean autoPickup;
+    private final boolean canQuickDeposit;
+    private final boolean showItemBar;
     private final Text emptyDescription;
     private final Supplier<SoundEvent> insertSound;
     private final Supplier<SoundEvent> insertFailSound;
     private final Supplier<SoundEvent> removeOneSound;
     private final Supplier<SoundEvent> dropContentsSound;
 
-    ItemContainerSettings(int id, String name, boolean autoPickup, Text emptyDescription,
-            Supplier<SoundEvent> insertSound, Supplier<SoundEvent> insertFailSound,
-            Supplier<SoundEvent> removeOneSound, Supplier<SoundEvent> dropAllSound) {
+    ItemContainerSettings(int id, String name, boolean autoPickup, boolean canQuickDeposit,
+            boolean showItemBar, Text emptyDescription, Supplier<SoundEvent> insertSound,
+            Supplier<SoundEvent> insertFailSound, Supplier<SoundEvent> removeOneSound,
+            Supplier<SoundEvent> dropAllSound) {
         this.id = id;
         this.name = name;
         this.autoPickup = autoPickup;
+        this.canQuickDeposit = canQuickDeposit;
+        this.showItemBar = showItemBar;
         this.emptyDescription = emptyDescription;
         this.insertSound = insertSound;
         this.insertFailSound = insertFailSound;
@@ -57,6 +66,14 @@ public enum ItemContainerSettings implements StringIdentifiable {
 
     public boolean shouldAutoPickup() {
         return autoPickup;
+    }
+
+    public boolean canQuickDeposit() {
+        return canQuickDeposit;
+    }
+
+    public boolean shouldShowItemBar() {
+        return showItemBar;
     }
 
     public Text getEmptyDescription() {

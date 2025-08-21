@@ -12,6 +12,7 @@ import net.minecraft.block.entity.BeehiveBlockEntity;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.BeesComponent;
 import net.minecraft.component.type.BundleContentsComponent;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -180,6 +181,19 @@ public class ItemContainerComponent implements TooltipData {
         return settings.shouldAutoPickup() && !disableAutoPickup;
     }
 
+    public boolean canToggleAutoPickup() {
+        return settings.shouldAutoPickup();
+    }
+
+    public boolean canQuickDeposit(LivingEntity user) {
+        return settings.canQuickDeposit() && !isEmpty() && (!canToggleAutoPickup()
+                || !user.isSneaking());
+    }
+
+    public boolean shouldShowItemBar() {
+        return settings.shouldShowItemBar();
+    }
+
     // This boolean only matters if it would be enabled by default
     public boolean isAutoPickupDisabled() {
         return settings.shouldAutoPickup() && disableAutoPickup;
@@ -202,6 +216,7 @@ public class ItemContainerComponent implements TooltipData {
         public Builder(ItemContainerComponent base) {
             this.maxItemCount = base.maxItemCount;
             this.validItems = base.validItems;
+            this.disableAutoPickup = base.disableAutoPickup;
             this.settings = base.settings;
             this.stacks = new ArrayList<>(base.stacks);
             this.weight = base.weight;
