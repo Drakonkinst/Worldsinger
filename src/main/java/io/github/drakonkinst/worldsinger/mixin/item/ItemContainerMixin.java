@@ -111,7 +111,7 @@ public abstract class ItemContainerMixin {
     private int getItemContainerUseTime(ItemStack stack, LivingEntity user,
             Operation<Integer> original) {
         ItemContainerComponent component = stack.get(ModDataComponentTypes.ITEM_CONTAINER);
-        if (component != null && !component.isEmpty()) {
+        if (component != null && !component.isEmpty() && component.canQuickDeposit(user)) {
             return ItemContainerInteractions.MAX_USE_TIME;
         }
         return original.call(stack, user);

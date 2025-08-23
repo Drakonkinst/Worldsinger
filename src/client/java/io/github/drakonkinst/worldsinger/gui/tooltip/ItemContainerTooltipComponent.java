@@ -55,7 +55,9 @@ public class ItemContainerTooltipComponent implements TooltipComponent {
         for (Text text : tooltipText) {
             height += getWrappedTextHeight(textRenderer, text);
         }
-        height += (tooltipText.size() - 1) * TEXT_LINE_MARGIN;
+        if (tooltipText.size() >= 2) {
+            height += (tooltipText.size() - 1) * TEXT_LINE_MARGIN;
+        }
         return height;
     }
 
@@ -83,6 +85,20 @@ public class ItemContainerTooltipComponent implements TooltipComponent {
         return textRenderer.wrapLines(text, ROW_WIDTH).size() * ROW_HEIGHT;
     }
 
+    private static boolean shouldDrawExtraItemsCount(boolean hasMoreItems, int column, int row) {
+        return hasMoreItems && column * row == 1;
+    }
+
+    private static boolean shouldDrawItem(List<ItemStack> items, int itemIndex) {
+        return items.size() >= itemIndex;
+    }
+
+    private static void drawExtraItemsCount(int x, int y, int numExtra, TextRenderer textRenderer,
+            DrawContext drawContext) {
+        drawContext.drawCenteredTextWithShadow(textRenderer, "+" + numExtra, x + 12, y + 10,
+                Colors.WHITE);
+    }
+
     private final ItemContainerComponent itemContainer;
     private final Text emptyDescription;
 
@@ -96,8 +112,13 @@ public class ItemContainerTooltipComponent implements TooltipComponent {
 
     @Override
     public int getHeight(TextRenderer textRenderer) {
-        return this.itemContainer.isEmpty() ? this.getHeightOfEmpty(textRenderer)
-                : this.getHeightOfNonEmpty(textRenderer);
+        int height = this.getRowsHeight() + TOOLTIP_TOP_MARGIN;
+        List<Text> tooltipText = getTooltipText();
+        height += getTooltipTextHeight(textRenderer, tooltipText);
+        if (itemContainer.shouldShowItemBar()) {
+            height += PROGRESS_BAR_HEIGHT;
+        }
+        return height;
     }
 
     @Override
@@ -108,26 +129,6 @@ public class ItemContainerTooltipComponent implements TooltipComponent {
     @Override
     public boolean isSticky() {
         return true;
-    }
-
-    private int getHeightOfEmpty(TextRenderer textRenderer) {
-        int height = TOOLTIP_TOP_MARGIN;
-        List<Text> tooltipText = getTooltipText();
-        height += getTooltipTextHeight(textRenderer, tooltipText);
-        if (itemContainer.shouldShowItemBar()) {
-            height += PROGRESS_BAR_HEIGHT;
-        }
-        return height;
-    }
-
-    private int getHeightOfNonEmpty(TextRenderer textRenderer) {
-        int height = this.getRowsHeight() + TOOLTIP_TOP_MARGIN;
-        List<Text> tooltipText = getTooltipText();
-        height += getTooltipTextHeight(textRenderer, tooltipText);
-        if (itemContainer.shouldShowItemBar()) {
-            height += PROGRESS_BAR_HEIGHT;
-        }
-        return height;
     }
 
     private List<Text> getTooltipText() {
@@ -165,45 +166,35 @@ public class ItemContainerTooltipComponent implements TooltipComponent {
     }
 
     private int getNumVisibleSlots() {
-        return Math.min(MAX_VISIBLE_SLOTS, this.itemContainer.size());
+        int slotsToShow =
+                this.itemContainer.useSingleStacksOnly() ? this.itemContainer.getMaxItemWeight()
+                        : this.itemContainer.size();
+        return Math.min(MAX_VISIBLE_SLOTS, slotsToShow);
     }
 
     @Override
     public void drawItems(TextRenderer textRenderer, int x, int y, int width, int height,
             DrawContext context) {
-        if (this.itemContainer.isEmpty()) {
-            this.drawEmptyTooltip(textRenderer, x, y, width, context);
-        } else {
-            this.drawNonEmptyTooltip(textRenderer, x, y, width, context);
-        }
+        this.drawTooltip(textRenderer, x, y, width, context);
     }
 
-    private void drawEmptyTooltip(TextRenderer textRenderer, int x, int y, int width,
-            DrawContext context) {
-        List<Text> tooltipText = getTooltipText();
-        int elementOffset = drawTooltipText(x + this.getXMargin(width), y, textRenderer, context,
-                tooltipText);
-        if (itemContainer.shouldShowItemBar()) {
-            this.drawProgressBar(x + this.getXMargin(width),
-                    y + PROGRESS_BAR_MARGIN + elementOffset, textRenderer, context);
-        }
-    }
-
-    private void drawNonEmptyTooltip(TextRenderer textRenderer, int x, int y, int width,
-            DrawContext context) {
-        List<Text> tooltipText = getTooltipText();
-        int elementOffset = drawTooltipText(x + this.getXMargin(width), y, textRenderer, context,
-                tooltipText);
+    private int drawItemSlots(TextRenderer textRenderer, int x, int y, int width,
+            DrawContext context, int elementOffset) {
         boolean hasMoreItems = this.itemContainer.size() > MAX_VISIBLE_SLOTS;
         List<ItemStack> list = this.firstStacksInContents(
                 this.itemContainer.getNumberOfStacksShown());
-        int maxX = x + this.getXMargin(width) + ROW_WIDTH;
+
+        int minX = x;
+        if (this.itemContainer.shouldShowItemBar()) {
+            // Make it align with the item bar
+            minX += this.getXMargin(width);
+        }
         int maxY = y + this.getRows() * SLOT_DIMENSION;
         int index = 1;
 
         for (int row = 1; row <= this.getRows(); row++) {
             for (int column = 1; column <= SLOTS_PER_ROW; column++) {
-                int itemX = maxX - column * SLOT_DIMENSION;
+                int itemX = minX + (column - 1) * SLOT_DIMENSION;
                 int itemY = maxY - row * SLOT_DIMENSION;
                 if (shouldDrawExtraItemsCount(hasMoreItems, column, row)) {
                     drawExtraItemsCount(itemX, itemY + elementOffset,
@@ -212,12 +203,24 @@ public class ItemContainerTooltipComponent implements TooltipComponent {
                     this.drawItem(index, itemX, itemY + elementOffset, list, index, textRenderer,
                             context);
                     index++;
+                } else if (this.itemContainer.useSingleStacksOnly()
+                        && this.itemContainer.getMaxItemWeight() >= index) {
+                    this.drawEmptySlot(itemX, itemY + elementOffset, context);
+                    index++;
                 }
             }
         }
 
         this.drawSelectedItemTooltip(textRenderer, context, x, y + elementOffset, width);
-        elementOffset += this.getRowsHeight();
+        return this.getRowsHeight();
+    }
+
+    private void drawTooltip(TextRenderer textRenderer, int x, int y, int width,
+            DrawContext context) {
+        List<Text> tooltipText = getTooltipText();
+        int elementOffset = drawTooltipText(x + this.getXMargin(width), y, textRenderer, context,
+                tooltipText);
+        elementOffset += drawItemSlots(textRenderer, x, y, width, context, elementOffset);
         if (itemContainer.shouldShowItemBar()) {
             this.drawProgressBar(x + this.getXMargin(width),
                     y + elementOffset + PROGRESS_BAR_MARGIN, textRenderer, context);
@@ -227,14 +230,6 @@ public class ItemContainerTooltipComponent implements TooltipComponent {
     private List<ItemStack> firstStacksInContents(int numberOfStacksShown) {
         int i = Math.min(this.itemContainer.size(), numberOfStacksShown);
         return this.itemContainer.stream().toList().subList(0, i);
-    }
-
-    private static boolean shouldDrawExtraItemsCount(boolean hasMoreItems, int column, int row) {
-        return hasMoreItems && column * row == 1;
-    }
-
-    private static boolean shouldDrawItem(List<ItemStack> items, int itemIndex) {
-        return items.size() >= itemIndex;
     }
 
     private int numContentItemsAfter(List<ItemStack> items) {
@@ -262,10 +257,9 @@ public class ItemContainerTooltipComponent implements TooltipComponent {
         }
     }
 
-    private static void drawExtraItemsCount(int x, int y, int numExtra, TextRenderer textRenderer,
-            DrawContext drawContext) {
-        drawContext.drawCenteredTextWithShadow(textRenderer, "+" + numExtra, x + 12, y + 10,
-                Colors.WHITE);
+    private void drawEmptySlot(int x, int y, DrawContext drawContext) {
+        drawContext.drawGuiTexture(RenderPipelines.GUI_TEXTURED, BUNDLE_SLOT_BACKGROUND_TEXTURE, x,
+                y, SLOT_DIMENSION, SLOT_DIMENSION);
     }
 
     private void drawSelectedItemTooltip(TextRenderer textRenderer, DrawContext drawContext, int x,

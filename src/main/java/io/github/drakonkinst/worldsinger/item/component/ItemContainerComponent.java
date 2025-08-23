@@ -39,13 +39,13 @@ public class ItemContainerComponent implements TooltipData {
             16); // 4
     public static final Codec<ItemContainerComponent> CODEC = ItemContainerComponentData.CODEC.flatXmap(
             ItemContainerComponent::validateWeight, component -> DataResult.success(
-                    new ItemContainerComponentData(component.getMaxItemCount(),
+                    new ItemContainerComponentData(component.getMaxItemWeight(),
                             component.getValidItems(), component.isAutoPickupDisabled(),
                             component.getSettings(), component.getStacks())));
     public static final PacketCodec<RegistryByteBuf, ItemContainerComponent> PACKET_CODEC = ItemContainerComponentData.PACKET_CODEC.xmap(
             data -> new ItemContainerComponent(data.maxItemCount, data.validItems,
                     data.disableAutoPickup, data.settings, data.stacks),
-            component -> new ItemContainerComponentData(component.getMaxItemCount(),
+            component -> new ItemContainerComponentData(component.getMaxItemWeight(),
                     component.getValidItems(), component.isAutoPickupDisabled(),
                     component.getSettings(), component.getStacks()));
 
@@ -88,7 +88,7 @@ public class ItemContainerComponent implements TooltipData {
         }
     }
 
-    private final int maxItemCount;
+    private final int maxItemWeight;
     private final TagKey<Item> validItems;
     private final boolean disableAutoPickup;
     private final ItemContainerSettings settings;
@@ -98,10 +98,10 @@ public class ItemContainerComponent implements TooltipData {
     private final Fraction weight;
     private final int selectedStackIndex;
 
-    protected ItemContainerComponent(int maxItemCount, TagKey<Item> validItems,
+    protected ItemContainerComponent(int maxItemWeight, TagKey<Item> validItems,
             boolean disableAutoPickup, ItemContainerSettings settings, List<ItemStack> stacks,
             Fraction weight, int selectedStackIndex) {
-        this.maxItemCount = maxItemCount;
+        this.maxItemWeight = maxItemWeight;
         this.validItems = validItems;
         this.disableAutoPickup = disableAutoPickup;
         this.settings = settings;
@@ -110,15 +110,15 @@ public class ItemContainerComponent implements TooltipData {
         this.selectedStackIndex = selectedStackIndex;
     }
 
-    public ItemContainerComponent(int maxItemCount, TagKey<Item> validItems,
+    public ItemContainerComponent(int maxItemWeight, TagKey<Item> validItems,
             boolean disableAutoPickup, ItemContainerSettings settings, List<ItemStack> stacks) {
-        this(maxItemCount, validItems, disableAutoPickup, settings, stacks, calculateWeight(stacks),
-                -1);
+        this(maxItemWeight, validItems, disableAutoPickup, settings, stacks,
+                calculateWeight(stacks), -1);
     }
 
-    public ItemContainerComponent(int maxItemCount, TagKey<Item> validItems,
+    public ItemContainerComponent(int maxItemWeight, TagKey<Item> validItems,
             ItemContainerSettings settings) {
-        this(maxItemCount, validItems, false, settings, Collections.emptyList());
+        this(maxItemWeight, validItems, false, settings, Collections.emptyList());
     }
 
     public int getNumberOfStacksShown() {
@@ -155,8 +155,8 @@ public class ItemContainerComponent implements TooltipData {
         return this.stacks.isEmpty();
     }
 
-    public int getMaxItemCount() {
-        return maxItemCount;
+    public int getMaxItemWeight() {
+        return maxItemWeight;
     }
 
     public TagKey<Item> getValidItems() {
@@ -172,7 +172,7 @@ public class ItemContainerComponent implements TooltipData {
     }
 
     public Fraction getOccupancy() {
-        return weight.divideBy(Fraction.getFraction(maxItemCount, 1));
+        return weight.divideBy(Fraction.getFraction(maxItemWeight, 1));
     }
 
     public boolean hasSelectedStack() {
@@ -205,6 +205,8 @@ public class ItemContainerComponent implements TooltipData {
         return settings.shouldAutoPickup() && disableAutoPickup;
     }
 
+    // We'll also use this to determine whether to render empty slots or not.
+    // This also kind of assumes that the only items being inserted have a weight of 1, and might struggle with other items
     public boolean useSingleStacksOnly() {
         return settings.useSingleStacksOnly();
     }
@@ -224,7 +226,7 @@ public class ItemContainerComponent implements TooltipData {
         private int selectedStackIndex;
 
         public Builder(ItemContainerComponent base) {
-            this.maxItemCount = base.maxItemCount;
+            this.maxItemCount = base.maxItemWeight;
             this.validItems = base.validItems;
             this.disableAutoPickup = base.disableAutoPickup;
             this.settings = base.settings;
