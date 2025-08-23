@@ -8,6 +8,7 @@ import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.function.ValueLists;
@@ -38,14 +39,14 @@ public enum ItemContainerSettings implements StringIdentifiable {
     private final boolean autoPickup;
     private final boolean canQuickDeposit;
     private final boolean showItemBar;
-    private final Text emptyDescription;
+    private final MutableText emptyDescription;
     private final Supplier<SoundEvent> insertSound;
     private final Supplier<SoundEvent> insertFailSound;
     private final Supplier<SoundEvent> removeOneSound;
     private final Supplier<SoundEvent> dropContentsSound;
 
     ItemContainerSettings(int id, String name, boolean autoPickup, boolean canQuickDeposit,
-            boolean showItemBar, Text emptyDescription, Supplier<SoundEvent> insertSound,
+            boolean showItemBar, MutableText emptyDescription, Supplier<SoundEvent> insertSound,
             Supplier<SoundEvent> insertFailSound, Supplier<SoundEvent> removeOneSound,
             Supplier<SoundEvent> dropAllSound) {
         this.id = id;
@@ -76,7 +77,7 @@ public enum ItemContainerSettings implements StringIdentifiable {
         return showItemBar;
     }
 
-    public Text getEmptyDescription() {
+    public MutableText getEmptyDescription() {
         return emptyDescription;
     }
 

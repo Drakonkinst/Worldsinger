@@ -1,6 +1,8 @@
 package io.github.drakonkinst.worldsinger.gui.tooltip;
 
 import io.github.drakonkinst.worldsinger.item.component.ItemContainerComponent;
+import io.github.drakonkinst.worldsinger.item.itemcontainer.ItemContainerInteractions;
+import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gl.RenderPipelines;
@@ -9,8 +11,10 @@ import net.minecraft.client.gui.tooltip.HoveredTooltipPositioner;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.item.ItemStack;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Colors;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import org.apache.commons.lang3.math.Fraction;
@@ -31,24 +35,69 @@ public class ItemContainerTooltipComponent implements TooltipComponent {
     private static final Identifier BUNDLE_SLOT_BACKGROUND_TEXTURE = Identifier.ofVanilla(
             "container/bundle/slot_background");
     private static final int SLOTS_PER_ROW = 4;
+    private static final int PROGRESS_BAR_MARGIN = 4;
     private static final int SLOT_DIMENSION = 24;
     private static final int ROW_WIDTH = 96;
     private static final int ROW_HEIGHT = 9;
     private static final int PROGRESS_BAR_WIDTH = 94;
     private static final int PROGRESS_BAR_HEIGHT = 13;
-    private static final Text BUNDLE_FULL = Text.translatable("item.minecraft.bundle.full");
-    private static final Text BUNDLE_EMPTY = Text.translatable("item.minecraft.bundle.empty");
+    private static final int EMPTY_DESCRIPTION_COLOR = -5592406;
+    private static final int TEXT_LINE_MARGIN = 4;
+    private static final int TOOLTIP_TOP_MARGIN = 8;
+    private static final int MAX_VISIBLE_SLOTS = 12;
+    private static final Text ITEM_CONTAINER_FULL = Text.translatable(
+            "item.worldsinger.item_container.full");
+    private static final Text ITEM_CONTAINER_EMPTY = Text.translatable(
+            "item.worldsinger.item_container.empty");
+
+    private static int getTooltipTextHeight(TextRenderer textRenderer, List<Text> tooltipText) {
+        int height = 0;
+        for (Text text : tooltipText) {
+            height += getWrappedTextHeight(textRenderer, text);
+        }
+        height += (tooltipText.size() - 1) * TEXT_LINE_MARGIN;
+        return height;
+    }
+
+    private static int drawTooltipText(int x, int y, TextRenderer textRenderer,
+            DrawContext drawContext, List<Text> tooltipText) {
+        int offset = 0;
+        for (int i = 0; i < tooltipText.size(); ++i) {
+            Text text = tooltipText.get(i);
+            if (i > 0) {
+                offset += TEXT_LINE_MARGIN;
+            }
+            drawSingleTooltipText(x, y + offset, textRenderer, drawContext, text);
+            int height = getWrappedTextHeight(textRenderer, text);
+            offset += height;
+        }
+        return offset;
+    }
+
+    private static void drawSingleTooltipText(int x, int y, TextRenderer textRenderer,
+            DrawContext drawContext, Text text) {
+        drawContext.drawWrappedTextWithShadow(textRenderer, text, x, y, ROW_WIDTH, Colors.WHITE);
+    }
+
+    private static int getWrappedTextHeight(TextRenderer textRenderer, Text text) {
+        return textRenderer.wrapLines(text, ROW_WIDTH).size() * ROW_HEIGHT;
+    }
+
     private final ItemContainerComponent itemContainer;
+    private final Text emptyDescription;
 
     public ItemContainerTooltipComponent(ItemContainerComponent itemContainer) {
         this.itemContainer = itemContainer;
+        this.emptyDescription = this.itemContainer.getSettings()
+                .getEmptyDescription()
+                .copy()
+                .withColor(EMPTY_DESCRIPTION_COLOR);
     }
 
     @Override
     public int getHeight(TextRenderer textRenderer) {
-        return this.itemContainer.isEmpty() ? this.getHeightOfEmpty(textRenderer,
-                this.itemContainer.getSettings().getEmptyDescription())
-                : this.getHeightOfNonEmpty();
+        return this.itemContainer.isEmpty() ? this.getHeightOfEmpty(textRenderer)
+                : this.getHeightOfNonEmpty(textRenderer);
     }
 
     @Override
@@ -61,18 +110,46 @@ public class ItemContainerTooltipComponent implements TooltipComponent {
         return true;
     }
 
-    private int getHeightOfEmpty(TextRenderer textRenderer, Text emptyDescription) {
+    private int getHeightOfEmpty(TextRenderer textRenderer) {
+        int height = TOOLTIP_TOP_MARGIN;
+        List<Text> tooltipText = getTooltipText();
+        height += getTooltipTextHeight(textRenderer, tooltipText);
         if (itemContainer.shouldShowItemBar()) {
-            return getDescriptionHeight(textRenderer, emptyDescription) + PROGRESS_BAR_HEIGHT + 8;
+            height += PROGRESS_BAR_HEIGHT;
         }
-        return getDescriptionHeight(textRenderer, emptyDescription) + 8;
+        return height;
     }
 
-    private int getHeightOfNonEmpty() {
+    private int getHeightOfNonEmpty(TextRenderer textRenderer) {
+        int height = this.getRowsHeight() + TOOLTIP_TOP_MARGIN;
+        List<Text> tooltipText = getTooltipText();
+        height += getTooltipTextHeight(textRenderer, tooltipText);
         if (itemContainer.shouldShowItemBar()) {
-            return this.getRowsHeight() + PROGRESS_BAR_HEIGHT + 8;
+            height += PROGRESS_BAR_HEIGHT;
         }
-        return this.getRowsHeight() + 8;
+        return height;
+    }
+
+    private List<Text> getTooltipText() {
+        List<Text> tooltipText = new ArrayList<>();
+        if (this.itemContainer.isEmpty()) {
+            tooltipText.add(emptyDescription);
+        }
+        if (itemContainer.canToggleAutoPickup()) {
+            tooltipText.add(getAutoPickupText());
+        }
+        return tooltipText;
+    }
+
+    private MutableText getAutoPickupText() {
+        MutableText text = Text.empty();
+        text.append(Text.translatable("item.worldsinger.item_container.auto_pickup",
+                ItemContainerInteractions.getAutoPickupStatusText(
+                        itemContainer.shouldAutoPickup())));
+        text.append(" ");
+        text.append(Text.translatable("item.worldsinger.item_container.auto_pickup_tooltip_hint")
+                .formatted(Formatting.BLUE));
+        return text;
     }
 
     private int getRowsHeight() {
@@ -88,55 +165,62 @@ public class ItemContainerTooltipComponent implements TooltipComponent {
     }
 
     private int getNumVisibleSlots() {
-        return Math.min(12, this.itemContainer.size());
+        return Math.min(MAX_VISIBLE_SLOTS, this.itemContainer.size());
     }
 
     @Override
     public void drawItems(TextRenderer textRenderer, int x, int y, int width, int height,
             DrawContext context) {
         if (this.itemContainer.isEmpty()) {
-            this.drawEmptyTooltip(textRenderer, x, y, width, height, context);
+            this.drawEmptyTooltip(textRenderer, x, y, width, context);
         } else {
-            this.drawNonEmptyTooltip(textRenderer, x, y, width, height, context);
+            this.drawNonEmptyTooltip(textRenderer, x, y, width, context);
         }
     }
 
-    private void drawEmptyTooltip(TextRenderer textRenderer, int x, int y, int width, int height,
+    private void drawEmptyTooltip(TextRenderer textRenderer, int x, int y, int width,
             DrawContext context) {
-        drawEmptyDescription(x + this.getXMargin(width), y, textRenderer, context,
-                this.itemContainer.getSettings().getEmptyDescription());
-        this.drawProgressBar(x + this.getXMargin(width), y + getDescriptionHeight(textRenderer,
-                        this.itemContainer.getSettings().getEmptyDescription()) + SLOTS_PER_ROW,
-                textRenderer, context);
+        List<Text> tooltipText = getTooltipText();
+        int elementOffset = drawTooltipText(x + this.getXMargin(width), y, textRenderer, context,
+                tooltipText);
+        if (itemContainer.shouldShowItemBar()) {
+            this.drawProgressBar(x + this.getXMargin(width),
+                    y + PROGRESS_BAR_MARGIN + elementOffset, textRenderer, context);
+        }
     }
 
-    private void drawNonEmptyTooltip(TextRenderer textRenderer, int x, int y, int width, int height,
+    private void drawNonEmptyTooltip(TextRenderer textRenderer, int x, int y, int width,
             DrawContext context) {
-        boolean bl = this.itemContainer.size() > 12;
+        List<Text> tooltipText = getTooltipText();
+        int elementOffset = drawTooltipText(x + this.getXMargin(width), y, textRenderer, context,
+                tooltipText);
+        boolean hasMoreItems = this.itemContainer.size() > MAX_VISIBLE_SLOTS;
         List<ItemStack> list = this.firstStacksInContents(
                 this.itemContainer.getNumberOfStacksShown());
-        int i = x + this.getXMargin(width) + ROW_WIDTH;
-        int j = y + this.getRows() * SLOT_DIMENSION;
-        int k = 1;
+        int maxX = x + this.getXMargin(width) + ROW_WIDTH;
+        int maxY = y + this.getRows() * SLOT_DIMENSION;
+        int index = 1;
 
-        for (int l = 1; l <= this.getRows(); l++) {
-            for (int m = 1; m <= SLOTS_PER_ROW; m++) {
-                int n = i - m * SLOT_DIMENSION;
-                int o = j - l * SLOT_DIMENSION;
-                if (shouldDrawExtraItemsCount(bl, m, l)) {
-                    drawExtraItemsCount(n, o, this.numContentItemsAfter(list), textRenderer,
+        for (int row = 1; row <= this.getRows(); row++) {
+            for (int column = 1; column <= SLOTS_PER_ROW; column++) {
+                int itemX = maxX - column * SLOT_DIMENSION;
+                int itemY = maxY - row * SLOT_DIMENSION;
+                if (shouldDrawExtraItemsCount(hasMoreItems, column, row)) {
+                    drawExtraItemsCount(itemX, itemY + elementOffset,
+                            this.numContentItemsAfter(list), textRenderer, context);
+                } else if (shouldDrawItem(list, index)) {
+                    this.drawItem(index, itemX, itemY + elementOffset, list, index, textRenderer,
                             context);
-                } else if (shouldDrawItem(list, k)) {
-                    this.drawItem(k, n, o, list, k, textRenderer, context);
-                    k++;
+                    index++;
                 }
             }
         }
 
-        this.drawSelectedItemTooltip(textRenderer, context, x, y, width);
+        this.drawSelectedItemTooltip(textRenderer, context, x, y + elementOffset, width);
+        elementOffset += this.getRowsHeight();
         if (itemContainer.shouldShowItemBar()) {
             this.drawProgressBar(x + this.getXMargin(width),
-                    y + this.getRowsHeight() + SLOTS_PER_ROW, textRenderer, context);
+                    y + elementOffset + PROGRESS_BAR_MARGIN, textRenderer, context);
         }
     }
 
@@ -161,7 +245,7 @@ public class ItemContainerTooltipComponent implements TooltipComponent {
             TextRenderer textRenderer, DrawContext drawContext) {
         int i = stacks.size() - index;
         boolean bl = i == this.itemContainer.getSelectedStackIndex();
-        ItemStack itemStack = (ItemStack) stacks.get(i);
+        ItemStack itemStack = stacks.get(i);
         if (bl) {
             drawContext.drawGuiTexture(RenderPipelines.GUI_TEXTURED,
                     BUNDLE_SLOT_HIGHLIGHT_BACK_TEXTURE, x, y, SLOT_DIMENSION, SLOT_DIMENSION);
@@ -210,16 +294,6 @@ public class ItemContainerTooltipComponent implements TooltipComponent {
         }
     }
 
-    private static void drawEmptyDescription(int x, int y, TextRenderer textRenderer,
-            DrawContext drawContext, Text emptyDescription) {
-        drawContext.drawWrappedTextWithShadow(textRenderer, emptyDescription, x, y, ROW_WIDTH,
-                -5592406);
-    }
-
-    private static int getDescriptionHeight(TextRenderer textRenderer, Text emptyDescription) {
-        return textRenderer.wrapLines(emptyDescription, ROW_WIDTH).size() * ROW_HEIGHT;
-    }
-
     private int getProgressBarFill() {
         return MathHelper.clamp(
                 MathHelper.multiplyFraction(this.itemContainer.getOccupancy(), PROGRESS_BAR_WIDTH),
@@ -234,10 +308,10 @@ public class ItemContainerTooltipComponent implements TooltipComponent {
     @Nullable
     private Text getProgressBarLabel() {
         if (this.itemContainer.isEmpty()) {
-            return BUNDLE_EMPTY;
+            return ITEM_CONTAINER_EMPTY;
         } else {
-            return this.itemContainer.getOccupancy().compareTo(Fraction.ONE) >= 0 ? BUNDLE_FULL
-                    : null;
+            return this.itemContainer.getOccupancy().compareTo(Fraction.ONE) >= 0
+                    ? ITEM_CONTAINER_FULL : null;
         }
     }
 }

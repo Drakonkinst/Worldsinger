@@ -13,6 +13,7 @@ import net.minecraft.screen.slot.Slot;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.text.Text;
 import net.minecraft.util.ClickType;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.math.ColorHelper;
 import net.minecraft.world.World;
 
@@ -24,6 +25,15 @@ public final class ItemContainerInteractions {
 
     private ItemContainerInteractions() {}
 
+    public static Text getAutoPickupStatusText(boolean enabled) {
+        if (enabled) {
+            return Text.translatable("item.worldsinger.item_container.auto_pickup.on")
+                    .formatted(Formatting.GREEN);
+        }
+        return Text.translatable("item.worldsinger.item_container.auto_pickup.off")
+                .formatted(Formatting.GRAY);
+    }
+
     public static boolean toggleAutoPickup(ItemStack stack, ItemContainerComponent component,
             PlayerEntity player) {
         if (component == null || !component.canToggleAutoPickup()) {
@@ -31,14 +41,8 @@ public final class ItemContainerInteractions {
         }
         ItemContainerComponent.Builder builder = new ItemContainerComponent.Builder(component);
         boolean isAutoPickupDisabled = builder.toggleAutoPickup();
-        if (isAutoPickupDisabled) {
-            player.sendMessage(
-                    Text.translatable("item.worldsinger.item_container.auto_pickup_disabled"),
-                    true);
-        } else {
-            player.sendMessage(
-                    Text.translatable("item.worldsinger.item_container.auto_pickup_enabled"), true);
-        }
+        player.sendMessage(Text.translatable("item.worldsinger.item_container.auto_pickup",
+                getAutoPickupStatusText(!isAutoPickupDisabled)), true);
         stack.set(ModDataComponentTypes.ITEM_CONTAINER, builder.build());
         return true;
     }

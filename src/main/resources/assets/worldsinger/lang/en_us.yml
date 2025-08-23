@@ -72,8 +72,12 @@ item:
     silver_lined: Silver-Lined
     silver_durability: 'Silver Durability: %s / %s'
     item_container:
-      auto_pickup_enabled: 'Auto-Pickup: Enabled'
-      auto_pickup_disabled: 'Auto-Pickup: Disabled'
+      auto_pickup: 'Auto-Pickup: %s'
+      auto_pickup.on: 'On'
+      auto_pickup.off: 'Off'
+      auto_pickup_tooltip_hint: '(Sneak + Use Item to Toggle)'
+      full: Full
+      empty: Empty
     cannonball:
       core:
         water: Water-Filled
