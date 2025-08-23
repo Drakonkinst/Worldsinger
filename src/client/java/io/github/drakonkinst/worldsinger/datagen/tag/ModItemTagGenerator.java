@@ -151,6 +151,8 @@ public class ModItemTagGenerator extends ItemTagProvider {
         valueLookupBuilder(ModItemTags.CAN_BE_QUIVERED).add(Items.ARROW)
                 .add(Items.SPECTRAL_ARROW)
                 .add(Items.TIPPED_ARROW);
+        valueLookupBuilder(ModItemTags.CAN_USE_IN_FABRIAL).add(Items.AMETHYST_SHARD, Items.EMERALD,
+                Items.DIAMOND);
 
         copy(ModBlockTags.HAS_IRON, ModItemTags.HAS_IRON);
         valueLookupBuilder(ModItemTags.HAS_IRON).add(Items.IRON_SHOVEL)

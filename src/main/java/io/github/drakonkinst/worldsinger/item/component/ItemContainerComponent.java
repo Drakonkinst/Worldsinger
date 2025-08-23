@@ -6,6 +6,7 @@ import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.drakonkinst.worldsinger.item.itemcontainer.ItemContainerSettings;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
 import net.minecraft.block.entity.BeehiveBlockEntity;
@@ -115,6 +116,11 @@ public class ItemContainerComponent implements TooltipData {
                 -1);
     }
 
+    public ItemContainerComponent(int maxItemCount, TagKey<Item> validItems,
+            ItemContainerSettings settings) {
+        this(maxItemCount, validItems, false, settings, Collections.emptyList());
+    }
+
     public int getNumberOfStacksShown() {
         int size = this.stacks.size();
         // One slot is taken up by the ellipses if it goes beyond one page
@@ -199,6 +205,10 @@ public class ItemContainerComponent implements TooltipData {
         return settings.shouldAutoPickup() && disableAutoPickup;
     }
 
+    public boolean useSingleStacksOnly() {
+        return settings.useSingleStacksOnly();
+    }
+
     public boolean canBeStored(ItemStack stack) {
         return BundleContentsComponent.canBeBundled(stack) && stack.isIn(validItems);
     }
@@ -231,7 +241,7 @@ public class ItemContainerComponent implements TooltipData {
         }
 
         private int getInsertionIndex(ItemStack stack) {
-            if (!stack.isStackable()) {
+            if (!stack.isStackable() || this.settings.useSingleStacksOnly()) {
                 return -1;
             } else {
                 for (int i = 0; i < this.stacks.size(); ++i) {
@@ -246,14 +256,23 @@ public class ItemContainerComponent implements TooltipData {
         private int getMaxAllowed(ItemStack stack) {
             Fraction weightRemaining = Fraction.getFraction(this.maxItemCount, 1)
                     .subtract(this.weight);
-            return Math.max(weightRemaining.intValue(), 0);
+            Fraction itemWeight = ItemContainerComponent.getStackWeight(stack);
+            return Math.max(weightRemaining.divideBy(itemWeight).intValue(), 0);
+        }
+
+        private int getNumToInsert(ItemStack stack) {
+            if (stack.isEmpty()) {
+                return 0;
+            }
+            int stackCount = this.settings.useSingleStacksOnly() ? 1 : stack.getCount();
+            return Math.min(stackCount, this.getMaxAllowed(stack));
         }
 
         public int add(ItemStack stack) {
             if (!this.canBeStored(stack)) {
                 return 0;
             }
-            int numToInsert = Math.min(stack.getCount(), this.getMaxAllowed(stack));
+            int numToInsert = getNumToInsert(stack);
             if (numToInsert == 0) {
                 return 0;
             }

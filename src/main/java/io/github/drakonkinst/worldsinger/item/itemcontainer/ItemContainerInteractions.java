@@ -108,13 +108,12 @@ public final class ItemContainerInteractions {
         if (clickType == ClickType.LEFT && !slotStack.isEmpty()) {
             if (builder.add(slot, player) > 0) {
                 playInsertSound(player, component);
-            } else {
-                playInsertFailSound(player, component);
+                stack.set(ModDataComponentTypes.ITEM_CONTAINER, builder.build());
+                onContentChanged(player);
+                return true;
             }
-
-            stack.set(ModDataComponentTypes.ITEM_CONTAINER, builder.build());
-            onContentChanged(player);
-            return true;
+            playInsertFailSound(player, component);
+            return false;
         } else if (clickType == ClickType.RIGHT && slotStack.isEmpty()) {
             ItemStack removedStack = builder.removeSelected();
             if (!removedStack.isEmpty()) {
@@ -147,13 +146,12 @@ public final class ItemContainerInteractions {
         if (clickType == ClickType.LEFT && !otherStack.isEmpty()) {
             if (slot.canTakePartial(player) && builder.add(otherStack) > 0) {
                 ItemContainerInteractions.playInsertSound(player, component);
-            } else {
-                ItemContainerInteractions.playInsertFailSound(player, component);
+                stack.set(ModDataComponentTypes.ITEM_CONTAINER, builder.build());
+                onContentChanged(player);
+                return true;
             }
-
-            stack.set(ModDataComponentTypes.ITEM_CONTAINER, builder.build());
-            onContentChanged(player);
-            return true;
+            ItemContainerInteractions.playInsertFailSound(player, component);
+            return false;
         } else if (clickType == ClickType.RIGHT && otherStack.isEmpty()) {
             if (slot.canTakePartial(player)) {
                 ItemStack removedStack = builder.removeSelected();

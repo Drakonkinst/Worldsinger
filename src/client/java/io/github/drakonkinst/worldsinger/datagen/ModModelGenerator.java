@@ -390,6 +390,7 @@ public class ModModelGenerator extends FabricModelProvider {
                 ModItems.MIDNIGHT_CREATURE_SPAWN_EGG,
                 ModBlocks.ALUMINUM_SHEET,
                 ModItems.QUIVER,
+                ModItems.TEST_FABRIAL,
         });
         registerHandheldItems(itemModelGenerator, new ItemConvertible[] {
                 ModItems.CRIMSON_SPINE,

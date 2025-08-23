@@ -192,8 +192,12 @@ public final class ModItems {
     // Test Items
     public static final Item QUIVER = register("quiver", new Settings().maxCount(1)
             .component(ModDataComponentTypes.ITEM_CONTAINER,
-                    new ItemContainerComponent(256, ModItemTags.CAN_BE_QUIVERED, false,
-                            ItemContainerSettings.QUIVER, Collections.emptyList())));
+                    new ItemContainerComponent(256, ModItemTags.CAN_BE_QUIVERED,
+                            ItemContainerSettings.QUIVER)));
+    public static final Item TEST_FABRIAL = register("test_fabrial", new Settings().maxCount(1)
+            .component(ModDataComponentTypes.ITEM_CONTAINER,
+                    new ItemContainerComponent(3, ModItemTags.CAN_USE_IN_FABRIAL,
+                            ItemContainerSettings.DEVICE)));
 
     // Admin
     public static final Item MIDNIGHT_CREATURE_SPAWN_EGG = register("midnight_creature_spawn_egg",
@@ -537,6 +541,7 @@ public final class ModItems {
 
             // Test Items
             itemGroup.add(ModItems.QUIVER);
+            itemGroup.add(ModItems.TEST_FABRIAL);
         });
     }
 
