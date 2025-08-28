@@ -56,6 +56,8 @@ public final class ModItemTags {
 
     public static final TagKey<Item> CAN_BE_QUIVERED = ModItemTags.of("can_be_quivered");
     public static final TagKey<Item> CAN_USE_IN_FABRIAL = ModItemTags.of("can_use_in_fabrial");
+    public static final TagKey<Item> SPHERES = ModItemTags.of("spheres");
+    public static final TagKey<Item> CAN_FIT_IN_POUCH = ModItemTags.of("can_fit_in_pouch");
 
     private static TagKey<Item> of(String id) {
         return TagKey.of(RegistryKeys.ITEM, Worldsinger.id(id));

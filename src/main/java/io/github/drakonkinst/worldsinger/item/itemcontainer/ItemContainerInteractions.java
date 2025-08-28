@@ -1,12 +1,16 @@
 package io.github.drakonkinst.worldsinger.item.itemcontainer;
 
+import io.github.drakonkinst.worldsinger.Worldsinger;
 import io.github.drakonkinst.worldsinger.item.component.ItemContainerComponent;
 import io.github.drakonkinst.worldsinger.item.component.ItemContainerComponent.Builder;
 import io.github.drakonkinst.worldsinger.registry.ModDataComponentTypes;
 import java.util.Optional;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.StackReference;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
@@ -14,8 +18,10 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.text.Text;
 import net.minecraft.util.ClickType;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.ColorHelper;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 
 public final class ItemContainerInteractions {
 
@@ -32,6 +38,82 @@ public final class ItemContainerInteractions {
         }
         return Text.translatable("item.worldsinger.item_container.auto_pickup.off")
                 .formatted(Formatting.GRAY);
+    }
+
+    private static void updateHandItem(ItemStack stack, LivingEntity user, Hand hand) {
+        ItemStack replacement = updateItemFromContainerFamily(stack);
+        if (replacement != null) {
+            user.setStackInHand(hand, replacement);
+        }
+    }
+
+    private static void updateSlotItem(ItemStack stack, Slot slot) {
+        ItemStack replacement = updateItemFromContainerFamily(stack);
+        if (replacement != null) {
+            slot.setStack(replacement);
+        }
+    }
+
+    private static void updateCursorItem(ItemStack stack, ScreenHandler handler) {
+        if (handler == null) {
+            return;
+        }
+        ItemStack replacement = updateItemFromContainerFamily(stack);
+        if (replacement != null) {
+            handler.setCursorStack(replacement);
+        }
+    }
+
+    public static void updateInventoryItem(ItemStack stack, PlayerInventory inventory, int slot) {
+        ItemStack replacement = updateItemFromContainerFamily(stack);
+        if (replacement != null) {
+            inventory.setStack(slot, replacement);
+        }
+    }
+
+    private static @Nullable ItemStack updateItemFromContainerFamily(ItemStack stack) {
+        // Get the updated component
+        ItemContainerComponent component = stack.get(ModDataComponentTypes.ITEM_CONTAINER);
+        if (component == null) {
+            return null;
+        }
+        ItemContainerFamily family = component.getSettings().getItemContainerFamily();
+        if (family == null) {
+            return null;
+        }
+
+        Item emptyItem = family.getEmptyItem();
+        Item transformTarget = null;
+        if (!component.isEmpty() && stack.isOf(emptyItem)) {
+            transformTarget = family.getVariantFor(component.getStacks().getFirst());
+        } else if (component.isEmpty() && !stack.isOf(emptyItem)) {
+            transformTarget = emptyItem;
+        }
+
+        if (transformTarget == null) {
+            return null;
+        }
+        return transformItemContainerStack(stack, component, transformTarget);
+    }
+
+    // If null, don't transform the item
+    private static @Nullable ItemStack transformItemContainerStack(ItemStack stack,
+            ItemContainerComponent component, Item transformTarget) {
+        if (transformTarget == null || stack.isOf(transformTarget)) {
+            return null;
+        }
+        ItemStack newStack = stack.withItem(transformTarget);
+        ItemContainerComponent defaultContainer = transformTarget.getDefaultStack()
+                .get(ModDataComponentTypes.ITEM_CONTAINER);
+        if (defaultContainer == null) {
+            Worldsinger.LOGGER.warn(
+                    "Item container family variant should have a default item_container component");
+            return null;
+        }
+        ItemContainerComponent newContainer = (new ItemContainerComponent.Builder(
+                defaultContainer)).copyStacks(component).build();
+        newStack.set(ModDataComponentTypes.ITEM_CONTAINER, newContainer);
+        return newStack;
     }
 
     public static boolean toggleAutoPickup(ItemStack stack, ItemContainerComponent component,
@@ -53,6 +135,7 @@ public final class ItemContainerInteractions {
             Optional<ItemStack> optional = popFirstContainerStack(stack, player, component);
             if (optional.isPresent()) {
                 player.dropItem(optional.get(), true);
+                updateHandItem(stack, player, player.getActiveHand());
                 return true;
             }
             return false;
@@ -109,6 +192,7 @@ public final class ItemContainerInteractions {
             if (builder.add(slot, player) > 0) {
                 playInsertSound(player, component);
                 stack.set(ModDataComponentTypes.ITEM_CONTAINER, builder.build());
+                updateCursorItem(stack, player.currentScreenHandler);
                 onContentChanged(player);
                 return true;
             }
@@ -126,6 +210,7 @@ public final class ItemContainerInteractions {
             }
 
             stack.set(ModDataComponentTypes.ITEM_CONTAINER, builder.build());
+            updateCursorItem(stack, player.currentScreenHandler);
             onContentChanged(player);
             return true;
         }
@@ -147,6 +232,7 @@ public final class ItemContainerInteractions {
             if (slot.canTakePartial(player) && builder.add(otherStack) > 0) {
                 ItemContainerInteractions.playInsertSound(player, component);
                 stack.set(ModDataComponentTypes.ITEM_CONTAINER, builder.build());
+                updateSlotItem(stack, slot);
                 onContentChanged(player);
                 return true;
             }
@@ -162,6 +248,7 @@ public final class ItemContainerInteractions {
             }
 
             stack.set(ModDataComponentTypes.ITEM_CONTAINER, builder.build());
+            updateSlotItem(stack, slot);
             onContentChanged(player);
             return true;
         } else {

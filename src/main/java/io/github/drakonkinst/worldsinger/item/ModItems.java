@@ -198,6 +198,15 @@ public final class ModItems {
             .component(ModDataComponentTypes.ITEM_CONTAINER,
                     new ItemContainerComponent(3, ModItemTags.CAN_USE_IN_FABRIAL,
                             ItemContainerSettings.DEVICE)));
+    public static final Item POUCH = register("pouch", new Settings().maxCount(1)
+            .component(ModDataComponentTypes.ITEM_CONTAINER,
+                    new ItemContainerComponent(64, ModItemTags.CAN_FIT_IN_POUCH,
+                            ItemContainerSettings.POUCH)));
+    public static final Item POUCH_OF_SPHERES = register("pouch_of_spheres",
+            new Settings().maxCount(1)
+                    .component(ModDataComponentTypes.ITEM_CONTAINER,
+                            new ItemContainerComponent(64, ModItemTags.SPHERES,
+                                    ItemContainerSettings.POUCH)));
 
     // Admin
     public static final Item MIDNIGHT_CREATURE_SPAWN_EGG = register("midnight_creature_spawn_egg",
@@ -542,6 +551,7 @@ public final class ModItems {
             // Test Items
             itemGroup.add(ModItems.QUIVER);
             itemGroup.add(ModItems.TEST_FABRIAL);
+            itemGroup.add(ModItems.POUCH);
         });
     }
 

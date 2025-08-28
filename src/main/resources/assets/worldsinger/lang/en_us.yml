@@ -146,6 +146,8 @@ item:
       .: Quiver
       empty.description: Can hold an assortment of arrows
     test_fabrial: Test Fabrial
+    pouch: Pouch
+    pouch_of_spheres: Pouch of Spheres
 block.worldsinger:
   dead_spore_block: Dead Spore Sea
   verdant_spore_block: Verdant Spore Block
@@ -341,6 +343,8 @@ tag.item:
     converts_to_coarse_dirt_when_salted: Converts to Coarse Dirt when salted
     can_be_quivered: Can be stored in a Quiver
     can_use_in_fabrial: Can be inserted into a Fabrial
+    spheres: Spheres
+    can_fit_in_pouch: Can fit into a Pouch
   c:
     salt: Salt items
     ingots.steel: Steel ingots

@@ -391,6 +391,8 @@ public class ModModelGenerator extends FabricModelProvider {
                 ModBlocks.ALUMINUM_SHEET,
                 ModItems.QUIVER,
                 ModItems.TEST_FABRIAL,
+                ModItems.POUCH,
+                ModItems.POUCH_OF_SPHERES,
         });
         registerHandheldItems(itemModelGenerator, new ItemConvertible[] {
                 ModItems.CRIMSON_SPINE,

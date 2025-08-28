@@ -3,6 +3,7 @@ package io.github.drakonkinst.worldsinger.mixin.entity.player;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import io.github.drakonkinst.worldsinger.item.component.ItemContainerComponent;
+import io.github.drakonkinst.worldsinger.item.itemcontainer.ItemContainerInteractions;
 import io.github.drakonkinst.worldsinger.registry.ModDataComponentTypes;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -29,7 +30,8 @@ public abstract class ItemEntityPickupMixin extends Entity implements Ownable {
         }
 
         boolean anyAccepted = false;
-        for (ItemStack stack : instance) {
+        for (int slot = 0; slot < instance.size(); ++slot) {
+            ItemStack stack = instance.getStack(slot);
             ItemContainerComponent component = stack.get(ModDataComponentTypes.ITEM_CONTAINER);
             if (component == null || !component.shouldAutoPickup() || !component.canBeStored(
                     stackToInsert)) {
@@ -41,10 +43,14 @@ public abstract class ItemEntityPickupMixin extends Entity implements Ownable {
                 anyAccepted = true;
             }
             stack.set(ModDataComponentTypes.ITEM_CONTAINER, builder.build());
+            ItemContainerInteractions.updateInventoryItem(stack, instance, slot);
             stackToInsert.decrement(numAdded);
             if (stackToInsert.isEmpty()) {
                 break;
             }
+        }
+        for (ItemStack stack : instance) {
+
         }
         if (!stackToInsert.isEmpty()) {
             boolean anyAcceptedToInventory = original.call(instance, stackToInsert);

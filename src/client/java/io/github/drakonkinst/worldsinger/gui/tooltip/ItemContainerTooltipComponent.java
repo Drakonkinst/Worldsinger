@@ -104,10 +104,12 @@ public class ItemContainerTooltipComponent implements TooltipComponent {
 
     public ItemContainerTooltipComponent(ItemContainerComponent itemContainer) {
         this.itemContainer = itemContainer;
-        this.emptyDescription = this.itemContainer.getSettings()
-                .getEmptyDescription()
-                .copy()
-                .withColor(EMPTY_DESCRIPTION_COLOR);
+        MutableText emptyDescription = this.itemContainer.getSettings().getEmptyDescription();
+        if (emptyDescription == null) {
+            this.emptyDescription = null;
+        } else {
+            this.emptyDescription = emptyDescription.copy().withColor(EMPTY_DESCRIPTION_COLOR);
+        }
     }
 
     @Override
@@ -133,7 +135,7 @@ public class ItemContainerTooltipComponent implements TooltipComponent {
 
     private List<Text> getTooltipText() {
         List<Text> tooltipText = new ArrayList<>();
-        if (this.itemContainer.isEmpty()) {
+        if (this.itemContainer.isEmpty() && emptyDescription != null) {
             tooltipText.add(emptyDescription);
         }
         if (itemContainer.canToggleAutoPickup()) {
@@ -175,7 +177,14 @@ public class ItemContainerTooltipComponent implements TooltipComponent {
     @Override
     public void drawItems(TextRenderer textRenderer, int x, int y, int width, int height,
             DrawContext context) {
-        this.drawTooltip(textRenderer, x, y, width, context);
+        List<Text> tooltipText = getTooltipText();
+        int elementOffset = drawTooltipText(x + this.getXMargin(width), y, textRenderer, context,
+                tooltipText);
+        elementOffset += drawItemSlots(textRenderer, x, y, width, context, elementOffset);
+        if (itemContainer.shouldShowItemBar()) {
+            this.drawProgressBar(x + this.getXMargin(width),
+                    y + elementOffset + PROGRESS_BAR_MARGIN, textRenderer, context);
+        }
     }
 
     private int drawItemSlots(TextRenderer textRenderer, int x, int y, int width,
@@ -213,18 +222,6 @@ public class ItemContainerTooltipComponent implements TooltipComponent {
 
         this.drawSelectedItemTooltip(textRenderer, context, x, y + elementOffset, width);
         return this.getRowsHeight();
-    }
-
-    private void drawTooltip(TextRenderer textRenderer, int x, int y, int width,
-            DrawContext context) {
-        List<Text> tooltipText = getTooltipText();
-        int elementOffset = drawTooltipText(x + this.getXMargin(width), y, textRenderer, context,
-                tooltipText);
-        elementOffset += drawItemSlots(textRenderer, x, y, width, context, elementOffset);
-        if (itemContainer.shouldShowItemBar()) {
-            this.drawProgressBar(x + this.getXMargin(width),
-                    y + elementOffset + PROGRESS_BAR_MARGIN, textRenderer, context);
-        }
     }
 
     private List<ItemStack> firstStacksInContents(int numberOfStacksShown) {
@@ -303,9 +300,10 @@ public class ItemContainerTooltipComponent implements TooltipComponent {
     private Text getProgressBarLabel() {
         if (this.itemContainer.isEmpty()) {
             return ITEM_CONTAINER_EMPTY;
-        } else {
-            return this.itemContainer.getOccupancy().compareTo(Fraction.ONE) >= 0
-                    ? ITEM_CONTAINER_FULL : null;
         }
+        if (this.itemContainer.getOccupancy().compareTo(Fraction.ONE) >= 0) {
+            return ITEM_CONTAINER_FULL;
+        }
+        return null;
     }
 }

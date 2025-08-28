@@ -242,17 +242,24 @@ public class ItemContainerComponent implements TooltipData {
             return this;
         }
 
+        // Assumes the size and settings are identical, or some items might be lost
+        public Builder copyStacks(ItemContainerComponent other) {
+            clearContents();
+            for (ItemStack stack : other.getStacks()) {
+                add(stack);
+            }
+            return this;
+        }
+
         private int getInsertionIndex(ItemStack stack) {
-            if (!stack.isStackable() || this.settings.useSingleStacksOnly()) {
-                return -1;
-            } else {
+            if (stack.isStackable() && !this.settings.useSingleStacksOnly()) {
                 for (int i = 0; i < this.stacks.size(); ++i) {
                     if (ItemStack.areItemsAndComponentsEqual(this.stacks.get(i), stack)) {
                         return i;
                     }
                 }
-                return -1;
             }
+            return -1;
         }
 
         private int getMaxAllowed(ItemStack stack) {
