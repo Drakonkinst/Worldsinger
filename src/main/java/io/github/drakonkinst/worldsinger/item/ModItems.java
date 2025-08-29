@@ -201,7 +201,7 @@ public final class ModItems {
     public static final Item POUCH = register("pouch", new Settings().maxCount(1)
             .component(ModDataComponentTypes.ITEM_CONTAINER,
                     new ItemContainerComponent(64, ModItemTags.CAN_FIT_IN_POUCH,
-                            ItemContainerSettings.POUCH)));
+                            ItemContainerSettings.EMPTY_POUCH)));
     public static final Item POUCH_OF_SPHERES = register("pouch_of_spheres",
             new Settings().maxCount(1)
                     .component(ModDataComponentTypes.ITEM_CONTAINER,

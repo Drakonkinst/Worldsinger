@@ -56,6 +56,7 @@ import net.minecraft.client.render.item.model.ItemModel.Unbaked;
 import net.minecraft.client.render.item.model.RangeDispatchItemModel;
 import net.minecraft.client.render.item.model.SelectItemModel.SwitchCase;
 import net.minecraft.client.render.item.property.select.DisplayContextProperty;
+import net.minecraft.client.render.item.tint.DyeTintSource;
 import net.minecraft.client.render.model.json.WeightedVariant;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
@@ -391,8 +392,6 @@ public class ModModelGenerator extends FabricModelProvider {
                 ModBlocks.ALUMINUM_SHEET,
                 ModItems.QUIVER,
                 ModItems.TEST_FABRIAL,
-                ModItems.POUCH,
-                ModItems.POUCH_OF_SPHERES,
         });
         registerHandheldItems(itemModelGenerator, new ItemConvertible[] {
                 ModItems.CRIMSON_SPINE,
@@ -442,6 +441,9 @@ public class ModModelGenerator extends FabricModelProvider {
 
         registerCannonball(itemModelGenerator, ModItems.CERAMIC_CANNONBALL);
         // registerOverlays(itemModelGenerator);
+
+        registerTwoLayerDyeable(itemModelGenerator, ModItems.POUCH);
+        registerTwoLayerDyeable(itemModelGenerator, ModItems.POUCH_OF_SPHERES);
     }
 
     // This doesn't work well because we need to modify the model scales, and overlays
@@ -452,6 +454,13 @@ public class ModModelGenerator extends FabricModelProvider {
             Identifier id = itemOverlay.getId();
             Models.GENERATED.upload(id, TextureMap.layer0(id), itemModelGenerator.modelCollector);
         }
+    }
+
+    private void registerTwoLayerDyeable(ItemModelGenerator itemModelGenerator, Item item) {
+        itemModelGenerator.uploadTwoLayers(item, TextureMap.getId(item),
+                TextureMap.getSubId(item, "_overlay"));
+        Unbaked model = ItemModels.tinted(TextureMap.getId(item), new DyeTintSource(-6265536));
+        itemModelGenerator.output.accept(item, model);
     }
 
     // Ugh this is complicated

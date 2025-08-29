@@ -26,7 +26,10 @@ public enum ItemContainerSettings implements StringIdentifiable {
             null),
     DEVICE(2, "device", false, false, false, true, null, () -> SoundEvents.ITEM_BUNDLE_INSERT,
             () -> SoundEvents.ITEM_BUNDLE_INSERT_FAIL, () -> SoundEvents.ITEM_BUNDLE_REMOVE_ONE,
-            () -> SoundEvents.ITEM_BUNDLE_DROP_CONTENTS, null);
+            () -> SoundEvents.ITEM_BUNDLE_DROP_CONTENTS, null),
+    EMPTY_POUCH(3, "pouch", false, true, true, false, null, () -> SoundEvents.ITEM_BUNDLE_INSERT,
+            () -> SoundEvents.ITEM_BUNDLE_INSERT_FAIL, () -> SoundEvents.ITEM_BUNDLE_REMOVE_ONE,
+            () -> SoundEvents.ITEM_BUNDLE_DROP_CONTENTS, PouchItemContainerFamily.INSTANCE);
 
     private static final IntFunction<ItemContainerSettings> BY_ID = ValueLists.createIndexToValueFunction(
             ItemContainerSettings::getId, values(), ValueLists.OutOfBoundsHandling.ZERO);
