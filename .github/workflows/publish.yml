@@ -6,9 +6,9 @@ on:
       - 'releases/**'
   workflow_dispatch:
 env:
-  MINECRAFT_VERSION: 1.21.7
+  MINECRAFT_VERSION: 1.21.8
   JAVA_VERSION: 21
-  MOD_VERSION: 1.7.2
+  MOD_VERSION: 1.8.0
   MOD_NAME: Worldsinger
   MODRINTH_ID: wHHS9ISQ
   MODRINTH_TOKEN: ${{ secrets.PUBLISH_MODRINTH_TOKEN }}
