@@ -43,6 +43,7 @@ import io.github.drakonkinst.worldsinger.item.component.ItemContainerComponent;
 import io.github.drakonkinst.worldsinger.item.itemcontainer.ItemContainerSettings;
 import io.github.drakonkinst.worldsinger.registry.ModArmorMaterials;
 import io.github.drakonkinst.worldsinger.registry.ModDataComponentTypes;
+import io.github.drakonkinst.worldsinger.registry.ModFeatureFlags;
 import io.github.drakonkinst.worldsinger.registry.ModFoodComponents;
 import io.github.drakonkinst.worldsinger.registry.ModPotions;
 import io.github.drakonkinst.worldsinger.registry.ModSoundEvents;
@@ -191,19 +192,23 @@ public final class ModItems {
 
     // Test Items
     public static final Item QUIVER = register("quiver", new Settings().maxCount(1)
+            .requires(ModFeatureFlags.ITEM_CONTAINERS)
             .component(ModDataComponentTypes.ITEM_CONTAINER,
                     new ItemContainerComponent(256, ModItemTags.CAN_BE_QUIVERED,
                             ItemContainerSettings.QUIVER)));
     public static final Item TEST_FABRIAL = register("test_fabrial", new Settings().maxCount(1)
+            .requires(ModFeatureFlags.ITEM_CONTAINERS)
             .component(ModDataComponentTypes.ITEM_CONTAINER,
                     new ItemContainerComponent(3, ModItemTags.CAN_USE_IN_FABRIAL,
                             ItemContainerSettings.DEVICE)));
     public static final Item POUCH = register("pouch", new Settings().maxCount(1)
+            .requires(ModFeatureFlags.ITEM_CONTAINERS)
             .component(ModDataComponentTypes.ITEM_CONTAINER,
                     new ItemContainerComponent(64, ModItemTags.CAN_FIT_IN_POUCH,
                             ItemContainerSettings.EMPTY_POUCH)));
     public static final Item POUCH_OF_SPHERES = register("pouch_of_spheres",
             new Settings().maxCount(1)
+                    .requires(ModFeatureFlags.ITEM_CONTAINERS)
                     .component(ModDataComponentTypes.ITEM_CONTAINER,
                             new ItemContainerComponent(64, ModItemTags.SPHERES,
                                     ItemContainerSettings.POUCH)));

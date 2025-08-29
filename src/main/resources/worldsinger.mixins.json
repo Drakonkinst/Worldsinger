@@ -80,6 +80,8 @@
     "entity.player.ServerPlayerEntitySpawnMixin",
     "entity.player.ServerPlayerEntityThirstMixin",
     "event.EntityHurtPlayerCriterionServerPlayerHurtMixin",
+    "featureflags.FeatureFlagsMixin",
+    "featureflags.FeatureManagerBuilderMixin",
     "fluid.FlowableFluidMixin",
     "item.BlockItemMixin",
     "item.BoatItemMixin",
